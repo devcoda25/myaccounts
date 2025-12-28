@@ -205,7 +205,7 @@ function buildTheme(mode: ThemeMode) {
       text: { primary: textPrimary, secondary: textSecondary },
       divider: isDark ? alpha("#E9FFF7", 0.12) : alpha("#0B1A17", 0.10),
     },
-    shape: { borderRadius: 18 },
+    shape: { borderRadius: 2 },
     typography: {
       fontFamily:
         "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji",
@@ -217,7 +217,7 @@ function buildTheme(mode: ThemeMode) {
       MuiCard: {
         styleOverrides: {
           root: {
-            borderRadius: 24,
+            borderRadius: 2,
             border: `1px solid ${isDark ? alpha("#E9FFF7", 0.10) : alpha("#0B1A17", 0.10)}`,
             backgroundImage:
               "radial-gradient(900px 420px at 12% 0%, rgba(3,205,140,0.14), transparent 60%), radial-gradient(900px 420px at 88% 0%, rgba(3,205,140,0.10), transparent 55%)",
@@ -226,7 +226,7 @@ function buildTheme(mode: ThemeMode) {
       },
       MuiButton: {
         styleOverrides: {
-          root: { borderRadius: 14, paddingTop: 10, paddingBottom: 10, boxShadow: "none" },
+          root: { borderRadius: 2, paddingTop: 10, paddingBottom: 10, boxShadow: "none" },
         },
       },
     },
@@ -427,7 +427,7 @@ export default function ForgotPasswordPage() {
         <Box
           sx={{
             width: "100%",
-            borderRadius: 16,
+            borderRadius: 2,
             border: `1px solid ${alpha(base, selected ? 0.95 : 0.55)}`,
             backgroundColor: selected ? base : alpha(theme.palette.background.paper, 0.35),
             color: selected ? "#FFFFFF" : theme.palette.text.primary,
@@ -446,7 +446,7 @@ export default function ForgotPasswordPage() {
               sx={{
                 width: 36,
                 height: 36,
-                borderRadius: 14,
+                borderRadius: 2,
                 display: "grid",
                 placeItems: "center",
                 backgroundColor: selected ? alpha("#FFFFFF", 0.18) : alpha(base, mode === "dark" ? 0.16 : 0.10),
@@ -596,7 +596,7 @@ export default function ForgotPasswordPage() {
                         </Typography>
                       </Stack>
 
-                      <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
+                      <Box sx={{ borderRadius: 2, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
                         <Stack spacing={1}>
                           <Typography sx={{ fontWeight: 900 }}>Next</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
@@ -705,7 +705,7 @@ export default function ForgotPasswordPage() {
                       </Box>
 
                       {captchaRequired ? (
-                        <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.2 }}>
+                        <Box sx={{ borderRadius: 2, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.2 }}>
                           <FormControlLabel
                             control={
                               <Checkbox
@@ -779,7 +779,7 @@ export default function ForgotPasswordPage() {
         <Dialog
           open={confirmOpen}
           onClose={() => setConfirmOpen(false)}
-          PaperProps={{ sx: { borderRadius: 20, border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}
+          PaperProps={{ sx: { borderRadius: 2, border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}
         >
           <DialogTitle sx={{ fontWeight: 950 }}>Confirm send</DialogTitle>
           <DialogContent>
@@ -787,7 +787,7 @@ export default function ForgotPasswordPage() {
               <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                 Send reset instructions to:
               </Typography>
-              <Box sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.55), p: 1.2 }}>
+              <Box sx={{ borderRadius: 2, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.55), p: 1.2 }}>
                 <Stack direction="row" spacing={1.2} alignItems="center">
                   <Box sx={{ color: delivery === "whatsapp_code" ? WHATSAPP.green : EVZONE.orange }}>
                     {delivery === "email_link" ? <MailIcon size={18} /> : delivery === "sms_code" ? <PhoneIcon size={18} /> : <WhatsAppIcon size={18} />}
