@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -186,10 +187,13 @@ export default function ServiceStatusPage() {
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Demo toggles
   const [demoDegraded, setDemoDegraded] = useState(false);
   const [demoMaintenance, setDemoMaintenance] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
@@ -202,7 +206,12 @@ export default function ServiceStatusPage() {
       { key: "notifications", name: "Notifications", desc: "Email and SMS alerts", health: demoMaintenance ? "Maintenance" : "Operational", lastUpdatedAt: now - 1000 * 60 * 5 },
       { key: "integrations", name: "Integrations", desc: "Payments and external services", health: demoDegraded ? "Degraded" : "Operational", lastUpdatedAt: now - 1000 * 60 * 4 },
     ];
-  }, [demoDegraded, demoMaintenance]);
+  }, [demoDegraded, demoMaintenance, refreshKey]);
+
+  const handleRefresh = () => {
+    setRefreshKey(prev => prev + 1);
+    setSnack({ open: true, severity: "success", msg: "Status refreshed." });
+  };
 
   useEffect(() => {
     // no-op
@@ -318,10 +327,10 @@ export default function ServiceStatusPage() {
                     </Box>
 
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                      <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /status/maintenance (demo)." })} startIcon={<WrenchIcon size={18} />}>
+                      <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/status/maintenance")} startIcon={<WrenchIcon size={18} />}>
                         Maintenance
                       </Button>
-                      <Button variant="contained" sx={orangeContained} onClick={() => setSnack({ open: true, severity: "info", msg: "Refresh status (demo)." })}>
+                      <Button variant="contained" sx={orangeContained} onClick={handleRefresh}>
                         Refresh
                       </Button>
                     </Stack>
@@ -384,10 +393,10 @@ export default function ServiceStatusPage() {
                         <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Subscribe to status updates (later)." })}>
                           Subscribe (later)
                         </Button>
-                        <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/support (demo)." })}>
+                        <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/app/support")}>
                           Contact support
                         </Button>
-                        <Button variant="contained" sx={orangeContained} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app (demo)." })}>
+                        <Button variant="contained" sx={orangeContained} onClick={() => navigate("/app")}>
                           My Accounts
                         </Button>
                       </Stack>
@@ -406,10 +415,10 @@ export default function ServiceStatusPage() {
               <Card sx={{ borderRadius: 999, backgroundColor: alpha(theme.palette.background.paper, 0.86), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backdropFilter: "blur(10px)" }}>
                 <CardContent sx={{ py: 1.1, px: 1.2 }}>
                   <Stack direction="row" spacing={1}>
-                    <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /status/maintenance (demo)." })}>
+                    <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => navigate("/status/maintenance")}>
                       Maint.
                     </Button>
-                    <Button fullWidth variant="contained" sx={orangeContained} onClick={() => setSnack({ open: true, severity: "info", msg: "Refresh status (demo)." })}>
+                    <Button fullWidth variant="contained" sx={orangeContained} onClick={handleRefresh}>
                       Refresh
                     </Button>
                   </Stack>

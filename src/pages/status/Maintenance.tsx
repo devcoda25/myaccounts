@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -143,6 +144,7 @@ export default function Maintenance503Page() {
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";
+  const navigate = useNavigate();
 
   // Demo: expected return window. In production, fetch from status backend.
   const [startAt] = useState(() => Date.now() - 1000 * 60 * 6);
@@ -240,10 +242,10 @@ export default function Maintenance503Page() {
                     </Stack>
 
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ width: { xs: "100%", md: "auto" } }}>
-                      <Button variant="contained" sx={orangeContained} onClick={() => setSnack({ open: true, severity: "info", msg: "Refresh (demo)." })}>
+                      <Button variant="contained" sx={orangeContained} onClick={() => window.location.reload()}>
                         Refresh
                       </Button>
-                      <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /status (demo)." })}>
+                      <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/status")}>
                         View status
                       </Button>
                     </Stack>
@@ -290,10 +292,10 @@ export default function Maintenance503Page() {
               <Card sx={{ borderRadius: 999, backgroundColor: alpha(theme.palette.background.paper, 0.86), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backdropFilter: "blur(10px)" }}>
                 <CardContent sx={{ py: 1.1, px: 1.2 }}>
                   <Stack direction="row" spacing={1}>
-                    <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /status (demo)." })}>
+                    <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => navigate("/status")}>
                       Status
                     </Button>
-                    <Button fullWidth variant="contained" sx={orangeContained} onClick={() => setSnack({ open: true, severity: "info", msg: "Refresh (demo)." })}>
+                    <Button fullWidth variant="contained" sx={orangeContained} onClick={() => window.location.reload()}>
                       Refresh
                     </Button>
                   </Stack>
