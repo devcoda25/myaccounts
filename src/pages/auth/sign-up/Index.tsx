@@ -12,6 +12,8 @@ import {
   FormControlLabel,
   IconButton,
   InputAdornment,
+  MenuItem,
+  Select,
   Snackbar,
   Stack,
   Switch,
@@ -41,6 +43,21 @@ const EVZONE = {
   green: "#03cd8c",
   orange: "#f77f00",
 } as const;
+
+const COUNTRIES = [
+  { code: "UG", label: "Uganda", dial: "+256" },
+  { code: "KE", label: "Kenya", dial: "+254" },
+  { code: "TZ", label: "Tanzania", dial: "+255" },
+  { code: "RW", label: "Rwanda", dial: "+250" },
+  { code: "NG", label: "Nigeria", dial: "+234" },
+  { code: "ZA", label: "South Africa", dial: "+27" },
+  { code: "US", label: "United States", dial: "+1" },
+  { code: "GB", label: "United Kingdom", dial: "+44" },
+  { code: "CA", label: "Canada", dial: "+1" },
+  { code: "AE", label: "UAE", dial: "+971" },
+  { code: "IN", label: "India", dial: "+91" },
+  { code: "CN", label: "China", dial: "+86" },
+];
 
 // -----------------------------
 // Inline icons (CDN-safe)
@@ -331,8 +348,10 @@ export default function SignUpPageV3() {
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";
 
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [otherNames, setOtherNames] = useState("");
   const [email, setEmail] = useState("");
+  const [countryCode, setCountryCode] = useState("+256");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -345,6 +364,21 @@ export default function SignUpPageV3() {
 
   const [banner, setBanner] = useState<{ severity: "error" | "warning" | "info" | "success"; msg: string } | null>(null);
   const [snack, setSnack] = useState<{ open: boolean; severity: "success" | "info" | "warning" | "error"; msg: string }>({ open: false, severity: "info", msg: "" });
+
+  // Detect location
+  React.useEffect(() => {
+    // Simple heuristic or fetch could go here. 
+    // For now, we'll try to guess based on timezone
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (tz.includes("Nairobi") || tz.includes("Kampala")) setCountryCode("+256"); // Default/Fallback
+      else if (tz.includes("New_York") || tz.includes("America")) setCountryCode("+1");
+      else if (tz.includes("London") || tz.includes("Europe")) setCountryCode("+44");
+      // Add more heuristics as needed or fetch from IP API
+    } catch (e) {
+      // ignore
+    }
+  }, []);
 
   const toggleMode = () => {
     const next: ThemeMode = mode === "light" ? "dark" : "light";
@@ -400,11 +434,13 @@ export default function SignUpPageV3() {
   const pwLabel = pwScore <= 1 ? "Weak" : pwScore === 2 ? "Fair" : pwScore === 3 ? "Good" : pwScore === 4 ? "Strong" : "Very strong";
 
   const validate = () => {
-    const n = fullName.trim();
+    const fn = firstName.trim();
+    const ln = otherNames.trim();
     const e = email.trim();
     const p = phone.trim();
 
-    if (!n) return "Enter your full name.";
+    if (!fn) return "Enter your first name.";
+    if (!ln) return "Enter your other names.";
     if (!e && !p) return "Provide at least an email or phone number.";
     if (e && !isEmail(e)) return "Enter a valid email address.";
     if (!acceptTerms) return "You must accept the Terms and Privacy Policy.";
@@ -586,20 +622,24 @@ export default function SignUpPageV3() {
                     {banner ? <Alert severity={banner.severity}>{banner.msg}</Alert> : null}
 
                     <Stack spacing={1.4}>
-                      <TextField
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        label="Full name"
-                        placeholder="Your name"
-                        fullWidth
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <UserIcon size={18} />
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
+                      <Box className="grid gap-3 md:grid-cols-2">
+                        <TextField
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                          label="First name"
+                          placeholder="John"
+                          fullWidth
+                          InputProps={{ startAdornment: <InputAdornment position="start"><UserIcon size={18} /></InputAdornment> }}
+                        />
+                        <TextField
+                          value={otherNames}
+                          onChange={(e) => setOtherNames(e.target.value)}
+                          label="Other names"
+                          placeholder="Doe"
+                          fullWidth
+                          InputProps={{ startAdornment: <InputAdornment position="start"><UserIcon size={18} /></InputAdornment> }}
+                        />
+                      </Box>
 
                       <Box className="grid gap-3 md:grid-cols-2">
                         <TextField
@@ -616,20 +656,41 @@ export default function SignUpPageV3() {
                             ),
                           }}
                         />
-                        <TextField
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value)}
-                          label="Phone (optional)"
-                          placeholder="+256..."
-                          fullWidth
-                          InputProps={{
-                            startAdornment: (
-                              <InputAdornment position="start">
-                                <PhoneIcon size={18} />
-                              </InputAdornment>
-                            ),
-                          }}
-                        />
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                          <Select
+                            value={countryCode}
+                            onChange={(e) => setCountryCode(e.target.value)}
+                            sx={{ width: 100, borderRadius: 1.5, '.MuiSelect-select': { display: 'flex', alignItems: 'center' } }}
+                            renderValue={(selected) => (
+                              <Stack direction="row" spacing={0.5} alignItems="center">
+                                <Typography variant="body2">{selected}</Typography>
+                              </Stack>
+                            )}
+                          >
+                            {COUNTRIES.map((c) => (
+                              <MenuItem key={c.code} value={c.dial}>
+                                <Stack direction="row" justifyContent="space-between" width="100%">
+                                  <Typography variant="body2">{c.label}</Typography>
+                                  <Typography variant="caption" color="text.secondary">{c.dial}</Typography>
+                                </Stack>
+                              </MenuItem>
+                            ))}
+                          </Select>
+                          <TextField
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            label="Phone (optional)"
+                            placeholder="770 123456"
+                            fullWidth
+                            InputProps={{
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  <PhoneIcon size={18} />
+                                </InputAdornment>
+                              ),
+                            }}
+                          />
+                        </Box>
                       </Box>
 
                       {/* OTP toggle */}
