@@ -10,7 +10,10 @@ import {
     Typography,
     useTheme,
     alpha,
-    useMediaQuery
+    useMediaQuery,
+    Paper,
+    BottomNavigation,
+    BottomNavigationAction
 } from '@mui/material';
 import {
     ShieldCheck as ShieldIcon,
@@ -36,6 +39,26 @@ export default function AdminLayout() {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
 
+    // State for Bottom Navigation
+    const [bottomNavValue, setBottomNavValue] = useState(0);
+
+    const menuItems = [
+        { label: "Dashboard", icon: <LayoutIcon size={18} />, route: "/admin/dashboard" },
+        { label: "Users", icon: <ShieldIcon size={18} />, route: "/admin/users" },
+        { label: "Organizations", icon: <BuildingIcon size={18} />, route: "/admin/orgs" },
+        { label: "KYC Requests", icon: <FileTextIcon size={18} />, route: "/admin/kyc" },
+        { label: "Wallets", icon: <RefreshIcon size={18} />, route: "/admin/wallets" },
+        { label: "Transactions", icon: <ClipboardIcon size={18} />, route: "/admin/transactions" },
+        { label: "Audit logs", icon: <ClipboardIcon size={18} />, route: "/admin/audit" },
+        { label: "System status", icon: <ShieldIcon size={18} />, route: "/admin/status" },
+    ];
+
+    // Sync bottom nav state with current path
+    React.useEffect(() => {
+        const foundIdx = menuItems.findIndex(item => location.pathname.startsWith(item.route));
+        if (foundIdx !== -1) setBottomNavValue(foundIdx);
+    }, [location.pathname, menuItems]);
+
     const handleDrawerClose = () => {
         setIsClosing(true);
         setMobileOpen(false);
@@ -50,17 +73,6 @@ export default function AdminLayout() {
             setMobileOpen(!mobileOpen);
         }
     };
-
-    const menuItems = [
-        { label: "Dashboard", icon: <LayoutIcon size={18} />, route: "/admin/dashboard" },
-        { label: "Users", icon: <ShieldIcon size={18} />, route: "/admin/users" },
-        { label: "Organizations", icon: <BuildingIcon size={18} />, route: "/admin/orgs" },
-        { label: "KYC Requests", icon: <FileTextIcon size={18} />, route: "/admin/kyc" },
-        { label: "Wallets", icon: <RefreshIcon size={18} />, route: "/admin/wallets" },
-        { label: "Transactions", icon: <ClipboardIcon size={18} />, route: "/admin/transactions" },
-        { label: "Audit logs", icon: <ClipboardIcon size={18} />, route: "/admin/audit" },
-        { label: "System status", icon: <ShieldIcon size={18} />, route: "/admin/status" },
-    ];
 
     const pageBg =
         isDark
@@ -198,10 +210,63 @@ export default function AdminLayout() {
                 <AppHeader onDrawerToggle={handleDrawerToggle} showMobileToggle={true} />
 
                 {/* Page Content */}
-                <Box sx={{ p: { xs: 2, md: 4 } }}>
+                <Box sx={{ p: { xs: 2, md: 4 }, pb: { xs: 10, md: 4 } }}>
                     <Outlet />
                 </Box>
             </Box>
+
+            {/* Mobile Bottom Navigation */}
+            <Paper sx={{
+                position: 'fixed',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                display: { xs: 'block', md: 'none' },
+                zIndex: 1300,
+                borderRadius: '0',
+                overflow: 'hidden',
+                boxShadow: '0 -4px 20px rgba(0,0,0,0.08)',
+                borderTop: `1px solid ${theme.palette.divider}`
+            }} elevation={3}>
+                <BottomNavigation
+                    showLabels
+                    value={bottomNavValue}
+                    onChange={(event, newValue) => {
+                        setBottomNavValue(newValue);
+                        navigate(menuItems[newValue].route);
+                    }}
+                    sx={{
+                        height: 72 + (typeof window !== 'undefined' && /iPhone|iPod|iPad/.test(navigator.userAgent) ? 10 : 0), // Extra padding for iOS home indicator if needed
+                        pb: typeof window !== 'undefined' && /iPhone|iPod|iPad/.test(navigator.userAgent) ? 2 : 0,
+                        bgcolor: alpha(theme.palette.background.paper, 0.94),
+                        backdropFilter: 'blur(10px)',
+                        '& .MuiBottomNavigationAction-root': {
+                            color: 'text.secondary',
+                            '&.Mui-selected': {
+                                color: EVZONE.green,
+                                '& .MuiSvgIcon-root, & svg': {
+                                    filter: `drop-shadow(0 0 6px ${alpha(EVZONE.green, 0.4)})`
+                                }
+                            }
+                        }
+                    }}
+                >
+                    {menuItems.slice(0, 5).map((item) => ( // Show first 5 items
+                        <BottomNavigationAction
+                            key={item.label}
+                            label={item.label}
+                            icon={item.icon}
+                            sx={{
+                                '& .MuiBottomNavigationAction-label': {
+                                    fontSize: '0.65rem',
+                                    fontWeight: 600,
+                                    mt: 0.5
+                                }
+                            }}
+                        />
+                    ))}
+                </BottomNavigation>
+            </Paper>
         </Box>
     );
 }
