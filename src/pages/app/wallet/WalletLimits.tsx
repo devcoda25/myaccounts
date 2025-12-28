@@ -399,7 +399,7 @@ export default function WalletLimitsFeesPage() {
                     <Divider />
 
                     <TableContainer sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, overflow: "hidden" }}>
-                      <Table size="small">
+                      <Table size="small" sx={{ minWidth: 800 }}>
                         <TableHead>
                           <TableRow sx={{ backgroundColor: alpha(theme.palette.background.paper, 0.55) }}>
                             <TableCell sx={{ fontWeight: 950 }}>Category</TableCell>
