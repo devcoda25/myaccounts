@@ -141,6 +141,11 @@ export default function NotificationsPopover({ onClose }: NotificationsPopoverPr
                             <Settings size={16} />
                         </IconButton>
                     </Tooltip>
+                    <Tooltip title="Close">
+                        <IconButton size="small" onClick={onClose}>
+                            <X size={16} />
+                        </IconButton>
+                    </Tooltip>
                 </Box>
             </Box>
 
