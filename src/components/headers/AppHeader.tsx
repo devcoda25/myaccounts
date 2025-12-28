@@ -29,6 +29,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useThemeContext } from '../../theme/ThemeContext';
 import { EVZONE } from '../../theme/evzone';
+import NotificationsPopover from './NotificationsPopover';
 
 interface AppHeaderProps {
     onDrawerToggle?: () => void;
@@ -41,6 +42,12 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
     const { mode, toggleMode } = useThemeContext();
     const isDark = mode === 'dark';
 
+    const notifRef = useRef<HTMLButtonElement>(null);
+    const [openNotif, setOpenNotif] = useState(false);
+    const handleNotifClick = () => setOpenNotif(true);
+    const handleNotifClose = () => setOpenNotif(false);
+
+    // Profile Menu State
     const anchorRef = useRef<HTMLButtonElement>(null);
     const [openMenu, setOpenMenu] = useState(false);
 
@@ -134,11 +141,49 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
                     </IconButton>
                 </Tooltip>
 
-                <Tooltip title="Notifications">
-                    <IconButton onClick={() => navigate('/app/notifications')}>
-                        <Bell size={20} />
-                    </IconButton>
-                </Tooltip>
+                <Box>
+                    <Tooltip title="Notifications">
+                        <IconButton ref={notifRef} onClick={handleNotifClick}>
+                            <Bell size={20} />
+                        </IconButton>
+                    </Tooltip>
+                    <Menu
+                        disableScrollLock
+                        anchorEl={notifRef.current}
+                        open={openNotif}
+                        onClose={handleNotifClose}
+                        onClick={handleNotifClose} // Close on item click optional
+                        PaperProps={{
+                            elevation: 0,
+                            sx: {
+                                overflow: 'visible',
+                                filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                                mt: 1.5,
+                                borderRadius: '12px',
+                                minWidth: 360,
+                                '&:before': {
+                                    content: '""',
+                                    display: 'block',
+                                    position: 'absolute',
+                                    top: 0,
+                                    right: 14,
+                                    width: 10,
+                                    height: 10,
+                                    bgcolor: 'background.paper',
+                                    transform: 'translateY(-50%) rotate(45deg)',
+                                    zIndex: 0,
+                                },
+                            },
+                        }}
+                        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                    >
+                        {/* We prevent closing when clicking inside the popover content itself if handled internally, but Menu handles outside clicks */}
+                        <Box onClick={(e) => e.stopPropagation()}>
+                            <NotificationsPopover onClose={handleNotifClose} />
+                        </Box>
+                    </Menu>
+                </Box>
 
                 <Box>
                     <IconButton
