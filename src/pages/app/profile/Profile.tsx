@@ -568,7 +568,7 @@ export default function PersonalProfilePage() {
                 size="small"
                 variant="text"
                 sx={orangeTextSx}
-                onClick={() => setSnack({ open: true, severity: "info", msg: "Open Terms (demo)." })}
+                onClick={() => window.open('/legal/terms', '_blank')}
               >
                 Terms
               </Button>
@@ -576,7 +576,7 @@ export default function PersonalProfilePage() {
                 size="small"
                 variant="text"
                 sx={orangeTextSx}
-                onClick={() => setSnack({ open: true, severity: "info", msg: "Open Privacy (demo)." })}
+                onClick={() => window.open('/legal/privacy', '_blank')}
               >
                 Privacy
               </Button>
