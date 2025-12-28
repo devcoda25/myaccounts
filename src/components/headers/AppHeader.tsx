@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
     Box,
     IconButton,
@@ -41,14 +41,14 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
     const { mode, toggleMode } = useThemeContext();
     const isDark = mode === 'dark';
 
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const openMenu = Boolean(anchorEl);
+    const anchorRef = useRef<HTMLButtonElement>(null);
+    const [openMenu, setOpenMenu] = useState(false);
 
-    const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
+    const handleMenuClick = () => {
+        setOpenMenu(true);
     };
     const handleMenuClose = () => {
-        setAnchorEl(null);
+        setOpenMenu(false);
     };
     const handleProfileClick = () => {
         navigate('/app/profile');
@@ -89,7 +89,7 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
                     backgroundColor: alpha(theme.palette.text.primary, 0.04),
                     '&:hover': { backgroundColor: alpha(theme.palette.text.primary, 0.06) },
                     mr: 2,
-                    display: { xs: 'none', sm: 'flex' }, // Hide on mobile for now or adjust
+                    display: { xs: 'none', sm: 'flex' },
                     alignItems: 'center',
                     px: 2,
                     height: 40,
@@ -141,19 +141,19 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
                 </Tooltip>
 
                 <Box>
-                    <Tooltip title="Account settings">
-                        <IconButton
-                            onClick={handleMenuClick}
-                            size="small"
-                            aria-controls={openMenu ? 'account-menu' : undefined}
-                            aria-haspopup="true"
-                            aria-expanded={openMenu ? 'true' : undefined}
-                        >
-                            <Avatar src="https://i.pravatar.cc/150?u=ronald" sx={{ width: 32, height: 32, border: `2px solid ${alpha(theme.palette.primary.main, 0.2)}` }} />
-                        </IconButton>
-                    </Tooltip>
+                    <IconButton
+                        ref={anchorRef}
+                        onClick={handleMenuClick}
+                        size="small"
+                        aria-controls={openMenu ? 'account-menu' : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={openMenu ? 'true' : undefined}
+                    >
+                        <Avatar src="https://i.pravatar.cc/150?u=ronald" sx={{ width: 32, height: 32, border: `2px solid ${alpha(theme.palette.primary.main, 0.2)}` }} />
+                    </IconButton>
                     <Menu
-                        anchorEl={anchorEl}
+                        disableScrollLock
+                        anchorEl={anchorRef.current}
                         id="account-menu"
                         open={openMenu}
                         onClose={handleMenuClose}
