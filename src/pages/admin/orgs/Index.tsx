@@ -145,7 +145,7 @@ export default function AdminOrgsListPage() {
 
                 <Card sx={{ borderRadius: 6 }}>
                     <TableContainer>
-                        <Table>
+                        <Table sx={{ minWidth: 800 }}>
                             <TableHead>
                                 <TableRow sx={{ backgroundColor: alpha(theme.palette.background.paper, 0.55) }}>
                                     <TableCell sx={{ fontWeight: 950 }}>Organization</TableCell>
