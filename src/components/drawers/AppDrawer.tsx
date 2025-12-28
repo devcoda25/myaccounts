@@ -25,7 +25,8 @@ import {
     Menu,
     Bell,
     Code,
-    Lock
+    Lock,
+    FileText
 } from "lucide-react";
 import { alpha } from "@mui/material/styles";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -51,6 +52,8 @@ const SECONDARY_NAV_ITEMS = [
     { label: "Parental Controls", path: "/app/parental-controls", icon: <Lock size={20} /> },
     { label: "Developer", path: "/app/developer", icon: <Code size={20} /> },
     { label: "Support", path: "/app/support", icon: <HelpCircle size={20} /> },
+    { label: "Terms", path: "/legal/terms", icon: <FileText size={20} /> },
+    { label: "Privacy", path: "/legal/privacy", icon: <Shield size={20} /> },
 ];
 
 export default function AppDrawer({ mobileOpen, onDrawerToggle }: AppDrawerProps) {
@@ -119,10 +122,6 @@ export default function AppDrawer({ mobileOpen, onDrawerToggle }: AppDrawerProps
                     );
                 })}
             </List>
-
-            <Box sx={{ flexGrow: 1 }} />
-
-            <Divider sx={{ mx: 3, my: 2 }} />
 
             {/* Secondary Nav */}
             <List sx={{ px: 2, pb: 2 }}>

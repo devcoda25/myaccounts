@@ -172,13 +172,13 @@ export default function Dashboard() {
                 <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>Quick Actions</Typography>
                 <Grid container spacing={2} sx={{ mb: 4 }}>
                   {[
-                    { label: "Pay Bills", icon: <CreditCard size={20} />, color: EVZONE.orange }, // Orange
-                    { label: "Security", icon: <ShieldCheck size={20} />, color: EVZONE.green }, // Green
-                    { label: "Orgs", icon: <Users size={20} />, color: EVZONE.green }, // Green
-                    { label: "Settings", icon: <Settings size={20} />, color: EVZONE.orange }, // Orange
+                    { label: "Pay Bills", icon: <CreditCard size={20} />, color: EVZONE.orange, path: "/app/wallet" }, // Orange
+                    { label: "Security", icon: <ShieldCheck size={20} />, color: EVZONE.green, path: "/app/security" }, // Green
+                    { label: "Orgs", icon: <Users size={20} />, color: EVZONE.green, path: "/app/orgs" }, // Green
+                    { label: "Settings", icon: <Settings size={20} />, color: EVZONE.orange, path: "/app/profile" }, // Orange
                   ].map((action, i) => (
                     <Grid item xs={6} sm={3} key={i}>
-                      <Paper sx={{
+                      <Paper onClick={() => navigate(action.path)} sx={{
                         borderRadius: '16px',
                         p: 3,
                         display: 'flex',
