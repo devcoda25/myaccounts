@@ -36,6 +36,7 @@ const AppSecurityChangePassword = lazy(() => import('../pages/app/security/Secur
 const AppSecurityPasskeys = lazy(() => import('../pages/app/security/SecurityPasskeys'))
 const AppSecurityRecoveryCodes = lazy(() => import('../pages/app/security/SecurityRecoveryCodes'))
 const AppSecuritySessions = lazy(() => import('../pages/app/security/SecuritySessions'))
+const AppSettings = lazy(() => import('../pages/app/Settings'))
 const AppSupport = lazy(() => import('../pages/app/support/Support'))
 const AppSupportSecurity = lazy(() => import('../pages/app/support/SupportSecurity'))
 const AppWallet = lazy(() => import('../pages/app/wallet/Wallet'))
@@ -129,6 +130,7 @@ export default function AppRouter() {
               <Route path="/app/security/passkeys" element={<AppSecurityPasskeys />} />
               <Route path="/app/security/recovery-codes" element={<AppSecurityRecoveryCodes />} />
               <Route path="/app/security/sessions" element={<AppSecuritySessions />} />
+              <Route path="/app/settings" element={<AppSettings />} />
               <Route path="/app/support" element={<AppSupport />} />
               <Route path="/app/support/security" element={<AppSupportSecurity />} />
               <Route path="/app/wallet" element={<AppWallet />} />

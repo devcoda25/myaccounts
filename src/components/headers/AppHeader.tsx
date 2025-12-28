@@ -197,7 +197,7 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
                             <ListItemIcon><User size={18} /></ListItemIcon>
                             Profile
                         </MenuItem>
-                        <MenuItem onClick={() => { navigate('/app/security'); handleMenuClose(); }} sx={{ py: 1.5 }}>
+                        <MenuItem onClick={() => { navigate('/app/settings'); handleMenuClose(); }} sx={{ py: 1.5 }}>
                             <ListItemIcon><Settings size={18} /></ListItemIcon>
                             Settings
                         </MenuItem>

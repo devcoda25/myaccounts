@@ -48,7 +48,6 @@ const NAV_ITEMS = [
 ];
 
 const SECONDARY_NAV_ITEMS = [
-    { label: "Settings", path: "/app/profile", icon: <Settings size={20} /> },
     { label: "Parental Controls", path: "/app/parental-controls", icon: <Lock size={20} /> },
     { label: "Developer", path: "/app/developer", icon: <Code size={20} /> },
     { label: "Support", path: "/app/support", icon: <HelpCircle size={20} /> },
