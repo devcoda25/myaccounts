@@ -1,23 +1,20 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
   Button,
   Card,
   CardContent,
-  Checkbox,
   CssBaseline,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Divider,
-  FormControlLabel,
   IconButton,
+  InputAdornment,
   Snackbar,
   Stack,
   Tab,
   Tabs,
+  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -25,29 +22,26 @@ import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
 import { motion } from "framer-motion";
 
 /**
- * EVzone My Accounts - MFA Challenge
- * Route: /auth/mfa
- *
- * Update:
- * - Added WhatsApp as an MFA option (Authenticator, SMS, WhatsApp, Email OTP).
- *
- * Style rules:
- * - Background: green-only
- * - Buttons: orange-only with white text (outlined hover -> solid orange + white text)
+ * EVzone My Accounts - Re-authentication Prompt
+ * Route: /auth/re-auth
+ * Purpose: Required for sensitive actions (wallet withdrawals, changing email/password, disabling MFA).
  *
  * Features:
- * - Method tabs: Authenticator (TOTP), SMS, WhatsApp, Email OTP (fallback)
- * - OTP input
- * - Try another method (dialog)
- * - Use recovery code
- * - Trust this device (checkbox) → sets a device token
+ * • Confirm password OR MFA code
+ * • Clear explanation: "For your security…"
+ *
+ * Style rules:
+ * • Background: green-only
+ * • Buttons: orange-only with white text (outlined hover -> solid orange + white text)
  */
 
 type ThemeMode = "light" | "dark";
 
-type Method = "totp" | "sms" | "whatsapp" | "email";
+type PromptMode = "password" | "mfa";
 
-type Step = "challenge" | "success";
+type MfaMethod = "totp" | "sms" | "email";
+
+type Step = "prompt" | "success";
 
 const EVZONE = {
   green: "#03cd8c",
@@ -55,7 +49,7 @@ const EVZONE = {
 } as const;
 
 // -----------------------------
-// Inline icon set (CDN-safe)
+// Inline icons (CDN-safe)
 // -----------------------------
 function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
   return (
@@ -82,10 +76,6 @@ function SunIcon({ size = 18 }: { size?: number }) {
       <path d="M12 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
       <path d="M4 12H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
       <path d="M22 12h-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4.9 4.9l1.4 1.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M17.7 17.7l1.4 1.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M19.1 4.9l-1.4 1.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M6.3 17.7l-1.4 1.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </IconBase>
   );
 }
@@ -108,8 +98,6 @@ function GlobeIcon({ size = 18 }: { size?: number }) {
     <IconBase size={size}>
       <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
       <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 3c3 3 3 15 0 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 3c-3 3-3 15 0 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </IconBase>
   );
 }
@@ -149,6 +137,50 @@ function ShieldCheckIcon({ size = 18 }: { size?: number }) {
   );
 }
 
+function LockIcon({ size = 18 }: { size?: number }) {
+  return (
+    <IconBase size={size}>
+      <rect x="6" y="11" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="2" />
+      <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </IconBase>
+  );
+}
+
+function EyeIcon({ size = 18 }: { size?: number }) {
+  return (
+    <IconBase size={size}>
+      <path
+        d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="12" r="2.5" stroke="currentColor" strokeWidth="2" />
+    </IconBase>
+  );
+}
+
+function EyeOffIcon({ size = 18 }: { size?: number }) {
+  return (
+    <IconBase size={size}>
+      <path d="M3 3l18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path
+        d="M2 12s3.5-7 10-7c2 0 3.8.5 5.3 1.3"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M22 12s-3.5 7-10 7c-2.2 0-4.2-.5-5.8-1.4"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path d="M10 10a3 3 0 0 0 4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </IconBase>
+  );
+}
+
 function KeypadIcon({ size = 18 }: { size?: number }) {
   return (
     <IconBase size={size}>
@@ -184,35 +216,11 @@ function MailIcon({ size = 18 }: { size?: number }) {
   );
 }
 
-function WhatsAppIcon({ size = 18 }: { size?: number }) {
-  // Official WhatsApp logo path (Font Awesome). Uses currentColor.
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 448 512"
-      fill="currentColor"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      focusable="false"
-      style={{ display: "block" }}
-    >
-      <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z" />
-    </svg>
-  );
-}
-
 function ArrowRightIcon({ size = 18 }: { size?: number }) {
   return (
     <IconBase size={size}>
       <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path
-        d="M12 5l7 7-7 7"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </IconBase>
   );
 }
@@ -221,13 +229,7 @@ function CheckCircleIcon({ size = 18 }: { size?: number }) {
   return (
     <IconBase size={size}>
       <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path
-        d="m8.5 12 2.3 2.3L15.8 9"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="m8.5 12 2.3 2.3L15.8 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </IconBase>
   );
 }
@@ -315,8 +317,11 @@ function OtpInput({
     window.setTimeout(() => refs.current[0]?.focus(), 200);
   }, [autoFocus]);
 
+  const sanitizeDigits = (raw: string) => raw.replace(/[^0-9]/g, "");
+
   const setDigit = (i: number, raw: string) => {
-    const d = raw.replace(/\D/g, "").slice(-1);
+    const digits = sanitizeDigits(raw);
+    const d = digits.slice(-1);
     const next = [...value];
     next[i] = d;
     onChange(next);
@@ -328,7 +333,7 @@ function OtpInput({
   };
 
   const onPasteFirst = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    const text = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, value.length);
+    const text = sanitizeDigits(e.clipboardData.getData("text")).slice(0, value.length);
     if (!text) return;
     e.preventDefault();
 
@@ -368,34 +373,48 @@ function OtpInput({
   );
 }
 
-export default function MfaChallengePage() {
+function getActionLabel(action: string | null) {
+  switch ((action || "").toLowerCase()) {
+    case "withdraw":
+    case "withdrawal":
+      return "Wallet withdrawal";
+    case "change_email":
+    case "email":
+      return "Change email";
+    case "change_password":
+    case "password":
+      return "Change password";
+    case "disable_mfa":
+    case "mfa":
+      return "Disable MFA";
+    default:
+      return "Sensitive action";
+  }
+}
+
+export default function ReAuthPromptPage() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";
 
-  const [step, setStep] = useState<Step>("challenge");
-  const [method, setMethod] = useState<Method>("totp");
+  const [step, setStep] = useState<Step>("prompt");
+  const [promptMode, setPromptMode] = useState<PromptMode>("password");
+  const [mfaMethod, setMfaMethod] = useState<MfaMethod>("totp");
+
+  const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
 
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
-  const [trustDevice, setTrustDevice] = useState(true);
-
   const [cooldown, setCooldown] = useState(0);
   const [codeSent, setCodeSent] = useState(false);
 
-  const [attempts, setAttempts] = useState(0);
-  const [lockedUntil, setLockedUntil] = useState<number | null>(null);
+  const [banner, setBanner] = useState<{ severity: "error" | "warning" | "info" | "success"; msg: string } | null>(null);
+  const [snack, setSnack] = useState<{ open: boolean; severity: "success" | "info" | "warning" | "error"; msg: string }>({ open: false, severity: "info", msg: "" });
 
-  const [methodDialog, setMethodDialog] = useState(false);
-  const [banner, setBanner] = useState<
-    { severity: "error" | "warning" | "info" | "success"; msg: string } | null
-  >(null);
-  const [snack, setSnack] = useState<{
-    open: boolean;
-    severity: "success" | "info" | "warning" | "error";
-    msg: string;
-  }>({ open: false, severity: "info", msg: "" });
+  const qs = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
+  const actionLabel = getActionLabel(qs.get("action"));
 
-  // Green-only background
   const pageBg =
     mode === "dark"
       ? "radial-gradient(1200px 600px at 12% 6%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 10%, rgba(3,205,140,0.16), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
@@ -422,9 +441,6 @@ export default function MfaChallengePage() {
     "&:hover": { backgroundColor: alpha(EVZONE.orange, mode === "dark" ? 0.14 : 0.10) },
   } as const;
 
-  const isLocked = lockedUntil !== null && Date.now() < lockedUntil;
-  const secondsLeft = isLocked ? Math.max(1, Math.ceil((lockedUntil! - Date.now()) / 1000)) : 0;
-
   useEffect(() => {
     if (cooldown <= 0) return;
     const t = window.setInterval(() => setCooldown((c) => Math.max(0, c - 1)), 1000);
@@ -432,17 +448,19 @@ export default function MfaChallengePage() {
   }, [cooldown]);
 
   useEffect(() => {
-    // reset OTP when switching method
-    setOtp(["", "", "", "", "", ""]);
     setBanner(null);
-    if (method === "totp") {
-      setCodeSent(false);
-      setCooldown(0);
-    } else {
-      setCodeSent(false);
-      setCooldown(0);
-    }
-  }, [method]);
+    setPassword("");
+    setOtp(["", "", "", "", "", ""]);
+    setCodeSent(false);
+    setCooldown(0);
+  }, [promptMode]);
+
+  useEffect(() => {
+    if (promptMode !== "mfa") return;
+    setOtp(["", "", "", "", "", ""]);
+    setCodeSent(false);
+    setCooldown(0);
+  }, [mfaMethod, promptMode]);
 
   const toggleMode = () => {
     const next: ThemeMode = mode === "light" ? "dark" : "light";
@@ -450,41 +468,33 @@ export default function MfaChallengePage() {
     setStoredMode(next);
   };
 
-  const methodIndex = method === "totp" ? 0 : method === "sms" ? 1 : method === "whatsapp" ? 2 : 3;
-
   const sendCode = () => {
-    if (method === "totp") return;
+    if (mfaMethod === "totp") return;
     setCodeSent(true);
     setCooldown(30);
-
-    const msg =
-      method === "sms"
-        ? "SMS code sent. Demo: 222222"
-        : method === "whatsapp"
-          ? "WhatsApp code sent. Demo: 333333"
-          : "Email OTP sent. Demo: 111111";
-
-    setSnack({ open: true, severity: "success", msg });
+    setSnack({ open: true, severity: "success", msg: mfaMethod === "sms" ? "SMS code sent. Demo: 222222" : "Email OTP sent. Demo: 111111" });
   };
 
-  const resendCode = () => {
-    if (method === "totp") return;
-    if (cooldown > 0) return;
-    sendCode();
-  };
+  const expectedCode = mfaMethod === "totp" ? "654321" : mfaMethod === "sms" ? "222222" : "111111";
 
-  const expectedCode =
-    method === "totp" ? "654321" : method === "sms" ? "222222" : method === "whatsapp" ? "333333" : "111111";
-
-  const verify = () => {
+  const confirm = () => {
     setBanner(null);
 
-    if (isLocked) {
-      setBanner({ severity: "error", msg: `Too many attempts. Try again in ${secondsLeft}s.` });
+    if (promptMode === "password") {
+      if (!password) {
+        setBanner({ severity: "warning", msg: "Enter your password." });
+        return;
+      }
+      if (password !== "EVzone123!") {
+        setBanner({ severity: "error", msg: "Incorrect password." });
+        return;
+      }
+      setStep("success");
+      setSnack({ open: true, severity: "success", msg: "Re-authentication confirmed." });
       return;
     }
 
-    if ((method === "sms" || method === "whatsapp" || method === "email") && !codeSent) {
+    if ((mfaMethod === "sms" || mfaMethod === "email") && !codeSent) {
       setBanner({ severity: "warning", msg: "Please send the code first." });
       return;
     }
@@ -496,57 +506,22 @@ export default function MfaChallengePage() {
     }
 
     if (code !== expectedCode) {
-      const nextAttempts = attempts + 1;
-      setAttempts(nextAttempts);
-      if (nextAttempts >= 5) {
-        setLockedUntil(Date.now() + 30_000);
-        setBanner({ severity: "error", msg: "Too many failed attempts. Locked for 30 seconds." });
-        return;
-      }
       setBanner({ severity: "error", msg: "Incorrect code. Please try again." });
       return;
     }
 
-    // Success
-    setAttempts(0);
-    setLockedUntil(null);
-    if (trustDevice) {
-      try {
-        window.localStorage.setItem("evzone_trusted_device", "true");
-      } catch {
-        // ignore
-      }
-    }
-
     setStep("success");
-    setSnack({ open: true, severity: "success", msg: "Verification complete." });
+    setSnack({ open: true, severity: "success", msg: "Re-authentication confirmed." });
   };
 
   const continueNext = () => {
-    setSnack({ open: true, severity: "info", msg: "Continue → redirect back to the requesting app (demo)." });
+    // Navigate back to where they came from
+    navigate(-1);
   };
 
-  const openRecovery = () => {
-    setSnack({ open: true, severity: "info", msg: "Navigate to /auth/recovery-code" });
+  const useRecovery = () => {
+    navigate("/auth/recovery-code");
   };
-
-  const methodTitle =
-    method === "totp"
-      ? "Authenticator (TOTP)"
-      : method === "sms"
-        ? "SMS OTP"
-        : method === "whatsapp"
-          ? "WhatsApp OTP"
-          : "Email OTP";
-
-  const methodHelp =
-    method === "totp"
-      ? "Open your authenticator app and enter the current code."
-      : method === "sms"
-        ? "Send a code to your phone number, then enter it here."
-        : method === "whatsapp"
-          ? "Send a code to your WhatsApp number, then enter it here."
-          : "Send a code to your email address, then enter it here.";
 
   return (
     <ThemeProvider theme={theme}>
@@ -576,7 +551,7 @@ export default function MfaChallengePage() {
                     EVzone My Accounts
                   </Typography>
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    Multi-factor authentication
+                    Re-authentication
                   </Typography>
                 </Box>
               </Stack>
@@ -586,12 +561,7 @@ export default function MfaChallengePage() {
                   <IconButton
                     onClick={toggleMode}
                     size="small"
-                    sx={{
-                      border: `1px solid ${alpha(EVZONE.orange, 0.35)}`,
-                      borderRadius: 12,
-                      backgroundColor: alpha(theme.palette.background.paper, 0.6),
-                      color: EVZONE.orange,
-                    }}
+                    sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}
                   >
                     {isDark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
                   </IconButton>
@@ -599,12 +569,7 @@ export default function MfaChallengePage() {
                 <Tooltip title="Language">
                   <IconButton
                     size="small"
-                    sx={{
-                      border: `1px solid ${alpha(EVZONE.orange, 0.35)}`,
-                      borderRadius: 12,
-                      backgroundColor: alpha(theme.palette.background.paper, 0.6),
-                      color: EVZONE.orange,
-                    }}
+                    sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}
                   >
                     <GlobeIcon size={18} />
                   </IconButton>
@@ -612,13 +577,8 @@ export default function MfaChallengePage() {
                 <Tooltip title="Help">
                   <IconButton
                     size="small"
-                    onClick={() => setSnack({ open: true, severity: "info", msg: "Help Center (demo)" })}
-                    sx={{
-                      border: `1px solid ${alpha(EVZONE.orange, 0.35)}`,
-                      borderRadius: 12,
-                      backgroundColor: alpha(theme.palette.background.paper, 0.6),
-                      color: EVZONE.orange,
-                    }}
+                    onClick={() => navigate("/auth/account-recovery-help")}
+                    sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}
                   >
                     <HelpCircleIcon size={18} />
                   </IconButton>
@@ -632,103 +592,46 @@ export default function MfaChallengePage() {
         <Box className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">
           <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
             {/* Left */}
-            <motion.div
-              className="md:col-span-5"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35 }}
-            >
+            <motion.div className="md:col-span-5" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
               <Card>
                 <CardContent className="p-5 md:p-6">
                   <Stack spacing={1.2}>
-                    <Typography variant="h6">Verify it’s you</Typography>
+                    <Typography variant="h6">For your security</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      For your security, we require a second step to confirm it’s really you signing in.
+                      Before we proceed with <b>{actionLabel}</b>, please confirm your identity again.
                     </Typography>
 
                     <Divider sx={{ my: 1 }} />
 
                     <Stack spacing={1.1}>
                       <Stack direction="row" spacing={1.1} alignItems="center">
-                        <Box
-                          sx={{
-                            width: 36,
-                            height: 36,
-                            borderRadius: 14,
-                            display: "grid",
-                            placeItems: "center",
-                            backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.16 : 0.10),
-                            border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
-                          }}
-                        >
+                        <Box sx={{ width: 36, height: 36, borderRadius: 14, display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.16 : 0.10), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
                           <ShieldCheckIcon size={18} />
                         </Box>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>Strong protection</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>Prevents fraud</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            MFA blocks most account takeover attempts.
+                            Confirms it’s you on sensitive actions.
                           </Typography>
                         </Box>
                       </Stack>
-
                       <Stack direction="row" spacing={1.1} alignItems="center">
-                        <Box
-                          sx={{
-                            width: 36,
-                            height: 36,
-                            borderRadius: 14,
-                            display: "grid",
-                            placeItems: "center",
-                            backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.16 : 0.10),
-                            border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
-                          }}
-                        >
-                          <KeypadIcon size={18} />
+                        <Box sx={{ width: 36, height: 36, borderRadius: 14, display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.16 : 0.10), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
+                          <LockIcon size={18} />
                         </Box>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>Multiple options</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>Short-lived</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Use Authenticator, SMS, WhatsApp, or Email OTP.
+                            This prompt only applies for this action.
                           </Typography>
                         </Box>
                       </Stack>
                     </Stack>
 
                     <Divider sx={{ my: 1 }} />
-
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={trustDevice}
-                          onChange={(e) => setTrustDevice(e.target.checked)}
-                          sx={{ color: alpha(EVZONE.orange, 0.7), "&.Mui-checked": { color: EVZONE.orange } }}
-                        />
-                      }
-                      label={
-                        <Box>
-                          <Typography variant="body2" sx={{ fontWeight: 900 }}>
-                            Trust this device
-                          </Typography>
-                          <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                            You will be prompted less often on this device.
-                          </Typography>
-                        </Box>
-                      }
-                    />
-
-                    <Divider sx={{ my: 1 }} />
-
-                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                      <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => setMethodDialog(true)}>
-                        Try another method
-                      </Button>
-                      <Button variant="outlined" sx={orangeOutlinedSx} onClick={openRecovery}>
-                        Use recovery code
-                      </Button>
-                    </Stack>
 
                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      Demo codes: Authenticator <b>654321</b>, SMS <b>222222</b>, WhatsApp <b>333333</b>, Email <b>111111</b>
+                      Demo password: <b>EVzone123!</b> • MFA codes: Authenticator <b>654321</b>, SMS <b>222222</b>, Email <b>111111</b>
                     </Typography>
                   </Stack>
                 </CardContent>
@@ -736,12 +639,7 @@ export default function MfaChallengePage() {
             </motion.div>
 
             {/* Right */}
-            <motion.div
-              className="md:col-span-7"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, delay: 0.05 }}
-            >
+            <motion.div className="md:col-span-7" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.05 }}>
               <Card>
                 <CardContent className="p-5 md:p-7">
                   {step === "success" ? (
@@ -750,37 +648,29 @@ export default function MfaChallengePage() {
                         <Box sx={{ color: EVZONE.green }}>
                           <CheckCircleIcon size={22} />
                         </Box>
-                        <Typography variant="h6">Verified</Typography>
+                        <Typography variant="h6">Confirmed</Typography>
                       </Stack>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        You’ve successfully completed multi-factor authentication.
+                        Re-authentication succeeded. You can continue.
                       </Typography>
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        endIcon={<ArrowRightIcon size={18} />}
-                        sx={orangeContainedSx}
-                        onClick={continueNext}
-                      >
+                      <Button variant="contained" color="secondary" endIcon={<ArrowRightIcon size={18} />} sx={orangeContainedSx} onClick={continueNext}>
                         Continue
                       </Button>
                     </Stack>
                   ) : (
                     <Stack spacing={2.0}>
                       <Stack spacing={0.6}>
-                        <Typography variant="h6">Enter your code</Typography>
+                        <Typography variant="h6">Confirm identity</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Choose a method and enter the 6-digit code.
+                          Choose one method: password or MFA code.
                         </Typography>
                       </Stack>
 
                       {banner ? <Alert severity={banner.severity}>{banner.msg}</Alert> : null}
 
                       <Tabs
-                        value={methodIndex}
-                        onChange={(_, v) =>
-                          setMethod(v === 0 ? "totp" : v === 1 ? "sms" : v === 2 ? "whatsapp" : "email")
-                        }
+                        value={promptMode === "password" ? 0 : 1}
+                        onChange={(_, v) => setPromptMode(v === 0 ? "password" : "mfa")}
                         variant="fullWidth"
                         sx={{
                           borderRadius: 16,
@@ -791,76 +681,98 @@ export default function MfaChallengePage() {
                           "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 },
                         }}
                       >
-                        <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label="Authenticator" />
-                        <Tab icon={<SmsIcon size={16} />} iconPosition="start" label="SMS" />
-                        <Tab icon={<WhatsAppIcon size={16} />} iconPosition="start" label="WhatsApp" />
-                        <Tab icon={<MailIcon size={16} />} iconPosition="start" label="Email" />
+                        <Tab icon={<LockIcon size={16} />} iconPosition="start" label="Password" />
+                        <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label="MFA code" />
                       </Tabs>
 
-                      <Box
-                        sx={{
-                          borderRadius: 18,
-                          border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
-                          backgroundColor: alpha(theme.palette.background.paper, 0.45),
-                          p: 1.4,
-                        }}
-                      >
-                        <Stack spacing={1}>
-                          <Typography sx={{ fontWeight: 900 }}>{methodTitle}</Typography>
-                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            {methodHelp}
-                          </Typography>
+                      {promptMode === "password" ? (
+                        <Stack spacing={1.4}>
+                          <TextField
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            label="Password"
+                            type={showPw ? "text" : "password"}
+                            fullWidth
+                            InputProps={{
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  <LockIcon size={18} />
+                                </InputAdornment>
+                              ),
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <IconButton size="small" onClick={() => setShowPw((v) => !v)} sx={{ color: EVZONE.orange }}>
+                                    {showPw ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
+                                  </IconButton>
+                                </InputAdornment>
+                              ),
+                            }}
+                          />
 
-                          {method !== "totp" ? (
+                          <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                            <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={confirm} endIcon={<ArrowRightIcon size={18} />}>
+                              Confirm
+                            </Button>
+                            <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => navigate("/auth/forgot-password")}>
+                              Forgot password
+                            </Button>
+                          </Stack>
+                        </Stack>
+                      ) : (
+                        <Stack spacing={1.4}>
+                          <Tabs
+                            value={mfaMethod === "totp" ? 0 : mfaMethod === "sms" ? 1 : 2}
+                            onChange={(_, v) => setMfaMethod(v === 0 ? "totp" : v === 1 ? "sms" : "email")}
+                            variant="fullWidth"
+                            sx={{
+                              borderRadius: 16,
+                              border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
+                              overflow: "hidden",
+                              minHeight: 42,
+                              "& .MuiTab-root": { minHeight: 42, fontWeight: 900 },
+                              "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 },
+                            }}
+                          >
+                            <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label="Auth" />
+                            <Tab icon={<SmsIcon size={16} />} iconPosition="start" label="SMS" />
+                            <Tab icon={<MailIcon size={16} />} iconPosition="start" label="Email" />
+                          </Tabs>
+
+                          {(mfaMethod === "sms" || mfaMethod === "email") ? (
                             <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                              <Button
-                                variant="contained"
-                                color="secondary"
-                                sx={orangeContainedSx}
-                                onClick={sendCode}
-                                disabled={cooldown > 0 && codeSent}
-                              >
+                              <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={sendCode} disabled={cooldown > 0 && codeSent}>
                                 {codeSent ? "Code sent" : "Send code"}
                               </Button>
                               <Button
                                 variant="outlined"
                                 sx={orangeOutlinedSx}
-                                onClick={resendCode}
+                                onClick={() => {
+                                  if (cooldown === 0) sendCode();
+                                }}
                                 disabled={!codeSent || cooldown > 0}
                               >
                                 {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend"}
                               </Button>
                             </Stack>
                           ) : null}
+
+                          <OtpInput value={otp} onChange={setOtp} autoFocus />
+
+                          <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                            <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={confirm} endIcon={<ArrowRightIcon size={18} />}>
+                              Confirm
+                            </Button>
+                            <Button variant="outlined" sx={orangeOutlinedSx} onClick={useRecovery}>
+                              Use recovery code
+                            </Button>
+                          </Stack>
                         </Stack>
-                      </Box>
+                      )}
 
-                      <OtpInput value={otp} onChange={setOtp} autoFocus />
+                      <Divider />
 
-                      <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                        <Button
-                          fullWidth
-                          variant="contained"
-                          color="secondary"
-                          endIcon={<ArrowRightIcon size={18} />}
-                          sx={orangeContainedSx}
-                          onClick={verify}
-                          disabled={isLocked}
-                        >
-                          {isLocked ? `Try again in ${secondsLeft}s` : "Verify"}
-                        </Button>
-                        <Button
-                          fullWidth
-                          variant="outlined"
-                          sx={orangeOutlinedSx}
-                          onClick={() => setMethodDialog(true)}
-                        >
-                          Try another method
-                        </Button>
-                      </Stack>
-
-                      <Button variant="text" sx={orangeTextSx} onClick={openRecovery}>
-                        Use recovery code
+                      <Button variant="text" sx={orangeTextSx} onClick={() => navigate(-1)}>
+                        Cancel
                       </Button>
                     </Stack>
                   )}
@@ -875,73 +787,15 @@ export default function MfaChallengePage() {
               © {new Date().getFullYear()} EVzone Group.
             </Typography>
             <Stack direction="row" spacing={1.2} alignItems="center">
-              <Button
-                size="small"
-                variant="text"
-                sx={orangeTextSx}
-                onClick={() => setSnack({ open: true, severity: "info", msg: "Open Terms (demo)" })}
-              >
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
                 Terms
               </Button>
-              <Button
-                size="small"
-                variant="text"
-                sx={orangeTextSx}
-                onClick={() => setSnack({ open: true, severity: "info", msg: "Open Privacy (demo)" })}
-              >
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
                 Privacy
               </Button>
             </Stack>
           </Box>
         </Box>
-
-        {/* Method dialog */}
-        <Dialog
-          open={methodDialog}
-          onClose={() => setMethodDialog(false)}
-          PaperProps={{
-            sx: {
-              borderRadius: 20,
-              border: `1px solid ${theme.palette.divider}`,
-              backgroundImage: "none",
-            },
-          }}
-        >
-          <DialogTitle sx={{ fontWeight: 950 }}>Choose another method</DialogTitle>
-          <DialogContent>
-            <Stack spacing={1.2}>
-              {([
-                { k: "totp" as const, title: "Authenticator", icon: <KeypadIcon size={18} /> },
-                { k: "sms" as const, title: "SMS", icon: <SmsIcon size={18} /> },
-                { k: "whatsapp" as const, title: "WhatsApp", icon: <WhatsAppIcon size={18} /> },
-                { k: "email" as const, title: "Email OTP", icon: <MailIcon size={18} /> },
-              ] as const).map((m) => {
-                const selected = method === m.k;
-                return (
-                  <Button
-                    key={m.k}
-                    variant={selected ? "contained" : "outlined"}
-                    color="secondary"
-                    startIcon={m.icon}
-                    sx={selected ? orangeContainedSx : orangeOutlinedSx}
-                    onClick={() => {
-                      setMethod(m.k);
-                      setMethodDialog(false);
-                    }}
-                    fullWidth
-                  >
-                    {m.title}
-                  </Button>
-                );
-              })}
-            </Stack>
-          </DialogContent>
-          <DialogActions sx={{ p: 2, pt: 0 }}>
-            <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => setMethodDialog(false)}>
-              Close
-            </Button>
-          </DialogActions>
-        </Dialog>
 
         <Snackbar
           open={snack.open}

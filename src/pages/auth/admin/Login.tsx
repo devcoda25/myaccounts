@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     Alert,
     Box,
@@ -188,6 +189,7 @@ async function tryWebAuthnGet(): Promise<{ ok: boolean; message: string }> {
 }
 
 export default function AdminLogin() {
+    const navigate = useNavigate();
     const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
     const theme = useMemo(() => buildTheme(mode), [mode]);
     const isDark = mode === "dark";
@@ -306,7 +308,7 @@ export default function AdminLogin() {
             const res = await tryWebAuthnGet();
             setSnack({ open: true, severity: res.ok ? "success" : "warning", msg: res.message });
             if (res.ok) {
-                setSnack({ open: true, severity: "info", msg: "Navigate to /admin/dashboard (demo)." });
+                navigate("/admin/dashboard");
             } else {
                 setBanner({ severity: "info", msg: "If passkeys are unavailable here, use password or Google/Apple." });
             }
@@ -362,8 +364,7 @@ export default function AdminLogin() {
         }
 
         setSnack({ open: true, severity: "success", msg: `Admin signed in as ${maskIdentifier(id)}.` });
-        // In a real app we'd redirect here using navigate
-        window.location.href = "/admin/dashboard";
+        navigate("/admin/dashboard");
     };
 
     const passkeyChip =
@@ -555,7 +556,7 @@ export default function AdminLogin() {
                                                     control={<Checkbox checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} sx={{ color: alpha(EVZONE.orange, 0.7), "&.Mui-checked": { color: EVZONE.orange } }} />}
                                                     label={<Typography variant="body2">Remember this device</Typography>}
                                                 />
-                                                <Button variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /auth/forgot-password (demo)." })}>
+                                                <Button variant="text" sx={orangeTextSx} onClick={() => navigate("/auth/forgot-password")}>
                                                     Forgot password?
                                                 </Button>
                                             </Stack>
@@ -584,10 +585,10 @@ export default function AdminLogin() {
                             © {new Date().getFullYear()} EVzone Group.
                         </Typography>
                         <Stack direction="row" spacing={1.2} alignItems="center">
-                            <Button size="small" variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open Terms (demo)." })}>
+                            <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
                                 Terms
                             </Button>
-                            <Button size="small" variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open Privacy (demo)." })}>
+                            <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
                                 Privacy
                             </Button>
                         </Stack>

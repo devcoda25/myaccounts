@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
   Button,
-  ButtonBase,
   Card,
   CardContent,
   CssBaseline,
@@ -27,9 +27,10 @@ import {
   CheckCircle2,
   Globe,
   HelpCircle,
-  MessageCircle,
+  Inbox,
+  Mail,
   Moon,
-  Phone,
+  Pencil,
   ShieldCheck,
   Sun,
   Timer,
@@ -37,33 +38,27 @@ import {
 import { motion } from "framer-motion";
 
 /**
- * EVzone My Accounts - Verify Phone (v3)
- * Route: /auth/verify-phone
- * Change requested: channel selector is NOT a dropdown.
- * - Two selectable channel cards (SMS + WhatsApp)
- * - SMS is default
- * - WhatsApp is fully supported
- *
- * Style rules:
+ * EVzone My Accounts - Verify Email
+ * Route: /auth/verify-email
+ * Requirements (consistent with prior pages):
+ * - Premium light + dark mode toggle (persisted)
  * - Background: green-only
- * - Buttons: orange-only with white text
- * - Orange outlined hover -> solid orange with white text
+ * - Buttons: orange-only with white text (outlined hover -> solid orange + white text)
+ *
+ * Features:
+ * - OTP entry OR open email app + resend link
+ * - Change email
+ * - Countdown + resend
+ * - Success state -> continue
  */
 
 type ThemeMode = "light" | "dark";
 
 type Step = "verify" | "success";
 
-type Channel = "SMS" | "WhatsApp";
-
 const EVZONE = {
   green: "#03cd8c",
   orange: "#f77f00",
-} as const;
-
-// Official WhatsApp brand green (used for WhatsApp channel selector)
-const WHATSAPP = {
-  green: "#25D366",
 } as const;
 
 function getStoredMode(): ThemeMode {
@@ -133,40 +128,27 @@ function buildTheme(mode: ThemeMode) {
   });
 }
 
-function maskPhone(v: string) {
-  const s = v.trim();
-  if (!s) return "";
-  if (s.length <= 6) return s;
-  return `${s.slice(0, 3)}***${s.slice(-3)}`;
+function isEmail(v: string) {
+  return /.+@.+\..+/.test(v);
 }
 
-function WhatsAppIcon({ size = 18 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 448 512"
-      fill="currentColor"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z" />
-    </svg>
-  );
+function maskEmail(email: string) {
+  const e = email.trim();
+  if (!e || !isEmail(e)) return e;
+  const [u, d] = e.split("@");
+  const safeU = u.length <= 2 ? u[0] + "*" : u.slice(0, 2) + "***";
+  return `${safeU}@${d}`;
 }
 
-
-export default function VerifyPhonePageV3() {
+export default function VerifyEmailPage() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";
 
   const [step, setStep] = useState<Step>("verify");
 
-  const [phone, setPhone] = useState("+256761677709");
-  const [channel, setChannel] = useState<Channel>("SMS");
-
+  const [email, setEmail] = useState("ronald@evzone.com");
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
 
@@ -174,13 +156,11 @@ export default function VerifyPhonePageV3() {
   const [banner, setBanner] = useState<{ severity: "error" | "warning" | "info" | "success"; msg: string } | null>(null);
 
   const [changeOpen, setChangeOpen] = useState(false);
-  const [newPhone, setNewPhone] = useState(phone);
+  const [newEmail, setNewEmail] = useState(email);
 
   const [snack, setSnack] = useState<{ open: boolean; severity: "success" | "info" | "warning" | "error"; msg: string }>(
     { open: false, severity: "info", msg: "" }
   );
-
-  const channelHint = channel === "WhatsApp" ? "Code sent via WhatsApp message." : "Code sent via SMS.";
 
   const toggleMode = () => {
     const next: ThemeMode = mode === "light" ? "dark" : "light";
@@ -221,6 +201,7 @@ export default function VerifyPhonePageV3() {
   }, [cooldown]);
 
   useEffect(() => {
+    // initial focus
     window.setTimeout(() => otpRefs.current[0]?.focus(), 250);
   }, []);
 
@@ -244,8 +225,8 @@ export default function VerifyPhonePageV3() {
     e.preventDefault();
 
     const chars = text.split("");
-    setOtp(() => {
-      const next = ["", "", "", "", "", ""];
+    setOtp((prev) => {
+      const next = [...prev];
       for (let i = 0; i < 6; i++) next[i] = chars[i] || "";
       return next;
     });
@@ -257,7 +238,11 @@ export default function VerifyPhonePageV3() {
   const resend = () => {
     if (cooldown > 0) return;
     setCooldown(30);
-    setSnack({ open: true, severity: "success", msg: `Code resent via ${channel}. (Demo code: 222222)` });
+    setSnack({ open: true, severity: "success", msg: `Verification code resent to ${maskEmail(email)}. (Demo code: 111111)` });
+  };
+
+  const openEmailApp = () => {
+    setSnack({ open: true, severity: "info", msg: "Open email app (demo). Check your inbox for the verification code." });
   };
 
   const verify = () => {
@@ -267,93 +252,33 @@ export default function VerifyPhonePageV3() {
       setBanner({ severity: "warning", msg: "Enter the 6-digit code." });
       return;
     }
-    if (code !== "222222") {
+    // Demo: accept 111111
+    if (code !== "111111") {
       setBanner({ severity: "error", msg: "Incorrect code. Please try again." });
       return;
     }
+
     setStep("success");
-    setSnack({ open: true, severity: "success", msg: "Phone verified successfully." });
+    setSnack({ open: true, severity: "success", msg: "Email verified successfully." });
   };
 
-  const savePhoneChange = () => {
+  const saveEmailChange = () => {
     setBanner(null);
-    const p = newPhone.trim();
-    if (p.length < 8) {
-      setBanner({ severity: "warning", msg: "Enter a valid phone number." });
+    const e = newEmail.trim();
+    if (!isEmail(e)) {
+      setBanner({ severity: "warning", msg: "Enter a valid email address." });
       return;
     }
-    setPhone(p);
+    setEmail(e);
     setOtp(["", "", "", "", "", ""]);
     setCooldown(30);
     setChangeOpen(false);
-    setSnack({ open: true, severity: "success", msg: `Phone updated. Code sent via ${channel}. (Demo: 222222)` });
+    setSnack({ open: true, severity: "success", msg: `Email updated. Code sent to ${maskEmail(e)}. (Demo: 111111)` });
     window.setTimeout(() => otpRefs.current[0]?.focus(), 250);
   };
 
   const continueNext = () => {
-    setSnack({ open: true, severity: "info", msg: "Continue → next step (e.g., /auth/set-password or /app)" });
-  };
-
-  const ChannelCard = ({
-    value,
-    title,
-    icon,
-  }: {
-    value: Channel;
-    title: string;
-    icon: React.ReactNode;
-  }) => {
-    const selected = channel === value;
-    const baseColor = value === "WhatsApp" ? WHATSAPP.green : EVZONE.orange;
-    return (
-      <ButtonBase
-        className="w-full"
-        onClick={() => {
-          setChannel(value);
-          setSnack({ open: true, severity: "info", msg: `Channel set to ${title}.` });
-        }}
-        sx={{ textAlign: "left" }}
-      >
-        <Box
-          sx={{
-            width: "100%",
-            borderRadius: 16,
-            border: `1px solid ${alpha(baseColor, selected ? 0.95 : 0.65)}`,
-            backgroundColor: selected ? baseColor : alpha(theme.palette.background.paper, 0.35),
-            color: selected ? "#FFFFFF" : baseColor,
-            p: 1.3,
-            transition: "all 180ms ease",
-            "&:hover": {
-              backgroundColor: baseColor,
-              borderColor: baseColor,
-              color: "#FFFFFF",
-            },
-          }}
-        >
-          <Stack direction="row" spacing={1.2} alignItems="center">
-            <Box
-              sx={{
-                width: 36,
-                height: 36,
-                borderRadius: 14,
-                display: "grid",
-                placeItems: "center",
-                backgroundColor: selected ? alpha("#FFFFFF", 0.18) : alpha(baseColor, mode === "dark" ? 0.18 : 0.12),
-                border: `1px solid ${alpha(selected ? "#FFFFFF" : baseColor, 0.26)}`,
-              }}
-            >
-              {icon}
-            </Box>
-            <Box flex={1}>
-              <Typography sx={{ fontWeight: 900, lineHeight: 1.1, color: "inherit" }}>
-                {title}
-              </Typography>
-            </Box>
-            <CheckCircle2 size={18} />
-          </Stack>
-        </Box>
-      </ButtonBase>
-    );
+    navigate("/auth/verify-phone");
   };
 
   return (
@@ -384,25 +309,16 @@ export default function VerifyPhonePageV3() {
                     EVzone My Accounts
                   </Typography>
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    Verify your phone
+                    Verify your email
                   </Typography>
                 </Box>
               </Stack>
               <Stack direction="row" spacing={1} alignItems="center">
                 <Tooltip title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}>
                   <IconButton
-                    onClick={() => {
-                      const next: ThemeMode = mode === "light" ? "dark" : "light";
-                      setMode(next);
-                      setStoredMode(next);
-                    }}
+                    onClick={toggleMode}
                     size="small"
-                    sx={{
-                      border: `1px solid ${alpha(EVZONE.orange, 0.35)}`,
-                      borderRadius: 12,
-                      backgroundColor: alpha(theme.palette.background.paper, 0.6),
-                      color: EVZONE.orange,
-                    }}
+                    sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}
                   >
                     {isDark ? <Sun size={18} /> : <Moon size={18} />}
                   </IconButton>
@@ -410,12 +326,7 @@ export default function VerifyPhonePageV3() {
                 <Tooltip title="Language">
                   <IconButton
                     size="small"
-                    sx={{
-                      border: `1px solid ${alpha(EVZONE.orange, 0.35)}`,
-                      borderRadius: 12,
-                      backgroundColor: alpha(theme.palette.background.paper, 0.6),
-                      color: EVZONE.orange,
-                    }}
+                    sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}
                   >
                     <Globe size={18} />
                   </IconButton>
@@ -423,13 +334,8 @@ export default function VerifyPhonePageV3() {
                 <Tooltip title="Help">
                   <IconButton
                     size="small"
-                    onClick={() => setSnack({ open: true, severity: "info", msg: "Help Center (demo)" })}
-                    sx={{
-                      border: `1px solid ${alpha(EVZONE.orange, 0.35)}`,
-                      borderRadius: 12,
-                      backgroundColor: alpha(theme.palette.background.paper, 0.6),
-                      color: EVZONE.orange,
-                    }}
+                    onClick={() => navigate("/auth/account-recovery-help")}
+                    sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}
                   >
                     <HelpCircle size={18} />
                   </IconButton>
@@ -447,53 +353,27 @@ export default function VerifyPhonePageV3() {
               <Card>
                 <CardContent className="p-5 md:p-6">
                   <Stack spacing={1.2}>
-                    <Typography variant="h6">Choose delivery method</Typography>
+                    <Typography variant="h6">Check your inbox</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      Select how you want to receive your verification code.
-                    </Typography>
-
-                    <Divider sx={{ my: 1 }} />
-
-                    <Stack spacing={1}>
-                      <Typography sx={{ fontWeight: 900 }}>Select a channel</Typography>
-                      <Box className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                        <ChannelCard
-                          value="SMS"
-                          title="SMS"
-                          icon={<Phone size={18} />}
-                        />
-                        <ChannelCard
-                          value="WhatsApp"
-                          title="WhatsApp"
-                          icon={<WhatsAppIcon size={18} />}
-                        />
-                      </Box>
-                      <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                        {channelHint}
-                      </Typography>
-                    </Stack>
-
-                    <Divider sx={{ my: 1 }} />
-
-                    <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      We sent a 6-digit code to <b>{maskPhone(phone)}</b>.
+                      We sent a 6-digit verification code to <b>{maskEmail(email)}</b>. Enter it here to continue.
                     </Typography>
 
                     <Divider sx={{ my: 1 }} />
 
                     <Stack spacing={1.1}>
                       <Stack direction="row" spacing={1.1} alignItems="center">
-                        <Box
-                          sx={{
-                            width: 36,
-                            height: 36,
-                            borderRadius: 14,
-                            display: "grid",
-                            placeItems: "center",
-                            backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.16 : 0.10),
-                            border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
-                          }}
-                        >
+                        <Box sx={{ width: 36, height: 36, borderRadius: 14, display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.16 : 0.10), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
+                          <Inbox size={18} />
+                        </Box>
+                        <Box>
+                          <Typography sx={{ fontWeight: 900 }}>Open your email</Typography>
+                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                            Check inbox, spam, and promotions.
+                          </Typography>
+                        </Box>
+                      </Stack>
+                      <Stack direction="row" spacing={1.1} alignItems="center">
+                        <Box sx={{ width: 36, height: 36, borderRadius: 14, display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.16 : 0.10), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
                           <Timer size={18} />
                         </Box>
                         <Box>
@@ -503,57 +383,23 @@ export default function VerifyPhonePageV3() {
                           </Typography>
                         </Box>
                       </Stack>
-                      <Stack direction="row" spacing={1.1} alignItems="center">
-                        <Box
-                          sx={{
-                            width: 36,
-                            height: 36,
-                            borderRadius: 14,
-                            display: "grid",
-                            placeItems: "center",
-                            backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.16 : 0.10),
-                            border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
-                          }}
-                        >
-                          <ShieldCheck size={18} />
-                        </Box>
-                        <Box>
-                          <Typography sx={{ fontWeight: 900 }}>Safe verification</Typography>
-                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Your phone helps protect your account.
-                          </Typography>
-                        </Box>
-                      </Stack>
                     </Stack>
 
                     <Divider sx={{ my: 1 }} />
 
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                      <Button
-                        variant="outlined"
-                        startIcon={<Phone size={18} />}
-                        sx={orangeOutlinedSx}
-                        onClick={() => {
-                          setNewPhone(phone);
-                          setChangeOpen(true);
-                        }}
-                      >
-                        Change phone
+                      <Button variant="outlined" startIcon={<Mail size={18} />} sx={orangeOutlinedSx} onClick={openEmailApp}>
+                        Open email app
                       </Button>
-                      <Button
-                        variant="outlined"
-                        startIcon={<ArrowLeft size={18} />}
-                        sx={orangeOutlinedSx}
-                        onClick={() => setSnack({ open: true, severity: "info", msg: "Back (demo)" })}
-                      >
-                        Back
+                      <Button variant="outlined" startIcon={<Pencil size={18} />} sx={orangeOutlinedSx} onClick={() => { setNewEmail(email); setChangeOpen(true); }}>
+                        Change email
                       </Button>
                     </Stack>
 
                     <Divider sx={{ my: 1 }} />
 
                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      Demo code: <b>222222</b>
+                      Demo code: <b>111111</b>
                     </Typography>
                   </Stack>
                 </CardContent>
@@ -569,49 +415,32 @@ export default function VerifyPhonePageV3() {
                       <Stack spacing={0.8}>
                         <Stack direction="row" spacing={1} alignItems="center">
                           <CheckCircle2 size={24} color={EVZONE.green} />
-                          <Typography variant="h6">Phone verified</Typography>
+                          <Typography variant="h6">Email verified</Typography>
                         </Stack>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Your phone <b>{maskPhone(phone)}</b> is verified. You can now continue.
+                          Your email <b>{maskEmail(email)}</b> is verified. You can now continue.
                         </Typography>
                       </Stack>
-
-                      <Box
-                        sx={{
-                          borderRadius: 18,
-                          border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
-                          backgroundColor: alpha(theme.palette.background.paper, 0.45),
-                          p: 1.6,
-                        }}
-                      >
-                        <Stack direction="row" spacing={1.1} alignItems="center">
-                          <Box
-                            sx={{
-                              width: 36,
-                              height: 36,
-                              borderRadius: 14,
-                              display: "grid",
-                              placeItems: "center",
-                              backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.16 : 0.10),
-                              border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
-                            }}
-                          >
-                            <ShieldCheck size={18} />
-                          </Box>
-                          <Box>
-                            <Typography sx={{ fontWeight: 900 }}>Next steps</Typography>
-                            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                              Continue to set your password or enable 2FA.
-                            </Typography>
-                          </Box>
+                      <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.6 }}>
+                        <Stack spacing={1}>
+                          <Stack direction="row" spacing={1.1} alignItems="center">
+                            <Box sx={{ width: 36, height: 36, borderRadius: 14, display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.16 : 0.10), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
+                              <ShieldCheck size={18} />
+                            </Box>
+                            <Box>
+                              <Typography sx={{ fontWeight: 900 }}>Next steps</Typography>
+                              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                                Continue to verify phone or set your password.
+                              </Typography>
+                            </Box>
+                          </Stack>
                         </Stack>
                       </Box>
-
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                         <Button variant="contained" color="secondary" endIcon={<ArrowRight size={18} />} sx={orangeContainedSx} onClick={continueNext}>
                           Continue
                         </Button>
-                        <Button variant="outlined" startIcon={<ArrowLeft size={18} />} sx={orangeOutlinedSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Back (demo)" })}>
+                        <Button variant="outlined" startIcon={<ArrowLeft size={18} />} sx={orangeOutlinedSx} onClick={() => navigate("/auth/sign-in")}>
                           Back
                         </Button>
                       </Stack>
@@ -619,9 +448,9 @@ export default function VerifyPhonePageV3() {
                   ) : (
                     <Stack spacing={2.0}>
                       <Stack spacing={0.6}>
-                        <Typography variant="h6">Verify phone</Typography>
+                        <Typography variant="h6">Verify email</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Enter the 6-digit code sent via <b>{channel}</b> to <b>{maskPhone(phone)}</b>.
+                          Enter the 6-digit code we sent to <b>{maskEmail(email)}</b>.
                         </Typography>
                       </Stack>
 
@@ -635,9 +464,7 @@ export default function VerifyPhonePageV3() {
                             onChange={(e) => onOtpChange(i, e.target.value)}
                             onKeyDown={(e) => onOtpKeyDown(i, e)}
                             onPaste={i === 0 ? onOtpPaste : undefined}
-                            inputRef={(el) => {
-                              otpRefs.current[i] = el;
-                            }}
+                            inputRef={(el) => { otpRefs.current[i] = el; }}
                             inputProps={{
                               inputMode: "numeric",
                               maxLength: 1,
@@ -649,15 +476,15 @@ export default function VerifyPhonePageV3() {
 
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                         <Button variant="contained" color="secondary" endIcon={<ArrowRight size={18} />} sx={orangeContainedSx} onClick={verify}>
-                          Verify phone
+                          Verify email
                         </Button>
                         <Button variant="outlined" onClick={resend} disabled={cooldown > 0} sx={orangeOutlinedSx} startIcon={<Timer size={18} />}>
                           {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend code"}
                         </Button>
                       </Stack>
 
-                      <Button variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Delivery help (demo)" })}>
-                        Didn’t receive the code?
+                      <Button variant="text" sx={orangeTextSx} onClick={() => navigate("/auth/account-recovery-help")}>
+                        Didn’t receive the email?
                       </Button>
                     </Stack>
                   )}
@@ -672,38 +499,38 @@ export default function VerifyPhonePageV3() {
               © {new Date().getFullYear()} EVzone Group.
             </Typography>
             <Stack direction="row" spacing={1.2} alignItems="center">
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open Terms (demo)" })}>
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
                 Terms
               </Button>
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open Privacy (demo)" })}>
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
                 Privacy
               </Button>
             </Stack>
           </Box>
         </Box>
 
-        {/* Change phone dialog */}
+        {/* Change email dialog */}
         <Dialog
           open={changeOpen}
           onClose={() => setChangeOpen(false)}
           PaperProps={{ sx: { borderRadius: 20, border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}
         >
-          <DialogTitle sx={{ fontWeight: 950 }}>Change phone</DialogTitle>
+          <DialogTitle sx={{ fontWeight: 950 }}>Change email</DialogTitle>
           <DialogContent>
             <Stack spacing={1.2}>
               <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                Update your phone number. We will send a new code via <b>{channel}</b>.
+                Update your email address. We will send a new verification code.
               </Typography>
               <TextField
-                value={newPhone}
-                onChange={(e) => setNewPhone(e.target.value)}
-                label="New phone"
-                placeholder="+256..."
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                label="New email"
+                placeholder="name@example.com"
                 fullWidth
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Phone size={18} />
+                      <Mail size={18} />
                     </InputAdornment>
                   ),
                 }}
@@ -714,7 +541,7 @@ export default function VerifyPhonePageV3() {
             <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => setChangeOpen(false)}>
               Cancel
             </Button>
-            <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={savePhoneChange}>
+            <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={saveEmailChange}>
               Save & send code
             </Button>
           </DialogActions>

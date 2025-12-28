@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -424,6 +425,7 @@ function OtpInput({
 }
 
 export default function ResetPasswordPageV2() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";
@@ -644,7 +646,7 @@ export default function ResetPasswordPageV2() {
     });
   };
 
-  const goSignIn = () => setSnack({ open: true, severity: "info", msg: "Navigate to /auth/sign-in" });
+  const goSignIn = () => navigate("/auth/sign-in");
 
   const ChannelCard = ({
     value,
@@ -682,10 +684,10 @@ export default function ResetPasswordPageV2() {
             transition: "all 160ms ease",
             "&:hover": enabled
               ? {
-                  backgroundColor: base,
-                  borderColor: base,
-                  color: "#FFFFFF",
-                }
+                backgroundColor: base,
+                borderColor: base,
+                color: "#FFFFFF",
+              }
               : undefined,
           }}
         >
@@ -782,7 +784,7 @@ export default function ResetPasswordPageV2() {
                 <Tooltip title="Help">
                   <IconButton
                     size="small"
-                    onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /auth/account-recovery-help" })}
+                    onClick={() => navigate("/auth/account-recovery-help")}
                     sx={{
                       border: `1px solid ${alpha(EVZONE.orange, 0.35)}`,
                       borderRadius: 12,

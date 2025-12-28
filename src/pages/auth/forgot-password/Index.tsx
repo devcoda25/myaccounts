@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -261,6 +262,7 @@ function labelForDelivery(d: Delivery) {
 }
 
 export default function ForgotPasswordPage() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";
@@ -433,9 +435,9 @@ export default function ForgotPasswordPage() {
             transition: "all 160ms ease",
             "&:hover": enabled
               ? {
-                  backgroundColor: base,
-                  color: "#FFFFFF",
-                }
+                backgroundColor: base,
+                color: "#FFFFFF",
+              }
               : undefined,
           }}
         >
@@ -520,7 +522,7 @@ export default function ForgotPasswordPage() {
                 <Tooltip title="Help">
                   <IconButton
                     size="small"
-                    onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /auth/account-recovery-help" })}
+                    onClick={() => navigate("/auth/account-recovery-help")}
                     sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}
                   >
                     <HelpCircleIcon size={18} />
@@ -573,7 +575,7 @@ export default function ForgotPasswordPage() {
 
                     <Divider sx={{ my: 1 }} />
 
-                    <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Back to /auth/sign-in" })}>
+                    <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => navigate("/auth/sign-in")}>
                       Back to sign in
                     </Button>
                   </Stack>
@@ -606,7 +608,7 @@ export default function ForgotPasswordPage() {
                               color="secondary"
                               sx={orangeContainedSx}
                               endIcon={<ArrowRightIcon size={18} />}
-                              onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /auth/reset-password" })}
+                              onClick={() => navigate("/auth/reset-password")}
                             >
                               Go to reset password
                             </Button>
@@ -634,7 +636,7 @@ export default function ForgotPasswordPage() {
                         <Button
                           variant="outlined"
                           sx={orangeOutlinedSx}
-                          onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /auth/account-recovery-help" })}
+                          onClick={() => navigate("/auth/account-recovery-help")}
                         >
                           Need help?
                         </Button>
@@ -741,7 +743,7 @@ export default function ForgotPasswordPage() {
                           variant="outlined"
                           sx={orangeOutlinedSx}
                           startIcon={<HelpCircleIcon size={18} />}
-                          onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /auth/account-recovery-help" })}
+                          onClick={() => navigate("/auth/account-recovery-help")}
                         >
                           Account recovery help
                         </Button>
@@ -763,10 +765,10 @@ export default function ForgotPasswordPage() {
               © {new Date().getFullYear()} EVzone Group.
             </Typography>
             <Stack direction="row" spacing={1.2} alignItems="center">
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open Terms (demo)" })}>
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
                 Terms
               </Button>
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open Privacy (demo)" })}>
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
                 Privacy
               </Button>
             </Stack>

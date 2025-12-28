@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -325,6 +326,7 @@ function scorePassword(pw: string) {
 }
 
 export default function SignUpPageV3() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";
@@ -424,7 +426,8 @@ export default function SignUpPageV3() {
       return;
     }
 
-    setSnack({ open: true, severity: "success", msg: "Account created. Proceed to verification (demo)." });
+    // In a real app we'd redirect here using navigate
+    navigate("/auth/verify-email"); // Or verify-phone depending on input
   };
 
   const onGoogle = () => setSnack({ open: true, severity: "info", msg: "Google sign-up: redirecting (demo)." });
@@ -470,7 +473,7 @@ export default function SignUpPageV3() {
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="Help">
-                  <IconButton size="small" onClick={() => setSnack({ open: true, severity: "info", msg: "Help Center (demo)" })} sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}>
+                  <IconButton size="small" onClick={() => navigate("/auth/account-recovery-help")} sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}>
                     <HelpCircleIcon size={18} />
                   </IconButton>
                 </Tooltip>
@@ -517,7 +520,7 @@ export default function SignUpPageV3() {
                       </Stack>
                     </Stack>
                     <Divider sx={{ my: 1 }} />
-                    <Button variant="outlined" startIcon={<ArrowLeftIcon size={18} />} sx={orangeOutlinedSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /auth/sign-in" })}>
+                    <Button variant="outlined" startIcon={<ArrowLeftIcon size={18} />} sx={orangeOutlinedSx} onClick={() => navigate("/auth/sign-in")}>
                       Back to sign in
                     </Button>
                   </Stack>
@@ -730,7 +733,7 @@ export default function SignUpPageV3() {
                         <Button fullWidth variant="contained" color="secondary" endIcon={<ArrowRightIcon size={18} />} onClick={onContinue} sx={orangeContainedSx}>
                           Continue
                         </Button>
-                        <Button fullWidth variant="outlined" startIcon={<ArrowLeftIcon size={18} />} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /auth/sign-in" })} sx={orangeOutlinedSx}>
+                        <Button fullWidth variant="outlined" startIcon={<ArrowLeftIcon size={18} />} onClick={() => navigate("/auth/sign-in")} sx={orangeOutlinedSx}>
                           Sign in instead
                         </Button>
                       </Stack>
@@ -751,8 +754,8 @@ export default function SignUpPageV3() {
           <Box className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
             <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group.</Typography>
             <Stack direction="row" spacing={1.2} alignItems="center">
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open Terms (demo)" })}>Terms</Button>
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open Privacy (demo)" })}>Privacy</Button>
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>Terms</Button>
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>Privacy</Button>
             </Stack>
           </Box>
         </Box>

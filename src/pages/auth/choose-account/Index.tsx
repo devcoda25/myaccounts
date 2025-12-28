@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Avatar,
@@ -201,6 +202,7 @@ function readClientFromQuery(): OidcClientMeta {
 }
 
 export default function AccountChooserV4() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";
@@ -252,7 +254,7 @@ export default function AccountChooserV4() {
   useEffect(() => {
     if (accounts.length === 0) {
       const t = window.setTimeout(() => {
-        setSnack({ open: true, severity: "info", msg: "No active sessions. Redirecting to Sign In… (demo)" });
+        navigate("/auth/sign-in");
       }, 450);
       return () => window.clearTimeout(t);
     }
@@ -304,10 +306,12 @@ export default function AccountChooserV4() {
       return;
     }
     setSnack({ open: true, severity: "success", msg: `Continuing to ${client.name} as ${selected.fullName}…` });
+    // Simulate auth success
+    setTimeout(() => navigate("/app"), 500);
   };
 
   const handleUseAnother = () => {
-    setSnack({ open: true, severity: "info", msg: "Use another account → Redirect to Sign In (demo)." });
+    navigate("/auth/sign-in");
   };
 
   // GREEN-only page background
@@ -517,7 +521,7 @@ export default function AccountChooserV4() {
                                 fullWidth
                                 variant="outlined"
                                 sx={orangeOutlinedSx}
-                                onClick={() => setSnack({ open: true, severity: "info", msg: "Create account (demo)" })}
+                                onClick={() => navigate("/auth/sign-up")}
                               >
                                 Create Account
                               </Button>
@@ -741,13 +745,13 @@ export default function AccountChooserV4() {
                 © {new Date().getFullYear()} EVzone Group. Secure sign-in across EVzone platforms.
               </Typography>
               <Stack direction="row" spacing={1.2} alignItems="center">
-                <Button size="small" variant="text" sx={{ color: EVZONE.orange, fontWeight: 820 }} onClick={() => setSnack({ open: true, severity: "info", msg: "Terms (demo)" })}>
+                <Button size="small" variant="text" sx={{ color: EVZONE.orange, fontWeight: 820 }} onClick={() => window.open("/legal/terms", "_blank")}>
                   Terms
                 </Button>
-                <Button size="small" variant="text" sx={{ color: EVZONE.orange, fontWeight: 820 }} onClick={() => setSnack({ open: true, severity: "info", msg: "Privacy (demo)" })}>
+                <Button size="small" variant="text" sx={{ color: EVZONE.orange, fontWeight: 820 }} onClick={() => window.open("/legal/privacy", "_blank")}>
                   Privacy
                 </Button>
-                <Button size="small" variant="text" sx={{ color: EVZONE.orange, fontWeight: 820 }} onClick={() => setSnack({ open: true, severity: "info", msg: "Help Center (demo)" })}>
+                <Button size="small" variant="text" sx={{ color: EVZONE.orange, fontWeight: 820 }} onClick={() => navigate("/auth/account-recovery-help")}>
                   Help
                 </Button>
               </Stack>

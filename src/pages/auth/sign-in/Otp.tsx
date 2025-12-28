@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -136,6 +137,7 @@ function maskIdentifier(v: string) {
 }
 
 export default function SignInOtpPage() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";
@@ -436,7 +438,7 @@ export default function SignInOtpPage() {
                       variant="outlined"
                       startIcon={<ArrowLeft size={18} />}
                       sx={orangeOutlinedSx}
-                      onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /auth/sign-in" })}
+                      onClick={() => navigate("/auth/sign-in")}
                     >
                       Back to password sign-in
                     </Button>
@@ -603,10 +605,10 @@ export default function SignInOtpPage() {
               © {new Date().getFullYear()} EVzone Group.
             </Typography>
             <Stack direction="row" spacing={1.2} alignItems="center">
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open Terms (demo)" })}>
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
                 Terms
               </Button>
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open Privacy (demo)" })}>
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
                 Privacy
               </Button>
             </Stack>
@@ -655,7 +657,7 @@ export default function SignInOtpPage() {
               sx={orangeContainedSx}
               onClick={() => {
                 setHelpOpen(false);
-                setSnack({ open: true, severity: "info", msg: "Contact support (demo)" });
+                navigate("/auth/account-recovery-help");
               }}
             >
               Contact support

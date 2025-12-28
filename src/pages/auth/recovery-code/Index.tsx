@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -203,6 +204,7 @@ function normalizeCode(s: string) {
 }
 
 export default function RecoveryCodeEntryPage() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";
@@ -266,11 +268,12 @@ export default function RecoveryCodeEntryPage() {
   };
 
   const regenerate = () => {
-    setSnack({ open: true, severity: "info", msg: "Navigate to /app/security/recovery-codes (regenerate)" });
+    navigate("/app/security/recovery-codes");
   };
 
   const continueNext = () => {
-    setSnack({ open: true, severity: "info", msg: "Continue → proceed to the sensitive action / app (demo)." });
+    // In real app, redirect to original destination
+    navigate("/app");
   };
 
   return (
@@ -327,7 +330,7 @@ export default function RecoveryCodeEntryPage() {
                 <Tooltip title="Help">
                   <IconButton
                     size="small"
-                    onClick={() => setSnack({ open: true, severity: "info", msg: "Recovery code help (demo)" })}
+                    onClick={() => navigate("/auth/account-recovery-help")}
                     sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}
                   >
                     <HelpCircleIcon size={18} />
@@ -461,14 +464,14 @@ export default function RecoveryCodeEntryPage() {
                         <Button
                           variant="outlined"
                           sx={orangeOutlinedSx}
-                          onClick={() => setSnack({ open: true, severity: "info", msg: "Back to /auth/mfa" })}
+                          onClick={() => navigate("/auth/mfa")}
                           startIcon={<ArrowLeftIcon size={18} />}
                         >
                           Back to MFA
                         </Button>
                       </Stack>
 
-                      <Button variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Contact support (demo)" })}>
+                      <Button variant="text" sx={orangeTextSx} onClick={() => navigate("/auth/account-recovery-help")}>
                         I can’t access my recovery codes
                       </Button>
                     </Stack>
@@ -484,10 +487,10 @@ export default function RecoveryCodeEntryPage() {
               © {new Date().getFullYear()} EVzone Group.
             </Typography>
             <Stack direction="row" spacing={1.2} alignItems="center">
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open Terms (demo)" })}>
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
                 Terms
               </Button>
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open Privacy (demo)" })}>
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
                 Privacy
               </Button>
             </Stack>

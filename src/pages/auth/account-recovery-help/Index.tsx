@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -192,6 +193,7 @@ type HelpItem = {
 };
 
 export default function AccountRecoveryHelpPage() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";
@@ -282,15 +284,15 @@ export default function AccountRecoveryHelpPage() {
 
   const runAction = (action: string) => {
     if (action === "go_forgot") {
-      setSnack({ open: true, severity: "info", msg: "Navigate to /auth/forgot-password" });
+      navigate("/auth/forgot-password");
       return;
     }
     if (action === "go_recovery") {
-      setSnack({ open: true, severity: "info", msg: "Navigate to /auth/recovery-code" });
+      navigate("/auth/recovery-code");
       return;
     }
     if (action === "go_signin") {
-      setSnack({ open: true, severity: "info", msg: "Navigate to /auth/sign-in" });
+      navigate("/auth/sign-in");
       return;
     }
     if (action === "support") {
@@ -485,8 +487,8 @@ export default function AccountRecoveryHelpPage() {
           <Box className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
             <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group.</Typography>
             <Stack direction="row" spacing={1.2} alignItems="center">
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open Terms (demo)" })}>Terms</Button>
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open Privacy (demo)" })}>Privacy</Button>
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>Terms</Button>
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>Privacy</Button>
             </Stack>
           </Box>
         </Box>

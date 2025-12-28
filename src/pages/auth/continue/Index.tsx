@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -248,6 +249,7 @@ function buildScopeCatalog(keys: string[]): ScopeItem[] {
 }
 
 export default function ContinueToAppV4() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";
@@ -288,11 +290,14 @@ export default function ContinueToAppV4() {
   };
 
   const onCancel = () => {
-    setSnack({ open: true, severity: "info", msg: "Cancelled. Returning to the calling app (demo)." });
+    navigate("/app");
   };
 
   const onContinue = () => {
-    setSnack({ open: true, severity: "success", msg: `Continuing to ${ctx.name}… (OIDC redirect to ${redirectHost || "callback"})` });
+    setSnack({ open: true, severity: "success", msg: `Continuing to ${ctx.name}…` });
+    setTimeout(() => {
+      window.location.href = ctx.redirectUri;
+    }, 800);
   };
 
   // GREEN-only page background
@@ -618,7 +623,7 @@ export default function ContinueToAppV4() {
                                 <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
                                   You can manage app access later in <b>My Accounts → Apps & Permissions</b>.
                                 </Typography>
-                                <Button size="small" variant="outlined" endIcon={<ExternalLink size={16} />} sx={orangeOutlinedSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open Apps & Permissions (demo)." })}>
+                                <Button size="small" variant="outlined" endIcon={<ExternalLink size={16} />} sx={orangeOutlinedSx} onClick={() => navigate("/app/security")}>
                                   Manage permissions
                                 </Button>
                               </Stack>
@@ -645,7 +650,7 @@ export default function ContinueToAppV4() {
                       </Button>
 
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ width: { xs: "100%", sm: "auto" } }}>
-                        <Button fullWidth variant="outlined" onClick={() => setSnack({ open: true, severity: "info", msg: "Switch account → /auth/choose-account (demo)." })} sx={orangeOutlinedSx}>
+                        <Button fullWidth variant="outlined" onClick={() => navigate("/auth/choose-account")} sx={orangeOutlinedSx}>
                           Switch account
                         </Button>
                         <Button fullWidth variant="contained" color="secondary" endIcon={<ArrowRight size={18} />} onClick={onContinue} sx={orangeContainedSx}>
@@ -668,13 +673,13 @@ export default function ContinueToAppV4() {
                 © {new Date().getFullYear()} EVzone Group. Secure sign-in across EVzone platforms.
               </Typography>
               <Stack direction="row" spacing={1.2} alignItems="center">
-                <Button size="small" variant="text" sx={{ color: EVZONE.orange, fontWeight: 820 }} onClick={() => setSnack({ open: true, severity: "info", msg: "Terms (demo)" })}>
+                <Button size="small" variant="text" sx={{ color: EVZONE.orange, fontWeight: 820 }} onClick={() => window.open("/legal/terms", "_blank")}>
                   Terms
                 </Button>
-                <Button size="small" variant="text" sx={{ color: EVZONE.orange, fontWeight: 820 }} onClick={() => setSnack({ open: true, severity: "info", msg: "Privacy (demo)" })}>
+                <Button size="small" variant="text" sx={{ color: EVZONE.orange, fontWeight: 820 }} onClick={() => window.open("/legal/privacy", "_blank")}>
                   Privacy
                 </Button>
-                <Button size="small" variant="text" sx={{ color: EVZONE.orange, fontWeight: 820 }} onClick={() => setSnack({ open: true, severity: "info", msg: "Help Center (demo)" })}>
+                <Button size="small" variant="text" sx={{ color: EVZONE.orange, fontWeight: 820 }} onClick={() => navigate("/auth/account-recovery-help")}>
                   Help
                 </Button>
               </Stack>

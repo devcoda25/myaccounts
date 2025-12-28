@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -6,10 +7,6 @@ import {
   Card,
   CardContent,
   CssBaseline,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Divider,
   IconButton,
   Snackbar,
@@ -21,12 +18,12 @@ import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
 import { motion } from "framer-motion";
 
 /**
- * EVzone My Accounts - OAuth Error / Request Blocked
- * Route: /auth/error
+ * EVzone My Accounts - Logged Out
+ * Route: /auth/signed-out
  * Features:
- * - Friendly error title + code
- * - Common cases: invalid redirect URI, expired request, user cancelled
- * - Actions: retry, return to app, support
+ * - Confirmation message
+ * - Sign in again
+ * - Return to {AppName}
  *
  * Style rules:
  * - Background: green-only
@@ -90,12 +87,20 @@ function HelpCircleIcon({ size = 18 }: { size?: number }) {
   );
 }
 
-function AlertTriangleIcon({ size = 18 }: { size?: number }) {
+function CheckCircleIcon({ size = 18 }: { size?: number }) {
   return (
     <IconBase size={size}>
-      <path d="M12 3l10 18H2L12 3Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-      <path d="M12 9v5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 17h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
+      <path d="m8.5 12 2.3 2.3L15.8 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </IconBase>
+  );
+}
+
+function ArrowRightIcon({ size = 18 }: { size?: number }) {
+  return (
+    <IconBase size={size}>
+      <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path d="M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </IconBase>
   );
 }
@@ -105,17 +110,6 @@ function ArrowLeftIcon({ size = 18 }: { size?: number }) {
     <IconBase size={size}>
       <path d="M19 12H5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
       <path d="M12 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function RefreshIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M20 6v6h-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M4 18v-6h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M20 12a8 8 0 0 0-14.7-4.7L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 12a8 8 0 0 0 14.7 4.7L20 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </IconBase>
   );
 }
@@ -188,17 +182,8 @@ function safeHost(url: string) {
   }
 }
 
-function friendlyTitle(error: string) {
-  const e = (error || "").toLowerCase();
-  if (e.includes("invalid_redirect") || e.includes("redirect")) return "Invalid redirect address";
-  if (e.includes("expired") || e.includes("timeout")) return "Request expired";
-  if (e.includes("access_denied") || e.includes("cancel")) return "Request cancelled";
-  if (e.includes("invalid_request")) return "Invalid request";
-  if (e.includes("unauthorized_client")) return "App not authorized";
-  return "Sign-in request blocked";
-}
-
-export default function OAuthErrorPage() {
+export default function SignedOutPage() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";
@@ -206,10 +191,7 @@ export default function OAuthErrorPage() {
   const qs = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
   const appName = qs.get("app") || "EVzone App";
   const redirectUri = qs.get("redirect_uri") || "";
-  const error = qs.get("error") || qs.get("code") || "request_blocked";
-  const desc = qs.get("error_description") || "The sign-in request could not be completed.";
 
-  const [supportOpen, setSupportOpen] = useState(false);
   const [snack, setSnack] = useState<{ open: boolean; severity: "success" | "info" | "warning" | "error"; msg: string }>({ open: false, severity: "info", msg: "" });
 
   const toggleMode = () => {
@@ -243,8 +225,14 @@ export default function OAuthErrorPage() {
     "&:hover": { backgroundColor: alpha(EVZONE.orange, mode === "dark" ? 0.14 : 0.10) },
   } as const;
 
-  const retry = () => setSnack({ open: true, severity: "info", msg: "Retrying the request (demo)." });
-  const returnToApp = () => setSnack({ open: true, severity: "info", msg: `Returning to ${appName} (demo).` });
+  const signInAgain = () => navigate("/auth/sign-in");
+  const returnToApp = () => {
+    if (redirectUri) {
+      window.location.href = redirectUri;
+    } else {
+      navigate("/auth/sign-in");
+    }
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -260,7 +248,7 @@ export default function OAuthErrorPage() {
                 </Box>
                 <Box>
                   <Typography variant="subtitle1" sx={{ lineHeight: 1.1 }}>EVzone My Accounts</Typography>
-                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>OAuth error</Typography>
+                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Signed out</Typography>
                 </Box>
               </Stack>
 
@@ -276,7 +264,7 @@ export default function OAuthErrorPage() {
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="Help">
-                  <IconButton size="small" onClick={() => setSupportOpen(true)} sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}>
+                  <IconButton size="small" onClick={() => navigate("/auth/account-recovery-help")} sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}>
                     <HelpCircleIcon size={18} />
                   </IconButton>
                 </Tooltip>
@@ -291,22 +279,15 @@ export default function OAuthErrorPage() {
             <Card>
               <CardContent className="p-5 md:p-7">
                 <Stack spacing={2.0}>
-                  <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ xs: "flex-start", md: "center" }} justifyContent="space-between">
-                    <Stack direction="row" spacing={1.2} alignItems="center">
-                      <Box sx={{ width: 44, height: 44, borderRadius: 16, display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.14 : 0.10), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
-                        <AlertTriangleIcon size={20} />
-                      </Box>
-                      <Box>
-                        <Typography variant="h6">{friendlyTitle(error)}</Typography>
-                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          {desc}
-                        </Typography>
-                      </Box>
-                    </Stack>
-
-                    <Box sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), px: 1.5, py: 1.1 }}>
-                      <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Error code</Typography>
-                      <Typography sx={{ fontWeight: 900 }}>{error}</Typography>
+                  <Stack direction="row" spacing={1.2} alignItems="center">
+                    <Box sx={{ width: 44, height: 44, borderRadius: 16, display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.14 : 0.10), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, color: EVZONE.green }}>
+                      <CheckCircleIcon size={20} />
+                    </Box>
+                    <Box>
+                      <Typography variant="h6">You are signed out</Typography>
+                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                        Your session on this device has ended.
+                      </Typography>
                     </Box>
                   </Stack>
 
@@ -314,31 +295,36 @@ export default function OAuthErrorPage() {
 
                   <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.40), p: 1.4 }}>
                     <Stack spacing={0.8}>
-                      <Typography sx={{ fontWeight: 900 }}>Common fixes</Typography>
-                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>• Try again and ensure the app is updated.</Typography>
-                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>• If you cancelled, start the sign-in again from the app.</Typography>
-                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>• If you see an invalid redirect, the app configuration may be wrong.</Typography>
+                      <Typography sx={{ fontWeight: 900 }}>What you can do next</Typography>
+                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>• Sign in again to continue using EVzone services.</Typography>
+                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>• Return to {appName} if you were sent here after logout.</Typography>
                       {redirectUri ? (
-                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>• Redirect destination: <b>{safeHost(redirectUri)}</b></Typography>
+                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>• Destination: <b>{safeHost(redirectUri)}</b></Typography>
                       ) : null}
                     </Stack>
                   </Box>
 
                   <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                    <Button variant="contained" color="secondary" sx={orangeContainedSx} startIcon={<RefreshIcon size={18} />} onClick={retry}>
-                      Retry
+                    <Button variant="contained" color="secondary" sx={orangeContainedSx} endIcon={<ArrowRightIcon size={18} />} onClick={signInAgain}>
+                      Sign in again
                     </Button>
                     <Button variant="outlined" sx={orangeOutlinedSx} startIcon={<ArrowLeftIcon size={18} />} onClick={returnToApp}>
                       Return to {appName}
                     </Button>
-                    <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => setSupportOpen(true)}>
-                      Support
-                    </Button>
                   </Stack>
 
-                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    If you keep seeing this message, contact support and share the error code.
-                  </Typography>
+                  <Alert severity="info">
+                    Tip: If this was unexpected, you can reset your password or review your active sessions.
+                  </Alert>
+
+                  <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                    <Button variant="text" sx={orangeTextSx} onClick={() => navigate("/auth/forgot-password")}>
+                      Reset password
+                    </Button>
+                    <Button variant="text" sx={orangeTextSx} onClick={() => navigate("/auth/sign-in")}>
+                      Review active sessions
+                    </Button>
+                  </Stack>
                 </Stack>
               </CardContent>
             </Card>
@@ -348,37 +334,11 @@ export default function OAuthErrorPage() {
           <Box className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
             <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group.</Typography>
             <Stack direction="row" spacing={1.2} alignItems="center">
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open Terms (demo)." })}>Terms</Button>
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open Privacy (demo)." })}>Privacy</Button>
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>Terms</Button>
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>Privacy</Button>
             </Stack>
           </Box>
         </Box>
-
-        {/* Support dialog */}
-        <Dialog open={supportOpen} onClose={() => setSupportOpen(false)} PaperProps={{ sx: { borderRadius: 20, border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}>
-          <DialogTitle sx={{ fontWeight: 950 }}>Support</DialogTitle>
-          <DialogContent>
-            <Stack spacing={1.2}>
-              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                Share the error code and what you were trying to do. For security, do not share passwords.
-              </Typography>
-              <Alert severity="info">Error code: <b>{error}</b></Alert>
-              <Box sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.55), p: 1.2 }}>
-                <Typography sx={{ fontWeight: 900 }}>Support channels (demo)</Typography>
-                <Typography variant="body2" sx={{ color: theme.palette.text.secondary, mt: 0.8 }}>• Email: support@evzone.com</Typography>
-                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>• Phone: +256 700 000 000</Typography>
-              </Box>
-            </Stack>
-          </DialogContent>
-          <DialogActions sx={{ p: 2, pt: 0 }}>
-            <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => setSupportOpen(false)}>
-              Close
-            </Button>
-            <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={() => { setSupportOpen(false); setSnack({ open: true, severity: "success", msg: "Support request submitted (demo)." }); }}>
-              Submit
-            </Button>
-          </DialogActions>
-        </Dialog>
 
         <Snackbar open={snack.open} autoHideDuration={3400} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
           <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={mode === "dark" ? "filled" : "standard"} sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.92) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>

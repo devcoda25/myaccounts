@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -230,6 +231,7 @@ function runSelfTestsOnce() {
 }
 
 export default function PasskeySignInPage() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";
@@ -289,7 +291,7 @@ export default function PasskeySignInPage() {
       const res = await tryWebAuthnGet();
       setSnack({ open: true, severity: res.ok ? "success" : "warning", msg: res.message });
       if (res.ok) {
-        setSnack({ open: true, severity: "info", msg: "Navigate back to the requesting app (demo)." });
+        navigate("/app");
       }
     } finally {
       setBusy(false);
@@ -306,7 +308,7 @@ export default function PasskeySignInPage() {
       return;
     }
     setSnack({ open: true, severity: "success", msg: "Signed in with password (demo)." });
-    setSnack({ open: true, severity: "info", msg: "Return to requesting app (demo)." });
+    navigate("/app");
   };
 
   return (
@@ -363,7 +365,7 @@ export default function PasskeySignInPage() {
                         </Stack>
                       </Box>
 
-                      <Button variant="outlined" sx={orangeOutlined} startIcon={<ArrowLeftIcon size={18} />} onClick={() => setSnack({ open: true, severity: "info", msg: "Back to account chooser (demo)." })}>
+                      <Button variant="outlined" sx={orangeOutlined} startIcon={<ArrowLeftIcon size={18} />} onClick={() => navigate("/auth/sign-in")}>
                         Back
                       </Button>
                     </Stack>
@@ -427,10 +429,10 @@ export default function PasskeySignInPage() {
                     <Divider />
 
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                      <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /auth/forgot-password (demo)." })}>
+                      <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/auth/forgot-password")}>
                         Forgot password
                       </Button>
-                      <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /auth/sign-in/otp (demo)." })}>
+                      <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/auth/sign-in/otp")}>
                         Use OTP
                       </Button>
                     </Stack>

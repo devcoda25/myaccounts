@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -287,6 +288,7 @@ function buildScopeItems(keys: string[]): ScopeItem[] {
 }
 
 export default function ConsentScreenPage() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";
@@ -350,7 +352,10 @@ export default function ConsentScreenPage() {
         // ignore
       }
     }
-    setSnack({ open: true, severity: "success", msg: `Allowed. Returning to ${safeHost(redirectUri) || "the app"} (demo).` });
+    setSnack({ open: true, severity: "success", msg: `Allowed. Returning to ${safeHost(redirectUri) || "the app"}…` });
+    setTimeout(() => {
+      window.location.href = redirectUri;
+    }, 800);
   };
 
   const onDeny = () => {
@@ -361,7 +366,10 @@ export default function ConsentScreenPage() {
         // ignore
       }
     }
-    setSnack({ open: true, severity: "info", msg: "Denied. Returning to the app (demo)." });
+    setSnack({ open: true, severity: "info", msg: "Denied. Returning to the app…" });
+    setTimeout(() => {
+      navigate("/app");
+    }, 800);
   };
 
   return (
@@ -403,7 +411,7 @@ export default function ConsentScreenPage() {
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="Help">
-                  <IconButton size="small" onClick={() => setSnack({ open: true, severity: "info", msg: "Help Center (demo)." })} sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}>
+                  <IconButton size="small" onClick={() => navigate("/auth/account-recovery-help")} sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}>
                     <HelpCircleIcon size={18} />
                   </IconButton>
                 </Tooltip>
@@ -586,8 +594,8 @@ export default function ConsentScreenPage() {
           <Box className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
             <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group.</Typography>
             <Stack direction="row" spacing={1.2} alignItems="center">
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open Terms (demo)." })}>Terms</Button>
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open Privacy (demo)." })}>Privacy</Button>
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>Terms</Button>
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>Privacy</Button>
             </Stack>
           </Box>
         </Box>

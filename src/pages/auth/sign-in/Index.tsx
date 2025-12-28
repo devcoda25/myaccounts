@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -356,6 +357,7 @@ function runSelfTestsOnce() {
 }
 
 export default function SignInPageV41() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";
@@ -781,7 +783,7 @@ export default function SignInPageV41() {
                           }
                           label={<Typography variant="body2">Remember this device</Typography>}
                         />
-                        <Button variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /auth/forgot-password" })}>
+                        <Button variant="text" sx={orangeTextSx} onClick={() => navigate("/auth/forgot-password")}>
                           Forgot password?
                         </Button>
                       </Stack>
@@ -797,7 +799,7 @@ export default function SignInPageV41() {
                         >
                           {isLocked ? `Try again in ${secondsLeft}s` : "Sign in"}
                         </Button>
-                        <Button fullWidth variant="outlined" onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /auth/sign-up" })} sx={orangeOutlinedSx}>
+                        <Button fullWidth variant="outlined" onClick={() => navigate("/auth/sign-up")} sx={orangeOutlinedSx}>
                           Create account
                         </Button>
                       </Stack>

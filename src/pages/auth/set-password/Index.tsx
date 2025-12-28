@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -435,6 +436,7 @@ function runSelfTestsOnce() {
 }
 
 export default function SetPasswordPage() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";
@@ -515,8 +517,11 @@ export default function SetPasswordPage() {
     setSnack({
       open: true,
       severity: "success",
-      msg: "Password set successfully. Next: 2FA setup or continue to app (demo).",
+      msg: "Password set successfully. Next: 2FA setup or continue to app.",
     });
+    setTimeout(() => {
+      navigate("/app");
+    }, 1200);
   };
 
   return (
@@ -585,7 +590,7 @@ export default function SetPasswordPage() {
                 <Tooltip title="Help">
                   <IconButton
                     size="small"
-                    onClick={() => setSnack({ open: true, severity: "info", msg: "Help Center (demo)" })}
+                    onClick={() => navigate("/auth/account-recovery-help")}
                     sx={{
                       border: `1px solid ${alpha(EVZONE.orange, 0.35)}`,
                       borderRadius: 12,
@@ -703,7 +708,7 @@ export default function SetPasswordPage() {
                       variant="outlined"
                       startIcon={<ArrowLeftIcon size={18} />}
                       sx={orangeOutlinedSx}
-                      onClick={() => setSnack({ open: true, severity: "info", msg: "Back (demo)" })}
+                      onClick={() => navigate(-1)}
                     >
                       Back
                     </Button>
@@ -894,7 +899,7 @@ export default function SetPasswordPage() {
                           variant="outlined"
                           startIcon={<ArrowLeftIcon size={18} />}
                           sx={orangeOutlinedSx}
-                          onClick={() => setSnack({ open: true, severity: "info", msg: "Back (demo)" })}
+                          onClick={() => navigate(-1)}
                           fullWidth
                         >
                           Back
@@ -917,10 +922,10 @@ export default function SetPasswordPage() {
               © {new Date().getFullYear()} EVzone Group.
             </Typography>
             <Stack direction="row" spacing={1.2} alignItems="center">
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open Terms (demo)" })}>
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
                 Terms
               </Button>
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open Privacy (demo)" })}>
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
                 Privacy
               </Button>
             </Stack>
