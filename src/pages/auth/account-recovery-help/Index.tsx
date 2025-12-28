@@ -162,7 +162,7 @@ function buildTheme(mode: ThemeMode) {
       text: { primary: textPrimary, secondary: textSecondary },
       divider: isDark ? alpha("#E9FFF7", 0.12) : alpha("#0B1A17", 0.10),
     },
-    shape: { borderRadius: 18 },
+    shape: { borderRadius: 7 },
     typography: {
       fontFamily: "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial",
       h6: { fontWeight: 900, letterSpacing: -0.28 },
@@ -173,13 +173,13 @@ function buildTheme(mode: ThemeMode) {
       MuiCard: {
         styleOverrides: {
           root: {
-            borderRadius: 24,
+            borderRadius: 6,
             border: `1px solid ${isDark ? alpha("#E9FFF7", 0.10) : alpha("#0B1A17", 0.10)}`,
             backgroundImage: "radial-gradient(900px 420px at 12% 0%, rgba(3,205,140,0.14), transparent 60%), radial-gradient(900px 420px at 88% 0%, rgba(3,205,140,0.10), transparent 55%)",
           },
         },
       },
-      MuiButton: { styleOverrides: { root: { borderRadius: 14, paddingTop: 10, paddingBottom: 10, boxShadow: "none" } } },
+      MuiButton: { styleOverrides: { root: { borderRadius: 4, paddingTop: 10, paddingBottom: 10, boxShadow: "none" } } },
     },
   });
 }
@@ -413,7 +413,7 @@ export default function AccountRecoveryHelpPage() {
                           <Box
                             key={it.key}
                             sx={{
-                              borderRadius: 18,
+                              borderRadius: 5,
                               border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
                               backgroundColor: alpha(theme.palette.background.paper, 0.40),
                               overflow: "hidden",
@@ -494,7 +494,7 @@ export default function AccountRecoveryHelpPage() {
         </Box>
 
         {/* Support dialog */}
-        <Dialog open={supportOpen} onClose={() => setSupportOpen(false)} PaperProps={{ sx: { borderRadius: 20, border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}>
+        <Dialog open={supportOpen} onClose={() => setSupportOpen(false)} PaperProps={{ sx: { borderRadius: 6, border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}>
           <DialogTitle sx={{ fontWeight: 950 }}>Contact support</DialogTitle>
           <DialogContent>
             <Stack spacing={1.2}>
