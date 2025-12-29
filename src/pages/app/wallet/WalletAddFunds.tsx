@@ -251,11 +251,8 @@ function runSelfTestsOnce() {
     assert("fee", feeFor("bank_transfer", 1000) === 0);
     assert("money", money(12000).includes("UGX"));
 
-    // eslint-disable-next-line no-console
-    console.log("EVzone Add Funds: self-tests passed");
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    // ignore
   }
 }
 

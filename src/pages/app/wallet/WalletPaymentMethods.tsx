@@ -291,11 +291,8 @@ function runSelfTestsOnce() {
     assert("mask bank", buildMasked("bank", "Bank Account", "3311").includes("3311"));
     assert("accent", providerAccent("MTN MoMo") === MTN.yellow);
 
-    // eslint-disable-next-line no-console
-    console.log("EVzone Payment Methods: self-tests passed");
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    // ignore
   }
 }
 

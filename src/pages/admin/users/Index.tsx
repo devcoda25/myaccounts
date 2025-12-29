@@ -357,7 +357,7 @@ export default function AdminUsersListPage() {
             <Button variant="outlined" sx={orangeOutlined} startIcon={<EyeIcon size={18} />} onClick={() => navigate(`/admin/users/${r.id}`)}>
                 View
             </Button>
-            <Button variant="outlined" sx={orangeOutlined} startIcon={<UsersIcon size={18} />} onClick={() => setSnack({ open: true, severity: "info", msg: `Navigate to /admin/users/${r.id}/sessions (demo).` })}>
+            <Button variant="outlined" sx={orangeOutlined} startIcon={<UsersIcon size={18} />} onClick={() => navigate(`/admin/users/${r.id}/sessions`)}>
                 Sessions
             </Button>
             {r.status === "Locked" ? (

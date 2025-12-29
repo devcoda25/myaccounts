@@ -193,9 +193,12 @@ function mkId(prefix: string) {
 }
 
 
+import { useNavigate } from "react-router-dom";
+
 export default function ReportSecurityIssuePage() {
   const { mode } = useThemeContext();
   const theme = useTheme();
+  const navigate = useNavigate();
 
   const [tab, setTab] = useState<0 | 1>(0);
   const [locked, setLocked] = useState(false);
@@ -327,7 +330,7 @@ export default function ReportSecurityIssuePage() {
                       </Box>
 
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                        <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/security/activity (demo)." })}>
+                        <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate('/app/security/activity')}>
                           View login activity
                         </Button>
                         <Button variant="contained" sx={dangerContained} startIcon={<LockIcon size={18} />} onClick={() => setLockDialog(true)}>
@@ -405,7 +408,7 @@ export default function ReportSecurityIssuePage() {
                             <Button variant="contained" sx={orangeContained} startIcon={<ShieldIcon size={18} />} onClick={submitSuspicious} disabled={locked}>
                               Submit report
                             </Button>
-                            <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/security/sessions (demo)." })} disabled={locked}>
+                            <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate('/app/security/sessions')} disabled={locked}>
                               Review sessions
                             </Button>
                           </Stack>
@@ -448,10 +451,10 @@ export default function ReportSecurityIssuePage() {
                             <Button variant="contained" sx={orangeContained} startIcon={<ShieldIcon size={18} />} onClick={submitCompromised} disabled={locked}>
                               Submit report
                             </Button>
-                            <Button variant="contained" sx={greenContained} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/security/change-password (demo)." })} disabled={locked}>
+                            <Button variant="contained" sx={greenContained} onClick={() => navigate('/app/security/change-password')} disabled={locked}>
                               Change password
                             </Button>
-                            <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/security/2fa/setup (demo)." })} disabled={locked}>
+                            <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate('/app/security/2fa/setup')} disabled={locked}>
                               Enable 2FA
                             </Button>
                           </Stack>
@@ -473,16 +476,16 @@ export default function ReportSecurityIssuePage() {
                         <Stack spacing={1.2}>
                           <Typography variant="h6">Quick actions</Typography>
                           <Divider />
-                          <Button variant="contained" sx={greenContained} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/security/change-password (demo)." })}>
-                            Change password
+                          <Button variant="contained" sx={greenContained} onClick={() => navigate('/app/security/change-password')}>
+                            Change Password
                           </Button>
-                          <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/security/sessions (demo)." })}>
-                            Review devices and sessions
+                          <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate('/app/security/sessions')}>
+                            Sign out devices
                           </Button>
-                          <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/security/2fa/setup (demo)." })}>
+                          <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate('/app/security/2fa/setup')}>
                             Enable 2FA
                           </Button>
-                          <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /auth/account-recovery-help (demo)." })}>
+                          <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate('/auth/account-recovery-help')}>
                             Account recovery help
                           </Button>
 
@@ -520,7 +523,7 @@ export default function ReportSecurityIssuePage() {
                 <Card sx={{ borderRadius: 999, backgroundColor: alpha(theme.palette.background.paper, 0.86), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backdropFilter: "blur(10px)" }}>
                   <CardContent sx={{ py: 1.1, px: 1.2 }}>
                     <Stack direction="row" spacing={1}>
-                      <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/security/activity (demo)." })}>
+                      <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => navigate('/app/security/activity')}>
                         Activity
                       </Button>
                       <Button fullWidth variant="contained" sx={dangerContained} onClick={() => setLockDialog(true)}>

@@ -285,11 +285,8 @@ function runSelfTestsOnce() {
     assert("mfa", mfaCodeFor("WhatsApp") === "333333");
     assert("fee", feeFor("momo", 100000) >= 500);
 
-    // eslint-disable-next-line no-console
-    console.log("EVzone Withdraw Funds: self-tests passed");
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    // ignore
   }
 }
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -153,6 +154,7 @@ function fmtSeconds(s: number) {
 export default function Error429Page() {
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
+  const navigate = useNavigate();
   const isDark = mode === "dark";
 
   // In production, this can be set from Retry-After header.
@@ -287,12 +289,12 @@ export default function Error429Page() {
                     <QuickTip title="If this persists" body="Check service status or contact support." />
                   </Box>
 
-                  <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                    <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /status (demo)." })}>
-                      View status
+                  <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ width: { xs: "100%", md: "auto" } }}>
+                    <Button variant="contained" sx={orangeContained} onClick={() => navigate("/app")}>
+                      Go to My Accounts
                     </Button>
-                    <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/support (demo)." })}>
-                      Contact support
+                    <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/status")}>
+                      Service status
                     </Button>
                   </Stack>
 

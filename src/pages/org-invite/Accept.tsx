@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Avatar,
@@ -140,15 +141,13 @@ function runSelfTestsOnce() {
       if (!cond) throw new Error(`Test failed: ${name}`);
     };
     assert("initials", initials("ronald@evworld.africa").length === 2);
-    // eslint-disable-next-line no-console
-    console.log("EVzone Accept Org Invite: self-tests passed");
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    // ignore
   }
 }
 
 export default function AcceptOrgInvitePage() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";
@@ -200,29 +199,32 @@ export default function AcceptOrgInvitePage() {
     const returnTo = `/org-invite/accept?token=${encodeURIComponent(token)}`;
 
     if (authState === "not_logged_in") {
-      setSnack({ open: true, severity: "info", msg: `Redirect to /auth/sign-in?returnTo=${returnTo} (demo).` });
+      navigate(`/auth/sign-in?returnTo=${encodeURIComponent(returnTo)}`);
       return;
     }
     if (authState === "logged_in_different_user") {
-      setSnack({ open: true, severity: "warning", msg: `Wrong user. Redirect to /auth/choose-account then return (demo).` });
+      navigate(`/auth/choose-account?continue=${encodeURIComponent(returnTo)}`);
       return;
     }
 
-    setSnack({ open: true, severity: "success", msg: `Invite accepted. Redirecting to /app/orgs/${encodeURIComponent(orgName)} (demo).` });
+    setSnack({ open: true, severity: "success", msg: "Invite accepted." });
+    setTimeout(() => {
+      navigate(`/app/orgs/${encodeURIComponent(orgName)}`);
+    }, 1000);
   };
 
   const decline = () => {
-    setSnack({ open: true, severity: "info", msg: "Invite declined (demo)." });
+    setSnack({ open: true, severity: "info", msg: "Invite declined." });
   };
 
   const showAccountChooser = () => {
     const returnTo = `/org-invite/accept?token=${encodeURIComponent(token)}`;
-    setSnack({ open: true, severity: "info", msg: `Open /auth/choose-account?continue=${returnTo} (demo).` });
+    navigate(`/auth/choose-account?continue=${encodeURIComponent(returnTo)}`);
   };
 
   const showSignIn = () => {
     const returnTo = `/org-invite/accept?token=${encodeURIComponent(token)}`;
-    setSnack({ open: true, severity: "info", msg: `Open /auth/sign-in?returnTo=${returnTo} (demo).` });
+    navigate(`/auth/sign-in?returnTo=${encodeURIComponent(returnTo)}`);
   };
 
   const authHint =

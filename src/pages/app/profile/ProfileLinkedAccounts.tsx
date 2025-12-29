@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Avatar,
@@ -373,6 +374,7 @@ function mfaCodeFor(channel: MfaChannel) {
 export default function LinkedAccountsPage() {
   const { mode } = useThemeContext();
   const theme = useTheme();
+  const navigate = useNavigate();
   const isDark = mode === "dark";
 
   const [providers, setProviders] = useState<Provider[]>(() => [
@@ -606,7 +608,7 @@ export default function LinkedAccountsPage() {
                                 "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.10) },
                               }
                           }
-                          onClick={() => setSnack({ open: true, severity: "info", msg: `Navigate to ${item.route} (demo).` })}
+                          onClick={() => navigate(item.route)}
                         >
                           {item.label}
                         </Button>
@@ -616,7 +618,7 @@ export default function LinkedAccountsPage() {
                         variant="outlined"
                         sx={evOrangeOutlinedSx}
                         startIcon={<ShieldCheckIcon size={18} />}
-                        onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/security (demo)." })}
+                        onClick={() => navigate('/app/security')}
                       >
                         Security settings
                       </Button>
@@ -721,7 +723,7 @@ export default function LinkedAccountsPage() {
                             color="secondary"
                             sx={evOrangeContainedSx}
                             startIcon={<ShieldCheckIcon size={18} />}
-                            onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/security (demo)." })}
+                            onClick={() => navigate('/app/security')}
                           >
                             Security overview
                           </Button>
@@ -729,7 +731,7 @@ export default function LinkedAccountsPage() {
                             variant="outlined"
                             sx={evOrangeOutlinedSx}
                             startIcon={<HelpCircleIcon size={18} />}
-                            onClick={() => setSnack({ open: true, severity: "info", msg: "Contact support (demo)." })}
+                            onClick={() => navigate('/app/support')}
                           >
                             Support
                           </Button>
@@ -758,7 +760,7 @@ export default function LinkedAccountsPage() {
                             fullWidth
                             variant="outlined"
                             sx={evOrangeOutlinedSx}
-                            onClick={() => setSnack({ open: true, severity: "info", msg: "Back to /app/profile (demo)." })}
+                            onClick={() => navigate('/app/profile')}
                             startIcon={<ArrowLeftIcon size={18} />}
                           >
                             Profile
@@ -768,7 +770,7 @@ export default function LinkedAccountsPage() {
                             variant="contained"
                             color="secondary"
                             sx={evOrangeContainedSx}
-                            onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/security (demo)." })}
+                            onClick={() => navigate('/app/security')}
                           >
                             Security
                           </Button>

@@ -46,12 +46,11 @@ function healthChip(health: Health) {
   return { label: "Degraded", color: "warning" as const, tone: EVZONE.orange };
 }
 
-export default function ServiceStatusPage() {
-  const navigate = useNavigate();
-  // Use global theme context
-  const { mode, toggleMode } = useThemeContext();
+export default function SystemStatusPage() {
   const theme = useTheme();
-  const isDark = mode === "dark";
+  const navigate = useNavigate();
+  const { mode, toggleMode } = useThemeContext();
+  const isDark = theme.palette.mode === "dark";
 
   // Demo toggles
   const [demoDegraded, setDemoDegraded] = useState(false);

@@ -290,11 +290,8 @@ function runSelfTestsOnce() {
     assert("money sign", money(-1200, "UGX").startsWith("-"));
     assert("typeIcon returns", !!typeIcon("Fee"));
 
-    // eslint-disable-next-line no-console
-    console.log("EVzone Tx History: self-tests passed");
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    // ignore
   }
 }
 

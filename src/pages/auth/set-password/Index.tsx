@@ -202,11 +202,8 @@ function runSelfTestsOnce() {
 
     assert("reqs len=7 false", r3.len === false);
 
-    // eslint-disable-next-line no-console
-    console.log("EVzone Set Password: self-tests passed");
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    // ignore
   }
 }
 

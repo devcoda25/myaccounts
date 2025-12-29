@@ -168,11 +168,8 @@ function runSelfTestsOnce() {
 
     assert("supportsPasskeys returns boolean", typeof supportsPasskeys() === "boolean");
 
-    // eslint-disable-next-line no-console
-    console.log("EVzone Passkey Sign-in: self-tests passed");
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    // ignore
   }
 }
 

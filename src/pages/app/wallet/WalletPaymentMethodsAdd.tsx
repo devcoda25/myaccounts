@@ -245,11 +245,8 @@ function runSelfTestsOnce() {
     assert("validatePhone", validatePhone("+256 761 677 709") === true);
     assert("verify code", demoVerifyCode("3DS") === "123456");
 
-    // eslint-disable-next-line no-console
-    console.log("EVzone Add Payment Method: self-tests passed");
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    // ignore
   }
 }
 
@@ -803,7 +800,7 @@ export default function AddPaymentMethodPage() {
                         <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={resetAll}>
                           Add another
                         </Button>
-                        <Button fullWidth variant="contained" sx={greenContained} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/wallet/payment-methods (demo)." })}>
+                        <Button fullWidth variant="contained" sx={greenContained} onClick={() => navigate('/app/wallet/payment-methods')}>
                           Methods
                         </Button>
                       </Stack>

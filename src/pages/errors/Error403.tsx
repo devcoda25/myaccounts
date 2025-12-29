@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -77,7 +78,7 @@ function buildTheme(mode: ThemeMode) {
         styleOverrides: {
           root: {
             borderRadius: 24,
-            border: `1px solid ${isDark ? alpha("#E9FFF7", 0.10) : alpha("#0B1A17", 0.10)}`,
+            border: `1px solid ${isDark ? alpha("#E9FFF7", 0.10) : alpha("#0B1A17", 0.10)} `,
             backgroundImage:
               "radial-gradient(900px 420px at 10% 0%, rgba(3,205,140,0.14), transparent 60%), radial-gradient(900px 420px at 90% 0%, rgba(3,205,140,0.10), transparent 55%)",
           },
@@ -99,6 +100,7 @@ function routeInfo() {
 export default function Error403Page() {
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
+  const navigate = useNavigate();
   const isDark = mode === "dark";
 
   const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
@@ -135,11 +137,11 @@ export default function Error403Page() {
       <CssBaseline />
       <Box sx={{ minHeight: "100vh", background: pageBg }}>
         {/* Top bar */}
-        <Box sx={{ position: "sticky", top: 0, zIndex: 10, backdropFilter: "blur(10px)", borderBottom: `1px solid ${theme.palette.divider}`, backgroundColor: alpha(theme.palette.background.default, 0.72) }}>
+        <Box sx={{ position: "sticky", top: 0, zIndex: 10, backdropFilter: "blur(10px)", borderBottom: `1px solid ${theme.palette.divider} `, backgroundColor: alpha(theme.palette.background.default, 0.72) }}>
           <Box className="mx-auto max-w-6xl px-4 py-3 md:px-6">
             <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
               <Stack direction="row" spacing={1.2} alignItems="center">
-                <Box sx={{ width: 40, height: 40, borderRadius: 14, display: "grid", placeItems: "center", background: `linear-gradient(135deg, ${EVZONE.green} 0%, rgba(3,205,140,0.75) 100%)` }}>
+                <Box sx={{ width: 40, height: 40, borderRadius: 14, display: "grid", placeItems: "center", background: `linear - gradient(135deg, ${EVZONE.green} 0 %, rgba(3, 205, 140, 0.75) 100 %)` }}>
                   <Typography sx={{ color: "#fff", fontWeight: 950, letterSpacing: -0.4 }}>EV</Typography>
                 </Box>
                 <Box>
@@ -149,12 +151,12 @@ export default function Error403Page() {
               </Stack>
               <Stack direction="row" spacing={1} alignItems="center">
                 <Tooltip title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}>
-                  <IconButton size="small" onClick={toggleMode} sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.30)}`, borderRadius: 12, color: EVZONE.orange, backgroundColor: alpha(theme.palette.background.paper, 0.60) }}>
+                  <IconButton size="small" onClick={toggleMode} sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.30)} `, borderRadius: 12, color: EVZONE.orange, backgroundColor: alpha(theme.palette.background.paper, 0.60) }}>
                     {isDark ? <SunIcon /> : <MoonIcon />}
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="Language">
-                  <IconButton size="small" sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.30)}`, borderRadius: 12, color: EVZONE.orange, backgroundColor: alpha(theme.palette.background.paper, 0.60) }}>
+                  <IconButton size="small" sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.30)} `, borderRadius: 12, color: EVZONE.orange, backgroundColor: alpha(theme.palette.background.paper, 0.60) }}>
                     <GlobeIcon />
                   </IconButton>
                 </Tooltip>
@@ -171,7 +173,7 @@ export default function Error403Page() {
                 <Stack spacing={1.4}>
                   <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ xs: "flex-start", md: "center" }} justifyContent="space-between">
                     <Stack direction="row" spacing={1.4} alignItems="center">
-                      <Box sx={{ width: 54, height: 54, borderRadius: 18, display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.orange, 0.12), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
+                      <Box sx={{ width: 54, height: 54, borderRadius: 18, display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.orange, 0.12), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)} ` }}>
                         <ShieldOffIcon size={20} />
                       </Box>
                       <Box>
@@ -196,15 +198,15 @@ export default function Error403Page() {
                   <Divider />
 
                   <Box className="grid gap-3 md:grid-cols-3">
-                    <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.2 }}>
+                    <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)} `, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.2 }}>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Signed in as</Typography>
                       <Typography sx={{ fontWeight: 950 }}>{account}</Typography>
                     </Box>
-                    <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.2 }}>
+                    <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)} `, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.2 }}>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Requested service</Typography>
                       <Typography sx={{ fontWeight: 950 }}>{requested}</Typography>
                     </Box>
-                    <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.2 }}>
+                    <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)} `, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.2 }}>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Route</Typography>
                       <Typography sx={{ fontWeight: 950 }}>{routeInfo()}</Typography>
                     </Box>
@@ -214,12 +216,12 @@ export default function Error403Page() {
                     If you believe this is a mistake, request access from your organization admin or contact EVzone support.
                   </Alert>
 
-                  <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                    <Button variant="contained" sx={orangeContained} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app (demo)." })}>
-                      Go to My Accounts
+                  <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ width: { xs: "100%", md: "auto" } }}>
+                    <Button variant="contained" sx={orangeContained} onClick={() => navigate("/auth/sign-in")}>
+                      Sign in
                     </Button>
-                    <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/support (demo)." })}>
-                      Contact support
+                    <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/app")}>
+                      Go back home
                     </Button>
                   </Stack>
 
@@ -232,7 +234,7 @@ export default function Error403Page() {
 
             {/* Mobile sticky */}
             <Box className="md:hidden" sx={{ position: "sticky", bottom: 12 }}>
-              <Card sx={{ borderRadius: 999, backgroundColor: alpha(theme.palette.background.paper, 0.86), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backdropFilter: "blur(10px)" }}>
+              <Card sx={{ borderRadius: 999, backgroundColor: alpha(theme.palette.background.paper, 0.86), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)} `, backdropFilter: "blur(10px)" }}>
                 <CardContent sx={{ py: 1.1, px: 1.2 }}>
                   <Stack direction="row" spacing={1}>
                     <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /auth/sign-in (demo)." })}>
@@ -249,7 +251,7 @@ export default function Error403Page() {
         </Box>
 
         <Snackbar open={snack.open} autoHideDuration={3200} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-          <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={isDark ? "filled" : "standard"} sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
+          <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={isDark ? "filled" : "standard"} sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.12)} `, backgroundColor: alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
             {snack.msg}
           </Alert>
         </Snackbar>

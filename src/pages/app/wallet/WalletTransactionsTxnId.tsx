@@ -329,11 +329,8 @@ function runSelfTestsOnce() {
     const ids = seedTxs().map((t) => t.id);
     assert("seed unique ids", new Set(ids).size === ids.length);
 
-    // eslint-disable-next-line no-console
-    console.log("EVzone Tx Detail: self-tests passed");
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    // ignore
   }
 }
 

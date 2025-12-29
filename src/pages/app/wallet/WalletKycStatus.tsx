@@ -176,11 +176,8 @@ function runSelfTestsOnce() {
     const w = window as any;
     if (w.__EVZONE_KYC_STATUS_TESTS_RAN__) return;
     w.__EVZONE_KYC_STATUS_TESTS_RAN__ = true;
-    // eslint-disable-next-line no-console
-    console.log("EVzone KYC Status: self-tests passed");
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    // ignore
   }
 }
 

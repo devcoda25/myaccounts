@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -144,6 +145,7 @@ function routeInfo() {
 export default function Error404Page() {
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
+  const navigate = useNavigate();
   const isDark = mode === "dark";
 
   const [query, setQuery] = useState("");
@@ -282,7 +284,7 @@ export default function Error404Page() {
                       <Button fullWidth variant="contained" sx={orangeContained} onClick={doSearch}>
                         Search
                       </Button>
-                      <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => setQuery("") }>
+                      <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => setQuery("")}>
                         Clear
                       </Button>
                     </Box>

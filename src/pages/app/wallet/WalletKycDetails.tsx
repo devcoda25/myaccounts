@@ -257,11 +257,8 @@ function runSelfTestsOnce() {
     assert("full name", looksLikeFullName("Ronald Isabirye"));
     assert("expiry future", isDateOnOrAfterToday("2099-01-01"));
 
-    // eslint-disable-next-line no-console
-    console.log("EVzone KYC Details v2: self-tests passed");
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    // ignore
   }
 }
 

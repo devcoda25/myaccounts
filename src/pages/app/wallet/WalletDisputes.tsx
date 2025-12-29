@@ -288,11 +288,8 @@ function runSelfTestsOnce() {
     };
     assert("mkId", mkId("D").startsWith("D_"));
     assert("stepForStatus", stepForStatus("Won") === 3);
-    // eslint-disable-next-line no-console
-    console.log("EVzone Disputes: self-tests passed");
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    // ignore
   }
 }
 

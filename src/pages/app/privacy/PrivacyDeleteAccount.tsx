@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -285,17 +286,15 @@ function runSelfTestsOnce() {
     assert("mfa", mfaCodeFor("WhatsApp") === "333333");
     assert("addDays", addDays(0, 7) === 7 * 24 * 60 * 60 * 1000);
 
-    // eslint-disable-next-line no-console
-    console.log("EVzone Delete Account: self-tests passed");
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    // ignore
   }
 }
 
 export default function DeleteDeactivateAccountPage() {
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
+  const navigate = useNavigate();
   const isDark = mode === "dark";
 
   const [flow, setFlow] = useState<FlowState>("form");
@@ -443,7 +442,7 @@ export default function DeleteDeactivateAccountPage() {
                 You can reactivate by signing in again (demo behavior).
               </Alert>
               <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                <Button variant="contained" sx={orangeContained} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /auth/sign-in (demo)." })}>
+                <Button variant="contained" sx={orangeContained} onClick={() => navigate('/auth/sign-in')}>
                   Reactivate by sign-in
                 </Button>
                 <Button variant="outlined" sx={orangeOutlined} onClick={() => setFlow("form")}>
@@ -479,7 +478,7 @@ export default function DeleteDeactivateAccountPage() {
               <Button variant="contained" sx={dangerContained} onClick={cancelDeletion}>
                 Cancel deletion
               </Button>
-              <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/privacy/download (demo)." })}>
+              <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate('/app/privacy/download')}>
                 Download my data
               </Button>
             </Stack>
@@ -587,7 +586,7 @@ export default function DeleteDeactivateAccountPage() {
                             <Button variant="contained" sx={dangerContained} startIcon={<LockIcon size={18} />} onClick={openReauth}>
                               Continue (re-auth)
                             </Button>
-                            <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/privacy/download (demo)." })}>
+                            <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate('/app/privacy/download')}>
                               Download my data
                             </Button>
                           </Stack>
@@ -618,7 +617,7 @@ export default function DeleteDeactivateAccountPage() {
                           <Alert severity="info" icon={<ShieldIcon size={18} />}>
                             Need help? Contact support before deleting.
                           </Alert>
-                          <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/support (demo)." })}>
+                          <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate('/app/support')}>
                             Contact support
                           </Button>
                         </Stack>
@@ -634,7 +633,7 @@ export default function DeleteDeactivateAccountPage() {
                   <Card sx={{ borderRadius: 999, backgroundColor: alpha(theme.palette.background.paper, 0.86), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backdropFilter: "blur(10px)" }}>
                     <CardContent sx={{ py: 1.1, px: 1.2 }}>
                       <Stack direction="row" spacing={1}>
-                        <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/privacy/download (demo)." })}>
+                        <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => navigate('/app/privacy/download')}>
                           Data
                         </Button>
                         <Button fullWidth variant="contained" sx={dangerContained} onClick={openReauth}>

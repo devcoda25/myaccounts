@@ -365,7 +365,7 @@ export default function AdminUserDetailPage() {
                                     <Button variant="outlined" sx={orangeOutlined} startIcon={<ArrowLeftIcon size={18} />} onClick={() => navigate('/admin/users')}>
                                         Back
                                     </Button>
-                                    <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: `Navigate to /admin/users/${user.id}/sessions (demo).` })}>
+                                    <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate(`/admin/users/${user.id}/sessions`)}>
                                         Sessions
                                     </Button>
                                     {user.status === "Locked" ? (

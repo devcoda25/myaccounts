@@ -274,11 +274,8 @@ function runSelfTestsOnce() {
     assert("mkId", id.startsWith("EXP_"));
     assert("countdown", fmtCountdown(61000) === "1:01");
 
-    // eslint-disable-next-line no-console
-    console.log("EVzone Download My Data: self-tests passed");
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    // ignore
   }
 }
 
@@ -473,8 +470,8 @@ export default function DownloadMyDataPage() {
                       </Box>
 
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ width: { xs: "100%", md: "auto" } }}>
-                        <Button variant="outlined" sx={orangeOutlined} startIcon={<RefreshIcon size={18} />} onClick={requestExport}>
-                          Request export
+                        <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "You will be notified when your data is ready." })}>
+                          Request data copy
                         </Button>
                         <Button variant="contained" sx={greenContained} startIcon={<DownloadIcon size={18} />} onClick={download} disabled={current.status !== "ready"}>
                           Download

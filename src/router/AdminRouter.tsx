@@ -6,6 +6,7 @@ import AdminLayout from '../layouts/AdminLayout';
 const AdminDashboard = React.lazy(() => import('../pages/admin/dashboard/Index'));
 const UsersList = React.lazy(() => import('../pages/admin/users/Index'));
 const UserDetail = React.lazy(() => import('../pages/admin/users/UserDetail'));
+const UserSessions = React.lazy(() => import('../pages/admin/users/UserSessions'));
 const WalletsList = React.lazy(() => import('../pages/admin/wallets/Index'));
 const TransactionsList = React.lazy(() => import('../pages/admin/transactions/Index'));
 const AuditLogs = React.lazy(() => import('../pages/admin/audit/Index'));
@@ -23,6 +24,7 @@ export default function AdminRouter() {
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="users" element={<UsersList />} />
                 <Route path="users/:userId" element={<UserDetail />} />
+                <Route path="users/:userId/sessions" element={<UserSessions />} />
                 <Route path="wallets" element={<WalletsList />} />
                 <Route path="transactions" element={<TransactionsList />} />
                 <Route path="audit" element={<AuditLogs />} />

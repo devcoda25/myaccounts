@@ -205,11 +205,8 @@ function runSelfTestsOnce() {
     assert("supportsPasskeys boolean", typeof supportsPasskeys() === "boolean");
     assert("maskIdentifier email", maskIdentifier("ronald@evzone.com").includes("@"));
 
-    // eslint-disable-next-line no-console
-    console.log("EVzone Sign In v4.1: self-tests passed");
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    // ignore
   }
 }
 
@@ -614,7 +611,7 @@ export default function SignInPageV41() {
                         </Stack>
                         {useOtpInstead ? (
                           <Box sx={{ mt: 1.2 }}>
-                            <Button fullWidth variant="contained" onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /auth/sign-in/otp" })} sx={orangeContainedSx}>
+                            <Button fullWidth variant="contained" onClick={() => setSnack({ open: true, severity: "info", msg: "OTP sign-in coming soon." })} sx={orangeContainedSx}>
                               {t('auth.sign_in.continue_otp')}
                             </Button>
                           </Box>

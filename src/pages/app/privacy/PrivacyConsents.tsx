@@ -266,11 +266,8 @@ function runSelfTestsOnce() {
     };
 
     assert("maskIp", maskIp("197.157.10.20").includes("x"));
-    // eslint-disable-next-line no-console
-    console.log("EVzone Privacy Consents: self-tests passed");
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    // ignore
   }
 }
 

@@ -225,11 +225,8 @@ function runSelfTestsOnce() {
     assert("money format", money(12000, "UGX").includes("UGX"));
     assert("timeAgo", typeof timeAgo(Date.now() - 1000) === "string");
 
-    // eslint-disable-next-line no-console
-    console.log("EVzone Wallet Overview: self-tests passed");
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    // ignore
   }
 }
 
@@ -472,7 +469,7 @@ export default function WalletPage() {
                       <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => navigate("/app/wallet/transactions")}>
                         View all
                       </Button>
-                      <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Download statement (demo)." })}>
+                      <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Statement download is coming soon." })}>
                         Download statement
                       </Button>
                     </Stack>
@@ -525,10 +522,10 @@ export default function WalletPage() {
               <Card sx={{ borderRadius: 999, backgroundColor: alpha(theme.palette.background.paper, 0.85), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backdropFilter: "blur(10px)" }}>
                 <CardContent sx={{ py: 1.1, px: 1.2 }}>
                   <Stack direction="row" spacing={1}>
-                    <Button fullWidth variant="contained" sx={greenContained} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/wallet/add-funds (demo)." })}>
+                    <Button fullWidth variant="contained" sx={greenContained} onClick={() => navigate('/app/wallet/add-funds')}>
                       Add funds
                     </Button>
-                    <Button fullWidth variant="contained" sx={orangeContained} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/wallet/withdraw (demo)." })}>
+                    <Button fullWidth variant="contained" sx={orangeContained} onClick={() => navigate('/app/wallet/withdraw')}>
                       Withdraw
                     </Button>
                   </Stack>

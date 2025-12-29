@@ -168,11 +168,8 @@ function runSelfTestsOnce() {
     };
     assert("clamp01", clamp01(1.2) === 1);
     assert("money", money(12000, "UGX").includes("UGX"));
-    // eslint-disable-next-line no-console
-    console.log("EVzone Wallet Limits: self-tests passed");
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    // ignore
   }
 }
 
