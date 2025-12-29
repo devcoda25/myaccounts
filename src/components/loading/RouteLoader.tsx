@@ -48,7 +48,7 @@ export default function RouteLoader() {
                             }}
                             animate={{ opacity: [0.2, 1, 0.2], scale: [0.8, 1.1, 0.8] }}
                             transition={{
-                                duration: 1.2,
+                                duration: 0.5,
                                 repeat: Infinity,
                                 delay: i * 0.1,
                                 ease: "easeInOut",

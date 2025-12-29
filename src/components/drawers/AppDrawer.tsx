@@ -51,8 +51,8 @@ const SECONDARY_NAV_ITEMS = [
     { label: "Parental Controls", path: "/app/parental-controls", icon: <Lock size={20} /> },
     { label: "Developer", path: "/app/developer", icon: <Code size={20} /> },
     { label: "Support", path: "/app/support", icon: <HelpCircle size={20} /> },
-    { label: "Terms", path: "/legal/terms", icon: <FileText size={20} /> },
-    { label: "Privacy", path: "/legal/privacy", icon: <Shield size={20} /> },
+    { label: "Terms", path: "/legal/terms", icon: <FileText size={20} />, external: true },
+    { label: "Privacy", path: "/legal/privacy", icon: <Shield size={20} />, external: true },
 ];
 
 import { useTranslation } from "react-i18next";
@@ -125,7 +125,13 @@ export default function AppDrawer({ mobileOpen, onDrawerToggle }: AppDrawerProps
                 {SECONDARY_NAV_ITEMS.map((item) => (
                     <ListItem key={item.path} disablePadding sx={{ mb: 0.5 }}>
                         <ListItemButton
-                            onClick={() => navigate(item.path)}
+                            onClick={() => {
+                                if ((item as any).external) {
+                                    window.open(item.path, "_blank");
+                                } else {
+                                    navigate(item.path);
+                                }
+                            }}
                             sx={{ borderRadius: "10px", py: 1.5, color: "text.secondary" }}
                         >
                             <ListItemIcon sx={{ minWidth: 40, color: "inherit" }}>{item.icon}</ListItemIcon>

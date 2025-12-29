@@ -714,17 +714,17 @@ export default function MfaChallengePage() {
                 size="small"
                 variant="text"
                 sx={orangeTextSx}
-                onClick={() => setSnack({ open: true, severity: "info", msg: "Open Terms (demo)" })}
+                onClick={() => window.open("/legal/terms", "_blank")}
               >
-                Terms
+                {t('auth.terms')}
               </Button>
               <Button
                 size="small"
                 variant="text"
                 sx={orangeTextSx}
-                onClick={() => setSnack({ open: true, severity: "info", msg: "Open Privacy (demo)" })}
+                onClick={() => window.open("/legal/privacy", "_blank")}
               >
-                Privacy
+                {t('auth.privacy')}
               </Button>
             </Stack>
           </Box>
