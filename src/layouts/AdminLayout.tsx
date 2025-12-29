@@ -100,8 +100,8 @@ export default function AdminLayout() {
                                 startIcon={item.icon}
                                 sx={
                                     isActive
-                                        ? ({ backgroundColor: EVZONE.orange, color: "#FFFFFF", "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92) }, justifyContent: "flex-start", borderRadius: 3, py: 1.2 } as const)
-                                        : ({ justifyContent: "flex-start", color: theme.palette.text.primary, "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.10) }, borderRadius: 3, py: 1.2 } as const)
+                                        ? ({ backgroundColor: EVZONE.orange, color: "#FFFFFF", "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92) }, justifyContent: "flex-start", borderRadius: "10px", py: 1.5 } as const)
+                                        : ({ justifyContent: "flex-start", color: theme.palette.text.primary, "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.10) }, borderRadius: "10px", py: 1.5 } as const)
                                 }
                                 onClick={() => {
                                     navigate(item.route);
@@ -125,7 +125,8 @@ export default function AdminLayout() {
                             backgroundColor: alpha(theme.palette.background.paper, 0.20),
                             "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
                             justifyContent: "flex-start",
-                            borderRadius: 3
+                            borderRadius: "10px",
+                            py: 1.5
                         }}
                         onClick={() => navigate('/auth/sign-in')}
                     >

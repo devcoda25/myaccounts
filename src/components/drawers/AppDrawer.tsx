@@ -83,7 +83,7 @@ export default function AppDrawer({ mobileOpen, onDrawerToggle }: AppDrawerProps
             </Box>
 
             {/* Navigation List */}
-            <List sx={{ px: 2 }}>
+            <List sx={{ px: 2 }} disablePadding>
                 {NAV_ITEMS.map((item) => {
                     const isActive =
                         location.pathname === item.path ||
@@ -121,7 +121,7 @@ export default function AppDrawer({ mobileOpen, onDrawerToggle }: AppDrawerProps
             </List>
 
             {/* Secondary Nav */}
-            <List sx={{ px: 2, pb: 2 }}>
+            <List sx={{ px: 2, pb: 2 }} disablePadding>
                 {SECONDARY_NAV_ITEMS.map((item) => (
                     <ListItem key={item.path} disablePadding sx={{ mb: 0.5 }}>
                         <ListItemButton
