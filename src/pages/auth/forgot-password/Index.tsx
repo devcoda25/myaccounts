@@ -23,7 +23,9 @@ import {
   Typography,
 } from "@mui/material";
 import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+import AuthHeader from "../../../components/headers/AuthHeader";
 
 /**
  * EVzone My Accounts - Forgot Password
@@ -39,134 +41,33 @@ import { motion } from "framer-motion";
  * • Buttons: orange-only with white text (outlined hover -> solid orange + white text)
  */
 
-type ThemeMode = "light" | "dark";
-
-type IdType = "email" | "phone" | "unknown";
-
-type Delivery = "email_link" | "sms_code" | "whatsapp_code";
-
-type Step = "request" | "sent";
+import { ThemeMode, Severity, IdType, Delivery, Step } from "../../../utils/types";
+import {
+  SunIcon,
+  MoonIcon,
+  GlobeIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  MailIcon,
+  ShieldCheckIcon,
+  HelpCircleIcon,
+  PhoneIcon,
+  TimerIcon,
+  WhatsAppIcon
+} from "../../../utils/icons";
 
 const EVZONE = {
   green: "#03cd8c",
   orange: "#f77f00",
 } as const;
 
+
+
 const WHATSAPP = {
   green: "#25D366",
 } as const;
 
-// -----------------------------
-// Inline icon set (CDN-safe)
-// -----------------------------
-function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      focusable="false"
-      style={{ display: "block" }}
-    >
-      {children}
-    </svg>
-  );
-}
 
-function SunIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
-      <path d="M12 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 12H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M22 12h-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function MoonIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M21 13a8 8 0 0 1-10-10 7.5 7.5 0 1 0 10 10Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function GlobeIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function HelpCircleIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M9.5 9a2.5 2.5 0 1 1 3.2 2.4c-.9.3-1.2.8-1.2 1.6v.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 17h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function MailIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <rect x="4" y="6" width="16" height="12" rx="2" stroke="currentColor" strokeWidth="2" />
-      <path d="M4 8l8 6 8-6" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function PhoneIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M22 16.9v3a2 2 0 0 1-2.2 2c-9.5-1-17-8.5-18-18A2 2 0 0 1 3.8 2h3a2 2 0 0 1 2 1.7c.2 1.4.6 2.8 1.2 4.1a2 2 0 0 1-.5 2.2L8.4 11.1a16 16 0 0 0 4.5 4.5l1.1-1.1a2 2 0 0 1 2.2-.5c1.3.6 2.7 1 4.1 1.2a2 2 0 0 1 1.7 2Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function TimerIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M10 2h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 14l3-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <circle cx="12" cy="13" r="8" stroke="currentColor" strokeWidth="2" />
-    </IconBase>
-  );
-}
-
-function ArrowRightIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function WhatsAppIcon({ size = 18 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 448 512"
-      fill="currentColor"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      focusable="false"
-      style={{ display: "block" }}
-    >
-      <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z" />
-    </svg>
-  );
-}
 
 // -----------------------------
 // Theme helpers
@@ -255,13 +156,9 @@ function maskPhone(phone: string) {
   return `${s.slice(0, 3)}***${s.slice(-3)}`;
 }
 
-function labelForDelivery(d: Delivery) {
-  if (d === "email_link") return "Email link";
-  if (d === "sms_code") return "SMS code";
-  return "WhatsApp code";
-}
 
 export default function ForgotPasswordPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
@@ -347,26 +244,32 @@ export default function ForgotPasswordPage() {
     return true;
   };
 
+  const labelForDelivery = (d: Delivery) => {
+    if (d === "email_link") return t('auth.forgot_password.email_link');
+    if (d === "sms_code") return t('auth.forgot_password.sms_code');
+    return t('auth.forgot_password.whatsapp_code');
+  };
+
   const requestSend = () => {
     setBanner(null);
 
     if (!identifier.trim()) {
-      setBanner({ severity: "warning", msg: "Enter your email or phone number." });
+      setBanner({ severity: "warning", msg: t('auth.forgot_password.validation_email_phone') });
       return;
     }
 
     if (idType === "unknown") {
-      setBanner({ severity: "warning", msg: "Enter a valid email address or phone number." });
+      setBanner({ severity: "warning", msg: t('auth.forgot_password.validation_valid_email_phone') });
       return;
     }
 
     if (cooldown > 0) {
-      setBanner({ severity: "warning", msg: `Please wait ${cooldown}s before trying again.` });
+      setBanner({ severity: "warning", msg: t('auth.forgot_password.validation_wait', { seconds: cooldown }) });
       return;
     }
 
     if (captchaRequired && !captchaChecked) {
-      setBanner({ severity: "warning", msg: "Please complete the verification checkbox to continue." });
+      setBanner({ severity: "warning", msg: t('auth.forgot_password.validation_captcha') });
       return;
     }
 
@@ -390,7 +293,7 @@ export default function ForgotPasswordPage() {
     setSnack({
       open: true,
       severity: "success",
-      msg: `Reset instructions sent via ${via}. (Demo)`
+      msg: t('auth.forgot_password.reset_sent_success', { via })
     });
   };
 
@@ -472,66 +375,11 @@ export default function ForgotPasswordPage() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box className="min-h-screen" sx={{ background: pageBg }}>
-        {/* Top bar */}
-        <Box sx={{ borderBottom: `1px solid ${theme.palette.divider}` }}>
-          <Box className="mx-auto max-w-5xl px-4 py-3 md:px-6">
-            <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
-              <Stack direction="row" alignItems="center" spacing={1.2}>
-                <Box
-                  sx={{
-                    width: 38,
-                    height: 38,
-                    borderRadius: 12,
-                    display: "grid",
-                    placeItems: "center",
-                    background:
-                      "linear-gradient(135deg, rgba(3,205,140,1) 0%, rgba(3,205,140,0.82) 55%, rgba(3,205,140,0.62) 100%)",
-                    boxShadow: `0 14px 40px ${alpha(isDark ? "#000" : "#0B1A17", 0.22)}`,
-                  }}
-                >
-                  <Typography sx={{ color: "white", fontWeight: 900, letterSpacing: -0.4 }}>EV</Typography>
-                </Box>
-                <Box>
-                  <Typography variant="subtitle1" sx={{ lineHeight: 1.1 }}>
-                    EVzone My Accounts
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    Forgot password
-                  </Typography>
-                </Box>
-              </Stack>
-
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Tooltip title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}>
-                  <IconButton
-                    onClick={toggleMode}
-                    size="small"
-                    sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}
-                  >
-                    {isDark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Language">
-                  <IconButton
-                    size="small"
-                    sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}
-                  >
-                    <GlobeIcon size={18} />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Help">
-                  <IconButton
-                    size="small"
-                    onClick={() => navigate("/auth/account-recovery-help")}
-                    sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}
-                  >
-                    <HelpCircleIcon size={18} />
-                  </IconButton>
-                </Tooltip>
-              </Stack>
-            </Stack>
-          </Box>
-        </Box>
+        {/* Unified Auth Header */}
+        <AuthHeader
+          title={t('app_name')}
+          subtitle={t('auth.forgot_password.title')}
+        />
 
         {/* Body */}
         <Box className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">
@@ -541,9 +389,9 @@ export default function ForgotPasswordPage() {
               <Card>
                 <CardContent className="p-5 md:p-6">
                   <Stack spacing={1.2}>
-                    <Typography variant="h6">Reset your access</Typography>
+                    <Typography variant="h6">{t('auth.forgot_password.reset_access_title')}</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      We will send password reset instructions to your verified email or phone.
+                      {t('auth.forgot_password.reset_access_desc')}
                     </Typography>
 
                     <Divider sx={{ my: 1 }} />
@@ -554,9 +402,9 @@ export default function ForgotPasswordPage() {
                           <TimerIcon size={18} />
                         </Box>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>Rate limiting</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>{t('auth.forgot_password.rate_limiting')}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Requests may be limited to protect against abuse.
+                            {t('auth.forgot_password.rate_limiting_desc')}
                           </Typography>
                         </Box>
                       </Stack>
@@ -565,9 +413,9 @@ export default function ForgotPasswordPage() {
                           <MailIcon size={18} />
                         </Box>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>Secure link / code</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>{t('auth.forgot_password.secure_link')}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Reset tokens expire quickly and can’t be reused.
+                            {t('auth.forgot_password.secure_link_desc')}
                           </Typography>
                         </Box>
                       </Stack>
@@ -576,7 +424,7 @@ export default function ForgotPasswordPage() {
                     <Divider sx={{ my: 1 }} />
 
                     <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => navigate("/auth/sign-in")}>
-                      Back to sign in
+                      {t('auth.forgot_password.back_to_signin')}
                     </Button>
                   </Stack>
                 </CardContent>
@@ -590,17 +438,17 @@ export default function ForgotPasswordPage() {
                   {step === "sent" ? (
                     <Stack spacing={2.0}>
                       <Stack spacing={0.6}>
-                        <Typography variant="h6">Check your {idType === "email" ? "email" : "phone"}</Typography>
+                        <Typography variant="h6">{t('auth.forgot_password.check_your', { type: idType === "email" ? "email" : "phone" })}</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          We sent reset instructions to <b>{deliveryMask()}</b> via <b>{labelForDelivery(delivery)}</b>.
+                          {t('auth.forgot_password.sent_instructions', { identifier: deliveryMask(), method: labelForDelivery(delivery) })}
                         </Typography>
                       </Stack>
 
                       <Box sx={{ borderRadius: 2, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
                         <Stack spacing={1}>
-                          <Typography sx={{ fontWeight: 900 }}>Next</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>{t('auth.forgot_password.next')}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Follow the link or enter the code to reset your password.
+                            {t('auth.forgot_password.next_desc')}
                           </Typography>
                           <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                             <Button
@@ -610,7 +458,7 @@ export default function ForgotPasswordPage() {
                               endIcon={<ArrowRightIcon size={18} />}
                               onClick={() => navigate("/auth/reset-password")}
                             >
-                              Go to reset password
+                              {t('auth.forgot_password.go_to_reset')}
                             </Button>
                             <Button
                               variant="outlined"
@@ -623,7 +471,7 @@ export default function ForgotPasswordPage() {
                               }}
                               disabled={cooldown > 0}
                             >
-                              {cooldown > 0 ? `Send again in ${cooldown}s` : "Send again"}
+                              {cooldown > 0 ? t('auth.forgot_password.send_again_in', { seconds: cooldown }) : t('auth.forgot_password.send_again')}
                             </Button>
                           </Stack>
                         </Stack>
@@ -631,23 +479,23 @@ export default function ForgotPasswordPage() {
 
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                         <Button variant="outlined" sx={orangeOutlinedSx} onClick={resetForm}>
-                          Change email/phone
+                          {t('auth.forgot_password.change_contact')}
                         </Button>
                         <Button
                           variant="outlined"
                           sx={orangeOutlinedSx}
                           onClick={() => navigate("/auth/account-recovery-help")}
                         >
-                          Need help?
+                          {t('auth.forgot_password.need_help')}
                         </Button>
                       </Stack>
                     </Stack>
                   ) : (
                     <Stack spacing={2.0}>
                       <Stack spacing={0.6}>
-                        <Typography variant="h6">Forgot password</Typography>
+                        <Typography variant="h6">{t('auth.forgot_password.title')}</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Enter your email or phone number and choose how to receive reset instructions.
+                          {t('auth.forgot_password.subtitle')}
                         </Typography>
                       </Stack>
 
@@ -656,8 +504,8 @@ export default function ForgotPasswordPage() {
                       <TextField
                         value={identifier}
                         onChange={(e) => setIdentifier(e.target.value)}
-                        label="Email or phone"
-                        placeholder="name@example.com or +256..."
+                        label={t('auth.forgot_password.validation_email_phone')}
+                        placeholder={t('auth.sign_in.email_phone_placeholder')}
                         fullWidth
                         InputProps={{
                           startAdornment: (
@@ -666,32 +514,32 @@ export default function ForgotPasswordPage() {
                             </Box>
                           ),
                         }}
-                        helperText={idType === "unknown" ? "Enter a valid email or phone." : ""}
+                        helperText={idType === "unknown" ? t('auth.forgot_password.validation_valid_email_phone') : ""}
                       />
 
                       <Box>
-                        <Typography sx={{ fontWeight: 900, mb: 1 }}>Delivery method</Typography>
+                        <Typography sx={{ fontWeight: 900, mb: 1 }}>{t('auth.forgot_password.delivery_method')}</Typography>
                         <Box className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                           <DeliveryCard
                             value="email_link"
-                            title="Email link"
-                            subtitle="Send a secure reset link to your email."
+                            title={t('auth.forgot_password.email_link')}
+                            subtitle={t('auth.forgot_password.email_link_desc')}
                             enabled={idType === "email"}
                             accent="orange"
                             icon={<MailIcon size={18} />}
                           />
                           <DeliveryCard
                             value="sms_code"
-                            title="SMS code"
-                            subtitle="Send a reset code to your phone."
+                            title={t('auth.forgot_password.sms_code')}
+                            subtitle={t('auth.forgot_password.sms_code_desc')}
                             enabled={idType === "phone"}
                             accent="orange"
                             icon={<PhoneIcon size={18} />}
                           />
                           <DeliveryCard
                             value="whatsapp_code"
-                            title="WhatsApp code"
-                            subtitle="Send a reset code via WhatsApp."
+                            title={t('auth.forgot_password.whatsapp_code')}
+                            subtitle={t('auth.forgot_password.whatsapp_code_desc')}
                             enabled={idType === "phone"}
                             accent="whatsapp"
                             icon={<WhatsAppIcon size={18} />}
@@ -699,7 +547,7 @@ export default function ForgotPasswordPage() {
                         </Box>
                         {idType === "email" ? (
                           <Typography variant="caption" sx={{ color: theme.palette.text.secondary, mt: 1, display: "block" }}>
-                            Phone methods are available when you enter a phone number.
+                            {t('auth.forgot_password.phone_methods_hint')}
                           </Typography>
                         ) : null}
                       </Box>
@@ -717,10 +565,10 @@ export default function ForgotPasswordPage() {
                             label={
                               <Box>
                                 <Typography variant="body2" sx={{ fontWeight: 900 }}>
-                                  I’m not a robot
+                                  {t('auth.forgot_password.captcha_label')}
                                 </Typography>
                                 <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                                  Optional abuse protection (demo).
+                                  {t('auth.forgot_password.captcha_desc')}
                                 </Typography>
                               </Box>
                             }
@@ -737,7 +585,7 @@ export default function ForgotPasswordPage() {
                           onClick={requestSend}
                           disabled={!canSend()}
                         >
-                          Continue
+                          {t('auth.forgot_password.continue')}
                         </Button>
                         <Button
                           variant="outlined"
@@ -745,12 +593,12 @@ export default function ForgotPasswordPage() {
                           startIcon={<HelpCircleIcon size={18} />}
                           onClick={() => navigate("/auth/account-recovery-help")}
                         >
-                          Account recovery help
+                          {t('auth.forgot_password.account_recovery_help')}
                         </Button>
                       </Stack>
 
                       <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                        Tip: If you don’t receive anything, check spam folders (email) or ensure network coverage (phone).
+                        {t('auth.forgot_password.tip_spam')}
                       </Typography>
                     </Stack>
                   )}
@@ -766,26 +614,27 @@ export default function ForgotPasswordPage() {
             </Typography>
             <Stack direction="row" spacing={1.2} alignItems="center">
               <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
-                Terms
+                {t('auth.terms')}
               </Button>
               <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
-                Privacy
+                {t('auth.privacy')}
               </Button>
             </Stack>
           </Box>
         </Box>
 
         {/* Confirm send dialog */}
-        <Dialog
+        < Dialog
           open={confirmOpen}
-          onClose={() => setConfirmOpen(false)}
+          onClose={() => setConfirmOpen(false)
+          }
           PaperProps={{ sx: { borderRadius: 2, border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}
         >
-          <DialogTitle sx={{ fontWeight: 950 }}>Confirm send</DialogTitle>
+          <DialogTitle sx={{ fontWeight: 950 }}>{t('auth.forgot_password.confirm_send_title')}</DialogTitle>
           <DialogContent>
             <Stack spacing={1.2}>
               <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                Send reset instructions to:
+                {t('auth.forgot_password.send_to')}
               </Typography>
               <Box sx={{ borderRadius: 2, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.55), p: 1.2 }}>
                 <Stack direction="row" spacing={1.2} alignItems="center">
@@ -795,23 +644,23 @@ export default function ForgotPasswordPage() {
                   <Box>
                     <Typography sx={{ fontWeight: 900 }}>{deliveryMask()}</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      Delivery: <b>{labelForDelivery(delivery)}</b>
+                      {t('auth.forgot_password.delivery_label')} <b>{labelForDelivery(delivery)}</b>
                     </Typography>
                   </Box>
                 </Stack>
               </Box>
-              <Alert severity="info">If this account exists, you will receive reset instructions shortly.</Alert>
+              <Alert severity="info">{t('auth.forgot_password.confirm_info')}</Alert>
             </Stack>
           </DialogContent>
           <DialogActions sx={{ p: 2, pt: 0 }}>
             <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => setConfirmOpen(false)}>
-              Cancel
+              {t('auth.forgot_password.cancel')}
             </Button>
             <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={doSend}>
-              Send
+              {t('auth.forgot_password.send')}
             </Button>
           </DialogActions>
-        </Dialog>
+        </Dialog >
 
         <Snackbar
           open={snack.open}
@@ -828,7 +677,7 @@ export default function ForgotPasswordPage() {
             {snack.msg}
           </Alert>
         </Snackbar>
-      </Box>
-    </ThemeProvider>
+      </Box >
+    </ThemeProvider >
   );
 }

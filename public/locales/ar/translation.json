@@ -1,0 +1,28 @@
+{
+    "app_name": "EVzone حساباتي",
+    "auth": {
+        "sign_in": "تسجيل الدخول",
+        "sign_out": "خروج",
+        "create_account": "إنشاء حساب",
+        "forgot_password": "هل نسيت كلمة المرور؟",
+        "email_placeholder": "name@example.com",
+        "password_placeholder": "كلمة المرور"
+    },
+    "header": {
+        "search": "بحث...",
+        "language": "لغة",
+        "theme": "سمة",
+        "notifications": "إشعارات",
+        "profile": "الملف الشخصي",
+        "settings": "الإعدادات",
+        "help": "مساعدة"
+    },
+    "languages": {
+        "en": "إنجليزي",
+        "fr": "فرنسي",
+        "zh": "صيني",
+        "es": "إسباني",
+        "ar": "عربي",
+        "sw": "سواحلي"
+    }
+}

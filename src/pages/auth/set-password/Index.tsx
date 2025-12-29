@@ -19,6 +19,23 @@ import {
   Typography,
 } from "@mui/material";
 import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
+import { useTranslation, Trans } from "react-i18next";
+import LanguageSwitcher from "../../../components/common/LanguageSwitcher";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  CheckCircleIcon,
+  HelpCircleIcon,
+  MoonIcon,
+  ShieldCheckIcon,
+  SunIcon,
+  EyeIcon,
+  EyeOffIcon,
+  KeyIcon,
+  FingerprintIcon,
+  LockIcon,
+  GlobeIcon,
+} from "../../../utils/icons";
 import { motion } from "framer-motion";
 
 /**
@@ -53,249 +70,7 @@ const EVZONE = {
 // -----------------------------
 // Inline Lucide-style icons
 // -----------------------------
-function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      focusable="false"
-      style={{ display: "block" }}
-    >
-      {children}
-    </svg>
-  );
-}
 
-function ArrowLeftIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M19 12H5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path
-        d="M12 19l-7-7 7-7"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </IconBase>
-  );
-}
-
-function ArrowRightIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path
-        d="M12 5l7 7-7 7"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </IconBase>
-  );
-}
-
-function GlobeIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 3c3 3 3 15 0 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 3c-3 3-3 15 0 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function HelpCircleIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path
-        d="M9.5 9a2.5 2.5 0 1 1 3.2 2.4c-.9.3-1.2.8-1.2 1.6v.3"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path d="M12 17h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function LockIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <rect x="6" y="11" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="2" />
-      <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function MoonIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path
-        d="M21 13a8 8 0 0 1-10-10 7.5 7.5 0 1 0 10 10Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-    </IconBase>
-  );
-}
-
-function SunIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
-      <path d="M12 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 12H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M22 12h-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4.9 4.9l1.4 1.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M17.7 17.7l1.4 1.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M19.1 4.9l-1.4 1.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M6.3 17.7l-1.4 1.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function ShieldCheckIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path
-        d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <path
-        d="m9 12 2 2 4-5"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </IconBase>
-  );
-}
-
-function EyeIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path
-        d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <circle cx="12" cy="12" r="2.5" stroke="currentColor" strokeWidth="2" />
-    </IconBase>
-  );
-}
-
-function EyeOffIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M3 3l18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path
-        d="M2 12s3.5-7 10-7c2 0 3.8.5 5.3 1.3"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M22 12s-3.5 7-10 7c-2.2 0-4.2-.5-5.8-1.4"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path d="M10 10a3 3 0 0 0 4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function CheckCircle2Icon({ size = 18, dim = false }: { size?: number; dim?: boolean }) {
-  const strokeOpacity = dim ? 0.35 : 1;
-  return (
-    <IconBase size={size}>
-      <circle
-        cx="12"
-        cy="12"
-        r="9"
-        stroke="currentColor"
-        strokeOpacity={strokeOpacity}
-        strokeWidth="2"
-      />
-      <path
-        d="m8.5 12 2.3 2.3L15.8 9"
-        stroke="currentColor"
-        strokeOpacity={strokeOpacity}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </IconBase>
-  );
-}
-
-function KeyRoundIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="8" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
-      <path d="M11 12h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M18 12v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M15 12v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function FingerprintIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path
-        d="M12 3.5c-3.9 0-7 3.1-7 7v2.2c0 2.6.7 5.2 2.1 7.4"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M12 3.5c3.9 0 7 3.1 7 7v2.2c0 2.7-.7 5.3-2.1 7.5"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M9 12.2v1.2c0 2.7 1 5.2 3 7.1"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M15 12.2v1.1c0 1.2-.2 2.5-.7 3.6"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M12 8.6a3.4 3.4 0 0 0-3.4 3.4"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M12 8.6a3.4 3.4 0 0 1 3.4 3.4"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </IconBase>
-  );
-}
 
 // -----------------------------
 // Theme utilities
@@ -436,6 +211,7 @@ function runSelfTestsOnce() {
 }
 
 export default function SetPasswordPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
@@ -494,7 +270,7 @@ export default function SetPasswordPage() {
 
   const s = strengthScore(pw);
   const label =
-    s <= 1 ? "Weak" : s === 2 ? "Fair" : s === 3 ? "Good" : s === 4 ? "Strong" : "Very strong";
+    s <= 1 ? t('auth.set_password.strength_weak') : s === 2 ? t('auth.set_password.strength_fair') : s === 3 ? t('auth.set_password.strength_good') : s === 4 ? t('auth.set_password.strength_strong') : t('auth.set_password.strength_very_strong');
   const r = reqs(pw);
   const canContinue = s >= 3 && pw === confirm;
 
@@ -502,22 +278,22 @@ export default function SetPasswordPage() {
     setBanner(null);
 
     if (!pw) {
-      setBanner({ severity: "warning", msg: "Create a password." });
+      setBanner({ severity: "warning", msg: t('auth.set_password.validation_create_pw') });
       return;
     }
     if (s < 3) {
-      setBanner({ severity: "warning", msg: "Please strengthen your password before continuing." });
+      setBanner({ severity: "warning", msg: t('auth.set_password.validation_strengthen') });
       return;
     }
     if (pw !== confirm) {
-      setBanner({ severity: "warning", msg: "Passwords do not match." });
+      setBanner({ severity: "warning", msg: t('auth.set_password.validation_mismatch') });
       return;
     }
 
     setSnack({
       open: true,
       severity: "success",
-      msg: "Password set successfully. Next: 2FA setup or continue to app.",
+      msg: t('auth.set_password.success_set'),
     });
     setTimeout(() => {
       navigate("/app");
@@ -545,14 +321,14 @@ export default function SetPasswordPage() {
                     boxShadow: `0 14px 40px ${alpha(isDark ? "#000" : "#0B1A17", 0.22)}`,
                   }}
                 >
-                  <Typography sx={{ color: "white", fontWeight: 900, letterSpacing: -0.4 }}>EV</Typography>
+                  <img src="/logo.png" alt="EVzone" style={{ height: '100%', width: 'auto' }} />
                 </Box>
                 <Box>
                   <Typography variant="subtitle1" sx={{ lineHeight: 1.1 }}>
-                    EVzone My Accounts
+                    {t('app_name')}
                   </Typography>
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    Set a password
+                    {t('auth.set_password.app_subtitle')}
                   </Typography>
                 </Box>
               </Stack>
@@ -573,19 +349,7 @@ export default function SetPasswordPage() {
                   </IconButton>
                 </Tooltip>
 
-                <Tooltip title="Language">
-                  <IconButton
-                    size="small"
-                    sx={{
-                      border: `1px solid ${alpha(EVZONE.orange, 0.35)}`,
-                      borderRadius: 12,
-                      backgroundColor: alpha(theme.palette.background.paper, 0.6),
-                      color: EVZONE.orange,
-                    }}
-                  >
-                    <GlobeIcon size={18} />
-                  </IconButton>
-                </Tooltip>
+                <LanguageSwitcher />
 
                 <Tooltip title="Help">
                   <IconButton
@@ -619,9 +383,9 @@ export default function SetPasswordPage() {
               <Card>
                 <CardContent className="p-5 md:p-6">
                   <Stack spacing={1.2}>
-                    <Typography variant="h6">Create a strong password</Typography>
+                    <Typography variant="h6">{t('auth.set_password.create_strong_title')}</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      Use a unique password to keep your EVzone account secure.
+                      {t('auth.set_password.create_strong_desc')}
                     </Typography>
 
                     <Divider sx={{ my: 1 }} />
@@ -639,12 +403,12 @@ export default function SetPasswordPage() {
                             border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
                           }}
                         >
-                          <KeyRoundIcon size={18} />
+                          <KeyIcon size={18} />
                         </Box>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>Password requirements</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>{t('auth.set_password.requirements_title')}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Aim for a strong score before continuing.
+                            {t('auth.set_password.requirements_desc')}
                           </Typography>
                         </Box>
                       </Stack>
@@ -664,9 +428,9 @@ export default function SetPasswordPage() {
                           <ShieldCheckIcon size={18} />
                         </Box>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>Next: 2FA setup</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>{t('auth.set_password.next_2fa_title')}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            For extra security, enable 2FA after setting your password.
+                            {t('auth.set_password.next_2fa_desc')}
                           </Typography>
                         </Box>
                       </Stack>
@@ -688,18 +452,18 @@ export default function SetPasswordPage() {
                             <Box sx={{ color: EVZONE.green, display: "grid", placeItems: "center" }}>
                               <FingerprintIcon size={18} />
                             </Box>
-                            <Typography sx={{ fontWeight: 900 }}>Enable passkey later</Typography>
+                            <Typography sx={{ fontWeight: 900 }}>{t('auth.set_password.passkey_teaser_title')}</Typography>
                           </Stack>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Passkeys let you sign in using Face ID, fingerprint, or device security.
+                            {t('auth.set_password.passkey_teaser_desc')}
                           </Typography>
                           <Button variant="text" sx={orangeTextSx} onClick={() => setTeaserPasskey(false)}>
-                            Dismiss
+                            {t('auth.set_password.dismiss')}
                           </Button>
                         </Stack>
                       </Box>
                     ) : (
-                      <Alert severity="info">You can enable a passkey anytime in Security Settings.</Alert>
+                      <Alert severity="info">{t('auth.set_password.passkey_info')}</Alert>
                     )}
 
                     <Divider sx={{ my: 1 }} />
@@ -710,7 +474,7 @@ export default function SetPasswordPage() {
                       sx={orangeOutlinedSx}
                       onClick={() => navigate(-1)}
                     >
-                      Back
+                      {t('auth.set_password.back')}
                     </Button>
                   </Stack>
                 </CardContent>
@@ -728,9 +492,9 @@ export default function SetPasswordPage() {
                 <CardContent className="p-5 md:p-7">
                   <Stack spacing={2.0}>
                     <Stack spacing={0.6}>
-                      <Typography variant="h6">Set password</Typography>
+                      <Typography variant="h6">{t('auth.set_password.title')}</Typography>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        Create a password for your EVzone account.
+                        {t('auth.set_password.subtitle')}
                       </Typography>
                     </Stack>
 
@@ -740,7 +504,7 @@ export default function SetPasswordPage() {
                       <TextField
                         value={pw}
                         onChange={(e) => setPw(e.target.value)}
-                        label="Password"
+                        label={t('auth.set_password.password_label')}
                         type={showPw ? "text" : "password"}
                         fullWidth
                         InputProps={{
@@ -767,7 +531,7 @@ export default function SetPasswordPage() {
                       <TextField
                         value={confirm}
                         onChange={(e) => setConfirm(e.target.value)}
-                        label="Confirm password"
+                        label={t('auth.set_password.confirm_password_label')}
                         type={showConfirm ? "text" : "password"}
                         fullWidth
                         InputProps={{
@@ -818,7 +582,7 @@ export default function SetPasswordPage() {
                           </Typography>
                         </Stack>
                         <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                          A stronger password reduces the risk of unauthorized access.
+                          {t('auth.set_password.strength_tip')}
                         </Typography>
                       </Stack>
 
@@ -831,17 +595,17 @@ export default function SetPasswordPage() {
                           p: 1.4,
                         }}
                       >
-                        <Typography sx={{ fontWeight: 900, mb: 1 }}>Requirements</Typography>
+                        <Typography sx={{ fontWeight: 900, mb: 1 }}>{t('auth.set_password.requirements_header')}</Typography>
                         <Stack spacing={0.7}>
                           {[
-                            { ok: r.len, text: "At least 8 characters" },
-                            { ok: r.upper, text: "One uppercase letter" },
-                            { ok: r.lower, text: "One lowercase letter" },
-                            { ok: r.num, text: "One number" },
-                            { ok: r.sym, text: "One symbol" },
+                            { ok: r.len, text: t('auth.set_password.req_len') },
+                            { ok: r.upper, text: t('auth.set_password.req_upper') },
+                            { ok: r.lower, text: t('auth.set_password.req_lower') },
+                            { ok: r.num, text: t('auth.set_password.req_num') },
+                            { ok: r.sym, text: t('auth.set_password.req_sym') },
                           ].map((item, idx) => (
                             <Stack key={idx} direction="row" spacing={1} alignItems="center">
-                              <CheckCircle2Icon size={18} dim={!item.ok} />
+                              <CheckCircleIcon size={18} color={!item.ok ? alpha(theme.palette.text.primary, 0.35) : undefined} />
                               <Typography
                                 variant="body2"
                                 sx={{
@@ -857,7 +621,7 @@ export default function SetPasswordPage() {
                           <Divider sx={{ my: 0.6 }} />
 
                           <Stack direction="row" spacing={1} alignItems="center">
-                            <CheckCircle2Icon size={18} dim={!(pw && pw === confirm)} />
+                            <CheckCircleIcon size={18} color={!(pw && pw === confirm) ? alpha(theme.palette.text.primary, 0.35) : undefined} />
                             <Typography
                               variant="body2"
                               sx={{
@@ -865,7 +629,7 @@ export default function SetPasswordPage() {
                                 fontWeight: pw && pw === confirm ? 900 : 700,
                               }}
                             >
-                              Passwords match
+                              {t('auth.set_password.req_match')}
                             </Typography>
                           </Stack>
                         </Stack>
@@ -880,7 +644,7 @@ export default function SetPasswordPage() {
                             sx={{ color: alpha(EVZONE.orange, 0.7), "&.Mui-checked": { color: EVZONE.orange } }}
                           />
                         }
-                        label={<Typography variant="body2">Show passkey teaser</Typography>}
+                        label={<Typography variant="body2">{t('auth.set_password.show_passkey_teaser')}</Typography>}
                       />
 
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
@@ -893,7 +657,7 @@ export default function SetPasswordPage() {
                           disabled={!canContinue}
                           fullWidth
                         >
-                          Continue
+                          {t('auth.set_password.btn_continue')}
                         </Button>
                         <Button
                           variant="outlined"
@@ -902,12 +666,12 @@ export default function SetPasswordPage() {
                           onClick={() => navigate(-1)}
                           fullWidth
                         >
-                          Back
+                          {t('auth.set_password.back')}
                         </Button>
                       </Stack>
 
                       <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                        Next: optional 2FA setup or redirect back to the requesting app.
+                        {t('auth.set_password.next_steps_footer')}
                       </Typography>
                     </Stack>
                   </Stack>
@@ -919,14 +683,14 @@ export default function SetPasswordPage() {
           {/* Footer */}
           <Box className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
             <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-              © {new Date().getFullYear()} EVzone Group.
+              © {new Date().getFullYear()} {t('app_name')}.
             </Typography>
             <Stack direction="row" spacing={1.2} alignItems="center">
               <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
-                Terms
+                {t('auth.terms')}
               </Button>
               <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
-                Privacy
+                {t('auth.privacy')}
               </Button>
             </Stack>
           </Box>

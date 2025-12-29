@@ -32,13 +32,16 @@ import { motion } from "framer-motion";
  * - If logged in as different user: account chooser
  */
 
-type ThemeMode = "light" | "dark";
-
-type Severity = "info" | "warning" | "error" | "success";
-
-type OrgRole = "Owner" | "Admin" | "Manager" | "Member" | "Viewer";
-
-type AuthState = "not_logged_in" | "logged_in_same_user" | "logged_in_different_user";
+import { ThemeMode, Severity, AuthState, OrgRole } from "../../utils/types";
+import {
+  SunIcon,
+  MoonIcon,
+  GlobeIcon,
+  BuildingIcon,
+  ShieldCheckIcon,
+  ArrowRightIcon,
+  UserIcon
+} from "../../utils/icons";
 
 const EVZONE = {
   green: "#03cd8c",
@@ -46,86 +49,6 @@ const EVZONE = {
 } as const;
 
 const THEME_KEY = "evzone_myaccounts_theme";
-
-// -----------------------------
-// Inline icons
-// -----------------------------
-function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{ display: "block" }}>
-      {children}
-    </svg>
-  );
-}
-
-function SunIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
-      <path d="M12 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 12H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M22 12h-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function MoonIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M21 13a8 8 0 0 1-10-10 7.5 7.5 0 1 0 10 10Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function GlobeIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function BuildingIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M4 21V3h12v18" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-      <path d="M16 9h4v12" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-      <path d="M8 7h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M8 11h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M8 15h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M6 21h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function ShieldCheckIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-      <path d="m9 12 2 2 4-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function ArrowRightIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function UserIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="2" />
-      <path d="M4 22a8 8 0 0 1 16 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
 
 // -----------------------------
 // Theme helpers

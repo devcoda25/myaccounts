@@ -38,102 +38,19 @@ const EVZONE = {
   orange: "#f77f00",
 } as const;
 
-// -----------------------------
-// Inline icons
-// -----------------------------
-function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      focusable="false"
-      style={{ display: "block" }}
-    >
-      {children}
-    </svg>
-  );
-}
-
-function SunIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
-      <path d="M12 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 12H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M22 12h-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function MoonIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M21 13a8 8 0 0 1-10-10 7.5 7.5 0 1 0 10 10Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function GlobeIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function HelpCircleIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M9.5 9a2.5 2.5 0 1 1 3.2 2.4c-.9.3-1.2.8-1.2 1.6v.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 17h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function KeyIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="8" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
-      <path d="M11 12h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M18 12v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M15 12v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function ArrowRightIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function ArrowLeftIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M19 12H5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function CheckCircleIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="m8.5 12 2.3 2.3L15.8 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
+import { useTranslation, Trans } from "react-i18next";
+import LanguageSwitcher from "../../../components/common/LanguageSwitcher";
+import {
+  IconBase,
+  SunIcon,
+  MoonIcon,
+  GlobeIcon,
+  HelpCircleIcon,
+  KeyIcon,
+  ArrowRightIcon,
+  ArrowLeftIcon,
+  CheckCircleIcon,
+} from "../../../utils/icons";
 
 // -----------------------------
 // Theme helpers
@@ -204,6 +121,7 @@ function normalizeCode(s: string) {
 }
 
 export default function RecoveryCodeEntryPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
@@ -253,18 +171,18 @@ export default function RecoveryCodeEntryPage() {
     setBanner(null);
     const v = normalizeCode(code);
     if (!v) {
-      setBanner({ severity: "warning", msg: "Enter your recovery code." });
+      setBanner({ severity: "warning", msg: t('auth.recovery_code.validation_empty') });
       return;
     }
 
     // Demo accepted code
     if (v !== "EVZ-REC-1A2B3C") {
-      setBanner({ severity: "error", msg: "Invalid recovery code. Try another code from your list." });
+      setBanner({ severity: "error", msg: t('auth.recovery_code.validation_invalid') });
       return;
     }
 
     setStep("success");
-    setSnack({ open: true, severity: "success", msg: "Recovery code accepted." });
+    setSnack({ open: true, severity: "success", msg: t('auth.recovery_code.success_verified') });
   };
 
   const regenerate = () => {
@@ -301,10 +219,10 @@ export default function RecoveryCodeEntryPage() {
                 </Box>
                 <Box>
                   <Typography variant="subtitle1" sx={{ lineHeight: 1.1 }}>
-                    EVzone My Accounts
+                    {t('app_name')}
                   </Typography>
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    Recovery code
+                    {t('auth.recovery_code.subtitle')}
                   </Typography>
                 </Box>
               </Stack>
@@ -319,14 +237,7 @@ export default function RecoveryCodeEntryPage() {
                     {isDark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Language">
-                  <IconButton
-                    size="small"
-                    sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}
-                  >
-                    <GlobeIcon size={18} />
-                  </IconButton>
-                </Tooltip>
+                <LanguageSwitcher />
                 <Tooltip title="Help">
                   <IconButton
                     size="small"
@@ -349,34 +260,34 @@ export default function RecoveryCodeEntryPage() {
               <Card>
                 <CardContent className="p-5 md:p-6">
                   <Stack spacing={1.2}>
-                    <Typography variant="h6">Use a recovery code</Typography>
+                    <Typography variant="h6">{t('auth.recovery_code.title')}</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      Recovery codes are single-use backups when you can’t access your authenticator, SMS, or email.
+                      {t('auth.recovery_code.desc')}
                     </Typography>
 
                     <Divider sx={{ my: 1 }} />
 
                     <Stack spacing={0.8}>
-                      <Typography sx={{ fontWeight: 900 }}>Where to find your codes</Typography>
+                      <Typography sx={{ fontWeight: 900 }}>{t('auth.recovery_code.where_find_title')}</Typography>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        • The list you downloaded when enabling MFA
+                        • {t('auth.recovery_code.where_find_1')}
                       </Typography>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        • A secure password manager
+                        • {t('auth.recovery_code.where_find_2')}
                       </Typography>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        • Printed backup sheet stored safely
+                        • {t('auth.recovery_code.where_find_3')}
                       </Typography>
                     </Stack>
 
                     <Divider sx={{ my: 1 }} />
 
                     <Alert severity="warning">
-                      Each recovery code can be used only once.
+                      {t('auth.recovery_code.alert_single_use')}
                     </Alert>
 
                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      Demo recovery code: <b>EVZ-REC-1A2B3C</b>
+                      <Trans i18nKey="auth.recovery_code.demo_code_hint" />
                     </Typography>
                   </Stack>
                 </CardContent>
@@ -393,11 +304,11 @@ export default function RecoveryCodeEntryPage() {
                         <Box sx={{ color: EVZONE.green }}>
                           <CheckCircleIcon size={22} />
                         </Box>
-                        <Typography variant="h6">Recovery code accepted</Typography>
+                        <Typography variant="h6">{t('auth.recovery_code.success_title')}</Typography>
                       </Stack>
 
                       <Alert severity="warning">
-                        Strongly recommended: regenerate your recovery codes now. This used code is no longer valid.
+                        {t('auth.recovery_code.alert_regenerate')}
                       </Alert>
 
                       <Box
@@ -409,16 +320,16 @@ export default function RecoveryCodeEntryPage() {
                         }}
                       >
                         <Stack spacing={1.2}>
-                          <Typography sx={{ fontWeight: 900 }}>Next steps</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>{t('auth.recovery_code.next_steps_title')}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Generate a fresh list of recovery codes and store them safely.
+                            {t('auth.recovery_code.next_steps_desc')}
                           </Typography>
                           <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                             <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={regenerate}>
-                              Regenerate recovery codes
+                              {t('auth.recovery_code.btn_regenerate')}
                             </Button>
                             <Button variant="outlined" sx={orangeOutlinedSx} onClick={continueNext} endIcon={<ArrowRightIcon size={18} />}>
-                              Continue
+                              {t('auth.recovery_code.btn_continue')}
                             </Button>
                           </Stack>
                         </Stack>
@@ -427,9 +338,9 @@ export default function RecoveryCodeEntryPage() {
                   ) : (
                     <Stack spacing={2.0}>
                       <Stack spacing={0.6}>
-                        <Typography variant="h6">Enter recovery code</Typography>
+                        <Typography variant="h6">{t('auth.recovery_code.enter_code_title')}</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Type a single-use recovery code from your saved list.
+                          {t('auth.recovery_code.enter_code_desc')}
                         </Typography>
                       </Stack>
 
@@ -438,8 +349,8 @@ export default function RecoveryCodeEntryPage() {
                       <TextField
                         value={code}
                         onChange={(e) => setCode(e.target.value)}
-                        label="Recovery code"
-                        placeholder="EVZ-REC-XXXXXX"
+                        label={t('auth.recovery_code.label_code')}
+                        placeholder={t('auth.recovery_code.placeholder_code')}
                         fullWidth
                         InputProps={{
                           startAdornment: (
@@ -448,7 +359,7 @@ export default function RecoveryCodeEntryPage() {
                             </InputAdornment>
                           ),
                         }}
-                        helperText="Tip: Codes are case-insensitive. Hyphens are optional."
+                        helperText={t('auth.recovery_code.helper_code')}
                       />
 
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
@@ -459,7 +370,7 @@ export default function RecoveryCodeEntryPage() {
                           onClick={verify}
                           endIcon={<ArrowRightIcon size={18} />}
                         >
-                          Verify recovery code
+                          {t('auth.recovery_code.btn_verify')}
                         </Button>
                         <Button
                           variant="outlined"
@@ -467,12 +378,12 @@ export default function RecoveryCodeEntryPage() {
                           onClick={() => navigate("/auth/mfa")}
                           startIcon={<ArrowLeftIcon size={18} />}
                         >
-                          Back to MFA
+                          {t('auth.recovery_code.btn_back_mfa')}
                         </Button>
                       </Stack>
 
                       <Button variant="text" sx={orangeTextSx} onClick={() => navigate("/auth/account-recovery-help")}>
-                        I can’t access my recovery codes
+                        {t('auth.recovery_code.link_cant_access')}
                       </Button>
                     </Stack>
                   )}
@@ -484,14 +395,14 @@ export default function RecoveryCodeEntryPage() {
           {/* Footer */}
           <Box className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
             <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-              © {new Date().getFullYear()} EVzone Group.
+              © {new Date().getFullYear()} {t('app_name')}.
             </Typography>
             <Stack direction="row" spacing={1.2} alignItems="center">
               <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
-                Terms
+                {t('auth.terms')}
               </Button>
               <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
-                Privacy
+                {t('auth.privacy')}
               </Button>
             </Stack>
           </Box>
@@ -518,6 +429,6 @@ export default function RecoveryCodeEntryPage() {
           </Alert>
         </Snackbar>
       </Box>
-    </ThemeProvider>
+    </ThemeProvider >
   );
 }

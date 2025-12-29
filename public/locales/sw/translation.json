@@ -1,0 +1,28 @@
+{
+    "app_name": "EVzone Akaunti Zangu",
+    "auth": {
+        "sign_in": "Weka sahihi",
+        "sign_out": "Toka",
+        "create_account": "Fungua akaunti",
+        "forgot_password": "Umesahau nywila?",
+        "email_placeholder": "jina@mfano.com",
+        "password_placeholder": "Nywila"
+    },
+    "header": {
+        "search": "Tafuta...",
+        "language": "Lugha",
+        "theme": "Mandhari",
+        "notifications": "Arifa",
+        "profile": "Wasifu",
+        "settings": "Mipangilio",
+        "help": "Msaada"
+    },
+    "languages": {
+        "en": "Kiingereza",
+        "fr": "Kifaransa",
+        "zh": "Kichina",
+        "es": "Kihispania",
+        "ar": "Kiarabu",
+        "sw": "Kiswahili"
+    }
+}

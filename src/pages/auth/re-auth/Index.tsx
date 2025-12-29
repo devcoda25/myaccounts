@@ -51,188 +51,24 @@ const EVZONE = {
 // -----------------------------
 // Inline icons (CDN-safe)
 // -----------------------------
-function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      focusable="false"
-      style={{ display: "block" }}
-    >
-      {children}
-    </svg>
-  );
-}
-
-function SunIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
-      <path d="M12 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 12H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M22 12h-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function MoonIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path
-        d="M21 13a8 8 0 0 1-10-10 7.5 7.5 0 1 0 10 10Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-    </IconBase>
-  );
-}
-
-function GlobeIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function HelpCircleIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path
-        d="M9.5 9a2.5 2.5 0 1 1 3.2 2.4c-.9.3-1.2.8-1.2 1.6v.3"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path d="M12 17h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function ShieldCheckIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path
-        d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <path
-        d="m9 12 2 2 4-5"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </IconBase>
-  );
-}
-
-function LockIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <rect x="6" y="11" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="2" />
-      <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function EyeIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path
-        d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <circle cx="12" cy="12" r="2.5" stroke="currentColor" strokeWidth="2" />
-    </IconBase>
-  );
-}
-
-function EyeOffIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M3 3l18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path
-        d="M2 12s3.5-7 10-7c2 0 3.8.5 5.3 1.3"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M22 12s-3.5 7-10 7c-2.2 0-4.2-.5-5.8-1.4"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path d="M10 10a3 3 0 0 0 4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function KeypadIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <rect x="6" y="3" width="12" height="18" rx="2" stroke="currentColor" strokeWidth="2" />
-      <path d="M9 7h.01M12 7h.01M15 7h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-      <path d="M9 11h.01M12 11h.01M15 11h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-      <path d="M9 15h.01M12 15h.01M15 15h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function SmsIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path
-        d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <path d="M8 9h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M8 13h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function MailIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <rect x="4" y="6" width="16" height="12" rx="2" stroke="currentColor" strokeWidth="2" />
-      <path d="M4 8l8 6 8-6" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function ArrowRightIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function CheckCircleIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="m8.5 12 2.3 2.3L15.8 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
+import { useTranslation, Trans } from "react-i18next";
+import LanguageSwitcher from "../../../components/common/LanguageSwitcher";
+import {
+  IconBase,
+  SunIcon,
+  MoonIcon,
+  GlobeIcon,
+  HelpCircleIcon,
+  ShieldCheckIcon,
+  LockIcon,
+  EyeIcon,
+  EyeOffIcon,
+  KeypadIcon,
+  SmsIcon,
+  MailIcon,
+  ArrowRightIcon,
+  CheckCircleIcon,
+} from "../../../utils/icons";
 
 // -----------------------------
 // Theme helpers
@@ -373,26 +209,27 @@ function OtpInput({
   );
 }
 
-function getActionLabel(action: string | null) {
+function getActionLabel(action: string | null, t: any) {
   switch ((action || "").toLowerCase()) {
     case "withdraw":
     case "withdrawal":
-      return "Wallet withdrawal";
+      return t('auth.re_auth.action_withdraw');
     case "change_email":
     case "email":
-      return "Change email";
+      return t('auth.re_auth.action_change_email');
     case "change_password":
     case "password":
-      return "Change password";
+      return t('auth.re_auth.action_change_password');
     case "disable_mfa":
     case "mfa":
-      return "Disable MFA";
+      return t('auth.re_auth.action_disable_mfa');
     default:
-      return "Sensitive action";
+      return t('auth.re_auth.action_default');
   }
 }
 
 export default function ReAuthPromptPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
@@ -413,7 +250,7 @@ export default function ReAuthPromptPage() {
   const [snack, setSnack] = useState<{ open: boolean; severity: "success" | "info" | "warning" | "error"; msg: string }>({ open: false, severity: "info", msg: "" });
 
   const qs = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
-  const actionLabel = getActionLabel(qs.get("action"));
+  const actionLabel = getActionLabel(qs.get("action"), t);
 
   const pageBg =
     mode === "dark"
@@ -472,7 +309,7 @@ export default function ReAuthPromptPage() {
     if (mfaMethod === "totp") return;
     setCodeSent(true);
     setCooldown(30);
-    setSnack({ open: true, severity: "success", msg: mfaMethod === "sms" ? "SMS code sent. Demo: 222222" : "Email OTP sent. Demo: 111111" });
+    setSnack({ open: true, severity: "success", msg: mfaMethod === "sms" ? t('auth.re_auth.msg_sms_sent') : t('auth.re_auth.msg_email_sent') });
   };
 
   const expectedCode = mfaMethod === "totp" ? "654321" : mfaMethod === "sms" ? "222222" : "111111";
@@ -482,36 +319,36 @@ export default function ReAuthPromptPage() {
 
     if (promptMode === "password") {
       if (!password) {
-        setBanner({ severity: "warning", msg: "Enter your password." });
+        setBanner({ severity: "warning", msg: t('auth.re_auth.validation_password_empty') });
         return;
       }
       if (password !== "EVzone123!") {
-        setBanner({ severity: "error", msg: "Incorrect password." });
+        setBanner({ severity: "error", msg: t('auth.re_auth.validation_password_incorrect') });
         return;
       }
       setStep("success");
-      setSnack({ open: true, severity: "success", msg: "Re-authentication confirmed." });
+      setSnack({ open: true, severity: "success", msg: t('auth.re_auth.success_confirmed') });
       return;
     }
 
     if ((mfaMethod === "sms" || mfaMethod === "email") && !codeSent) {
-      setBanner({ severity: "warning", msg: "Please send the code first." });
+      setBanner({ severity: "warning", msg: t('auth.re_auth.validation_send_first') });
       return;
     }
 
     const code = otp.join("");
     if (code.length < 6) {
-      setBanner({ severity: "warning", msg: "Enter the 6-digit code." });
+      setBanner({ severity: "warning", msg: t('auth.re_auth.validation_code_empty') });
       return;
     }
 
     if (code !== expectedCode) {
-      setBanner({ severity: "error", msg: "Incorrect code. Please try again." });
+      setBanner({ severity: "error", msg: t('auth.re_auth.validation_code_incorrect') });
       return;
     }
 
     setStep("success");
-    setSnack({ open: true, severity: "success", msg: "Re-authentication confirmed." });
+    setSnack({ open: true, severity: "success", msg: t('auth.re_auth.success_confirmed') });
   };
 
   const continueNext = () => {
@@ -548,10 +385,10 @@ export default function ReAuthPromptPage() {
                 </Box>
                 <Box>
                   <Typography variant="subtitle1" sx={{ lineHeight: 1.1 }}>
-                    EVzone My Accounts
+                    {t('app_name')}
                   </Typography>
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    Re-authentication
+                    {t('auth.re_auth.subtitle')}
                   </Typography>
                 </Box>
               </Stack>
@@ -566,14 +403,9 @@ export default function ReAuthPromptPage() {
                     {isDark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Language">
-                  <IconButton
-                    size="small"
-                    sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}
-                  >
-                    <GlobeIcon size={18} />
-                  </IconButton>
-                </Tooltip>
+
+                <LanguageSwitcher />
+
                 <Tooltip title="Help">
                   <IconButton
                     size="small"
@@ -596,9 +428,9 @@ export default function ReAuthPromptPage() {
               <Card>
                 <CardContent className="p-5 md:p-6">
                   <Stack spacing={1.2}>
-                    <Typography variant="h6">For your security</Typography>
+                    <Typography variant="h6">{t('auth.re_auth.subtitle_security_title')}</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      Before we proceed with <b>{actionLabel}</b>, please confirm your identity again.
+                      <Trans i18nKey="auth.re_auth.subtitle_security_desc" values={{ action: actionLabel }} components={{ b: <b /> }} />
                     </Typography>
 
                     <Divider sx={{ my: 1 }} />
@@ -609,9 +441,9 @@ export default function ReAuthPromptPage() {
                           <ShieldCheckIcon size={18} />
                         </Box>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>Prevents fraud</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>{t('auth.re_auth.feature_fraud_title')}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Confirms it’s you on sensitive actions.
+                            {t('auth.re_auth.feature_fraud_desc')}
                           </Typography>
                         </Box>
                       </Stack>
@@ -620,9 +452,9 @@ export default function ReAuthPromptPage() {
                           <LockIcon size={18} />
                         </Box>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>Short-lived</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>{t('auth.re_auth.feature_short_lived_title')}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            This prompt only applies for this action.
+                            {t('auth.re_auth.feature_short_lived_desc')}
                           </Typography>
                         </Box>
                       </Stack>
@@ -631,7 +463,7 @@ export default function ReAuthPromptPage() {
                     <Divider sx={{ my: 1 }} />
 
                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      Demo password: <b>EVzone123!</b> • MFA codes: Authenticator <b>654321</b>, SMS <b>222222</b>, Email <b>111111</b>
+                      <Trans i18nKey="auth.re_auth.demo_hint" />
                     </Typography>
                   </Stack>
                 </CardContent>
@@ -648,21 +480,21 @@ export default function ReAuthPromptPage() {
                         <Box sx={{ color: EVZONE.green }}>
                           <CheckCircleIcon size={22} />
                         </Box>
-                        <Typography variant="h6">Confirmed</Typography>
+                        <Typography variant="h6">{t('auth.re_auth.title_confirmed')}</Typography>
                       </Stack>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        Re-authentication succeeded. You can continue.
+                        {t('auth.re_auth.desc_confirmed')}
                       </Typography>
                       <Button variant="contained" color="secondary" endIcon={<ArrowRightIcon size={18} />} sx={orangeContainedSx} onClick={continueNext}>
-                        Continue
+                        {t('auth.re_auth.btn_continue_confirmed')}
                       </Button>
                     </Stack>
                   ) : (
                     <Stack spacing={2.0}>
                       <Stack spacing={0.6}>
-                        <Typography variant="h6">Confirm identity</Typography>
+                        <Typography variant="h6">{t('auth.re_auth.title_confirm_identity')}</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Choose one method: password or MFA code.
+                          {t('auth.re_auth.desc_confirm_identity')}
                         </Typography>
                       </Stack>
 
@@ -681,8 +513,8 @@ export default function ReAuthPromptPage() {
                           "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 },
                         }}
                       >
-                        <Tab icon={<LockIcon size={16} />} iconPosition="start" label="Password" />
-                        <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label="MFA code" />
+                        <Tab icon={<LockIcon size={16} />} iconPosition="start" label={t('auth.re_auth.tab_password')} />
+                        <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label={t('auth.re_auth.tab_mfa_code')} />
                       </Tabs>
 
                       {promptMode === "password" ? (
@@ -690,7 +522,7 @@ export default function ReAuthPromptPage() {
                           <TextField
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            label="Password"
+                            label={t('auth.re_auth.tab_password')}
                             type={showPw ? "text" : "password"}
                             fullWidth
                             InputProps={{
@@ -711,10 +543,10 @@ export default function ReAuthPromptPage() {
 
                           <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                             <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={confirm} endIcon={<ArrowRightIcon size={18} />}>
-                              Confirm
+                              {t('auth.re_auth.btn_confirm')}
                             </Button>
                             <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => navigate("/auth/forgot-password")}>
-                              Forgot password
+                              {t('auth.re_auth.btn_forgot_password')}
                             </Button>
                           </Stack>
                         </Stack>
@@ -733,15 +565,15 @@ export default function ReAuthPromptPage() {
                               "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 },
                             }}
                           >
-                            <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label="Auth" />
-                            <Tab icon={<SmsIcon size={16} />} iconPosition="start" label="SMS" />
-                            <Tab icon={<MailIcon size={16} />} iconPosition="start" label="Email" />
+                            <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label={t('auth.re_auth.tab_auth')} />
+                            <Tab icon={<SmsIcon size={16} />} iconPosition="start" label={t('auth.re_auth.tab_sms')} />
+                            <Tab icon={<MailIcon size={16} />} iconPosition="start" label={t('auth.re_auth.tab_email')} />
                           </Tabs>
 
                           {(mfaMethod === "sms" || mfaMethod === "email") ? (
                             <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                               <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={sendCode} disabled={cooldown > 0 && codeSent}>
-                                {codeSent ? "Code sent" : "Send code"}
+                                {codeSent ? t('auth.re_auth.btn_code_sent') : t('auth.re_auth.btn_send_code')}
                               </Button>
                               <Button
                                 variant="outlined"
@@ -751,7 +583,7 @@ export default function ReAuthPromptPage() {
                                 }}
                                 disabled={!codeSent || cooldown > 0}
                               >
-                                {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend"}
+                                {cooldown > 0 ? t('auth.re_auth.btn_resend_timer', { seconds: cooldown }) : t('auth.re_auth.btn_resend')}
                               </Button>
                             </Stack>
                           ) : null}
@@ -760,10 +592,10 @@ export default function ReAuthPromptPage() {
 
                           <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                             <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={confirm} endIcon={<ArrowRightIcon size={18} />}>
-                              Confirm
+                              {t('auth.re_auth.btn_confirm')}
                             </Button>
                             <Button variant="outlined" sx={orangeOutlinedSx} onClick={useRecovery}>
-                              Use recovery code
+                              {t('auth.re_auth.btn_use_recovery')}
                             </Button>
                           </Stack>
                         </Stack>
@@ -772,7 +604,7 @@ export default function ReAuthPromptPage() {
                       <Divider />
 
                       <Button variant="text" sx={orangeTextSx} onClick={() => navigate(-1)}>
-                        Cancel
+                        {t('auth.re_auth.btn_cancel')}
                       </Button>
                     </Stack>
                   )}
@@ -788,10 +620,10 @@ export default function ReAuthPromptPage() {
             </Typography>
             <Stack direction="row" spacing={1.2} alignItems="center">
               <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
-                Terms
+                {t('auth.terms')}
               </Button>
               <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
-                Privacy
+                {t('auth.privacy')}
               </Button>
             </Stack>
           </Box>
@@ -817,7 +649,7 @@ export default function ReAuthPromptPage() {
             {snack.msg}
           </Alert>
         </Snackbar>
-      </Box>
-    </ThemeProvider>
+      </Box >
+    </ThemeProvider >
   );
 }

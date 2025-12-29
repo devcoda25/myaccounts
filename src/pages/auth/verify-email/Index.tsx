@@ -21,20 +21,21 @@ import {
   Typography,
 } from "@mui/material";
 import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
+import { useTranslation, Trans } from "react-i18next";
+import LanguageSwitcher from "../../../components/common/LanguageSwitcher";
 import {
-  ArrowLeft,
-  ArrowRight,
-  CheckCircle2,
-  Globe,
-  HelpCircle,
-  Inbox,
-  Mail,
-  Moon,
-  Pencil,
-  ShieldCheck,
-  Sun,
-  Timer,
-} from "lucide-react";
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  CheckCircleIcon,
+  HelpCircleIcon,
+  InboxIcon,
+  MailIcon,
+  MoonIcon,
+  PencilIcon,
+  ShieldCheckIcon,
+  SunIcon,
+  TimerIcon,
+} from "../../../utils/icons";
 import { motion } from "framer-motion";
 
 /**
@@ -141,6 +142,7 @@ function maskEmail(email: string) {
 }
 
 export default function VerifyEmailPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
@@ -238,42 +240,42 @@ export default function VerifyEmailPage() {
   const resend = () => {
     if (cooldown > 0) return;
     setCooldown(30);
-    setSnack({ open: true, severity: "success", msg: `Verification code resent to ${maskEmail(email)}. (Demo code: 111111)` });
+    setSnack({ open: true, severity: "success", msg: t('auth.verify_email.resend_success', { email: maskEmail(email) }) });
   };
 
   const openEmailApp = () => {
-    setSnack({ open: true, severity: "info", msg: "Open email app (demo). Check your inbox for the verification code." });
+    setSnack({ open: true, severity: "info", msg: t('auth.verify_email.info_open_email') });
   };
 
   const verify = () => {
     setBanner(null);
     const code = otp.join("");
     if (code.length < 6) {
-      setBanner({ severity: "warning", msg: "Enter the 6-digit code." });
+      setBanner({ severity: "warning", msg: t('auth.verify_email.validation_code_length') });
       return;
     }
     // Demo: accept 111111
     if (code !== "111111") {
-      setBanner({ severity: "error", msg: "Incorrect code. Please try again." });
+      setBanner({ severity: "error", msg: t('auth.verify_email.validation_code_invalid') });
       return;
     }
 
     setStep("success");
-    setSnack({ open: true, severity: "success", msg: "Email verified successfully." });
+    setSnack({ open: true, severity: "success", msg: t('auth.verify_email.success_verified') });
   };
 
   const saveEmailChange = () => {
     setBanner(null);
     const e = newEmail.trim();
     if (!isEmail(e)) {
-      setBanner({ severity: "warning", msg: "Enter a valid email address." });
+      setBanner({ severity: "warning", msg: t('auth.verify_email.validation_email_invalid') });
       return;
     }
     setEmail(e);
     setOtp(["", "", "", "", "", ""]);
     setCooldown(30);
     setChangeOpen(false);
-    setSnack({ open: true, severity: "success", msg: `Email updated. Code sent to ${maskEmail(e)}. (Demo: 111111)` });
+    setSnack({ open: true, severity: "success", msg: t('auth.verify_email.success_email_updated', { email: maskEmail(e) }) });
     window.setTimeout(() => otpRefs.current[0]?.focus(), 250);
   };
 
@@ -292,24 +294,21 @@ export default function VerifyEmailPage() {
               <Stack direction="row" alignItems="center" spacing={1.2}>
                 <Box
                   sx={{
-                    width: 38,
                     height: 38,
-                    borderRadius: 12,
-                    display: "grid",
-                    placeItems: "center",
-                    background:
-                      "linear-gradient(135deg, rgba(3,205,140,1) 0%, rgba(3,205,140,0.82) 55%, rgba(3,205,140,0.62) 100%)",
-                    boxShadow: `0 14px 40px ${alpha(isDark ? "#000" : "#0B1A17", 0.22)}`,
+                    display: "flex",
+                    alignItems: "center",
+                    cursor: 'pointer'
                   }}
+                  onClick={() => navigate('/auth/sign-in')}
                 >
-                  <Typography sx={{ color: "white", fontWeight: 900, letterSpacing: -0.4 }}>EV</Typography>
+                  <img src="/logo.png" alt="EVzone" style={{ height: '100%', width: 'auto' }} />
                 </Box>
                 <Box>
                   <Typography variant="subtitle1" sx={{ lineHeight: 1.1 }}>
-                    EVzone My Accounts
+                    {t('app_name')}
                   </Typography>
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    Verify your email
+                    {t('auth.verify_email.title')}
                   </Typography>
                 </Box>
               </Stack>
@@ -320,24 +319,17 @@ export default function VerifyEmailPage() {
                     size="small"
                     sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}
                   >
-                    {isDark ? <Sun size={18} /> : <Moon size={18} />}
+                    {isDark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Language">
-                  <IconButton
-                    size="small"
-                    sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}
-                  >
-                    <Globe size={18} />
-                  </IconButton>
-                </Tooltip>
+                <LanguageSwitcher />
                 <Tooltip title="Help">
                   <IconButton
                     size="small"
                     onClick={() => navigate("/auth/account-recovery-help")}
                     sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}
                   >
-                    <HelpCircle size={18} />
+                    <HelpCircleIcon size={18} />
                   </IconButton>
                 </Tooltip>
               </Stack>
@@ -353,9 +345,9 @@ export default function VerifyEmailPage() {
               <Card>
                 <CardContent className="p-5 md:p-6">
                   <Stack spacing={1.2}>
-                    <Typography variant="h6">Check your inbox</Typography>
+                    <Typography variant="h6">{t('auth.verify_email.check_inbox')}</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      We sent a 6-digit verification code to <b>{maskEmail(email)}</b>. Enter it here to continue.
+                      <Trans i18nKey="auth.verify_email.sent_code" values={{ email: maskEmail(email) }} components={{ b: <b /> }} />
                     </Typography>
 
                     <Divider sx={{ my: 1 }} />
@@ -363,23 +355,23 @@ export default function VerifyEmailPage() {
                     <Stack spacing={1.1}>
                       <Stack direction="row" spacing={1.1} alignItems="center">
                         <Box sx={{ width: 36, height: 36, borderRadius: 14, display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.16 : 0.10), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
-                          <Inbox size={18} />
+                          <InboxIcon size={18} />
                         </Box>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>Open your email</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>{t('auth.verify_email.open_email_title')}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Check inbox, spam, and promotions.
+                            {t('auth.verify_email.open_email_desc')}
                           </Typography>
                         </Box>
                       </Stack>
                       <Stack direction="row" spacing={1.1} alignItems="center">
                         <Box sx={{ width: 36, height: 36, borderRadius: 14, display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.16 : 0.10), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
-                          <Timer size={18} />
+                          <TimerIcon size={18} />
                         </Box>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>Resend if needed</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>{t('auth.verify_email.resend_title')}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            You can resend after the cooldown.
+                            {t('auth.verify_email.resend_desc')}
                           </Typography>
                         </Box>
                       </Stack>
@@ -388,18 +380,18 @@ export default function VerifyEmailPage() {
                     <Divider sx={{ my: 1 }} />
 
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                      <Button variant="outlined" startIcon={<Mail size={18} />} sx={orangeOutlinedSx} onClick={openEmailApp}>
-                        Open email app
+                      <Button variant="outlined" startIcon={<MailIcon size={18} />} sx={orangeOutlinedSx} onClick={openEmailApp}>
+                        {t('auth.verify_email.btn_open_email')}
                       </Button>
-                      <Button variant="outlined" startIcon={<Pencil size={18} />} sx={orangeOutlinedSx} onClick={() => { setNewEmail(email); setChangeOpen(true); }}>
-                        Change email
+                      <Button variant="outlined" startIcon={<PencilIcon size={18} />} sx={orangeOutlinedSx} onClick={() => { setNewEmail(email); setChangeOpen(true); }}>
+                        {t('auth.verify_email.btn_change_email')}
                       </Button>
                     </Stack>
 
                     <Divider sx={{ my: 1 }} />
 
                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      Demo code: <b>111111</b>
+                      <Trans i18nKey="auth.verify_email.demo_code" components={{ b: <b /> }} />
                     </Typography>
                   </Stack>
                 </CardContent>
@@ -414,43 +406,43 @@ export default function VerifyEmailPage() {
                     <Stack spacing={2.0}>
                       <Stack spacing={0.8}>
                         <Stack direction="row" spacing={1} alignItems="center">
-                          <CheckCircle2 size={24} color={EVZONE.green} />
-                          <Typography variant="h6">Email verified</Typography>
+                          <CheckCircleIcon size={24} color={EVZONE.green} />
+                          <Typography variant="h6">{t('auth.verify_email.email_verified')}</Typography>
                         </Stack>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Your email <b>{maskEmail(email)}</b> is verified. You can now continue.
+                          <Trans i18nKey="auth.verify_email.email_verified_desc" values={{ email: maskEmail(email) }} components={{ b: <b /> }} />
                         </Typography>
                       </Stack>
                       <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.6 }}>
                         <Stack spacing={1}>
                           <Stack direction="row" spacing={1.1} alignItems="center">
                             <Box sx={{ width: 36, height: 36, borderRadius: 14, display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.16 : 0.10), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
-                              <ShieldCheck size={18} />
+                              <ShieldCheckIcon size={18} />
                             </Box>
                             <Box>
-                              <Typography sx={{ fontWeight: 900 }}>Next steps</Typography>
+                              <Typography sx={{ fontWeight: 900 }}>{t('auth.verify_email.next_steps')}</Typography>
                               <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                                Continue to verify phone or set your password.
+                                {t('auth.verify_email.next_steps_desc')}
                               </Typography>
                             </Box>
                           </Stack>
                         </Stack>
                       </Box>
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                        <Button variant="contained" color="secondary" endIcon={<ArrowRight size={18} />} sx={orangeContainedSx} onClick={continueNext}>
-                          Continue
+                        <Button variant="contained" color="secondary" endIcon={<ArrowRightIcon size={18} />} sx={orangeContainedSx} onClick={continueNext}>
+                          {t('auth.verify_email.btn_continue')}
                         </Button>
-                        <Button variant="outlined" startIcon={<ArrowLeft size={18} />} sx={orangeOutlinedSx} onClick={() => navigate("/auth/sign-in")}>
-                          Back
+                        <Button variant="outlined" startIcon={<ArrowLeftIcon size={18} />} sx={orangeOutlinedSx} onClick={() => navigate("/auth/sign-in")}>
+                          {t('auth.verify_email.btn_back')}
                         </Button>
                       </Stack>
                     </Stack>
                   ) : (
                     <Stack spacing={2.0}>
                       <Stack spacing={0.6}>
-                        <Typography variant="h6">Verify email</Typography>
+                        <Typography variant="h6">{t('auth.verify_email.title')}</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Enter the 6-digit code we sent to <b>{maskEmail(email)}</b>.
+                          <Trans i18nKey="auth.verify_email.sent_code" values={{ email: maskEmail(email) }} components={{ b: <b /> }} />
                         </Typography>
                       </Stack>
 
@@ -475,16 +467,16 @@ export default function VerifyEmailPage() {
                       </Box>
 
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                        <Button variant="contained" color="secondary" endIcon={<ArrowRight size={18} />} sx={orangeContainedSx} onClick={verify}>
-                          Verify email
+                        <Button variant="contained" color="secondary" endIcon={<ArrowRightIcon size={18} />} sx={orangeContainedSx} onClick={verify}>
+                          {t('auth.verify_email.btn_verify')}
                         </Button>
-                        <Button variant="outlined" onClick={resend} disabled={cooldown > 0} sx={orangeOutlinedSx} startIcon={<Timer size={18} />}>
-                          {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend code"}
+                        <Button variant="outlined" onClick={resend} disabled={cooldown > 0} sx={orangeOutlinedSx} startIcon={<TimerIcon size={18} />}>
+                          {cooldown > 0 ? t('auth.verify_email.btn_resend_timer', { seconds: cooldown }) : t('auth.verify_email.btn_resend')}
                         </Button>
                       </Stack>
 
                       <Button variant="text" sx={orangeTextSx} onClick={() => navigate("/auth/account-recovery-help")}>
-                        Didn’t receive the email?
+                        {t('auth.verify_email.link_help')}
                       </Button>
                     </Stack>
                   )}
@@ -496,14 +488,14 @@ export default function VerifyEmailPage() {
           {/* Footer */}
           <Box className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
             <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-              © {new Date().getFullYear()} EVzone Group.
+              © {new Date().getFullYear()} {t('app_name')}.
             </Typography>
             <Stack direction="row" spacing={1.2} alignItems="center">
               <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
-                Terms
+                {t('auth.terms')}
               </Button>
               <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
-                Privacy
+                {t('auth.privacy')}
               </Button>
             </Stack>
           </Box>
@@ -515,22 +507,22 @@ export default function VerifyEmailPage() {
           onClose={() => setChangeOpen(false)}
           PaperProps={{ sx: { borderRadius: 20, border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}
         >
-          <DialogTitle sx={{ fontWeight: 950 }}>Change email</DialogTitle>
+          <DialogTitle sx={{ fontWeight: 950 }}>{t('auth.verify_email.dialog_change_email_title')}</DialogTitle>
           <DialogContent>
             <Stack spacing={1.2}>
               <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                Update your email address. We will send a new verification code.
+                {t('auth.verify_email.dialog_change_email_desc')}
               </Typography>
               <TextField
                 value={newEmail}
                 onChange={(e) => setNewEmail(e.target.value)}
-                label="New email"
+                label={t('auth.verify_email.dialog_new_email_label')}
                 placeholder="name@example.com"
                 fullWidth
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Mail size={18} />
+                      <MailIcon size={18} />
                     </InputAdornment>
                   ),
                 }}
@@ -539,10 +531,10 @@ export default function VerifyEmailPage() {
           </DialogContent>
           <DialogActions sx={{ p: 2, pt: 0 }}>
             <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => setChangeOpen(false)}>
-              Cancel
+              {t('auth.verify_email.dialog_btn_cancel')}
             </Button>
             <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={saveEmailChange}>
-              Save & send code
+              {t('auth.verify_email.dialog_btn_save')}
             </Button>
           </DialogActions>
         </Dialog>

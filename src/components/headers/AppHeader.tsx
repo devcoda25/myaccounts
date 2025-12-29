@@ -30,6 +30,8 @@ import { useNavigate } from 'react-router-dom';
 import { useThemeContext } from '../../theme/ThemeContext';
 import { EVZONE } from '../../theme/evzone';
 import NotificationsPopover from './NotificationsPopover';
+import LanguageSwitcher from '../common/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 interface AppHeaderProps {
     onDrawerToggle?: () => void;
@@ -61,6 +63,8 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
         navigate('/app/profile');
         handleMenuClose();
     };
+
+    const { t } = useTranslation();
 
     return (
         <Box sx={{
@@ -108,7 +112,7 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
                         <SearchIcon size={18} />
                     </Box>
                     <InputBase
-                        placeholder="Search..."
+                        placeholder={t('header.search')}
                         sx={{ width: '100%', fontSize: '0.9rem', fontWeight: 500 }}
                     />
                     <Box sx={{
@@ -135,14 +139,10 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
                     </IconButton>
                 </Tooltip>
 
-                <Tooltip title="Language">
-                    <IconButton size="small" sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.30)}`, borderRadius: 12, color: EVZONE.orange, backgroundColor: alpha(theme.palette.background.paper, 0.60) }}>
-                        <Globe size={18} />
-                    </IconButton>
-                </Tooltip>
+                <LanguageSwitcher />
 
                 <Box>
-                    <Tooltip title="Notifications">
+                    <Tooltip title={t('header.notifications')}>
                         <IconButton ref={notifRef} onClick={handleNotifClick}>
                             <Bell size={20} />
                         </IconButton>
@@ -240,16 +240,16 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
                         <Divider />
                         <MenuItem onClick={handleProfileClick} sx={{ py: 1.5 }}>
                             <ListItemIcon><User size={18} /></ListItemIcon>
-                            Profile
+                            {t('header.profile')}
                         </MenuItem>
                         <MenuItem onClick={() => { navigate('/app/settings'); handleMenuClose(); }} sx={{ py: 1.5 }}>
                             <ListItemIcon><Settings size={18} /></ListItemIcon>
-                            Settings
+                            {t('header.settings')}
                         </MenuItem>
                         <Divider />
                         <MenuItem onClick={() => navigate('/auth/sign-in')} sx={{ py: 1.5, color: 'error.main' }}>
                             <ListItemIcon><LogOut size={18} color={theme.palette.error.main} /></ListItemIcon>
-                            Sign out
+                            {t('auth.sign_out')}
                         </MenuItem>
                     </Menu>
                 </Box>

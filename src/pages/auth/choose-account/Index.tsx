@@ -29,33 +29,26 @@ import {
   Typography,
 } from "@mui/material";
 import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
+import { useTranslation } from "react-i18next";
+import { ThemeMode } from "../../../utils/types";
 import {
-  ArrowRight,
-  ChevronRight,
-  Globe,
-  HelpCircle,
-  LogIn,
-  Moon,
-  MoreVertical,
-  ShieldCheck,
-  Sun,
-  Trash2,
-  UserPlus,
-  Wallet,
-} from "lucide-react";
+  ArrowRightIcon,
+  ChevronRightIcon,
+  GlobeIcon,
+  HelpCircleIcon,
+  LogInIcon,
+  MoonIcon,
+  MoreVerticalIcon,
+  ShieldCheckIcon,
+  SunIcon,
+  Trash2Icon,
+  UserPlusIcon,
+  WalletIcon
+} from "../../../utils/icons";
+
 import { motion } from "framer-motion";
 
-/**
- * EVzone My Accounts — Account Chooser (v4)
- * Route: /auth/choose-account
- * Style Rules (requested):
- *  - Background: GREEN ONLY
- *  - Buttons: ORANGE ONLY
- *  - Orange filled buttons: WHITE text
- *  - Orange outline buttons: on hover → SOLID orange with WHITE text
- */
-
-type ThemeMode = "light" | "dark";
+const THEME_KEY = "evzone_myaccounts_theme";
 
 type OidcClientMeta = {
   name: string;
@@ -165,9 +158,9 @@ function initials(name: string) {
 }
 
 function ScopeIcon({ kind }: { kind?: "wallet" | "profile" | "email" }) {
-  if (kind === "wallet") return <Wallet size={16} />;
-  if (kind === "profile") return <ShieldCheck size={16} />;
-  return <LogIn size={16} />;
+  if (kind === "wallet") return <WalletIcon size={16} />;
+  if (kind === "profile") return <ShieldCheckIcon size={16} />;
+  return <LogInIcon size={16} />;
 }
 
 function readClientFromQuery(): OidcClientMeta {
@@ -202,6 +195,7 @@ function readClientFromQuery(): OidcClientMeta {
 }
 
 export default function AccountChooserV4() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
@@ -341,7 +335,7 @@ export default function AccountChooserV4() {
   } as const;
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme} >
       <CssBaseline />
 
       <Box className="min-h-screen" sx={{ background: pageBg }}>
@@ -352,24 +346,19 @@ export default function AccountChooserV4() {
               <Stack direction="row" alignItems="center" spacing={1.2}>
                 <Box
                   sx={{
-                    width: 38,
                     height: 38,
-                    borderRadius: 12,
-                    display: "grid",
-                    placeItems: "center",
-                    background:
-                      "linear-gradient(135deg, rgba(3,205,140,1) 0%, rgba(3,205,140,0.82) 55%, rgba(3,205,140,0.62) 100%)",
-                    boxShadow: `0 14px 40px ${alpha(isDark ? "#000" : "#0B1A17", 0.22)}`,
+                    display: "flex",
+                    alignItems: "center",
                   }}
                 >
-                  <Typography sx={{ color: "white", fontWeight: 900, letterSpacing: -0.4 }}>EV</Typography>
+                  <img src="/logo.png" alt="EVzone" style={{ height: '100%', width: 'auto' }} />
                 </Box>
                 <Box>
                   <Typography variant="subtitle1" sx={{ lineHeight: 1.1 }}>
-                    EVzone My Accounts
+                    {t('app_name')}
                   </Typography>
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    One secure login for all EVzone platforms
+                    {t('auth.choose_account.continue_subtitle')}
                   </Typography>
                 </Box>
               </Stack>
@@ -386,10 +375,27 @@ export default function AccountChooserV4() {
                       color: EVZONE.orange,
                     }}
                   >
-                    {isDark ? <Sun size={18} /> : <Moon size={18} />}
+                    {isDark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Language">
+                <Tooltip title={t('header.language')}>
+                  <IconButton
+                    size="small"
+                    onClick={() => {
+                      const newLang = i18n.language === 'en' ? 'fr' : 'en';
+                      i18n.changeLanguage(newLang);
+                    }}
+                    sx={{
+                      border: `1px solid ${alpha(EVZONE.orange, 0.35)}`,
+                      borderRadius: 12,
+                      backgroundColor: alpha(theme.palette.background.paper, 0.6),
+                      color: EVZONE.orange,
+                    }}
+                  >
+                    <GlobeIcon size={18} />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title={t('header.help')}>
                   <IconButton
                     size="small"
                     sx={{
@@ -399,20 +405,7 @@ export default function AccountChooserV4() {
                       color: EVZONE.orange,
                     }}
                   >
-                    <Globe size={18} />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Help">
-                  <IconButton
-                    size="small"
-                    sx={{
-                      border: `1px solid ${alpha(EVZONE.orange, 0.35)}`,
-                      borderRadius: 12,
-                      backgroundColor: alpha(theme.palette.background.paper, 0.6),
-                      color: EVZONE.orange,
-                    }}
-                  >
-                    <HelpCircle size={18} />
+                    <HelpCircleIcon size={18} />
                   </IconButton>
                 </Tooltip>
               </Stack>
@@ -421,7 +414,7 @@ export default function AccountChooserV4() {
         </Box>
 
         {/* Content */}
-        <Box className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">
+        <Box className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12" >
           <Stack spacing={3}>
             <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
               <Card>
@@ -447,18 +440,18 @@ export default function AccountChooserV4() {
                         </Box>
                         <Box>
                           <Typography variant="h6" sx={{ lineHeight: 1.15 }}>
-                            Continue to {client.name}
+                            {t('auth.choose_account.continue_to', { name: client.name })}
                           </Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            {client.subtitle}
+                            {t('auth.choose_account.continue_subtitle')}
                           </Typography>
                         </Box>
                       </Stack>
 
                       <Stack direction="row" spacing={1} alignItems="center">
                         <Chip
-                          icon={<ShieldCheck size={16} />}
-                          label="SSO Ready"
+                          icon={<ShieldCheckIcon size={16} />}
+                          label={t('auth.choose_account.sso_ready')}
                           variant="outlined"
                           sx={{
                             borderColor: alpha(EVZONE.green, 0.35),
@@ -468,8 +461,8 @@ export default function AccountChooserV4() {
                           }}
                         />
                         <Chip
-                          icon={<Wallet size={16} />}
-                          label="Wallet"
+                          icon={<WalletIcon size={16} />}
+                          label={t('auth.choose_account.wallet')}
                           variant="outlined"
                           sx={{
                             borderColor: alpha(EVZONE.green, 0.35),
@@ -484,9 +477,9 @@ export default function AccountChooserV4() {
                     <Divider />
 
                     <Stack spacing={1.0}>
-                      <Typography variant="subtitle1">Choose an account</Typography>
+                      <Typography variant="subtitle1">{t('auth.choose_account.title')}</Typography>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        Select a recent account on this device. Or sign in with another account.
+                        {t('auth.choose_account.subtitle')}
                       </Typography>
                     </Stack>
 
@@ -502,16 +495,16 @@ export default function AccountChooserV4() {
                           }}
                         >
                           <Stack spacing={1.3}>
-                            <Typography variant="h6">No active sessions found</Typography>
+                            <Typography variant="h6">{t('auth.choose_account.no_sessions')}</Typography>
                             <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                              This device has no saved EVzone sessions. Sign in to continue.
+                              {t('auth.choose_account.no_sessions_desc')}
                             </Typography>
                             <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ pt: 1 }}>
                               <Button
                                 fullWidth
                                 variant="contained"
                                 color="secondary"
-                                startIcon={<LogIn size={18} />}
+                                startIcon={<LogInIcon size={18} />}
                                 onClick={handleUseAnother}
                                 sx={orangeContainedSx}
                               >
@@ -644,10 +637,10 @@ export default function AccountChooserV4() {
                                           color: EVZONE.orange,
                                         }}
                                       >
-                                        <MoreVertical size={18} />
+                                        <MoreVerticalIcon size={18} />
                                       </IconButton>
                                     </Tooltip>
-                                    <ChevronRight size={18} opacity={0.85} />
+                                    <ChevronRightIcon size={18} />
                                   </Stack>
                                 </ListItemButton>
                               </ListItem>
@@ -665,21 +658,21 @@ export default function AccountChooserV4() {
                             fullWidth
                             variant="contained"
                             color="secondary"
-                            endIcon={<ArrowRight size={18} />}
+                            endIcon={<ArrowRightIcon size={18} />}
                             onClick={handleContinue}
                             sx={orangeContainedSx}
                           >
-                            Continue
+                            {t('auth.choose_account.continue')}
                           </Button>
 
                           <Button
                             fullWidth
                             variant="outlined"
                             onClick={handleUseAnother}
-                            startIcon={<UserPlus size={18} />}
+                            startIcon={<UserPlusIcon size={18} />}
                             sx={orangeOutlinedSx}
                           >
-                            Use another account
+                            {t('auth.choose_account.use_another')}
                           </Button>
                         </Stack>
 
@@ -693,7 +686,7 @@ export default function AccountChooserV4() {
                           }}
                         >
                           <Typography variant="subtitle2" sx={{ fontWeight: 880, mb: 0.7 }}>
-                            Requested access (preview)
+                            {t('auth.choose_account.requested_access')}
                           </Typography>
                           <Stack spacing={1}>
                             {client.requestedScopes.slice(0, 3).map((s) => (
@@ -757,10 +750,10 @@ export default function AccountChooserV4() {
               </Stack>
             </Box>
           </Stack>
-        </Box>
+        </Box >
 
         {/* Account item menu */}
-        <Menu
+        < Menu
           anchorEl={menuAnchor}
           open={Boolean(menuAnchor)}
           onClose={closeAccountMenu}
@@ -771,7 +764,8 @@ export default function AccountChooserV4() {
               backgroundImage: "none",
               minWidth: 240,
             },
-          }}
+          }
+          }
         >
           <MenuItem
             onClick={() => {
@@ -780,20 +774,20 @@ export default function AccountChooserV4() {
             }}
           >
             <Stack direction="row" spacing={1.2} alignItems="center">
-              <ShieldCheck size={18} color={EVZONE.orange} />
+              <ShieldCheckIcon size={18} color={EVZONE.orange} />
               <Typography>Manage account</Typography>
             </Stack>
           </MenuItem>
           <MenuItem onClick={requestRemove}>
             <Stack direction="row" spacing={1.2} alignItems="center">
-              <Trash2 size={18} color={EVZONE.orange} />
+              <Trash2Icon size={18} color={EVZONE.orange} />
               <Typography>Remove from this device</Typography>
             </Stack>
           </MenuItem>
-        </Menu>
+        </Menu >
 
         {/* Remove confirmation */}
-        <Dialog
+        < Dialog
           open={removeDialog.open}
           onClose={() => setRemoveDialog({ open: false, account: null })}
           PaperProps={{
@@ -841,7 +835,7 @@ export default function AccountChooserV4() {
               Remove
             </Button>
           </DialogActions>
-        </Dialog>
+        </Dialog >
 
         <Snackbar
           open={snack.open}
@@ -864,7 +858,7 @@ export default function AccountChooserV4() {
             {snack.msg}
           </Alert>
         </Snackbar>
-      </Box>
-    </ThemeProvider>
+      </Box >
+    </ThemeProvider >
   );
 }

@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import AuthHeader from "../../../components/headers/AuthHeader";
+import { useTranslation } from "react-i18next";
 import {
     Alert,
     Box,
@@ -24,22 +26,28 @@ import {
 import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import {
-    Sun as SunIcon,
-    Moon as MoonIcon,
-    Globe as GlobeIcon,
-    ShieldCheck as ShieldIcon,
-    Lock as LockIcon,
-    Mail as MailIcon,
-    Phone as PhoneIcon,
-    Eye as EyeIcon,
-    EyeOff as EyeOffIcon,
-    Fingerprint as FingerprintIcon,
-    ArrowRight as ArrowRightIcon
+    Loader2
 } from "lucide-react";
 
 // Types
-type ThemeMode = "light" | "dark";
-type Severity = "success" | "info" | "warning" | "error";
+import { ThemeMode, Severity } from "../../../utils/types";
+import {
+    IconBase,
+    SunIcon,
+    MoonIcon,
+    GlobeIcon,
+    EyeIcon,
+    EyeOffIcon,
+    LockIcon,
+    UserIcon,
+    ArrowRightIcon,
+    ShieldIcon,
+    GoogleGIcon,
+    AppleIcon,
+    FingerprintIcon,
+    PhoneIcon,
+    MailIcon
+} from "../../../utils/icons";
 
 const EVZONE = {
     green: "#03cd8c",
@@ -47,26 +55,6 @@ const EVZONE = {
 } as const;
 
 const THEME_KEY = "evzone_myaccounts_theme";
-
-// Brand icons
-function GoogleGIcon({ size = 18 }: { size?: number }) {
-    return (
-        <svg width={size} height={size} viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{ display: "block" }}>
-            <path fill="#EA4335" d="M24 9.5c3.54 0 6.72 1.22 9.23 3.23l6.9-6.9C35.95 2.27 30.33 0 24 0 14.62 0 6.51 5.38 2.56 13.22l8.02 6.23C12.58 13.2 17.86 9.5 24 9.5z" />
-            <path fill="#4285F4" d="M46.1 24.5c0-1.57-.14-3.08-.4-4.54H24v8.6h12.5c-.54 2.9-2.14 5.36-4.54 7.02l6.96 5.4C43.2 36.98 46.1 31.3 46.1 24.5z" />
-            <path fill="#FBBC05" d="M10.58 28.45A14.9 14.9 0 0 1 9.8 24c0-1.55.27-3.05.78-4.45l-8.02-6.23A24.02 24.02 0 0 0 0 24c0 3.9.94 7.6 2.56 10.78l8.02-6.33z" />
-            <path fill="#34A853" d="M24 48c6.33 0 11.65-2.1 15.54-5.72l-6.96-5.4c-1.94 1.3-4.42 2.07-8.58 2.07-6.14 0-11.42-3.7-13.42-8.95l-8.02 6.33C6.51 42.62 14.62 48 24 48z" />
-        </svg>
-    );
-}
-
-function AppleIcon({ size = 18 }: { size?: number }) {
-    return (
-        <svg width={size} height={size} viewBox="0 0 384 512" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{ display: "block" }}>
-            <path d="M318.7 268.7c-.2-37.3 16.4-65.6 51.5-87.2-19.2-27.5-48.2-42.6-86.5-45.5-36.5-2.9-76.3 21.3-90.9 21.3-15.4 0-50.5-20.3-78.3-20.3C56.8 137 0 181.7 0 273.4c0 27.1 5 55.1 15 84 13.4 37.3 61.7 128.9 112.1 127.4 26.2-.7 44.8-18.6 78.9-18.6 33.1 0 50.3 18.6 79.5 18.6 50.9-.7 94.6-82.7 107.3-120-58.2-27.7-74.2-79.5-74.1-96.1zM259.1 80.2c28.1-33.3 25.6-63.6 24.8-74.2-24.8 1.4-53.4 16.9-69.7 36-17.9 20.5-28.4 45.9-26.1 73.2 26.9 2.1 50.6-10.8 71-35z" />
-        </svg>
-    );
-}
 
 // -----------------------------
 // Theme
@@ -317,6 +305,8 @@ export default function AdminLogin() {
         }
     };
 
+    const { t } = useTranslation();
+
     const submit = () => {
         setBanner(null);
 
@@ -335,7 +325,6 @@ export default function AdminLogin() {
             return;
         }
 
-        // Demo credential
         const ok = id.toLowerCase() === "admin@evzone.com" && password === "EVzone123!";
 
         if (!ok) {
@@ -380,67 +369,11 @@ export default function AdminLogin() {
         <ThemeProvider theme={theme}>
             <CssBaseline />
             <Box className="min-h-screen" sx={{ background: pageBg }}>
-                {/* Top bar */}
-                <Box sx={{ borderBottom: `1px solid ${theme.palette.divider}` }}>
-                    <Box className="mx-auto max-w-5xl px-4 py-3 md:px-6">
-                        <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
-                            <Stack direction="row" alignItems="center" spacing={1.2}>
-                                <Box
-                                    sx={{
-                                        width: 38,
-                                        height: 38,
-                                        borderRadius: 12,
-                                        display: "grid",
-                                        placeItems: "center",
-                                        background:
-                                            "linear-gradient(135deg, rgba(3,205,140,1) 0%, rgba(3,205,140,0.82) 55%, rgba(3,205,140,0.62) 100%)",
-                                        boxShadow: `0 14px 40px ${alpha(isDark ? "#000" : "#0B1A17", 0.22)}`,
-                                    }}
-                                >
-                                    <Typography sx={{ color: "white", fontWeight: 900, letterSpacing: -0.4 }}>EV</Typography>
-                                </Box>
-                                <Box>
-                                    <Typography variant="subtitle1" sx={{ lineHeight: 1.1 }}>
-                                        EVzone Admin
-                                    </Typography>
-                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                                        Sign in to manage the platform
-                                    </Typography>
-                                </Box>
-                            </Stack>
-
-                            <Stack direction="row" alignItems="center" spacing={1}>
-                                <Tooltip title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}>
-                                    <IconButton
-                                        onClick={toggleMode}
-                                        size="small"
-                                        sx={{
-                                            border: `1px solid ${alpha(EVZONE.orange, 0.35)}`,
-                                            borderRadius: 12,
-                                            backgroundColor: alpha(theme.palette.background.paper, 0.6),
-                                            color: EVZONE.orange,
-                                        }}
-                                    >
-                                        {isDark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip title="Language">
-                                    <IconButton
-                                        size="small"
-                                        sx={{
-                                            border: `1px solid ${alpha(EVZONE.orange, 0.35)}`,
-                                            borderRadius: 12,
-                                            backgroundColor: alpha(theme.palette.background.paper, 0.6),
-                                            color: EVZONE.orange,
-                                        }}
-                                    >
-                                        <GlobeIcon size={18} />
-                                    </IconButton>
-                                </Tooltip>
-                            </Stack>
-                        </Stack>
-                    </Box>
-                </Box>
+                {/* Unified Auth Header */}
+                <AuthHeader
+                    title="EVzone Admin"
+                    subtitle="Sign in to manage the platform"
+                />
 
                 {/* Body */}
                 <Box className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">
@@ -475,7 +408,7 @@ export default function AdminLogin() {
                                 <CardContent className="p-5 md:p-7">
                                     <Stack spacing={2.0}>
                                         <Stack spacing={0.6}>
-                                            <Typography variant="h4">Sign in</Typography>
+                                            <Typography variant="h4">{t('auth.sign_in')}</Typography>
                                             <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                                                 Use passkey, Google/Apple, or your admin credentials.
                                             </Typography>
@@ -520,7 +453,7 @@ export default function AdminLogin() {
                                                 value={identifier}
                                                 onChange={(e) => setIdentifier(e.target.value)}
                                                 label="Email or phone"
-                                                placeholder="admin@evzone.com"
+                                                placeholder={t('auth.email_placeholder')}
                                                 fullWidth
                                                 InputProps={{
                                                     startAdornment: (
@@ -532,7 +465,7 @@ export default function AdminLogin() {
                                             <TextField
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
-                                                label="Password"
+                                                label={t('auth.password_placeholder')}
                                                 type={showPassword ? "text" : "password"}
                                                 fullWidth
                                                 InputProps={{
@@ -557,13 +490,13 @@ export default function AdminLogin() {
                                                     label={<Typography variant="body2">Remember this device</Typography>}
                                                 />
                                                 <Button variant="text" sx={orangeTextSx} onClick={() => navigate("/auth/forgot-password")}>
-                                                    Forgot password?
+                                                    {t('auth.forgot_password')}
                                                 </Button>
                                             </Stack>
 
                                             <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                                                 <Button fullWidth variant="contained" endIcon={<ArrowRightIcon size={18} />} onClick={submit} disabled={isLocked} sx={orangeContainedSx}>
-                                                    {isLocked ? `Try again in ${secondsLeft}s` : "Sign in"}
+                                                    {isLocked ? `Try again in ${secondsLeft}s` : t('auth.sign_in')}
                                                 </Button>
                                                 <Button fullWidth variant="outlined" sx={orangeOutlinedSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Request access from your org admin (demo)." })}>
                                                     Request access

@@ -20,6 +20,7 @@ import {
 } from "@mui/material";
 import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
 import { motion } from "framer-motion";
+import AuthHeader from "../../../components/headers/AuthHeader";
 
 /**
  * EVzone My Accounts - Account Recovery Help
@@ -33,7 +34,17 @@ import { motion } from "framer-motion";
  * • Buttons: orange-only with white text (outlined hover -> solid orange + white text)
  */
 
-type ThemeMode = "light" | "dark";
+import { ThemeMode, Severity } from "../../../utils/types";
+import {
+  IconBase,
+  ChevronDownIcon,
+  CheckCircleIcon,
+  ArrowRightIcon,
+  WhatsAppIcon,
+  HelpCircleIcon
+} from "../../../utils/icons";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "../../../components/common/LanguageSwitcher";
 
 const EVZONE = {
   green: "#03cd8c",
@@ -41,90 +52,6 @@ const EVZONE = {
 } as const;
 
 const WHATSAPP = { green: "#25D366" } as const;
-
-// -----------------------------
-// Inline icons
-// -----------------------------
-function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{ display: "block" }}>
-      {children}
-    </svg>
-  );
-}
-
-function SunIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
-      <path d="M12 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 12H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M22 12h-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function MoonIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M21 13a8 8 0 0 1-10-10 7.5 7.5 0 1 0 10 10Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function GlobeIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function HelpCircleIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M9.5 9a2.5 2.5 0 1 1 3.2 2.4c-.9.3-1.2.8-1.2 1.6v.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 17h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function ChevronDownIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function CheckCircleIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="m8.5 12 2.3 2.3L15.8 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function ArrowRightIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function WhatsAppIcon({ size = 18 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 448 512" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{ display: "block" }}>
-      <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z" />
-    </svg>
-  );
-}
 
 // -----------------------------
 // Theme helpers
@@ -193,6 +120,7 @@ type HelpItem = {
 };
 
 export default function AccountRecoveryHelpPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
@@ -237,48 +165,31 @@ export default function AccountRecoveryHelpPage() {
   const items: HelpItem[] = [
     {
       key: "no_email",
-      title: "I didn’t receive the email",
-      bullets: [
-        "Check Spam/Promotions folders.",
-        "Confirm the email address is correct.",
-        "Wait 2 to 5 minutes, then resend.",
-        "If you used a phone number, try SMS or WhatsApp instead.",
-      ],
-      primaryCta: { label: "Resend reset instructions", action: "go_forgot" },
-      secondaryCta: { label: "Contact support", action: "support" },
+      title: t('auth.account_recovery.help_no_email_title'),
+      bullets: t('auth.account_recovery.help_no_email_bullets', { returnObjects: true }) as string[],
+      primaryCta: { label: t('auth.account_recovery.help_no_email_cta1'), action: "go_forgot" },
+      secondaryCta: { label: t('auth.account_recovery.help_no_email_cta2'), action: "support" },
     },
     {
       key: "phone_changed",
-      title: "My phone number changed",
-      bullets: [
-        "Try using your email to reset your password.",
-        "If you no longer have access to the email, use Account Recovery with support.",
-        "Have a document or proof ready if support requests verification.",
-      ],
-      primaryCta: { label: "Use email reset", action: "go_forgot" },
-      secondaryCta: { label: "Contact support", action: "support" },
+      title: t('auth.account_recovery.help_phone_changed_title'),
+      bullets: t('auth.account_recovery.help_phone_changed_bullets', { returnObjects: true }) as string[],
+      primaryCta: { label: t('auth.account_recovery.help_phone_changed_cta1'), action: "go_forgot" },
+      secondaryCta: { label: t('auth.account_recovery.help_phone_changed_cta2'), action: "support" },
     },
     {
       key: "lost_mfa",
-      title: "I lost my MFA device",
-      bullets: [
-        "Use a recovery code if you saved them.",
-        "If you don’t have recovery codes, contact support.",
-        "After login, regenerate recovery codes and enable MFA again.",
-      ],
-      primaryCta: { label: "Use recovery code", action: "go_recovery" },
-      secondaryCta: { label: "Contact support", action: "support" },
+      title: t('auth.account_recovery.help_lost_mfa_title'),
+      bullets: t('auth.account_recovery.help_lost_mfa_bullets', { returnObjects: true }) as string[],
+      primaryCta: { label: t('auth.account_recovery.help_lost_mfa_cta1'), action: "go_recovery" },
+      secondaryCta: { label: t('auth.account_recovery.help_lost_mfa_cta2'), action: "support" },
     },
     {
       key: "locked_out",
-      title: "I’m locked out or rate-limited",
-      bullets: [
-        "Wait for the timer to expire, then try again.",
-        "Avoid repeated requests to prevent blocking.",
-        "If this persists, contact support with your identifier (email/phone).",
-      ],
-      primaryCta: { label: "Go to sign in", action: "go_signin" },
-      secondaryCta: { label: "Contact support", action: "support" },
+      title: t('auth.account_recovery.help_locked_out_title'),
+      bullets: t('auth.account_recovery.help_locked_out_bullets', { returnObjects: true }) as string[],
+      primaryCta: { label: t('auth.account_recovery.help_locked_out_cta1'), action: "go_signin" },
+      secondaryCta: { label: t('auth.account_recovery.help_locked_out_cta2'), action: "support" },
     },
   ];
 
@@ -306,49 +217,35 @@ export default function AccountRecoveryHelpPage() {
       <CssBaseline />
 
       <Box className="min-h-screen" sx={{ background: pageBg }}>
-        {/* Top bar */}
-        <Box sx={{ borderBottom: `1px solid ${theme.palette.divider}` }}>
-          <Box className="mx-auto max-w-5xl px-4 py-3 md:px-6">
-            <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
-              <Stack direction="row" alignItems="center" spacing={1.2}>
-                <Box
-                  sx={{
-                    width: 38,
-                    height: 38,
-                    borderRadius: 12,
-                    display: "grid",
-                    placeItems: "center",
-                    background: "linear-gradient(135deg, rgba(3,205,140,1) 0%, rgba(3,205,140,0.82) 55%, rgba(3,205,140,0.62) 100%)",
-                    boxShadow: `0 14px 40px ${alpha(isDark ? "#000" : "#0B1A17", 0.22)}`,
-                  }}
-                >
-                  <Typography sx={{ color: "white", fontWeight: 900, letterSpacing: -0.4 }}>EV</Typography>
-                </Box>
-                <Box>
-                  <Typography variant="subtitle1" sx={{ lineHeight: 1.1 }}>EVzone My Accounts</Typography>
-                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Account recovery help</Typography>
-                </Box>
-              </Stack>
-
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Tooltip title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}>
-                  <IconButton onClick={toggleMode} size="small" sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}>
-                    {isDark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Language">
-                  <IconButton size="small" sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}>
-                    <GlobeIcon size={18} />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Help">
-                  <IconButton size="small" onClick={() => setSnack({ open: true, severity: "info", msg: "You are already in recovery help." })} sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}>
-                    <HelpCircleIcon size={18} />
-                  </IconButton>
-                </Tooltip>
-              </Stack>
-            </Stack>
-          </Box>
+        {/* Unified Auth Header */}
+        {/* Unified Auth Header */}
+        <Box sx={{ p: 2, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <Stack direction="row" spacing={2} alignItems="center">
+            <Box
+              sx={{
+                width: 40,
+                height: 40,
+                borderRadius: 12,
+                backgroundColor: EVZONE.green,
+                display: "grid",
+                placeItems: "center",
+                boxShadow: `0 14px 40px ${alpha(isDark ? "#000" : "#0B1A17", 0.22)}`,
+              }}
+            >
+              <img src="/logo.png" alt="EVzone" style={{ height: '100%', width: 'auto' }} />
+            </Box>
+            <Box>
+              <Typography variant="subtitle1" sx={{ lineHeight: 1.1 }}>
+                {t('app_name')}
+              </Typography>
+              <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                {t('auth.account_recovery.subtitle')}
+              </Typography>
+            </Box>
+          </Stack>
+          <Stack direction="row" spacing={1}>
+            <LanguageSwitcher />
+          </Stack>
         </Box>
 
         {/* Body */}
@@ -359,33 +256,33 @@ export default function AccountRecoveryHelpPage() {
               <Card>
                 <CardContent className="p-5 md:p-6">
                   <Stack spacing={1.2}>
-                    <Typography variant="h6">Quick actions</Typography>
+                    <Typography variant="h6">{t('auth.account_recovery.section_quick_actions')}</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      Use these shortcuts to get back into your account quickly.
+                      {t('auth.account_recovery.section_quick_actions_desc')}
                     </Typography>
 
                     <Divider sx={{ my: 1 }} />
 
                     <Stack spacing={1.2}>
                       <Button variant="contained" color="secondary" sx={orangeContainedSx} endIcon={<ArrowRightIcon size={18} />} onClick={() => runAction("go_forgot")}>
-                        Reset password
+                        {t('auth.account_recovery.btn_reset_password')}
                       </Button>
                       <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => runAction("go_recovery")}>
-                        Use recovery code
+                        {t('auth.account_recovery.btn_use_recovery_code')}
                       </Button>
                       <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => runAction("go_signin")}>
-                        Go to sign in
+                        {t('auth.account_recovery.btn_go_signin')}
                       </Button>
                     </Stack>
 
                     <Divider sx={{ my: 1 }} />
 
                     <Alert severity="info">
-                      If you suspect your account is compromised, reset your password and enable MFA immediately.
+                      {t('auth.account_recovery.alert_compromised')}
                     </Alert>
 
                     <Button variant="text" sx={orangeTextSx} onClick={() => setSupportOpen(true)}>
-                      Contact support
+                      {t('auth.account_recovery.btn_contact_support')}
                     </Button>
                   </Stack>
                 </CardContent>
@@ -398,9 +295,9 @@ export default function AccountRecoveryHelpPage() {
                 <CardContent className="p-5 md:p-7">
                   <Stack spacing={1.4}>
                     <Stack spacing={0.6}>
-                      <Typography variant="h6">Guided troubleshooting</Typography>
+                      <Typography variant="h6">{t('auth.account_recovery.section_troubleshooting')}</Typography>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        Choose the issue that matches your situation.
+                        {t('auth.account_recovery.section_troubleshooting_desc')}
                       </Typography>
                     </Stack>
 
@@ -475,7 +372,7 @@ export default function AccountRecoveryHelpPage() {
                     <Divider />
 
                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      If none of the options apply, contact support and provide the email/phone you used on your account.
+                      {t('auth.account_recovery.footer_troubleshooting')}
                     </Typography>
                   </Stack>
                 </CardContent>
@@ -485,38 +382,38 @@ export default function AccountRecoveryHelpPage() {
 
           {/* Footer */}
           <Box className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
-            <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group.</Typography>
+            <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} {t('app_name')}.</Typography>
             <Stack direction="row" spacing={1.2} alignItems="center">
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>Terms</Button>
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>Privacy</Button>
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>{t('auth.terms')}</Button>
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>{t('auth.privacy')}</Button>
             </Stack>
           </Box>
         </Box>
 
         {/* Support dialog */}
         <Dialog open={supportOpen} onClose={() => setSupportOpen(false)} PaperProps={{ sx: { borderRadius: 6, border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}>
-          <DialogTitle sx={{ fontWeight: 950 }}>Contact support</DialogTitle>
+          <DialogTitle sx={{ fontWeight: 950 }}>{t('auth.account_recovery.dialog_support_title')}</DialogTitle>
           <DialogContent>
             <Stack spacing={1.2}>
               <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                Share the email/phone you used, and what happened. For security, do not share your password.
+                {t('auth.account_recovery.dialog_support_desc')}
               </Typography>
               <Box sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.55), p: 1.2 }}>
                 <Stack spacing={0.8}>
-                  <Typography sx={{ fontWeight: 900 }}>Support channels (demo)</Typography>
+                  <Typography sx={{ fontWeight: 900 }}>{t('auth.account_recovery.dialog_support_channels')}</Typography>
                   <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                    • Email: support@evzone.com
+                    • {t('auth.account_recovery.dialog_support_email')}
                   </Typography>
                   <Stack direction="row" spacing={1} alignItems="center">
                     <Box sx={{ color: WHATSAPP.green }}>
                       <WhatsAppIcon size={18} />
                     </Box>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      WhatsApp: +256 700 000 000
+                      {t('auth.account_recovery.dialog_support_whatsapp')}
                     </Typography>
                   </Stack>
                   <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                    • Phone: +256 700 000 000
+                    • {t('auth.account_recovery.dialog_support_phone')}
                   </Typography>
                 </Stack>
               </Box>
@@ -524,10 +421,10 @@ export default function AccountRecoveryHelpPage() {
           </DialogContent>
           <DialogActions sx={{ p: 2, pt: 0 }}>
             <Button variant="outlined" sx={{ borderColor: alpha(EVZONE.orange, 0.65), color: EVZONE.orange, "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" } }} onClick={() => setSupportOpen(false)}>
-              Close
+              {t('auth.account_recovery.dialog_btn_close')}
             </Button>
-            <Button variant="contained" color="secondary" sx={{ backgroundColor: EVZONE.orange, color: "#FFFFFF", "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92) } }} onClick={() => { setSupportOpen(false); setSnack({ open: true, severity: "success", msg: "Support request submitted (demo)." }); }}>
-              Submit support request
+            <Button variant="contained" color="secondary" sx={{ backgroundColor: EVZONE.orange, color: "#FFFFFF", "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92) } }} onClick={() => { setSupportOpen(false); setSnack({ open: true, severity: "success", msg: t('auth.account_recovery.success_support_submitted') }); }}>
+              {t('auth.account_recovery.dialog_btn_submit')}
             </Button>
           </DialogActions>
         </Dialog>
@@ -538,6 +435,6 @@ export default function AccountRecoveryHelpPage() {
           </Alert>
         </Snackbar>
       </Box>
-    </ThemeProvider>
+    </ThemeProvider >
   );
 }

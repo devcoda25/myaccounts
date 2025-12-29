@@ -21,74 +21,19 @@ import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
  * Route: /errors/403
  */
 
-type ThemeMode = "light" | "dark";
-type Severity = "info" | "warning" | "error" | "success";
+import { ThemeMode, Severity } from "../../utils/types";
+import {
+  SunIcon,
+  MoonIcon,
+  GlobeIcon,
+  ShieldOffIcon,
+  ArrowLeftIcon,
+  HelpCircleIcon
+} from "../../utils/icons";
 
 const EVZONE = { green: "#03cd8c", orange: "#f77f00" } as const;
 const THEME_KEY = "evzone_myaccounts_theme";
 
-// ---------- Inline icons (CDN-safe) ----------
-function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{ display: "block" }}>
-      {children}
-    </svg>
-  );
-}
-function SunIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
-      <path d="M12 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 12H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M22 12h-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-function MoonIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M21 13a8 8 0 0 1-10-10 7.5 7.5 0 1 0 10 10Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-function GlobeIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-function ShieldOffIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M12 2l8 4v6c0 5-3.4 9.4-8 10-2.1-.3-4-1.4-5.6-3" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-      <path d="M5 15c-.7-1.5-1-3.1-1-5V6l8-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 4l16 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-function ArrowLeftIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M19 12H5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-function HelpCircleIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M9.5 9a2.5 2.5 0 1 1 3.2 2.4c-.9.3-1.2.8-1.2 1.6v.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 17h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-// ---------- Theme ----------
 function getStoredMode(): ThemeMode {
   try {
     const v = window.localStorage.getItem(THEME_KEY);

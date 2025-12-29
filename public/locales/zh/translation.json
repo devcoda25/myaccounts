@@ -1,0 +1,28 @@
+{
+    "app_name": "EVzone 我的账户",
+    "auth": {
+        "sign_in": "登录",
+        "sign_out": "退出",
+        "create_account": "创建账户",
+        "forgot_password": "忘记密码？",
+        "email_placeholder": "name@example.com",
+        "password_placeholder": "密码"
+    },
+    "header": {
+        "search": "搜索...",
+        "language": "语言",
+        "theme": "主题",
+        "notifications": "通知",
+        "profile": "个人资料",
+        "settings": "设置",
+        "help": "帮助"
+    },
+    "languages": {
+        "en": "英语",
+        "fr": "法语",
+        "zh": "中文",
+        "es": "西班牙语",
+        "ar": "阿拉伯语",
+        "sw": "斯瓦希里语"
+    }
+}

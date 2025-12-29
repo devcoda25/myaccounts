@@ -82,16 +82,9 @@ export default function AdminLayout() {
     const drawerContent = (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             {/* Logo Area */}
-            <Box sx={{ p: 3 }}>
-                <Stack direction="row" spacing={1.2} alignItems="center">
-                    <Box sx={{ width: 40, height: 40, borderRadius: 14, display: "grid", placeItems: "center", background: `linear-gradient(135deg, ${EVZONE.green} 0%, rgba(3,205,140,0.75) 100%)` }}>
-                        <Typography sx={{ color: "#fff", fontWeight: 950, letterSpacing: -0.4 }}>EV</Typography>
-                    </Box>
-                    <Box>
-                        <Typography sx={{ fontWeight: 950, lineHeight: 1.05 }}>EVzone Admin</Typography>
-                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Portal</Typography>
-                    </Box>
-                </Stack>
+            {/* Logo Area */}
+            <Box sx={{ p: 3, display: "flex", alignItems: "center", gap: 2 }}>
+                <img src="/logo.png" alt="EVzone" style={{ height: 32, width: 'auto' }} />
             </Box>
 
             {/* Nav Items */}

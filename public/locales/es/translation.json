@@ -1,0 +1,28 @@
+{
+    "app_name": "EVzone Mis Cuentas",
+    "auth": {
+        "sign_in": "Iniciar sesión",
+        "sign_out": "Cerrar sesión",
+        "create_account": "Crear cuenta",
+        "forgot_password": "¿Olvidaste tu contraseña?",
+        "email_placeholder": "nombre@ejemplo.com",
+        "password_placeholder": "Contraseña"
+    },
+    "header": {
+        "search": "Buscar...",
+        "language": "Idioma",
+        "theme": "Tema",
+        "notifications": "Notificaciones",
+        "profile": "Perfil",
+        "settings": "Configuración",
+        "help": "Ayuda"
+    },
+    "languages": {
+        "en": "Inglés",
+        "fr": "Francés",
+        "zh": "Chino",
+        "es": "Español",
+        "ar": "Árabe",
+        "sw": "Suajili"
+    }
+}

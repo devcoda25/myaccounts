@@ -58,180 +58,22 @@ const EVZONE = {
 // -----------------------------
 // Inline icon set (CDN-safe)
 // -----------------------------
-function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      focusable="false"
-      style={{ display: "block" }}
-    >
-      {children}
-    </svg>
-  );
-}
-
-function SunIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
-      <path d="M12 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 12H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M22 12h-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4.9 4.9l1.4 1.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M17.7 17.7l1.4 1.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M19.1 4.9l-1.4 1.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M6.3 17.7l-1.4 1.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function MoonIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path
-        d="M21 13a8 8 0 0 1-10-10 7.5 7.5 0 1 0 10 10Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-    </IconBase>
-  );
-}
-
-function GlobeIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 3c3 3 3 15 0 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 3c-3 3-3 15 0 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function HelpCircleIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path
-        d="M9.5 9a2.5 2.5 0 1 1 3.2 2.4c-.9.3-1.2.8-1.2 1.6v.3"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path d="M12 17h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function ShieldCheckIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path
-        d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <path
-        d="m9 12 2 2 4-5"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </IconBase>
-  );
-}
-
-function KeypadIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <rect x="6" y="3" width="12" height="18" rx="2" stroke="currentColor" strokeWidth="2" />
-      <path d="M9 7h.01M12 7h.01M15 7h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-      <path d="M9 11h.01M12 11h.01M15 11h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-      <path d="M9 15h.01M12 15h.01M15 15h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function SmsIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path
-        d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <path d="M8 9h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M8 13h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function MailIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <rect x="4" y="6" width="16" height="12" rx="2" stroke="currentColor" strokeWidth="2" />
-      <path d="M4 8l8 6 8-6" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function WhatsAppIcon({ size = 18 }: { size?: number }) {
-  // Official WhatsApp logo path (Font Awesome). Uses currentColor.
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 448 512"
-      fill="currentColor"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      focusable="false"
-      style={{ display: "block" }}
-    >
-      <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z" />
-    </svg>
-  );
-}
-
-function ArrowRightIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path
-        d="M12 5l7 7-7 7"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </IconBase>
-  );
-}
-
-function CheckCircleIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path
-        d="m8.5 12 2.3 2.3L15.8 9"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </IconBase>
-  );
-}
+import { useTranslation, Trans } from "react-i18next";
+import LanguageSwitcher from "../../../components/common/LanguageSwitcher";
+import {
+  IconBase,
+  SunIcon,
+  MoonIcon,
+  GlobeIcon,
+  HelpCircleIcon,
+  ShieldCheckIcon,
+  KeypadIcon,
+  SmsIcon,
+  MailIcon,
+  WhatsAppIcon,
+  ArrowRightIcon,
+  CheckCircleIcon,
+} from "../../../utils/icons";
 
 // -----------------------------
 // Theme helpers
@@ -370,6 +212,7 @@ function OtpInput({
 }
 
 export default function MfaChallengePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
@@ -461,10 +304,10 @@ export default function MfaChallengePage() {
 
     const msg =
       method === "sms"
-        ? "SMS code sent. Demo: 222222"
+        ? t('auth.mfa.msg_sms_sent')
         : method === "whatsapp"
-          ? "WhatsApp code sent. Demo: 333333"
-          : "Email OTP sent. Demo: 111111";
+          ? t('auth.mfa.msg_whatsapp_sent')
+          : t('auth.mfa.msg_email_sent');
 
     setSnack({ open: true, severity: "success", msg });
   };
@@ -482,18 +325,18 @@ export default function MfaChallengePage() {
     setBanner(null);
 
     if (isLocked) {
-      setBanner({ severity: "error", msg: `Too many attempts. Try again in ${secondsLeft}s.` });
+      setBanner({ severity: "error", msg: t('auth.mfa.validation_too_many_attempts_timer', { seconds: secondsLeft }) });
       return;
     }
 
     if ((method === "sms" || method === "whatsapp" || method === "email") && !codeSent) {
-      setBanner({ severity: "warning", msg: "Please send the code first." });
+      setBanner({ severity: "warning", msg: t('auth.mfa.validation_send_first') });
       return;
     }
 
     const code = otp.join("");
     if (code.length < 6) {
-      setBanner({ severity: "warning", msg: "Enter the 6-digit code." });
+      setBanner({ severity: "warning", msg: t('auth.mfa.validation_incomplete') });
       return;
     }
 
@@ -502,10 +345,10 @@ export default function MfaChallengePage() {
       setAttempts(nextAttempts);
       if (nextAttempts >= 5) {
         setLockedUntil(Date.now() + 30_000);
-        setBanner({ severity: "error", msg: "Too many failed attempts. Locked for 30 seconds." });
+        setBanner({ severity: "error", msg: t('auth.mfa.validation_locked') });
         return;
       }
-      setBanner({ severity: "error", msg: "Incorrect code. Please try again." });
+      setBanner({ severity: "error", msg: t('auth.mfa.validation_incorrect') });
       return;
     }
 
@@ -521,7 +364,7 @@ export default function MfaChallengePage() {
     }
 
     setStep("success");
-    setSnack({ open: true, severity: "success", msg: "Verification complete." });
+    setSnack({ open: true, severity: "success", msg: t('auth.mfa.success_complete') });
   };
 
   const continueNext = () => {
@@ -543,12 +386,12 @@ export default function MfaChallengePage() {
 
   const methodHelp =
     method === "totp"
-      ? "Open your authenticator app and enter the current code."
+      ? t('auth.mfa.help_totp')
       : method === "sms"
-        ? "Send a code to your phone number, then enter it here."
+        ? t('auth.mfa.help_sms')
         : method === "whatsapp"
-          ? "Send a code to your WhatsApp number, then enter it here."
-          : "Send a code to your email address, then enter it here.";
+          ? t('auth.mfa.help_whatsapp')
+          : t('auth.mfa.help_email');
 
   return (
     <ThemeProvider theme={theme}>
@@ -575,10 +418,10 @@ export default function MfaChallengePage() {
                 </Box>
                 <Box>
                   <Typography variant="subtitle1" sx={{ lineHeight: 1.1 }}>
-                    EVzone My Accounts
+                    {t('app_name')}
                   </Typography>
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    Multi-factor authentication
+                    {t('auth.mfa.subtitle')}
                   </Typography>
                 </Box>
               </Stack>
@@ -598,19 +441,9 @@ export default function MfaChallengePage() {
                     {isDark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Language">
-                  <IconButton
-                    size="small"
-                    sx={{
-                      border: `1px solid ${alpha(EVZONE.orange, 0.35)}`,
-                      borderRadius: 12,
-                      backgroundColor: alpha(theme.palette.background.paper, 0.6),
-                      color: EVZONE.orange,
-                    }}
-                  >
-                    <GlobeIcon size={18} />
-                  </IconButton>
-                </Tooltip>
+
+                <LanguageSwitcher />
+
                 <Tooltip title="Help">
                   <IconButton
                     size="small"
@@ -643,9 +476,9 @@ export default function MfaChallengePage() {
               <Card>
                 <CardContent className="p-5 md:p-6">
                   <Stack spacing={1.2}>
-                    <Typography variant="h6">Verify it’s you</Typography>
+                    <Typography variant="h6">{t('auth.mfa.challenge_title')}</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      For your security, we require a second step to confirm it’s really you signing in.
+                      {t('auth.mfa.challenge_desc')}
                     </Typography>
 
                     <Divider sx={{ my: 1 }} />
@@ -666,9 +499,9 @@ export default function MfaChallengePage() {
                           <ShieldCheckIcon size={18} />
                         </Box>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>Strong protection</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>{t('auth.mfa.feature_protection_title')}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            MFA blocks most account takeover attempts.
+                            {t('auth.mfa.feature_protection_desc')}
                           </Typography>
                         </Box>
                       </Stack>
@@ -688,9 +521,9 @@ export default function MfaChallengePage() {
                           <KeypadIcon size={18} />
                         </Box>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>Multiple options</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>{t('auth.mfa.feature_options_title')}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Use Authenticator, SMS, WhatsApp, or Email OTP.
+                            {t('auth.mfa.feature_options_desc')}
                           </Typography>
                         </Box>
                       </Stack>
@@ -709,10 +542,10 @@ export default function MfaChallengePage() {
                       label={
                         <Box>
                           <Typography variant="body2" sx={{ fontWeight: 900 }}>
-                            Trust this device
+                            {t('auth.mfa.checkbox_trust')}
                           </Typography>
                           <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                            You will be prompted less often on this device.
+                            {t('auth.mfa.checkbox_trust_desc')}
                           </Typography>
                         </Box>
                       }
@@ -722,15 +555,15 @@ export default function MfaChallengePage() {
 
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                       <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => setMethodDialog(true)}>
-                        Try another method
+                        {t('auth.mfa.btn_try_another')}
                       </Button>
                       <Button variant="outlined" sx={orangeOutlinedSx} onClick={openRecovery}>
-                        Use recovery code
+                        {t('auth.mfa.btn_use_recovery')}
                       </Button>
                     </Stack>
 
                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      Demo codes: Authenticator <b>654321</b>, SMS <b>222222</b>, WhatsApp <b>333333</b>, Email <b>111111</b>
+                      <Trans i18nKey="auth.mfa.demo_codes_hint" />
                     </Typography>
                   </Stack>
                 </CardContent>
@@ -752,10 +585,10 @@ export default function MfaChallengePage() {
                         <Box sx={{ color: EVZONE.green }}>
                           <CheckCircleIcon size={22} />
                         </Box>
-                        <Typography variant="h6">Verified</Typography>
+                        <Typography variant="h6">{t('auth.mfa.success_title')}</Typography>
                       </Stack>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        You’ve successfully completed multi-factor authentication.
+                        {t('auth.mfa.success_desc')}
                       </Typography>
                       <Button
                         variant="contained"
@@ -764,15 +597,15 @@ export default function MfaChallengePage() {
                         sx={orangeContainedSx}
                         onClick={continueNext}
                       >
-                        Continue
+                        {t('auth.mfa.btn_continue')}
                       </Button>
                     </Stack>
                   ) : (
                     <Stack spacing={2.0}>
                       <Stack spacing={0.6}>
-                        <Typography variant="h6">Enter your code</Typography>
+                        <Typography variant="h6">{t('auth.mfa.enter_code_title')}</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Choose a method and enter the 6-digit code.
+                          {t('auth.mfa.enter_code_desc')}
                         </Typography>
                       </Stack>
 
@@ -793,10 +626,10 @@ export default function MfaChallengePage() {
                           "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 },
                         }}
                       >
-                        <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label="Authenticator" />
-                        <Tab icon={<SmsIcon size={16} />} iconPosition="start" label="SMS" />
-                        <Tab icon={<WhatsAppIcon size={16} />} iconPosition="start" label="WhatsApp" />
-                        <Tab icon={<MailIcon size={16} />} iconPosition="start" label="Email" />
+                        <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label={t('auth.mfa.tab_authenticator')} />
+                        <Tab icon={<SmsIcon size={16} />} iconPosition="start" label={t('auth.mfa.tab_sms')} />
+                        <Tab icon={<WhatsAppIcon size={16} />} iconPosition="start" label={t('auth.mfa.tab_whatsapp')} />
+                        <Tab icon={<MailIcon size={16} />} iconPosition="start" label={t('auth.mfa.tab_email')} />
                       </Tabs>
 
                       <Box
@@ -966,6 +799,6 @@ export default function MfaChallengePage() {
           </Alert>
         </Snackbar>
       </Box>
-    </ThemeProvider>
+    </ThemeProvider >
   );
 }

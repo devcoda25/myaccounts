@@ -22,7 +22,9 @@ import {
   Typography,
 } from "@mui/material";
 import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+import AuthHeader from "../../../components/headers/AuthHeader";
 
 /**
  * EVzone My Accounts - Create Account v3
@@ -37,7 +39,23 @@ import { motion } from "framer-motion";
  * - Social buttons: brand styling (Google/Apple)
  */
 
-type ThemeMode = "light" | "dark";
+import { ThemeMode } from "../../../utils/types";
+import {
+  IconBase,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  UserIcon,
+  MailIcon,
+  PhoneIcon,
+  LockIcon,
+  EyeIcon,
+  EyeOffIcon,
+  TicketIcon,
+  ShieldCheckIcon,
+  InfoBadgeIcon,
+  GoogleGIcon,
+  AppleIcon
+} from "../../../utils/icons";
 
 const EVZONE = {
   green: "#03cd8c",
@@ -58,211 +76,6 @@ const COUNTRIES = [
   { code: "IN", label: "India", dial: "+91" },
   { code: "CN", label: "China", dial: "+86" },
 ];
-
-// -----------------------------
-// Inline icons (CDN-safe)
-// -----------------------------
-function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      focusable="false"
-      style={{ display: "block" }}
-    >
-      {children}
-    </svg>
-  );
-}
-
-function SunIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
-      <path d="M12 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 12H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M22 12h-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function MoonIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path
-        d="M21 13a8 8 0 0 1-10-10 7.5 7.5 0 1 0 10 10Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-    </IconBase>
-  );
-}
-
-function GlobeIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function HelpCircleIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path
-        d="M9.5 9a2.5 2.5 0 1 1 3.2 2.4c-.9.3-1.2.8-1.2 1.6v.3"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path d="M12 17h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function ArrowLeftIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M19 12H5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function ArrowRightIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function UserIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="2" />
-      <path d="M4 22a8 8 0 0 1 16 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function MailIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <rect x="4" y="6" width="16" height="12" rx="2" stroke="currentColor" strokeWidth="2" />
-      <path d="M4 8l8 6 8-6" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function PhoneIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path
-        d="M22 16.9v3a2 2 0 0 1-2.2 2c-9.5-1-17-8.5-18-18A2 2 0 0 1 3.8 2h3a2 2 0 0 1 2 1.7c.2 1.4.6 2.8 1.2 4.1a2 2 0 0 1-.5 2.2L8.4 11.1a16 16 0 0 0 4.5 4.5l1.1-1.1a2 2 0 0 1 2.2-.5c1.3.6 2.7 1 4.1 1.2a2 2 0 0 1 1.7 2Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-    </IconBase>
-  );
-}
-
-function LockIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <rect x="6" y="11" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="2" />
-      <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function EyeIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-      <circle cx="12" cy="12" r="2.5" stroke="currentColor" strokeWidth="2" />
-    </IconBase>
-  );
-}
-
-function EyeOffIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M3 3l18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M2 12s3.5-7 10-7c2 0 3.8.5 5.3 1.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M22 12s-3.5 7-10 7c-2.2 0-4.2-.5-5.8-1.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M10 10a3 3 0 0 0 4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function TicketIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path
-        d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V7Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <path d="M12 7v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function ShieldCheckIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path
-        d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <path d="m9 12 2 2 4-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function InfoBadgeIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M12 10v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 7h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-// Brand icons
-function GoogleGIcon({ size = 18 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{ display: "block" }}>
-      <path fill="#EA4335" d="M24 9.5c3.54 0 6.72 1.22 9.23 3.23l6.9-6.9C35.95 2.27 30.33 0 24 0 14.62 0 6.51 5.38 2.56 13.22l8.02 6.23C12.58 13.2 17.86 9.5 24 9.5z" />
-      <path fill="#4285F4" d="M46.1 24.5c0-1.57-.14-3.08-.4-4.54H24v8.6h12.5c-.54 2.9-2.14 5.36-4.54 7.02l6.96 5.4C43.2 36.98 46.1 31.3 46.1 24.5z" />
-      <path fill="#FBBC05" d="M10.58 28.45A14.9 14.9 0 0 1 9.8 24c0-1.55.27-3.05.78-4.45l-8.02-6.23A24.02 24.02 0 0 0 0 24c0 3.9.94 7.6 2.56 10.78l8.02-6.33z" />
-      <path fill="#34A853" d="M24 48c6.33 0 11.65-2.1 15.54-5.72l-6.96-5.4c-1.94 1.3-4.42 2.07-8.58 2.07-6.14 0-11.42-3.7-13.42-8.95l-8.02 6.33C6.51 42.62 14.62 48 24 48z" />
-    </svg>
-  );
-}
-
-function AppleIcon({ size = 18 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 384 512" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{ display: "block" }}>
-      <path d="M318.7 268.7c-.2-37.3 16.4-65.6 51.5-87.2-19.2-27.5-48.2-42.6-86.5-45.5-36.5-2.9-76.3 21.3-90.9 21.3-15.4 0-50.5-20.3-78.3-20.3C56.8 137 0 181.7 0 273.4c0 27.1 5 55.1 15 84 13.4 37.3 61.7 128.9 112.1 127.4 26.2-.7 44.8-18.6 78.9-18.6 33.1 0 50.3 18.6 79.5 18.6 50.9-.7 94.6-82.7 107.3-120-58.2-27.7-74.2-79.5-74.1-96.1zM259.1 80.2c28.1-33.3 25.6-63.6 24.8-74.2-24.8 1.4-53.4 16.9-69.7 36-17.9 20.5-28.4 45.9-26.1 73.2 26.9 2.1 50.6-10.8 71-35z" />
-    </svg>
-  );
-}
 
 // -----------------------------
 // Theme
@@ -343,6 +156,7 @@ function scorePassword(pw: string) {
 }
 
 export default function SignUpPageV3() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
@@ -473,50 +287,11 @@ export default function SignUpPageV3() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box className="min-h-screen" sx={{ background: pageBg }}>
-        {/* Top bar */}
-        <Box sx={{ borderBottom: `1px solid ${theme.palette.divider}` }}>
-          <Box className="mx-auto max-w-5xl px-4 py-3 md:px-6">
-            <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
-              <Stack direction="row" alignItems="center" spacing={1.2}>
-                <Box
-                  sx={{
-                    width: 38,
-                    height: 38,
-                    borderRadius: 12,
-                    display: "grid",
-                    placeItems: "center",
-                    background: "linear-gradient(135deg, rgba(3,205,140,1) 0%, rgba(3,205,140,0.82) 55%, rgba(3,205,140,0.62) 100%)",
-                    boxShadow: `0 14px 40px ${alpha(isDark ? "#000" : "#0B1A17", 0.22)}`,
-                  }}
-                >
-                  <Typography sx={{ color: "white", fontWeight: 900, letterSpacing: -0.4 }}>EV</Typography>
-                </Box>
-                <Box>
-                  <Typography variant="subtitle1" sx={{ lineHeight: 1.1 }}>EVzone My Accounts</Typography>
-                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Create your EVzone account</Typography>
-                </Box>
-              </Stack>
-
-              <Stack direction="row" alignItems="center" spacing={1}>
-                <Tooltip title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}>
-                  <IconButton onClick={toggleMode} size="small" sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}>
-                    {isDark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Language">
-                  <IconButton size="small" sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}>
-                    <GlobeIcon size={18} />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Help">
-                  <IconButton size="small" onClick={() => navigate("/auth/account-recovery-help")} sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}>
-                    <HelpCircleIcon size={18} />
-                  </IconButton>
-                </Tooltip>
-              </Stack>
-            </Stack>
-          </Box>
-        </Box>
+        {/* Unified Auth Header */}
+        <AuthHeader
+          title={t('app_name')}
+          subtitle={t('auth.sign_up.subtitle')}
+        />
 
         {/* Body */}
         <Box className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">
@@ -526,9 +301,9 @@ export default function SignUpPageV3() {
               <Card>
                 <CardContent className="p-5 md:p-6">
                   <Stack spacing={1.2}>
-                    <Typography variant="h6">Account creation only</Typography>
+                    <Typography variant="h6">{t('auth.sign_up.account_creation_only')}</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      This creates your EVzone account. Each module will handle its own onboarding after you sign in.
+                      {t('auth.sign_up.account_creation_desc')}
                     </Typography>
                     <Divider sx={{ my: 1 }} />
                     <Stack spacing={1.1}>
@@ -537,9 +312,9 @@ export default function SignUpPageV3() {
                           <ShieldCheckIcon size={18} />
                         </Box>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>Secure identity</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>{t('auth.sign_up.secure_identity')}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            One login for all EVzone platforms.
+                            {t('auth.sign_up.secure_identity_desc')}
                           </Typography>
                         </Box>
                       </Stack>
@@ -548,16 +323,16 @@ export default function SignUpPageV3() {
                           <InfoBadgeIcon size={18} />
                         </Box>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>Clear permissions</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>{t('auth.sign_up.clear_permissions')}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            You can manage access later in My Accounts.
+                            {t('auth.sign_up.clear_permissions_desc')}
                           </Typography>
                         </Box>
                       </Stack>
                     </Stack>
                     <Divider sx={{ my: 1 }} />
                     <Button variant="outlined" startIcon={<ArrowLeftIcon size={18} />} sx={orangeOutlinedSx} onClick={() => navigate("/auth/sign-in")}>
-                      Back to sign in
+                      {t('auth.sign_up.back_to_signin')}
                     </Button>
                   </Stack>
                 </CardContent>
@@ -570,9 +345,9 @@ export default function SignUpPageV3() {
                 <CardContent className="p-5 md:p-7">
                   <Stack spacing={2.0}>
                     <Stack spacing={0.6}>
-                      <Typography variant="h6">Create account</Typography>
+                      <Typography variant="h6">{t('auth.sign_up.form_title')}</Typography>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        Create your EVzone identity. You will verify your email or phone in the next step.
+                        {t('auth.sign_up.form_subtitle')}
                       </Typography>
                     </Stack>
 
@@ -595,7 +370,7 @@ export default function SignUpPageV3() {
                             fontWeight: 800,
                           }}
                         >
-                          Continue with Google
+                          {t('auth.sign_up.continue_google')}
                         </Button>
                         <Button
                           fullWidth
@@ -613,10 +388,10 @@ export default function SignUpPageV3() {
                             fontWeight: 800,
                           }}
                         >
-                          Continue with Apple
+                          {t('auth.sign_up.continue_apple')}
                         </Button>
                       </Stack>
-                      <Divider>or</Divider>
+                      <Divider>{t('auth.sign_in.or')}</Divider>
                     </Stack>
 
                     {banner ? <Alert severity={banner.severity}>{banner.msg}</Alert> : null}
@@ -626,16 +401,16 @@ export default function SignUpPageV3() {
                         <TextField
                           value={firstName}
                           onChange={(e) => setFirstName(e.target.value)}
-                          label="First name"
-                          placeholder="John"
+                          label={t('auth.sign_up.first_name')}
+                          placeholder={t('auth.sign_up.first_name_placeholder')}
                           fullWidth
                           InputProps={{ startAdornment: <InputAdornment position="start"><UserIcon size={18} /></InputAdornment> }}
                         />
                         <TextField
                           value={otherNames}
                           onChange={(e) => setOtherNames(e.target.value)}
-                          label="Other names"
-                          placeholder="Doe"
+                          label={t('auth.sign_up.other_names')}
+                          placeholder={t('auth.sign_up.other_names_placeholder')}
                           fullWidth
                           InputProps={{ startAdornment: <InputAdornment position="start"><UserIcon size={18} /></InputAdornment> }}
                         />
@@ -645,8 +420,8 @@ export default function SignUpPageV3() {
                         <TextField
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          label="Email (optional)"
-                          placeholder="name@example.com"
+                          label={t('auth.sign_up.email_label')}
+                          placeholder={t('auth.sign_up.email_placeholder')}
                           fullWidth
                           InputProps={{
                             startAdornment: (
@@ -679,8 +454,8 @@ export default function SignUpPageV3() {
                           <TextField
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
-                            label="Phone (optional)"
-                            placeholder="770 123456"
+                            label={t('auth.sign_up.phone_label')}
+                            placeholder={t('auth.sign_up.phone_placeholder')}
                             fullWidth
                             InputProps={{
                               startAdornment: (
@@ -697,9 +472,9 @@ export default function SignUpPageV3() {
                       <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
                         <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ xs: "flex-start", sm: "center" }} justifyContent="space-between" spacing={1}>
                           <Box>
-                            <Typography sx={{ fontWeight: 900 }}>Create with OTP</Typography>
+                            <Typography sx={{ fontWeight: 900 }}>{t('auth.sign_up.create_otp_title')}</Typography>
                             <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                              Use a verification code instead of setting a password now.
+                              {t('auth.sign_up.create_otp_desc')}
                             </Typography>
                           </Box>
                           <Switch checked={createWithOtp} onChange={(e) => setCreateWithOtp(e.target.checked)} color="secondary" />
@@ -712,7 +487,7 @@ export default function SignUpPageV3() {
                             <TextField
                               value={password}
                               onChange={(e) => setPassword(e.target.value)}
-                              label="Password"
+                              label={t('auth.sign_up.password_label')}
                               type={showPw ? "text" : "password"}
                               fullWidth
                               InputProps={{
@@ -733,7 +508,7 @@ export default function SignUpPageV3() {
                             <TextField
                               value={confirm}
                               onChange={(e) => setConfirm(e.target.value)}
-                              label="Confirm password"
+                              label={t('auth.sign_up.confirm_password_label')}
                               type={showConfirm ? "text" : "password"}
                               fullWidth
                               InputProps={{
@@ -763,18 +538,18 @@ export default function SignUpPageV3() {
                           </Stack>
 
                           <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                            Use at least 8 characters. Mix letters, numbers, and symbols for stronger security.
+                            {t('auth.sign_up.password_hint')}
                           </Typography>
                         </Box>
                       ) : (
-                        <Alert severity="info">You will verify your email or phone with a one-time code. You can set a password later in Security Settings.</Alert>
+                        <Alert severity="info">{t('auth.sign_up.otp_info')}</Alert>
                       )}
 
                       <TextField
                         value={inviteCode}
                         onChange={(e) => setInviteCode(e.target.value)}
-                        label="Referral or invite code (optional)"
-                        placeholder="Enter code if you have one"
+                        label={t('auth.sign_up.invite_code_label')}
+                        placeholder={t('auth.sign_up.invite_code_placeholder')}
                         fullWidth
                         InputProps={{
                           startAdornment: (
@@ -787,22 +562,22 @@ export default function SignUpPageV3() {
 
                       <FormControlLabel
                         control={<Checkbox checked={acceptTerms} onChange={(e) => setAcceptTerms(e.target.checked)} sx={{ color: alpha(EVZONE.orange, 0.7), "&.Mui-checked": { color: EVZONE.orange } }} />}
-                        label={<Typography variant="body2">I agree to the EVzone Terms and Privacy Policy</Typography>}
+                        label={<Typography variant="body2">{t('auth.sign_up.terms_checkbox')}</Typography>}
                       />
 
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                         <Button fullWidth variant="contained" color="secondary" endIcon={<ArrowRightIcon size={18} />} onClick={onContinue} sx={orangeContainedSx}>
-                          Continue
+                          {t('auth.sign_up.continue_btn')}
                         </Button>
                         <Button fullWidth variant="outlined" startIcon={<ArrowLeftIcon size={18} />} onClick={() => navigate("/auth/sign-in")} sx={orangeOutlinedSx}>
-                          Sign in instead
+                          {t('auth.sign_up.sign_in_instead')}
                         </Button>
                       </Stack>
 
                       <Divider />
 
                       <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                        Next step: verification. This is account creation, not module onboarding.
+                        {t('auth.sign_up.next_step_verification')}
                       </Typography>
                     </Stack>
                   </Stack>
@@ -815,8 +590,8 @@ export default function SignUpPageV3() {
           <Box className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
             <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group.</Typography>
             <Stack direction="row" spacing={1.2} alignItems="center">
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>Terms</Button>
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>Privacy</Button>
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>{t('auth.terms')}</Button>
+              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>{t('auth.privacy')}</Button>
             </Stack>
           </Box>
         </Box>

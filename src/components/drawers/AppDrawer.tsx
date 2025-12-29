@@ -55,7 +55,10 @@ const SECONDARY_NAV_ITEMS = [
     { label: "Privacy", path: "/legal/privacy", icon: <Shield size={20} /> },
 ];
 
+import { useTranslation } from "react-i18next";
+
 export default function AppDrawer({ mobileOpen, onDrawerToggle }: AppDrawerProps) {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
     const theme = useTheme();
@@ -65,12 +68,7 @@ export default function AppDrawer({ mobileOpen, onDrawerToggle }: AppDrawerProps
         <React.Fragment>
             {/* Logo Area */}
             <Box sx={{ p: 3, display: "flex", alignItems: "center", gap: 2 }}>
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-evzone-green to-evzone-orange flex items-center justify-center shadow-lg shadow-evzone-green/20">
-                    <span className="text-white font-bold text-xl">E</span>
-                </div>
-                <Typography variant="h6" fontWeight={800} letterSpacing="-0.02em">
-                    EVzone
-                </Typography>
+                <img src="/logo.png" alt="EVzone" style={{ height: 32, width: 'auto' }} />
             </Box>
 
             <Box sx={{ px: 3, mb: 2 }}>

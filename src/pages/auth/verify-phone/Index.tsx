@@ -22,19 +22,21 @@ import {
   Typography,
 } from "@mui/material";
 import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
+import { useTranslation, Trans } from "react-i18next";
+import LanguageSwitcher from "../../../components/common/LanguageSwitcher";
 import {
-  ArrowLeft,
-  ArrowRight,
-  CheckCircle2,
-  Globe,
-  HelpCircle,
-  MessageCircle,
-  Moon,
-  Phone,
-  ShieldCheck,
-  Sun,
-  Timer,
-} from "lucide-react";
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  CheckCircleIcon,
+  HelpCircleIcon,
+  MoonIcon,
+  PhoneIcon,
+  ShieldCheckIcon,
+  SunIcon,
+  TimerIcon,
+  WhatsAppIcon,
+  GlobeIcon,
+} from "../../../utils/icons";
 import { motion } from "framer-motion";
 
 /**
@@ -141,24 +143,11 @@ function maskPhone(v: string) {
   return `${s.slice(0, 3)}***${s.slice(-3)}`;
 }
 
-function WhatsAppIcon({ size = 18 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 448 512"
-      fill="currentColor"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z" />
-    </svg>
-  );
-}
+
 
 
 export default function VerifyPhonePageV3() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
@@ -182,7 +171,7 @@ export default function VerifyPhonePageV3() {
     { open: false, severity: "info", msg: "" }
   );
 
-  const channelHint = channel === "WhatsApp" ? "Code sent via WhatsApp message." : "Code sent via SMS.";
+  const channelHint = channel === "WhatsApp" ? t('auth.verify_phone.channel_hint_whatsapp') : t('auth.verify_phone.channel_hint_sms');
 
   const toggleMode = () => {
     const next: ThemeMode = mode === "light" ? "dark" : "light";
@@ -259,36 +248,36 @@ export default function VerifyPhonePageV3() {
   const resend = () => {
     if (cooldown > 0) return;
     setCooldown(30);
-    setSnack({ open: true, severity: "success", msg: `Code resent via ${channel}. (Demo code: 222222)` });
+    setSnack({ open: true, severity: "success", msg: t('auth.verify_phone.resend_success', { channel }) });
   };
 
   const verify = () => {
     setBanner(null);
     const code = otp.join("");
     if (code.length < 6) {
-      setBanner({ severity: "warning", msg: "Enter the 6-digit code." });
+      setBanner({ severity: "warning", msg: t('auth.verify_phone.validation_code_length') });
       return;
     }
     if (code !== "222222") {
-      setBanner({ severity: "error", msg: "Incorrect code. Please try again." });
+      setBanner({ severity: "error", msg: t('auth.verify_phone.validation_code_invalid') });
       return;
     }
     setStep("success");
-    setSnack({ open: true, severity: "success", msg: "Phone verified successfully." });
+    setSnack({ open: true, severity: "success", msg: t('auth.verify_phone.success_verified') });
   };
 
   const savePhoneChange = () => {
     setBanner(null);
     const p = newPhone.trim();
     if (p.length < 8) {
-      setBanner({ severity: "warning", msg: "Enter a valid phone number." });
+      setBanner({ severity: "warning", msg: t('auth.verify_phone.validation_phone_length') });
       return;
     }
     setPhone(p);
     setOtp(["", "", "", "", "", ""]);
     setCooldown(30);
     setChangeOpen(false);
-    setSnack({ open: true, severity: "success", msg: `Phone updated. Code sent via ${channel}. (Demo: 222222)` });
+    setSnack({ open: true, severity: "success", msg: t('auth.verify_phone.phone_updated', { channel }) });
     window.setTimeout(() => otpRefs.current[0]?.focus(), 250);
   };
 
@@ -312,7 +301,7 @@ export default function VerifyPhonePageV3() {
         className="w-full"
         onClick={() => {
           setChannel(value);
-          setSnack({ open: true, severity: "info", msg: `Channel set to ${title}.` });
+          setSnack({ open: true, severity: "info", msg: t('auth.verify_phone.channel_set', { channel: title }) });
         }}
         sx={{ textAlign: "left" }}
       >
@@ -351,7 +340,7 @@ export default function VerifyPhonePageV3() {
                 {title}
               </Typography>
             </Box>
-            <CheckCircle2 size={18} />
+            <CheckCircleIcon size={18} />
           </Stack>
         </Box>
       </ButtonBase>
@@ -379,25 +368,21 @@ export default function VerifyPhonePageV3() {
                     boxShadow: `0 14px 40px ${alpha(isDark ? "#000" : "#0B1A17", 0.22)}`,
                   }}
                 >
-                  <Typography sx={{ color: "white", fontWeight: 900, letterSpacing: -0.4 }}>EV</Typography>
+                  <img src="/logo.png" alt="EVzone" style={{ height: '100%', width: 'auto' }} />
                 </Box>
                 <Box>
                   <Typography variant="subtitle1" sx={{ lineHeight: 1.1 }}>
-                    EVzone My Accounts
+                    {t('app_name')}
                   </Typography>
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    Verify your phone
+                    {t('auth.verify_phone.title')}
                   </Typography>
                 </Box>
               </Stack>
               <Stack direction="row" spacing={1} alignItems="center">
                 <Tooltip title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}>
                   <IconButton
-                    onClick={() => {
-                      const next: ThemeMode = mode === "light" ? "dark" : "light";
-                      setMode(next);
-                      setStoredMode(next);
-                    }}
+                    onClick={toggleMode}
                     size="small"
                     sx={{
                       border: `1px solid ${alpha(EVZONE.orange, 0.35)}`,
@@ -406,22 +391,12 @@ export default function VerifyPhonePageV3() {
                       color: EVZONE.orange,
                     }}
                   >
-                    {isDark ? <Sun size={18} /> : <Moon size={18} />}
+                    {isDark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Language">
-                  <IconButton
-                    size="small"
-                    sx={{
-                      border: `1px solid ${alpha(EVZONE.orange, 0.35)}`,
-                      borderRadius: 12,
-                      backgroundColor: alpha(theme.palette.background.paper, 0.6),
-                      color: EVZONE.orange,
-                    }}
-                  >
-                    <Globe size={18} />
-                  </IconButton>
-                </Tooltip>
+
+                <LanguageSwitcher />
+
                 <Tooltip title="Help">
                   <IconButton
                     size="small"
@@ -433,7 +408,7 @@ export default function VerifyPhonePageV3() {
                       color: EVZONE.orange,
                     }}
                   >
-                    <HelpCircle size={18} />
+                    <HelpCircleIcon size={18} />
                   </IconButton>
                 </Tooltip>
               </Stack>
@@ -449,24 +424,24 @@ export default function VerifyPhonePageV3() {
               <Card>
                 <CardContent className="p-5 md:p-6">
                   <Stack spacing={1.2}>
-                    <Typography variant="h6">Choose delivery method</Typography>
+                    <Typography variant="h6">{t('auth.verify_phone.choose_method_title')}</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      Select how you want to receive your verification code.
+                      {t('auth.verify_phone.choose_method_desc')}
                     </Typography>
 
                     <Divider sx={{ my: 1 }} />
 
                     <Stack spacing={1}>
-                      <Typography sx={{ fontWeight: 900 }}>Select a channel</Typography>
+                      <Typography sx={{ fontWeight: 900 }}>{t('auth.verify_phone.select_channel')}</Typography>
                       <Box className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                         <ChannelCard
                           value="SMS"
-                          title="SMS"
-                          icon={<Phone size={18} />}
+                          title={t('auth.verify_phone.channel_sms')}
+                          icon={<PhoneIcon size={18} />}
                         />
                         <ChannelCard
                           value="WhatsApp"
-                          title="WhatsApp"
+                          title={t('auth.verify_phone.channel_whatsapp')}
                           icon={<WhatsAppIcon size={18} />}
                         />
                       </Box>
@@ -478,7 +453,7 @@ export default function VerifyPhonePageV3() {
                     <Divider sx={{ my: 1 }} />
 
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      We sent a 6-digit code to <b>{maskPhone(phone)}</b>.
+                      <Trans i18nKey="auth.verify_phone.sent_code" values={{ phone: maskPhone(phone) }} components={{ b: <b /> }} />
                     </Typography>
 
                     <Divider sx={{ my: 1 }} />
@@ -496,12 +471,12 @@ export default function VerifyPhonePageV3() {
                             border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
                           }}
                         >
-                          <Timer size={18} />
+                          <TimerIcon size={18} />
                         </Box>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>Resend if needed</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>{t('auth.verify_phone.resend_title')}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            You can resend after the cooldown.
+                            {t('auth.verify_phone.resend_desc')}
                           </Typography>
                         </Box>
                       </Stack>
@@ -517,12 +492,12 @@ export default function VerifyPhonePageV3() {
                             border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
                           }}
                         >
-                          <ShieldCheck size={18} />
+                          <ShieldCheckIcon size={18} />
                         </Box>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>Safe verification</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>{t('auth.verify_phone.safe_verification_title')}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Your phone helps protect your account.
+                            {t('auth.verify_phone.safe_verification_desc')}
                           </Typography>
                         </Box>
                       </Stack>
@@ -533,29 +508,29 @@ export default function VerifyPhonePageV3() {
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                       <Button
                         variant="outlined"
-                        startIcon={<Phone size={18} />}
+                        startIcon={<PhoneIcon size={18} />}
                         sx={orangeOutlinedSx}
                         onClick={() => {
                           setNewPhone(phone);
                           setChangeOpen(true);
                         }}
                       >
-                        Change phone
+                        {t('auth.verify_phone.btn_change_phone')}
                       </Button>
                       <Button
                         variant="outlined"
-                        startIcon={<ArrowLeft size={18} />}
+                        startIcon={<ArrowLeftIcon size={18} />}
                         sx={orangeOutlinedSx}
                         onClick={() => navigate("/auth/verify-email")}
                       >
-                        Back
+                        {t('auth.verify_phone.btn_back')}
                       </Button>
                     </Stack>
 
                     <Divider sx={{ my: 1 }} />
 
                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      Demo code: <b>222222</b>
+                      <Trans i18nKey="auth.verify_phone.demo_code" components={{ b: <b /> }} />
                     </Typography>
                   </Stack>
                 </CardContent>
@@ -570,11 +545,11 @@ export default function VerifyPhonePageV3() {
                     <Stack spacing={2.0}>
                       <Stack spacing={0.8}>
                         <Stack direction="row" spacing={1} alignItems="center">
-                          <CheckCircle2 size={24} color={EVZONE.green} />
-                          <Typography variant="h6">Phone verified</Typography>
+                          <CheckCircleIcon size={24} color={EVZONE.green} />
+                          <Typography variant="h6">{t('auth.verify_phone.success_verified_title')}</Typography>
                         </Stack>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Your phone <b>{maskPhone(phone)}</b> is verified. You can now continue.
+                          <Trans i18nKey="auth.verify_phone.success_verified_desc" values={{ phone: maskPhone(phone) }} components={{ b: <b /> }} />
                         </Typography>
                       </Stack>
 
@@ -598,32 +573,32 @@ export default function VerifyPhonePageV3() {
                               border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
                             }}
                           >
-                            <ShieldCheck size={18} />
+                            <ShieldCheckIcon size={18} />
                           </Box>
                           <Box>
-                            <Typography sx={{ fontWeight: 900 }}>Next steps</Typography>
+                            <Typography sx={{ fontWeight: 900 }}>{t('auth.verify_phone.next_steps_title')}</Typography>
                             <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                              Continue to set your password or enable 2FA.
+                              {t('auth.verify_phone.next_steps_desc')}
                             </Typography>
                           </Box>
                         </Stack>
                       </Box>
 
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                        <Button variant="contained" color="secondary" endIcon={<ArrowRight size={18} />} sx={orangeContainedSx} onClick={continueNext}>
-                          Continue
+                        <Button variant="contained" color="secondary" endIcon={<ArrowRightIcon size={18} />} sx={orangeContainedSx} onClick={continueNext}>
+                          {t('auth.verify_phone.btn_continue')}
                         </Button>
-                        <Button variant="outlined" startIcon={<ArrowLeft size={18} />} sx={orangeOutlinedSx} onClick={() => navigate("/auth/verify-email")}>
-                          Back
+                        <Button variant="outlined" startIcon={<ArrowLeftIcon size={18} />} sx={orangeOutlinedSx} onClick={() => navigate("/auth/verify-email")}>
+                          {t('auth.verify_phone.btn_back')}
                         </Button>
                       </Stack>
                     </Stack>
                   ) : (
                     <Stack spacing={2.0}>
                       <Stack spacing={0.6}>
-                        <Typography variant="h6">Verify phone</Typography>
+                        <Typography variant="h6">{t('auth.verify_phone.title')}</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Enter the 6-digit code sent via <b>{channel}</b> to <b>{maskPhone(phone)}</b>.
+                          <Trans i18nKey="auth.verify_phone.enter_code_desc" values={{ channel, phone: maskPhone(phone) }} components={{ b: <b /> }} />
                         </Typography>
                       </Stack>
 
@@ -650,16 +625,16 @@ export default function VerifyPhonePageV3() {
                       </Box>
 
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                        <Button variant="contained" color="secondary" endIcon={<ArrowRight size={18} />} sx={orangeContainedSx} onClick={verify}>
-                          Verify phone
+                        <Button variant="contained" color="secondary" endIcon={<ArrowRightIcon size={18} />} sx={orangeContainedSx} onClick={verify}>
+                          {t('auth.verify_phone.btn_verify')}
                         </Button>
-                        <Button variant="outlined" onClick={resend} disabled={cooldown > 0} sx={orangeOutlinedSx} startIcon={<Timer size={18} />}>
-                          {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend code"}
+                        <Button variant="outlined" onClick={resend} disabled={cooldown > 0} sx={orangeOutlinedSx} startIcon={<TimerIcon size={18} />}>
+                          {cooldown > 0 ? t('auth.verify_phone.btn_resend_timer', { seconds: cooldown }) : t('auth.verify_phone.btn_resend')}
                         </Button>
                       </Stack>
 
                       <Button variant="text" sx={orangeTextSx} onClick={() => navigate("/auth/account-recovery-help")}>
-                        Didn’t receive the code?
+                        {t('auth.verify_phone.link_help')}
                       </Button>
                     </Stack>
                   )}
@@ -671,14 +646,14 @@ export default function VerifyPhonePageV3() {
           {/* Footer */}
           <Box className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
             <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-              © {new Date().getFullYear()} EVzone Group.
+              © {new Date().getFullYear()} {t('app_name')}.
             </Typography>
             <Stack direction="row" spacing={1.2} alignItems="center">
               <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
-                Terms
+                {t('auth.terms')}
               </Button>
               <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
-                Privacy
+                {t('auth.privacy')}
               </Button>
             </Stack>
           </Box>
@@ -690,22 +665,22 @@ export default function VerifyPhonePageV3() {
           onClose={() => setChangeOpen(false)}
           PaperProps={{ sx: { borderRadius: 20, border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}
         >
-          <DialogTitle sx={{ fontWeight: 950 }}>Change phone</DialogTitle>
+          <DialogTitle sx={{ fontWeight: 950 }}>{t('auth.verify_phone.dialog_change_phone_title')}</DialogTitle>
           <DialogContent>
             <Stack spacing={1.2}>
               <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                Update your phone number. We will send a new code via <b>{channel}</b>.
+                <Trans i18nKey="auth.verify_phone.dialog_change_phone_desc" values={{ channel }} components={{ b: <b /> }} />
               </Typography>
               <TextField
                 value={newPhone}
                 onChange={(e) => setNewPhone(e.target.value)}
-                label="New phone"
+                label={t('auth.verify_phone.dialog_new_phone_label')}
                 placeholder="+256..."
                 fullWidth
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Phone size={18} />
+                      <PhoneIcon size={18} />
                     </InputAdornment>
                   ),
                 }}
@@ -714,10 +689,10 @@ export default function VerifyPhonePageV3() {
           </DialogContent>
           <DialogActions sx={{ p: 2, pt: 0 }}>
             <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => setChangeOpen(false)}>
-              Cancel
+              {t('auth.verify_phone.dialog_btn_cancel')}
             </Button>
             <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={savePhoneChange}>
-              Save & send code
+              {t('auth.verify_phone.dialog_btn_save')}
             </Button>
           </DialogActions>
         </Dialog>

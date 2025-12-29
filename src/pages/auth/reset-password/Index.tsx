@@ -22,7 +22,24 @@ import {
   Typography,
 } from "@mui/material";
 import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
+import { useTranslation, Trans } from "react-i18next";
 import { motion } from "framer-motion";
+import LanguageSwitcher from "../../../components/common/LanguageSwitcher";
+import {
+  SunIcon,
+  MoonIcon,
+  HelpCircleIcon,
+  LockIcon,
+  KeyIcon,
+  EyeIcon,
+  EyeOffIcon,
+  ArrowRightIcon,
+  CheckCircleIcon,
+  TimerIcon,
+  MailIcon,
+  PhoneIcon,
+  WhatsAppIcon
+} from "../../../utils/icons";
 
 /**
  * EVzone My Accounts - Reset Password (v2)
@@ -59,197 +76,6 @@ const WHATSAPP = {
   green: "#25D366",
 } as const;
 
-// -----------------------------
-// Inline icons (CDN-safe)
-// -----------------------------
-function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      focusable="false"
-      style={{ display: "block" }}
-    >
-      {children}
-    </svg>
-  );
-}
-
-function SunIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
-      <path d="M12 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 12H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M22 12h-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function MoonIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path
-        d="M21 13a8 8 0 0 1-10-10 7.5 7.5 0 1 0 10 10Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-    </IconBase>
-  );
-}
-
-function GlobeIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function HelpCircleIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path
-        d="M9.5 9a2.5 2.5 0 1 1 3.2 2.4c-.9.3-1.2.8-1.2 1.6v.3"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path d="M12 17h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function LockIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <rect x="6" y="11" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="2" />
-      <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function KeyIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="8" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
-      <path d="M11 12h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M18 12v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M15 12v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function EyeIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path
-        d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <circle cx="12" cy="12" r="2.5" stroke="currentColor" strokeWidth="2" />
-    </IconBase>
-  );
-}
-
-function EyeOffIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M3 3l18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path
-        d="M2 12s3.5-7 10-7c2 0 3.8.5 5.3 1.3"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M22 12s-3.5 7-10 7c-2.2 0-4.2-.5-5.8-1.4"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path d="M10 10a3 3 0 0 0 4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function ArrowRightIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function CheckCircleIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="m8.5 12 2.3 2.3L15.8 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function TimerIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M10 2h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 14l3-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <circle cx="12" cy="13" r="8" stroke="currentColor" strokeWidth="2" />
-    </IconBase>
-  );
-}
-
-function MailIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <rect x="4" y="6" width="16" height="12" rx="2" stroke="currentColor" strokeWidth="2" />
-      <path d="M4 8l8 6 8-6" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function PhoneIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path
-        d="M22 16.9v3a2 2 0 0 1-2.2 2c-9.5-1-17-8.5-18-18A2 2 0 0 1 3.8 2h3a2 2 0 0 1 2 1.7c.2 1.4.6 2.8 1.2 4.1a2 2 0 0 1-.5 2.2L8.4 11.1a16 16 0 0 0 4.5 4.5l1.1-1.1a2 2 0 0 1 2.2-.5c1.3.6 2.7 1 4.1 1.2a2 2 0 0 1 1.7 2Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-    </IconBase>
-  );
-}
-
-function WhatsAppIcon({ size = 18 }: { size?: number }) {
-  // Official WhatsApp logo (Font Awesome path). Uses currentColor.
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 448 512"
-      fill="currentColor"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      focusable="false"
-      style={{ display: "block" }}
-    >
-      <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z" />
-    </svg>
-  );
-}
 
 // -----------------------------
 // Theme helpers
@@ -425,6 +251,7 @@ function OtpInput({
 }
 
 export default function ResetPasswordPageV2() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
@@ -541,18 +368,18 @@ export default function ResetPasswordPageV2() {
   const verifyToken = () => {
     setBanner(null);
     if (!token.trim()) {
-      setBanner({ severity: "warning", msg: "Enter the reset token from your email link." });
+      setBanner({ severity: "warning", msg: t('auth.reset_password.validation_token_empty') });
       return;
     }
     if (!tokenOk(token)) {
       setBanner({
         severity: "error",
-        msg: "Invalid or expired token. Try requesting a new reset link.",
+        msg: t('auth.reset_password.validation_token_invalid'),
       });
       return;
     }
     setStep("set");
-    setSnack({ open: true, severity: "success", msg: "Token verified. Set a new password." });
+    setSnack({ open: true, severity: "success", msg: t('auth.reset_password.success_token_verified') });
   };
 
   const expectedOtp = otpChannel === "whatsapp" ? "555555" : "444444"; // SMS+Email share a demo code
@@ -561,22 +388,22 @@ export default function ResetPasswordPageV2() {
     setBanner(null);
 
     if (!identifier.trim()) {
-      setBanner({ severity: "warning", msg: "Enter your email or phone number." });
+      setBanner({ severity: "warning", msg: t('auth.reset_password.validation_email_phone_empty') });
       return;
     }
 
     if (idType === "unknown") {
-      setBanner({ severity: "warning", msg: "Enter a valid email address or phone number." });
+      setBanner({ severity: "warning", msg: t('auth.reset_password.validation_email_phone_invalid') });
       return;
     }
 
     if (otpChannel === "email" && idType !== "email") {
-      setBanner({ severity: "warning", msg: "Email delivery is only available for email identifiers." });
+      setBanner({ severity: "warning", msg: t('auth.reset_password.validation_email_only') });
       return;
     }
 
     if ((otpChannel === "sms" || otpChannel === "whatsapp") && idType !== "phone") {
-      setBanner({ severity: "warning", msg: "SMS/WhatsApp delivery is only available for phone identifiers." });
+      setBanner({ severity: "warning", msg: t('auth.reset_password.validation_phone_only') });
       return;
     }
 
@@ -585,10 +412,10 @@ export default function ResetPasswordPageV2() {
 
     const msg =
       otpChannel === "email"
-        ? "Reset OTP sent via Email. Demo code: 444444"
+        ? t('auth.reset_password.otp_sent_email')
         : otpChannel === "sms"
-          ? "Reset OTP sent via SMS. Demo code: 444444"
-          : "Reset OTP sent via WhatsApp. Demo code: 555555";
+          ? t('auth.reset_password.otp_sent_sms')
+          : t('auth.reset_password.otp_sent_whatsapp');
 
     setSnack({ open: true, severity: "success", msg });
   };
@@ -597,28 +424,28 @@ export default function ResetPasswordPageV2() {
     setBanner(null);
 
     if (!codeSent) {
-      setBanner({ severity: "warning", msg: "Please send the OTP first." });
+      setBanner({ severity: "warning", msg: t('auth.reset_password.validation_send_otp_first') });
       return;
     }
 
     const code = otp.join("");
     if (code.length < 6) {
-      setBanner({ severity: "warning", msg: "Enter the 6-digit OTP." });
+      setBanner({ severity: "warning", msg: t('auth.reset_password.validation_otp_length') });
       return;
     }
 
     if (code !== expectedOtp) {
-      setBanner({ severity: "error", msg: "Incorrect OTP. Try again." });
+      setBanner({ severity: "error", msg: t('auth.reset_password.validation_otp_invalid') });
       return;
     }
 
     setStep("set");
-    setSnack({ open: true, severity: "success", msg: "OTP verified. Set a new password." });
+    setSnack({ open: true, severity: "success", msg: t('auth.reset_password.success_otp_verified') });
   };
 
   // Password setting step
   const s = strengthScore(pw);
-  const label = s <= 1 ? "Weak" : s === 2 ? "Fair" : s === 3 ? "Good" : s === 4 ? "Strong" : "Very strong";
+  const label = s <= 1 ? t('auth.reset_password.strength_weak') : s === 2 ? t('auth.reset_password.strength_fair') : s === 3 ? t('auth.reset_password.strength_good') : s === 4 ? t('auth.reset_password.strength_strong') : t('auth.reset_password.strength_very_strong');
   const r = reqs(pw);
   const canReset = s >= 3 && pw === confirm;
 
@@ -626,15 +453,15 @@ export default function ResetPasswordPageV2() {
     setBanner(null);
 
     if (!pw) {
-      setBanner({ severity: "warning", msg: "Enter a new password." });
+      setBanner({ severity: "warning", msg: t('auth.reset_password.validation_pw_empty') });
       return;
     }
     if (s < 3) {
-      setBanner({ severity: "warning", msg: "Please strengthen your password." });
+      setBanner({ severity: "warning", msg: t('auth.reset_password.validation_pw_strength') });
       return;
     }
     if (pw !== confirm) {
-      setBanner({ severity: "warning", msg: "Passwords do not match." });
+      setBanner({ severity: "warning", msg: t('auth.reset_password.validation_pw_mismatch') });
       return;
     }
 
@@ -642,7 +469,7 @@ export default function ResetPasswordPageV2() {
     setSnack({
       open: true,
       severity: "success",
-      msg: signOutAll ? "Password reset. All devices signed out (demo)." : "Password reset (demo).",
+      msg: signOutAll ? t('auth.reset_password.success_reset_signout') : t('auth.reset_password.success_reset'),
     });
   };
 
@@ -729,24 +556,21 @@ export default function ResetPasswordPageV2() {
               <Stack direction="row" alignItems="center" spacing={1.2}>
                 <Box
                   sx={{
-                    width: 38,
                     height: 38,
-                    borderRadius: 12,
-                    display: "grid",
-                    placeItems: "center",
-                    background:
-                      "linear-gradient(135deg, rgba(3,205,140,1) 0%, rgba(3,205,140,0.82) 55%, rgba(3,205,140,0.62) 100%)",
-                    boxShadow: `0 14px 40px ${alpha(isDark ? "#000" : "#0B1A17", 0.22)}`,
+                    display: "flex",
+                    alignItems: "center",
+                    cursor: 'pointer'
                   }}
+                  onClick={() => navigate('/auth/sign-in')}
                 >
-                  <Typography sx={{ color: "white", fontWeight: 900, letterSpacing: -0.4 }}>EV</Typography>
+                  <img src="/logo.png" alt="EVzone" style={{ height: '100%', width: 'auto' }} />
                 </Box>
                 <Box>
                   <Typography variant="subtitle1" sx={{ lineHeight: 1.1 }}>
-                    EVzone My Accounts
+                    {t('app_name')}
                   </Typography>
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    Reset password
+                    {t('auth.reset_password.title')}
                   </Typography>
                 </Box>
               </Stack>
@@ -767,19 +591,7 @@ export default function ResetPasswordPageV2() {
                   </IconButton>
                 </Tooltip>
 
-                <Tooltip title="Language">
-                  <IconButton
-                    size="small"
-                    sx={{
-                      border: `1px solid ${alpha(EVZONE.orange, 0.35)}`,
-                      borderRadius: 12,
-                      backgroundColor: alpha(theme.palette.background.paper, 0.6),
-                      color: EVZONE.orange,
-                    }}
-                  >
-                    <GlobeIcon size={18} />
-                  </IconButton>
-                </Tooltip>
+                <LanguageSwitcher />
 
                 <Tooltip title="Help">
                   <IconButton
@@ -813,15 +625,13 @@ export default function ResetPasswordPageV2() {
               <Card>
                 <CardContent className="p-5 md:p-6">
                   <Stack spacing={1.2}>
-                    <Typography variant="h6">Create a new password</Typography>
+                    <Typography variant="h6">{t('auth.reset_password.create_new_password')}</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      Reset tokens and OTPs are short-lived for your security.
+                      {t('auth.reset_password.create_new_password_desc')}
                     </Typography>
                     <Divider sx={{ my: 1 }} />
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      Demo token: <b>EVZ-RESET-TOKEN</b>
-                      <br />
-                      Demo OTP: SMS/Email <b>444444</b>, WhatsApp <b>555555</b>
+                      <Trans i18nKey="auth.reset_password.demo_token_info" components={{ b: <b /> }} />
                     </Typography>
                     <Divider sx={{ my: 1 }} />
                     <Button
@@ -831,7 +641,7 @@ export default function ResetPasswordPageV2() {
                         setSnack({ open: true, severity: "info", msg: "Back to /auth/forgot-password" })
                       }
                     >
-                      Back to forgot password
+                      {t('auth.reset_password.back_to_forgot')}
                     </Button>
                   </Stack>
                 </CardContent>
@@ -849,9 +659,9 @@ export default function ResetPasswordPageV2() {
                 <CardContent className="p-5 md:p-7">
                   <Stack spacing={2.0}>
                     <Stack spacing={0.6}>
-                      <Typography variant="h6">Reset password</Typography>
+                      <Typography variant="h6">{t('auth.reset_password.title')}</Typography>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        Verify your reset link token or use an OTP code.
+                        {t('auth.reset_password.subtitle')}
                       </Typography>
                     </Stack>
 
@@ -870,8 +680,8 @@ export default function ResetPasswordPageV2() {
                         "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 },
                       }}
                     >
-                      <Tab icon={<KeyIcon size={16} />} iconPosition="start" label="Link token" />
-                      <Tab icon={<TimerIcon size={16} />} iconPosition="start" label="OTP" />
+                      <Tab icon={<KeyIcon size={16} />} iconPosition="start" label={t('auth.reset_password.tab_token')} />
+                      <Tab icon={<TimerIcon size={16} />} iconPosition="start" label={t('auth.reset_password.tab_otp')} />
                     </Tabs>
 
                     {step === "verify" ? (
@@ -880,8 +690,8 @@ export default function ResetPasswordPageV2() {
                           <TextField
                             value={token}
                             onChange={(e) => setToken(e.target.value)}
-                            label="Reset token"
-                            placeholder="EVZ-RESET-TOKEN"
+                            label={t('auth.reset_password.token_label')}
+                            placeholder={t('auth.reset_password.token_placeholder')}
                             fullWidth
                             InputProps={{
                               startAdornment: (
@@ -890,7 +700,7 @@ export default function ResetPasswordPageV2() {
                                 </InputAdornment>
                               ),
                             }}
-                            helperText="Paste the token from your email reset link."
+                            helperText={t('auth.reset_password.token_helper')}
                           />
                           <Button
                             variant="contained"
@@ -899,7 +709,7 @@ export default function ResetPasswordPageV2() {
                             onClick={verifyToken}
                             endIcon={<ArrowRightIcon size={18} />}
                           >
-                            Verify token
+                            {t('auth.reset_password.verify_token_btn')}
                           </Button>
                         </Stack>
                       ) : (
@@ -907,8 +717,8 @@ export default function ResetPasswordPageV2() {
                           <TextField
                             value={identifier}
                             onChange={(e) => setIdentifier(e.target.value)}
-                            label="Email or phone"
-                            placeholder="name@example.com or +256..."
+                            label={t('auth.reset_password.email_phone_label')}
+                            placeholder={t('auth.reset_password.email_phone_placeholder')}
                             fullWidth
                             InputProps={{
                               startAdornment: (
@@ -917,33 +727,33 @@ export default function ResetPasswordPageV2() {
                                 </InputAdornment>
                               ),
                             }}
-                            helperText={idType === "unknown" ? "Enter a valid email or phone." : ""}
+                            helperText={idType === "unknown" ? t('auth.reset_password.email_phone_helper') : ""}
                           />
 
                           {/* Delivery method selection */}
                           <Box>
-                            <Typography sx={{ fontWeight: 900, mb: 1 }}>Delivery method</Typography>
+                            <Typography sx={{ fontWeight: 900, mb: 1 }}>{t('auth.reset_password.delivery_method')}</Typography>
                             <Box className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                               <ChannelCard
                                 value="email"
-                                title="Email"
-                                subtitle="Receive the OTP in your email inbox."
+                                title={t('auth.reset_password.channel_email')}
+                                subtitle={t('auth.reset_password.channel_email_desc')}
                                 icon={<MailIcon size={18} />}
                                 enabled={idType === "email"}
                                 accent="orange"
                               />
                               <ChannelCard
                                 value="sms"
-                                title="SMS"
-                                subtitle="Receive the OTP as an SMS."
+                                title={t('auth.reset_password.channel_sms')}
+                                subtitle={t('auth.reset_password.channel_sms_desc')}
                                 icon={<PhoneIcon size={18} />}
                                 enabled={idType === "phone"}
                                 accent="orange"
                               />
                               <ChannelCard
                                 value="whatsapp"
-                                title="WhatsApp"
-                                subtitle="Receive the OTP in WhatsApp chat."
+                                title={t('auth.reset_password.channel_whatsapp')}
+                                subtitle={t('auth.reset_password.channel_whatsapp_desc')}
                                 icon={<WhatsAppIcon size={18} />}
                                 enabled={idType === "phone"}
                                 accent="whatsapp"
@@ -951,7 +761,7 @@ export default function ResetPasswordPageV2() {
                             </Box>
                             {idType === "email" ? (
                               <Typography variant="caption" sx={{ color: theme.palette.text.secondary, mt: 1, display: "block" }}>
-                                Phone channels are available when you enter a phone number.
+                                {t('auth.reset_password.phone_channels_hint')}
                               </Typography>
                             ) : null}
                           </Box>
@@ -964,7 +774,7 @@ export default function ResetPasswordPageV2() {
                               onClick={sendOtp}
                               disabled={cooldown > 0 && codeSent}
                             >
-                              {codeSent ? "OTP sent" : "Send OTP"}
+                              {codeSent ? t('auth.reset_password.otp_sent') : t('auth.reset_password.send_otp')}
                             </Button>
                             <Button
                               variant="outlined"
@@ -973,7 +783,7 @@ export default function ResetPasswordPageV2() {
                               disabled={!codeSent || cooldown > 0}
                               startIcon={<TimerIcon size={18} />}
                             >
-                              {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend"}
+                              {cooldown > 0 ? t('auth.reset_password.resend_in', { seconds: cooldown }) : t('auth.reset_password.resend')}
                             </Button>
                           </Stack>
 
@@ -986,7 +796,7 @@ export default function ResetPasswordPageV2() {
                             onClick={verifyOtp}
                             endIcon={<ArrowRightIcon size={18} />}
                           >
-                            Verify OTP
+                            {t('auth.reset_password.verify_otp_btn')}
                           </Button>
                         </Stack>
                       )
@@ -995,7 +805,7 @@ export default function ResetPasswordPageV2() {
                         <TextField
                           value={pw}
                           onChange={(e) => setPw(e.target.value)}
-                          label="New password"
+                          label={t('auth.reset_password.new_password_label')}
                           type={showPw ? "text" : "password"}
                           fullWidth
                           InputProps={{
@@ -1021,7 +831,7 @@ export default function ResetPasswordPageV2() {
                         <TextField
                           value={confirm}
                           onChange={(e) => setConfirm(e.target.value)}
-                          label="Confirm password"
+                          label={t('auth.reset_password.confirm_password_label')}
                           type={showConfirm ? "text" : "password"}
                           fullWidth
                           InputProps={{
@@ -1083,14 +893,14 @@ export default function ResetPasswordPageV2() {
                             p: 1.2,
                           }}
                         >
-                          <Typography sx={{ fontWeight: 900, mb: 0.8 }}>Requirements</Typography>
+                          <Typography sx={{ fontWeight: 900, mb: 0.8 }}>{t('auth.reset_password.requirements_title')}</Typography>
                           <Stack spacing={0.5}>
                             {[
-                              { ok: r.len, text: "At least 8 characters" },
-                              { ok: r.upper, text: "One uppercase letter" },
-                              { ok: r.lower, text: "One lowercase letter" },
-                              { ok: r.num, text: "One number" },
-                              { ok: r.sym, text: "One symbol" },
+                              { ok: r.len, text: t('auth.reset_password.req_length') },
+                              { ok: r.upper, text: t('auth.reset_password.req_upper') },
+                              { ok: r.lower, text: t('auth.reset_password.req_lower') },
+                              { ok: r.num, text: t('auth.reset_password.req_number') },
+                              { ok: r.sym, text: t('auth.reset_password.req_symbol') },
                             ].map((it, idx) => (
                               <Typography
                                 key={idx}
@@ -1111,7 +921,7 @@ export default function ResetPasswordPageV2() {
                                 fontWeight: pw && pw === confirm ? 900 : 700,
                               }}
                             >
-                              • Passwords match
+                              • {t('auth.reset_password.req_match')}
                             </Typography>
                           </Stack>
                         </Box>
@@ -1127,7 +937,7 @@ export default function ResetPasswordPageV2() {
                               }}
                             />
                           }
-                          label={<Typography variant="body2">Sign out all devices</Typography>}
+                          label={<Typography variant="body2">{t('auth.reset_password.sign_out_all')}</Typography>}
                         />
 
                         <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
@@ -1139,11 +949,11 @@ export default function ResetPasswordPageV2() {
                             disabled={!canReset}
                             endIcon={<ArrowRightIcon size={18} />}
                           >
-                            Reset password
+                            {t('auth.reset_password.reset_password_btn')}
                           </Button>
                           <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => setStep("verify")}
                           >
-                            Back
+                            {t('auth.reset_password.back')}
                           </Button>
                         </Stack>
                       </Stack>
@@ -1153,10 +963,10 @@ export default function ResetPasswordPageV2() {
                           <Box sx={{ color: EVZONE.green }}>
                             <CheckCircleIcon size={22} />
                           </Box>
-                          <Typography variant="h6">Password updated</Typography>
+                          <Typography variant="h6">{t('auth.reset_password.password_updated')}</Typography>
                         </Stack>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Your password has been reset. You can sign in now.
+                          {t('auth.reset_password.password_updated_desc')}
                         </Typography>
                         <Button
                           variant="contained"
@@ -1165,7 +975,7 @@ export default function ResetPasswordPageV2() {
                           onClick={goSignIn}
                           endIcon={<ArrowRightIcon size={18} />}
                         >
-                          Go to sign in
+                          {t('auth.reset_password.go_to_signin')}
                         </Button>
                       </Stack>
                     )}
@@ -1179,7 +989,7 @@ export default function ResetPasswordPageV2() {
                         setSnack({ open: true, severity: "info", msg: "Navigate to /auth/account-recovery-help" })
                       }
                     >
-                      Account recovery help
+                      {t('auth.reset_password.account_recovery_help')}
                     </Button>
                   </Stack>
                 </CardContent>

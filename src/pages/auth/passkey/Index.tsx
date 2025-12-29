@@ -41,73 +41,19 @@ const THEME_KEY = "evzone_myaccounts_theme";
 // -----------------------------
 // Inline icons (CDN-safe)
 // -----------------------------
-function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{ display: "block" }}>
-      {children}
-    </svg>
-  );
-}
-function SunIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
-      <path d="M12 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 12H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M22 12h-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-function MoonIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M21 13a8 8 0 0 1-10-10 7.5 7.5 0 1 0 10 10Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-function GlobeIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-function FingerprintIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M12 11a3 3 0 0 1 3 3v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M9 14v2a6 6 0 0 0 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M6 14v2a9 9 0 0 0 9 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 7a7 7 0 0 1 7 7v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 7a7 7 0 0 0-7 7v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-function KeyIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M7 14a5 5 0 1 1 3.6-8.5L22 5v4l-3 1v3l-3 1v3h-4l-1.4-1.4A5 5 0 0 1 7 14Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-function LockIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <rect x="6" y="11" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="2" />
-      <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-function ArrowLeftIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M19 12H5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
+import { useTranslation, Trans } from "react-i18next";
+import LanguageSwitcher from "../../../components/common/LanguageSwitcher";
+import {
+  IconBase,
+  SunIcon,
+  MoonIcon,
+  GlobeIcon,
+  FingerprintIcon,
+  KeyIcon,
+  LockIcon,
+  ArrowLeftIcon,
+  HelpCircleIcon,
+} from "../../../utils/icons";
 
 // -----------------------------
 // Theme
@@ -184,7 +130,7 @@ async function tryWebAuthnGet(): Promise<{ ok: boolean; message: string }> {
   // This demo tries a minimal call and gracefully handles unsupported/blocked contexts.
   try {
     const nav: any = navigator as any;
-    if (!nav?.credentials?.get) return { ok: false, message: "WebAuthn is not available." };
+    if (!nav?.credentials?.get) return { ok: false, message: "WebAuthn is not available." }; // This string is internal/error, we can translate it if needed but maybe later. actually let's use t in the component
 
     const random = new Uint8Array(32);
     try {
@@ -231,6 +177,7 @@ function runSelfTestsOnce() {
 }
 
 export default function PasskeySignInPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
@@ -285,7 +232,7 @@ export default function PasskeySignInPage() {
     setBusy(true);
     try {
       if (!supportsPasskeys()) {
-        setSnack({ open: true, severity: "warning", msg: "Passkeys are not supported on this device/browser." });
+        setSnack({ open: true, severity: "warning", msg: t('auth.passkey.validation_no_support') });
         return;
       }
       const res = await tryWebAuthnGet();
@@ -300,14 +247,14 @@ export default function PasskeySignInPage() {
 
   const doPassword = () => {
     if (!identifier.trim()) {
-      setSnack({ open: true, severity: "warning", msg: "Enter email or phone." });
+      setSnack({ open: true, severity: "warning", msg: t('auth.passkey.validation_enter_identifier') });
       return;
     }
     if (password !== "EVzone123!") {
-      setSnack({ open: true, severity: "error", msg: "Invalid credentials (demo)." });
+      setSnack({ open: true, severity: "error", msg: t('auth.passkey.validation_invalid_credentials') });
       return;
     }
-    setSnack({ open: true, severity: "success", msg: "Signed in with password (demo)." });
+    setSnack({ open: true, severity: "success", msg: t('auth.passkey.success_signed_in') });
     navigate("/app");
   };
 
@@ -325,8 +272,8 @@ export default function PasskeySignInPage() {
                   <Typography sx={{ color: "white", fontWeight: 950, letterSpacing: -0.4 }}>EV</Typography>
                 </Box>
                 <Box>
-                  <Typography sx={{ fontWeight: 950, lineHeight: 1.05 }}>My Accounts</Typography>
-                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Passkey sign-in</Typography>
+                  <Typography sx={{ fontWeight: 950, lineHeight: 1.05 }}>{t('app_name')}</Typography>
+                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{t('auth.passkey.subtitle')}</Typography>
                 </Box>
               </Stack>
 
@@ -336,9 +283,11 @@ export default function PasskeySignInPage() {
                     {isDark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Language">
-                  <IconButton size="small" sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.30)}`, borderRadius: 12, color: EVZONE.orange, backgroundColor: alpha(theme.palette.background.paper, 0.60) }}>
-                    <GlobeIcon size={18} />
+                <LanguageSwitcher />
+
+                <Tooltip title="Help">
+                  <IconButton size="small" onClick={() => navigate("/auth/account-recovery-help")} sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.30)}`, borderRadius: 12, color: EVZONE.orange, backgroundColor: alpha(theme.palette.background.paper, 0.60) }}>
+                    <HelpCircleIcon size={18} />
                   </IconButton>
                 </Tooltip>
               </Stack>
@@ -355,18 +304,18 @@ export default function PasskeySignInPage() {
                   <Stack spacing={1.2}>
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} alignItems={{ xs: "flex-start", sm: "center" }} justifyContent="space-between">
                       <Box>
-                        <Typography variant="h4">Sign in</Typography>
+                        <Typography variant="h4">{t('auth.passkey.title')}</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Use a passkey (recommended) or sign in with password.
+                          {t('auth.passkey.desc')}
                         </Typography>
                         <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 1 }}>
-                          <Chip size="small" variant="outlined" label={supportsPasskeys() ? "Passkeys supported" : "Passkeys limited"} />
-                          <Chip size="small" variant="outlined" label="WebAuthn" />
+                          <Chip size="small" variant="outlined" label={supportsPasskeys() ? t('auth.passkey.tag_supported') : t('auth.passkey.tag_limited')} />
+                          <Chip size="small" variant="outlined" label={t('auth.passkey.tag_webauthn')} />
                         </Stack>
                       </Box>
 
                       <Button variant="outlined" sx={orangeOutlined} startIcon={<ArrowLeftIcon size={18} />} onClick={() => navigate("/auth/sign-in")}>
-                        Back
+                        {t('auth.passkey.btn_back')}
                       </Button>
                     </Stack>
 
@@ -375,33 +324,33 @@ export default function PasskeySignInPage() {
                     <TextField
                       value={identifier}
                       onChange={(e) => setIdentifier(e.target.value)}
-                      label="Email or phone"
+                      label={t('auth.passkey.input_identifier')}
                       fullWidth
-                      placeholder="name@example.com"
+                      placeholder={t('auth.passkey.input_identifier_placeholder')}
                       InputProps={{ startAdornment: (<InputAdornment position="start"><KeyIcon size={18} /></InputAdornment>) }}
                     />
 
                     <Alert severity="info" icon={<FingerprintIcon size={18} />}>
-                      Passkeys protect against phishing. Use your device lock to continue.
+                      {t('auth.passkey.alert_phishing')}
                     </Alert>
 
                     {busy ? (
                       <Box>
                         <LinearProgress />
-                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Waiting for passkey…</Typography>
+                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{t('auth.passkey.status_waiting')}</Typography>
                       </Box>
                     ) : null}
 
                     {view === "passkey" ? (
                       <Stack spacing={1.2}>
                         <Button variant="contained" sx={orangeContained} startIcon={<FingerprintIcon size={18} />} onClick={doPasskey} disabled={busy}>
-                          Continue with passkey
+                          {t('auth.passkey.btn_continue_passkey')}
                         </Button>
                         <Button variant="outlined" sx={orangeOutlined} startIcon={<LockIcon size={18} />} onClick={() => setView("password")} disabled={busy}>
-                          Use password instead
+                          {t('auth.passkey.btn_use_password')}
                         </Button>
                         <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                          If you do not have a passkey on this device, you can use your phone or switch to password.
+                          {t('auth.passkey.hint_no_passkey')}
                         </Typography>
                       </Stack>
                     ) : (
@@ -409,18 +358,18 @@ export default function PasskeySignInPage() {
                         <TextField
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          label="Password"
+                          label={t('auth.passkey.input_password')}
                           type="password"
                           fullWidth
                           InputProps={{ startAdornment: (<InputAdornment position="start"><LockIcon size={18} /></InputAdornment>) }}
-                          helperText="Demo password: EVzone123!"
+                          helperText={t('auth.passkey.helper_password_demo')}
                         />
                         <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                           <Button variant="contained" sx={greenContained} onClick={doPassword}>
-                            Sign in
+                            {t('auth.passkey.btn_sign_in')}
                           </Button>
                           <Button variant="outlined" sx={orangeOutlined} onClick={() => setView("passkey")}>
-                            Back to passkey
+                            {t('auth.passkey.btn_back_passkey')}
                           </Button>
                         </Stack>
                       </Stack>
@@ -430,15 +379,15 @@ export default function PasskeySignInPage() {
 
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                       <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/auth/forgot-password")}>
-                        Forgot password
+                        {t('auth.passkey.btn_forgot_password')}
                       </Button>
                       <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/auth/sign-in/otp")}>
-                        Use OTP
+                        {t('auth.passkey.btn_use_otp')}
                       </Button>
                     </Stack>
 
                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      By continuing, you agree to EVzone’s Terms and Privacy Policy.
+                      {t('auth.passkey.footer_terms')}
                     </Typography>
                   </Stack>
                 </CardContent>
@@ -450,10 +399,10 @@ export default function PasskeySignInPage() {
                   <CardContent sx={{ py: 1.1, px: 1.2 }}>
                     <Stack direction="row" spacing={1}>
                       <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => setView(view === "passkey" ? "password" : "passkey")}>
-                        {view === "passkey" ? "Password" : "Passkey"}
+                        {view === "passkey" ? t('auth.passkey.toggle_password') : t('auth.passkey.toggle_passkey')}
                       </Button>
                       <Button fullWidth variant="contained" sx={orangeContained} onClick={view === "passkey" ? doPasskey : doPassword} disabled={busy}>
-                        Continue
+                        {t('auth.passkey.btn_continue')}
                       </Button>
                     </Stack>
                   </CardContent>
