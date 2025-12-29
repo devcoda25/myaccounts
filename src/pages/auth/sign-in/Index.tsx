@@ -613,7 +613,7 @@ export default function SignInPageV41() {
                 <Tooltip title="Help">
                   <IconButton
                     size="small"
-                    onClick={() => setSnack({ open: true, severity: "info", msg: "Help Center (demo)" })}
+                    onClick={() => navigate("/auth/account-recovery-help")}
                     sx={{
                       border: `1px solid ${alpha(EVZONE.orange, 0.35)}`,
                       borderRadius: 12,
