@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Pagination from "../../../components/common/Pagination";
 import {
     Alert,
     Box,
@@ -138,6 +139,9 @@ export default function AdminUsersListPage() {
     const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
     const [q, setQ] = useState("");
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+
     const [statusFilter, setStatusFilter] = useState<UserStatus | "All">("All");
     const [typeFilter, setTypeFilter] = useState<AccountType | "All">("All");
     const [kycFilter, setKycFilter] = useState<KycTier | "All">("All");
@@ -463,23 +467,25 @@ export default function AdminUsersListPage() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {filtered.map((r) => (
-                                        <TableRow key={r.id} hover>
-                                            <TableCell>
-                                                <Stack>
-                                                    <Typography sx={{ fontWeight: 900 }}>{r.name}</Typography>
-                                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{r.email || r.phone}</Typography>
-                                                </Stack>
-                                            </TableCell>
-                                            <TableCell>{r.type}</TableCell>
-                                            <TableCell>{statusChip(r.status)}</TableCell>
-                                            <TableCell>{kycChip(r.kyc)}</TableCell>
-                                            <TableCell>{riskChip(r.risk)}</TableCell>
-                                            <TableCell>
-                                                <RowActions r={r} />
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
+                                    {filtered
+                                        .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
+                                        .map((r) => (
+                                            <TableRow key={r.id} hover>
+                                                <TableCell>
+                                                    <Stack>
+                                                        <Typography sx={{ fontWeight: 900 }}>{r.name}</Typography>
+                                                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{r.email || r.phone}</Typography>
+                                                    </Stack>
+                                                </TableCell>
+                                                <TableCell>{r.type}</TableCell>
+                                                <TableCell>{statusChip(r.status)}</TableCell>
+                                                <TableCell>{kycChip(r.kyc)}</TableCell>
+                                                <TableCell>{riskChip(r.risk)}</TableCell>
+                                                <TableCell>
+                                                    <RowActions r={r} />
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
                                     {filtered.length === 0 && (
                                         <TableRow>
                                             <TableCell colSpan={6} align="center" sx={{ py: 8 }}>
@@ -492,6 +498,19 @@ export default function AdminUsersListPage() {
                                 </TableBody>
                             </Table>
                         </TableContainer>
+                        <Divider />
+                        <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
+                            <Pagination
+                                page={page}
+                                count={filtered.length}
+                                rowsPerPage={rowsPerPage}
+                                onPageChange={setPage}
+                                onRowsPerPageChange={(n) => {
+                                    setRowsPerPage(n);
+                                    setPage(0);
+                                }}
+                            />
+                        </CardContent>
                     </Card>
                 </Stack>
             </Box>

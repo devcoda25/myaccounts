@@ -61,7 +61,7 @@ const AuthForgotPassword = lazy(() => import('../pages/auth/forgot-password/Inde
 const AuthMfa = lazy(() => import('../pages/auth/mfa/Index'))
 const NotFound = React.lazy(() => import('../pages/errors/NotFound'));
 const AdminRouter = React.lazy(() => import('./AdminRouter'));
-const AdminLogin = React.lazy(() => import('../pages/auth/admin/Login'));
+const AdminAuthRouter = lazy(() => import('./AdminAuthRouter'));
 const AuthPasskey = lazy(() => import('../pages/auth/passkey/Index'))
 const AuthReAuth = lazy(() => import('../pages/auth/re-auth/Index'))
 const AuthRecoveryCode = lazy(() => import('../pages/auth/recovery-code/Index'))
@@ -163,7 +163,7 @@ export default function AppRouter() {
             <Route path="/auth/sign-in" element={<AuthSignIn />} />
             <Route path="/auth/sign-in/otp" element={<AuthSignInOtp />} />
             <Route path="/auth/sign-up" element={<AuthSignUp />} />
-            <Route path="/auth/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/auth/*" element={<AdminAuthRouter />} />
             <Route path="/auth/signed-out" element={<AuthSignedOut />} />
             <Route path="/auth/verify-email" element={<AuthVerifyEmail />} />
             <Route path="/auth/verify-phone" element={<AuthVerifyPhone />} />

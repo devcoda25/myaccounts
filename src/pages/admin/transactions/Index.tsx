@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import Pagination from "../../../components/common/Pagination";
 import {
     Box,
     Card,
@@ -66,6 +67,8 @@ function mkTransactions(): Transaction[] {
 export default function TransactionsList() {
     const theme = useTheme();
     const [q, setQ] = useState("");
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const [typeFilter, setTypeFilter] = useState<TxType | "All">("All");
     const [statusFilter, setStatusFilter] = useState<TxStatus | "All">("All");
     const [txs] = useState<Transaction[]>(mkTransactions);
@@ -200,64 +203,66 @@ export default function TransactionsList() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filtered.map((t) => {
-                                const status = statusConfig(t.status);
-                                const type = typeConfig(t.type);
-                                return (
-                                    <TableRow key={t.id} hover>
-                                        <TableCell sx={{ fontFamily: 'monospace', fontWeight: 600 }}>{t.id}</TableCell>
-                                        <TableCell>
-                                            <Stack direction="row" spacing={1.5} alignItems="center">
-                                                <Avatar sx={{ width: 32, height: 32, fontSize: '0.8rem' }}>
-                                                    {t.user.name.charAt(0)}
-                                                </Avatar>
-                                                <Stack>
-                                                    <Typography variant="subtitle2" fontWeight={600}>{t.user.name}</Typography>
-                                                    <Typography variant="caption" color="text.secondary">{t.user.email}</Typography>
+                            {filtered
+                                .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
+                                .map((t) => {
+                                    const status = statusConfig(t.status);
+                                    const type = typeConfig(t.type);
+                                    return (
+                                        <TableRow key={t.id} hover>
+                                            <TableCell sx={{ fontFamily: 'monospace', fontWeight: 600 }}>{t.id}</TableCell>
+                                            <TableCell>
+                                                <Stack direction="row" spacing={1.5} alignItems="center">
+                                                    <Avatar sx={{ width: 32, height: 32, fontSize: '0.8rem' }}>
+                                                        {t.user.name.charAt(0)}
+                                                    </Avatar>
+                                                    <Stack>
+                                                        <Typography variant="subtitle2" fontWeight={600}>{t.user.name}</Typography>
+                                                        <Typography variant="caption" color="text.secondary">{t.user.email}</Typography>
+                                                    </Stack>
                                                 </Stack>
-                                            </Stack>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Chip
-                                                icon={type.icon}
-                                                label={t.type}
-                                                size="small"
-                                                sx={{ bgcolor: type.bg, color: type.color, fontWeight: 700, border: 'none' }}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <Typography variant="subtitle2" fontWeight={700} sx={{
-                                                color: t.amount > 0 ? EVZONE.green : 'text.primary'
-                                            }}>
-                                                {t.amount > 0 ? '+' : ''}{formatCurrency(t.amount, t.currency)}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Chip
-                                                label={t.status}
-                                                icon={status.icon}
-                                                size="small"
-                                                sx={{
-                                                    bgcolor: alpha(status.color, 0.1),
-                                                    color: status.color,
-                                                    fontWeight: 700,
-                                                    border: `1px solid ${alpha(status.color, 0.2)}`
-                                                }}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <Typography variant="body2" color="text.secondary">
-                                                {formatDate(t.date)}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="right">
-                                            <IconButton size="small">
-                                                <MoreHorizontal size={18} />
-                                            </IconButton>
-                                        </TableCell>
-                                    </TableRow>
-                                );
-                            })}
+                                            </TableCell>
+                                            <TableCell>
+                                                <Chip
+                                                    icon={type.icon}
+                                                    label={t.type}
+                                                    size="small"
+                                                    sx={{ bgcolor: type.bg, color: type.color, fontWeight: 700, border: 'none' }}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Typography variant="subtitle2" fontWeight={700} sx={{
+                                                    color: t.amount > 0 ? EVZONE.green : 'text.primary'
+                                                }}>
+                                                    {t.amount > 0 ? '+' : ''}{formatCurrency(t.amount, t.currency)}
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Chip
+                                                    label={t.status}
+                                                    icon={status.icon}
+                                                    size="small"
+                                                    sx={{
+                                                        bgcolor: alpha(status.color, 0.1),
+                                                        color: status.color,
+                                                        fontWeight: 700,
+                                                        border: `1px solid ${alpha(status.color, 0.2)}`
+                                                    }}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    {formatDate(t.date)}
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                <IconButton size="small">
+                                                    <MoreHorizontal size={18} />
+                                                </IconButton>
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })}
 
                             {filtered.length === 0 && (
                                 <TableRow>
@@ -271,6 +276,19 @@ export default function TransactionsList() {
                         </TableBody>
                     </Table>
                 </TableContainer>
+
+                <Box sx={{ p: 2, borderTop: `1px solid ${theme.palette.divider}` }}>
+                    <Pagination
+                        page={page}
+                        count={filtered.length}
+                        rowsPerPage={rowsPerPage}
+                        onPageChange={setPage}
+                        onRowsPerPageChange={(n) => {
+                            setRowsPerPage(n);
+                            setPage(0);
+                        }}
+                    />
+                </Box>
             </Paper>
         </Box>
     );

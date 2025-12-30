@@ -8,7 +8,6 @@ import {
   CardContent,
   Checkbox,
   Chip,
-  CssBaseline,
   Divider,
   FormControlLabel,
   IconButton,
@@ -18,13 +17,14 @@ import {
   Stack,
   Switch,
   TextField,
-  Tooltip,
   Typography,
+  useTheme
 } from "@mui/material";
-import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
+import { alpha } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import AuthHeader from "../../../components/headers/AuthHeader";
+import { EVZONE } from "../../../theme/evzone";
 
 /**
  * EVzone My Accounts - Sign In v4.1 (Passkey Outline)
@@ -41,15 +41,9 @@ import AuthHeader from "../../../components/headers/AuthHeader";
  */
 
 import {
-  ThemeMode,
   Severity
 } from "../../../utils/types";
 import {
-  IconBase,
-  SunIcon,
-  MoonIcon,
-  GlobeIcon,
-  HelpCircleIcon,
   LockIcon,
   MailIcon,
   PhoneIcon,
@@ -61,78 +55,6 @@ import {
   GoogleGIcon,
   AppleIcon
 } from "../../../utils/icons";
-
-const EVZONE = {
-  green: "#03cd8c",
-  orange: "#f77f00",
-} as const;
-
-
-
-// -----------------------------
-// Theme
-// -----------------------------
-function getStoredMode(): ThemeMode {
-  try {
-    const v = window.localStorage.getItem("evzone_myaccounts_theme");
-    return v === "light" || v === "dark" ? (v as ThemeMode) : "light";
-  } catch {
-    return "light";
-  }
-}
-
-function setStoredMode(mode: ThemeMode) {
-  try {
-    window.localStorage.setItem("evzone_myaccounts_theme", mode);
-  } catch {
-    // ignore
-  }
-}
-
-function buildTheme(mode: ThemeMode) {
-  const isDark = mode === "dark";
-
-  const bg = isDark ? "#07110F" : "#F4FFFB";
-  const paper = isDark ? "#0B1A17" : "#FFFFFF";
-  const textPrimary = isDark ? "#E9FFF7" : "#0B1A17";
-  const textSecondary = isDark ? alpha("#E9FFF7", 0.74) : alpha("#0B1A17", 0.70);
-
-  return createTheme({
-    palette: {
-      mode,
-      primary: { main: EVZONE.green },
-      secondary: { main: EVZONE.orange },
-      background: { default: bg, paper },
-      text: { primary: textPrimary, secondary: textSecondary },
-      divider: isDark ? alpha("#E9FFF7", 0.12) : alpha("#0B1A17", 0.10),
-    },
-    shape: { borderRadius: 18 },
-    typography: {
-      fontFamily:
-        "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji",
-      h6: { fontWeight: 900, letterSpacing: -0.28 },
-      subtitle1: { fontWeight: 760 },
-      button: { fontWeight: 900, textTransform: "none" },
-    },
-    components: {
-      MuiCard: {
-        styleOverrides: {
-          root: {
-            borderRadius: 24,
-            border: `1px solid ${isDark ? alpha("#E9FFF7", 0.10) : alpha("#0B1A17", 0.10)}`,
-            backgroundImage:
-              "radial-gradient(900px 420px at 12% 0%, rgba(3,205,140,0.14), transparent 60%), radial-gradient(900px 420px at 88% 0%, rgba(3,205,140,0.10), transparent 55%)",
-          },
-        },
-      },
-      MuiButton: {
-        styleOverrides: {
-          root: { borderRadius: 14, paddingTop: 10, paddingBottom: 10, boxShadow: "none" },
-        },
-      },
-    },
-  });
-}
 
 // -----------------------------
 // Helpers
@@ -213,9 +135,8 @@ function runSelfTestsOnce() {
 export default function SignInPageV41() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
-  const theme = useMemo(() => buildTheme(mode), [mode]);
-  const isDark = mode === "dark";
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
 
   const [identifier, setIdentifier] = useState("ronald@evzone.com");
   const [password, setPassword] = useState("");
@@ -265,12 +186,6 @@ export default function SignInPageV41() {
     };
   }, []);
 
-  const toggleMode = () => {
-    const next: ThemeMode = mode === "light" ? "dark" : "light";
-    setMode(next);
-    setStoredMode(next);
-  };
-
   const isLocked = lockUntil !== null && Date.now() < lockUntil;
   const secondsLeft = isLocked ? Math.max(1, Math.ceil((lockUntil! - Date.now()) / 1000)) : 0;
 
@@ -279,18 +194,19 @@ export default function SignInPageV41() {
     const t = window.setInterval(() => setLockTick((x) => x + 1), 500);
     return () => window.clearInterval(t);
   }, [isLocked]);
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const _lockTick = lockTick;
 
   const pageBg =
-    mode === "dark"
+    isDark
       ? "radial-gradient(1200px 600px at 12% 6%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 10%, rgba(3,205,140,0.16), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
       : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.18), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.12), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
 
   const orangeContainedSx = {
     backgroundColor: EVZONE.orange,
     color: "#FFFFFF",
-    boxShadow: `0 18px 48px ${alpha(EVZONE.orange, mode === "dark" ? 0.28 : 0.20)}`,
+    boxShadow: `0 18px 48px ${alpha(EVZONE.orange, isDark ? 0.28 : 0.20)}`,
     "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
     "&:active": { backgroundColor: alpha(EVZONE.orange, 0.86), color: "#FFFFFF" },
   } as const;
@@ -305,7 +221,7 @@ export default function SignInPageV41() {
   const orangeTextSx = {
     color: EVZONE.orange,
     fontWeight: 900,
-    "&:hover": { backgroundColor: alpha(EVZONE.orange, mode === "dark" ? 0.14 : 0.10) },
+    "&:hover": { backgroundColor: alpha(EVZONE.orange, isDark ? 0.14 : 0.10) },
   } as const;
 
   const googleBtnSx = {
@@ -329,15 +245,6 @@ export default function SignInPageV41() {
 
     const id = identifier.trim();
     if (!id) {
-      setBanner({ severity: "warning", msg: t('auth.sign_in.email_phone_placeholder') }); // Using placeholder text or generic msg? Use generic msg for validation? Maybe add validation keys.
-      // For now, let's keep English or add keys for validation. I'll stick to a generic prompt or reuse placeholder
-      // Actually I should add validation keys. I'll use hardcoded for now or reuse existing if suitable.
-      // Let's use hardcoded literal for now to avoid breaking flow, or add validation keys later.
-      // Wait, user said "each and every word". I MUST translate this.
-      // I'll add validation keys to translation.json in a separate step or just use "Sign in" title as fallback?
-      // I'll add a new key "enter_email" to sign_in in next step.
-      // For now, I will skip replacing validation strings inside functions to avoid complex edits in one go,
-      // and focus on UI strings first.
       setBanner({ severity: "warning", msg: "Enter your email or phone number." });
       return;
     }
@@ -414,253 +321,250 @@ export default function SignInPageV41() {
     );
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Box className="min-h-screen" sx={{ background: pageBg }}>
-        {/* Unified Auth Header */}
-        <AuthHeader
-          title={t('app_name')}
-          subtitle={t('auth.sign_in.subtitle')}
-        />
+    <Box className="min-h-screen" sx={{ background: pageBg }}>
+      {/* Unified Auth Header */}
+      <AuthHeader
+        title={t('app_name')}
+        subtitle={t('auth.sign_in.subtitle')}
+      />
 
-        {/* Body */}
-        <Box className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">
-          <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
-            {/* Left */}
-            <motion.div className="md:col-span-5" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
-              <Card>
-                <CardContent className="p-5 md:p-6">
-                  <Stack spacing={1.2}>
-                    <Typography variant="h6">{t('auth.sign_in.one_account_title')}</Typography>
+      {/* Body */}
+      <Box className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">
+        <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
+          {/* Left */}
+          <motion.div className="md:col-span-5" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
+            <Card>
+              <CardContent className="p-5 md:p-6">
+                <Stack spacing={1.2}>
+                  <Typography variant="h6">{t('auth.sign_in.one_account_title')}</Typography>
+                  <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                    {t('auth.sign_in.one_account_desc')}
+                  </Typography>
+
+                  <Divider sx={{ my: 1 }} />
+
+                  <Stack spacing={1.1}>
+                    <FeatureRow icon={<ShieldCheckIcon size={18} />} title={t('auth.sign_in.secure_sessions')} desc={t('auth.sign_in.secure_sessions_desc')} bg={EVZONE.green} />
+                    <FeatureRow icon={<FingerprintIcon size={18} />} title={t('auth.sign_in.passkeys')} desc={t('auth.sign_in.passkeys_desc')} bg={EVZONE.green} />
+                    <FeatureRow icon={<LockIcon size={18} />} title={t('auth.sign_in.privacy_first')} desc={t('auth.sign_in.privacy_first_desc')} bg={EVZONE.green} />
+                  </Stack>
+
+                  <Divider sx={{ my: 1 }} />
+                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                    {t('auth.sign_in.demo_login', { email: 'ronald@evzone.com', password: 'EVzone123!' })}
+                  </Typography>
+                </Stack>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Right */}
+          <motion.div className="md:col-span-7" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.05 }}>
+            <Card>
+              <CardContent className="p-5 md:p-7">
+                <Stack spacing={2.0}>
+                  <Stack spacing={0.6}>
+                    <Typography variant="h6">{t('auth.sign_in.form_title')}</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      {t('auth.sign_in.one_account_desc')}
-                    </Typography>
-
-                    <Divider sx={{ my: 1 }} />
-
-                    <Stack spacing={1.1}>
-                      <FeatureRow icon={<ShieldCheckIcon size={18} />} title={t('auth.sign_in.secure_sessions')} desc={t('auth.sign_in.secure_sessions_desc')} bg={EVZONE.green} />
-                      <FeatureRow icon={<FingerprintIcon size={18} />} title={t('auth.sign_in.passkeys')} desc={t('auth.sign_in.passkeys_desc')} bg={EVZONE.green} />
-                      <FeatureRow icon={<LockIcon size={18} />} title={t('auth.sign_in.privacy_first')} desc={t('auth.sign_in.privacy_first_desc')} bg={EVZONE.green} />
-                    </Stack>
-
-                    <Divider sx={{ my: 1 }} />
-                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      {t('auth.sign_in.demo_login', { email: 'ronald@evzone.com', password: 'EVzone123!' })}
+                      {t('auth.sign_in.form_subtitle')}
                     </Typography>
                   </Stack>
-                </CardContent>
-              </Card>
-            </motion.div>
 
-            {/* Right */}
-            <motion.div className="md:col-span-7" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.05 }}>
-              <Card>
-                <CardContent className="p-5 md:p-7">
-                  <Stack spacing={2.0}>
-                    <Stack spacing={0.6}>
-                      <Typography variant="h6">{t('auth.sign_in.form_title')}</Typography>
-                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        {t('auth.sign_in.form_subtitle')}
-                      </Typography>
-                    </Stack>
-
-                    {/* Social + Passkeys */}
-                    <Stack spacing={1}>
-                      <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                        <Button
-                          fullWidth
-                          variant="outlined"
-                          startIcon={<GoogleGIcon size={18} />}
-                          onClick={onGoogle}
-                          sx={{ ...googleBtnSx, borderRadius: 14, textTransform: "none", fontWeight: 800 }}
-                        >
-                          {t('auth.sign_in.continue_google')}
-                        </Button>
-                        <Button
-                          fullWidth
-                          variant="contained"
-                          startIcon={<AppleIcon size={18} />}
-                          onClick={onApple}
-                          sx={{ ...appleBtnSx, borderRadius: 14, textTransform: "none", fontWeight: 800 }}
-                        >
-                          {t('auth.sign_in.continue_apple')}
-                        </Button>
-                      </Stack>
-
-                      {/* Passkey button: OUTLINED + hover fills orange */}
+                  {/* Social + Passkeys */}
+                  <Stack spacing={1}>
+                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                       <Button
                         fullWidth
                         variant="outlined"
-                        startIcon={<FingerprintIcon size={18} />}
-                        onClick={onPasskey}
-                        disabled={passkeySupported === false || passkeyBusy}
-                        sx={orangeOutlinedSx}
+                        startIcon={<GoogleGIcon size={18} />}
+                        onClick={onGoogle}
+                        sx={{ ...googleBtnSx, borderRadius: 14, textTransform: "none", fontWeight: 800 }}
                       >
-                        {passkeyBusy ? t('auth.sign_in.waiting_passkey') : t('auth.sign_in.continue_passkey')}
+                        {t('auth.sign_in.continue_google')}
                       </Button>
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        startIcon={<AppleIcon size={18} />}
+                        onClick={onApple}
+                        sx={{ ...appleBtnSx, borderRadius: 14, textTransform: "none", fontWeight: 800 }}
+                      >
+                        {t('auth.sign_in.continue_apple')}
+                      </Button>
+                    </Stack>
 
-                      <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
-                        {passkeyChip}
-                        <Chip size="small" variant="outlined" label={t('auth.sign_in.setup_passkeys_later')} />
-                      </Stack>
+                    {/* Passkey button: OUTLINED + hover fills orange */}
+                    <Button
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<FingerprintIcon size={18} />}
+                      onClick={onPasskey}
+                      disabled={passkeySupported === false || passkeyBusy}
+                      sx={orangeOutlinedSx}
+                    >
+                      {passkeyBusy ? t('auth.sign_in.waiting_passkey') : t('auth.sign_in.continue_passkey')}
+                    </Button>
 
-                      {passkeyBusy ? (
+                    <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
+                      {passkeyChip}
+                      <Chip size="small" variant="outlined" label={t('auth.sign_in.setup_passkeys_later')} />
+                    </Stack>
+
+                    {passkeyBusy ? (
+                      <Box>
+                        <LinearProgress />
+                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                          {t('auth.sign_in.otp_fallback')}
+                        </Typography>
+                      </Box>
+                    ) : null}
+
+                    <Divider>{t('auth.sign_in.or')}</Divider>
+                  </Stack>
+
+                  {banner ? <Alert severity={banner.severity}>{banner.msg}</Alert> : null}
+
+                  <Stack spacing={1.4}>
+                    <TextField
+                      value={identifier}
+                      onChange={(e) => setIdentifier(e.target.value)}
+                      label={t('auth.sign_in.email_phone_label')}
+                      placeholder={t('auth.sign_in.email_phone_placeholder')}
+                      fullWidth
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            {identifier.trim().startsWith("+") || /\d/.test(identifier.trim().slice(0, 1)) ? (
+                              <PhoneIcon size={18} />
+                            ) : (
+                              <MailIcon size={18} />
+                            )}
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+
+                    <TextField
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      label={t('auth.sign_in.password_label')}
+                      type={showPassword ? "text" : "password"}
+                      fullWidth
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <LockIcon size={18} />
+                          </InputAdornment>
+                        ),
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              size="small"
+                              onClick={() => setShowPassword((v) => !v)}
+                              aria-label={showPassword ? "Hide password" : "Show password"}
+                              sx={{ color: EVZONE.orange }}
+                            >
+                              {showPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+
+                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems={{ xs: "stretch", sm: "center" }} justifyContent="space-between">
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={rememberMe}
+                            onChange={(e) => setRememberMe(e.target.checked)}
+                            sx={{ color: alpha(EVZONE.orange, 0.7), "&.Mui-checked": { color: EVZONE.orange } }}
+                          />
+                        }
+                        label={<Typography variant="body2">{t('auth.sign_in.remember_device')}</Typography>}
+                      />
+                      <Button variant="text" sx={orangeTextSx} onClick={() => navigate("/auth/forgot-password")}>
+                        {t('auth.sign_in.forgot_password')}
+                      </Button>
+                    </Stack>
+
+                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        endIcon={<ArrowRightIcon size={18} />}
+                        onClick={submitPasswordSignIn}
+                        disabled={isLocked}
+                        sx={orangeContainedSx}
+                      >
+                        {isLocked ? t('auth.sign_in.try_again_in', { seconds: secondsLeft }) : t('auth.sign_in.sign_in_btn')}
+                      </Button>
+                      <Button fullWidth variant="outlined" onClick={() => navigate("/auth/sign-up")} sx={orangeOutlinedSx}>
+                        {t('auth.sign_in.create_account')}
+                      </Button>
+                    </Stack>
+
+                    {/* OTP toggle */}
+                    <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
+                      <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ xs: "flex-start", sm: "center" }} justifyContent="space-between" spacing={1}>
                         <Box>
-                          <LinearProgress />
-                          <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                            {t('auth.sign_in.otp_fallback')}
+                          <Typography sx={{ fontWeight: 900 }}>{t('auth.sign_in.use_otp_title')}</Typography>
+                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                            {t('auth.sign_in.use_otp_desc')}
                           </Typography>
                         </Box>
+                        <Switch checked={useOtpInstead} onChange={(e) => setUseOtpInstead(e.target.checked)} />
+                      </Stack>
+                      {useOtpInstead ? (
+                        <Box sx={{ mt: 1.2 }}>
+                          <Button fullWidth variant="contained" onClick={() => setSnack({ open: true, severity: "info", msg: "OTP sign-in coming soon." })} sx={orangeContainedSx}>
+                            {t('auth.sign_in.continue_otp')}
+                          </Button>
+                        </Box>
                       ) : null}
+                    </Box>
 
-                      <Divider>{t('auth.sign_in.or')}</Divider>
-                    </Stack>
-
-                    {banner ? <Alert severity={banner.severity}>{banner.msg}</Alert> : null}
-
-                    <Stack spacing={1.4}>
-                      <TextField
-                        value={identifier}
-                        onChange={(e) => setIdentifier(e.target.value)}
-                        label={t('auth.sign_in.email_phone_label')}
-                        placeholder={t('auth.sign_in.email_phone_placeholder')}
-                        fullWidth
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              {identifier.trim().startsWith("+") || /\d/.test(identifier.trim().slice(0, 1)) ? (
-                                <PhoneIcon size={18} />
-                              ) : (
-                                <MailIcon size={18} />
-                              )}
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-
-                      <TextField
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        label={t('auth.sign_in.password_label')}
-                        type={showPassword ? "text" : "password"}
-                        fullWidth
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <LockIcon size={18} />
-                            </InputAdornment>
-                          ),
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              <IconButton
-                                size="small"
-                                onClick={() => setShowPassword((v) => !v)}
-                                aria-label={showPassword ? "Hide password" : "Show password"}
-                                sx={{ color: EVZONE.orange }}
-                              >
-                                {showPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
-                              </IconButton>
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-
-                      <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems={{ xs: "stretch", sm: "center" }} justifyContent="space-between">
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={rememberMe}
-                              onChange={(e) => setRememberMe(e.target.checked)}
-                              sx={{ color: alpha(EVZONE.orange, 0.7), "&.Mui-checked": { color: EVZONE.orange } }}
-                            />
-                          }
-                          label={<Typography variant="body2">{t('auth.sign_in.remember_device')}</Typography>}
-                        />
-                        <Button variant="text" sx={orangeTextSx} onClick={() => navigate("/auth/forgot-password")}>
-                          {t('auth.sign_in.forgot_password')}
-                        </Button>
-                      </Stack>
-
-                      <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                        <Button
-                          fullWidth
-                          variant="contained"
-                          endIcon={<ArrowRightIcon size={18} />}
-                          onClick={submitPasswordSignIn}
-                          disabled={isLocked}
-                          sx={orangeContainedSx}
-                        >
-                          {isLocked ? t('auth.sign_in.try_again_in', { seconds: secondsLeft }) : t('auth.sign_in.sign_in_btn')}
-                        </Button>
-                        <Button fullWidth variant="outlined" onClick={() => navigate("/auth/sign-up")} sx={orangeOutlinedSx}>
-                          {t('auth.sign_in.create_account')}
-                        </Button>
-                      </Stack>
-
-                      {/* OTP toggle */}
-                      <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
-                        <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ xs: "flex-start", sm: "center" }} justifyContent="space-between" spacing={1}>
-                          <Box>
-                            <Typography sx={{ fontWeight: 900 }}>{t('auth.sign_in.use_otp_title')}</Typography>
-                            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                              {t('auth.sign_in.use_otp_desc')}
-                            </Typography>
-                          </Box>
-                          <Switch checked={useOtpInstead} onChange={(e) => setUseOtpInstead(e.target.checked)} />
-                        </Stack>
-                        {useOtpInstead ? (
-                          <Box sx={{ mt: 1.2 }}>
-                            <Button fullWidth variant="contained" onClick={() => setSnack({ open: true, severity: "info", msg: "OTP sign-in coming soon." })} sx={orangeContainedSx}>
-                              {t('auth.sign_in.continue_otp')}
-                            </Button>
-                          </Box>
-                        ) : null}
-                      </Box>
-
-                      <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                        {t('auth.sign_in.terms_agreement')}
-                      </Typography>
-                    </Stack>
+                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                      {t('auth.sign_in.terms_agreement')}
+                    </Typography>
                   </Stack>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </Box>
-
-          {/* Footer */}
-          <Box className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
-            <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-              © {new Date().getFullYear()} EVzone Group.
-            </Typography>
-            <Stack direction="row" spacing={1.2} alignItems="center">
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
-                {t('auth.terms')}
-              </Button>
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
-                {t('auth.privacy')}
-              </Button>
-            </Stack>
-          </Box>
+                </Stack>
+              </CardContent>
+            </Card>
+          </motion.div>
         </Box>
 
-        <Snackbar open={snack.open} autoHideDuration={3400} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-          <Alert
-            onClose={() => setSnack((s) => ({ ...s, open: false }))}
-            severity={snack.severity}
-            variant={mode === "dark" ? "filled" : "standard"}
-            sx={{
-              borderRadius: 16,
-              border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`,
-              backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.92) : alpha(theme.palette.background.paper, 0.96),
-              color: theme.palette.text.primary,
-            }}
-          >
-            {snack.msg}
-          </Alert>
-        </Snackbar>
+        {/* Footer */}
+        <Box className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
+          <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+            © {new Date().getFullYear()} EVzone Group.
+          </Typography>
+          <Stack direction="row" spacing={1.2} alignItems="center">
+            <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
+              {t('auth.terms')}
+            </Button>
+            <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
+              {t('auth.privacy')}
+            </Button>
+          </Stack>
+        </Box>
       </Box>
-    </ThemeProvider>
+
+      <Snackbar open={snack.open} autoHideDuration={3400} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+        <Alert
+          onClose={() => setSnack((s) => ({ ...s, open: false }))}
+          severity={snack.severity}
+          variant={isDark ? "filled" : "standard"}
+          sx={{
+            borderRadius: 16,
+            border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`,
+            backgroundColor: isDark ? alpha(theme.palette.background.paper, 0.92) : alpha(theme.palette.background.paper, 0.96),
+            color: theme.palette.text.primary,
+          }}
+        >
+          {snack.msg}
+        </Alert>
+      </Snackbar>
+    </Box>
   );
 }
 

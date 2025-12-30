@@ -8,24 +8,23 @@ import {
   Card,
   CardContent,
   Checkbox,
-  CssBaseline,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Divider,
   FormControlLabel,
-  IconButton,
   Snackbar,
   Stack,
   TextField,
-  Tooltip,
   Typography,
+  useTheme
 } from "@mui/material";
-import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
+import { alpha } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import AuthHeader from "../../../components/headers/AuthHeader";
+import { EVZONE } from "../../../theme/evzone";
 
 /**
  * EVzone My Accounts - Forgot Password
@@ -41,98 +40,21 @@ import AuthHeader from "../../../components/headers/AuthHeader";
  * • Buttons: orange-only with white text (outlined hover -> solid orange + white text)
  */
 
-import { ThemeMode, Severity, IdType, Delivery, Step } from "../../../utils/types";
+import { Delivery, Step } from "../../../utils/types";
 import {
-  SunIcon,
-  MoonIcon,
-  GlobeIcon,
-  ArrowLeftIcon,
   ArrowRightIcon,
   MailIcon,
-  ShieldCheckIcon,
   HelpCircleIcon,
   PhoneIcon,
   TimerIcon,
   WhatsAppIcon
 } from "../../../utils/icons";
 
-const EVZONE = {
-  green: "#03cd8c",
-  orange: "#f77f00",
-} as const;
-
-
-
 const WHATSAPP = {
   green: "#25D366",
 } as const;
 
-
-
-// -----------------------------
-// Theme helpers
-// -----------------------------
-function getStoredMode(): ThemeMode {
-  try {
-    const v = window.localStorage.getItem("evzone_myaccounts_theme");
-    return v === "light" || v === "dark" ? (v as ThemeMode) : "light";
-  } catch {
-    return "light";
-  }
-}
-
-function setStoredMode(mode: ThemeMode) {
-  try {
-    window.localStorage.setItem("evzone_myaccounts_theme", mode);
-  } catch {
-    // ignore
-  }
-}
-
-function buildTheme(mode: ThemeMode) {
-  const isDark = mode === "dark";
-
-  const bg = isDark ? "#07110F" : "#F4FFFB";
-  const paper = isDark ? "#0B1A17" : "#FFFFFF";
-  const textPrimary = isDark ? "#E9FFF7" : "#0B1A17";
-  const textSecondary = isDark ? alpha("#E9FFF7", 0.74) : alpha("#0B1A17", 0.70);
-
-  return createTheme({
-    palette: {
-      mode,
-      primary: { main: EVZONE.green },
-      secondary: { main: EVZONE.orange },
-      background: { default: bg, paper },
-      text: { primary: textPrimary, secondary: textSecondary },
-      divider: isDark ? alpha("#E9FFF7", 0.12) : alpha("#0B1A17", 0.10),
-    },
-    shape: { borderRadius: 2 },
-    typography: {
-      fontFamily:
-        "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji",
-      h6: { fontWeight: 900, letterSpacing: -0.28 },
-      subtitle1: { fontWeight: 760 },
-      button: { fontWeight: 900, textTransform: "none" },
-    },
-    components: {
-      MuiCard: {
-        styleOverrides: {
-          root: {
-            borderRadius: 2,
-            border: `1px solid ${isDark ? alpha("#E9FFF7", 0.10) : alpha("#0B1A17", 0.10)}`,
-            backgroundImage:
-              "radial-gradient(900px 420px at 12% 0%, rgba(3,205,140,0.14), transparent 60%), radial-gradient(900px 420px at 88% 0%, rgba(3,205,140,0.10), transparent 55%)",
-          },
-        },
-      },
-      MuiButton: {
-        styleOverrides: {
-          root: { borderRadius: 2, paddingTop: 10, paddingBottom: 10, boxShadow: "none" },
-        },
-      },
-    },
-  });
-}
+type IdType = "email" | "phone" | "unknown";
 
 function detectIdType(v: string): IdType {
   const s = v.trim();
@@ -160,9 +82,8 @@ function maskPhone(phone: string) {
 export default function ForgotPasswordPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
-  const theme = useMemo(() => buildTheme(mode), [mode]);
-  const isDark = mode === "dark";
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
 
   const [step, setStep] = useState<Step>("request");
   const [identifier, setIdentifier] = useState("ronald@evzone.com");
@@ -181,7 +102,7 @@ export default function ForgotPasswordPage() {
 
   // Green-only background
   const pageBg =
-    mode === "dark"
+    isDark
       ? "radial-gradient(1200px 600px at 12% 6%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 10%, rgba(3,205,140,0.16), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
       : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.18), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.12), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
 
@@ -189,7 +110,7 @@ export default function ForgotPasswordPage() {
   const orangeContainedSx = {
     backgroundColor: EVZONE.orange,
     color: "#FFFFFF",
-    boxShadow: `0 18px 48px ${alpha(EVZONE.orange, mode === "dark" ? 0.28 : 0.20)}`,
+    boxShadow: `0 18px 48px ${alpha(EVZONE.orange, isDark ? 0.28 : 0.20)}`,
     "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
   } as const;
 
@@ -203,7 +124,7 @@ export default function ForgotPasswordPage() {
   const orangeTextSx = {
     color: EVZONE.orange,
     fontWeight: 900,
-    "&:hover": { backgroundColor: alpha(EVZONE.orange, mode === "dark" ? 0.14 : 0.10) },
+    "&:hover": { backgroundColor: alpha(EVZONE.orange, isDark ? 0.14 : 0.10) },
   } as const;
 
   useEffect(() => {
@@ -223,12 +144,6 @@ export default function ForgotPasswordPage() {
       return;
     }
   }, [idType]);
-
-  const toggleMode = () => {
-    const next: ThemeMode = mode === "light" ? "dark" : "light";
-    setMode(next);
-    setStoredMode(next);
-  };
 
   const deliveryMask = () => {
     if (idType === "email") return maskEmail(identifier);
@@ -352,7 +267,7 @@ export default function ForgotPasswordPage() {
                 borderRadius: 2,
                 display: "grid",
                 placeItems: "center",
-                backgroundColor: selected ? alpha("#FFFFFF", 0.18) : alpha(base, mode === "dark" ? 0.16 : 0.10),
+                backgroundColor: selected ? alpha("#FFFFFF", 0.18) : alpha(base, isDark ? 0.16 : 0.10),
                 border: `1px solid ${alpha(selected ? "#FFFFFF" : base, 0.26)}`,
                 color: selected ? "#FFFFFF" : base,
               }}
@@ -372,312 +287,309 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Box className="min-h-screen" sx={{ background: pageBg }}>
-        {/* Unified Auth Header */}
-        <AuthHeader
-          title={t('app_name')}
-          subtitle={t('auth.forgot_password.title')}
-        />
+    <Box className="min-h-screen" sx={{ background: pageBg }}>
+      {/* Unified Auth Header */}
+      <AuthHeader
+        title={t('app_name')}
+        subtitle={t('auth.forgot_password.title')}
+      />
 
-        {/* Body */}
-        <Box className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">
-          <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
-            {/* Left info */}
-            <motion.div className="md:col-span-5" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
-              <Card>
-                <CardContent className="p-5 md:p-6">
-                  <Stack spacing={1.2}>
-                    <Typography variant="h6">{t('auth.forgot_password.reset_access_title')}</Typography>
-                    <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      {t('auth.forgot_password.reset_access_desc')}
-                    </Typography>
+      {/* Body */}
+      <Box className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">
+        <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
+          {/* Left info */}
+          <motion.div className="md:col-span-5" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
+            <Card>
+              <CardContent className="p-5 md:p-6">
+                <Stack spacing={1.2}>
+                  <Typography variant="h6">{t('auth.forgot_password.reset_access_title')}</Typography>
+                  <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                    {t('auth.forgot_password.reset_access_desc')}
+                  </Typography>
 
-                    <Divider sx={{ my: 1 }} />
+                  <Divider sx={{ my: 1 }} />
 
-                    <Stack spacing={1.1}>
-                      <Stack direction="row" spacing={1.1} alignItems="center">
-                        <Box sx={{ width: 36, height: 36, borderRadius: 14, display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.16 : 0.10), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
-                          <TimerIcon size={18} />
-                        </Box>
-                        <Box>
-                          <Typography sx={{ fontWeight: 900 }}>{t('auth.forgot_password.rate_limiting')}</Typography>
-                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            {t('auth.forgot_password.rate_limiting_desc')}
-                          </Typography>
-                        </Box>
-                      </Stack>
-                      <Stack direction="row" spacing={1.1} alignItems="center">
-                        <Box sx={{ width: 36, height: 36, borderRadius: 14, display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.16 : 0.10), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
-                          <MailIcon size={18} />
-                        </Box>
-                        <Box>
-                          <Typography sx={{ fontWeight: 900 }}>{t('auth.forgot_password.secure_link')}</Typography>
-                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            {t('auth.forgot_password.secure_link_desc')}
-                          </Typography>
-                        </Box>
-                      </Stack>
-                    </Stack>
-
-                    <Divider sx={{ my: 1 }} />
-
-                    <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => navigate("/auth/sign-in")}>
-                      {t('auth.forgot_password.back_to_signin')}
-                    </Button>
-                  </Stack>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Right form */}
-            <motion.div className="md:col-span-7" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.05 }}>
-              <Card>
-                <CardContent className="p-5 md:p-7">
-                  {step === "sent" ? (
-                    <Stack spacing={2.0}>
-                      <Stack spacing={0.6}>
-                        <Typography variant="h6">{t('auth.forgot_password.check_your', { type: idType === "email" ? "email" : "phone" })}</Typography>
-                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          {t('auth.forgot_password.sent_instructions', { identifier: deliveryMask(), method: labelForDelivery(delivery) })}
-                        </Typography>
-                      </Stack>
-
-                      <Box sx={{ borderRadius: 2, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
-                        <Stack spacing={1}>
-                          <Typography sx={{ fontWeight: 900 }}>{t('auth.forgot_password.next')}</Typography>
-                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            {t('auth.forgot_password.next_desc')}
-                          </Typography>
-                          <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                            <Button
-                              variant="contained"
-                              color="secondary"
-                              sx={orangeContainedSx}
-                              endIcon={<ArrowRightIcon size={18} />}
-                              onClick={() => navigate("/auth/reset-password")}
-                            >
-                              {t('auth.forgot_password.go_to_reset')}
-                            </Button>
-                            <Button
-                              variant="outlined"
-                              sx={orangeOutlinedSx}
-                              startIcon={<TimerIcon size={18} />}
-                              onClick={() => {
-                                if (cooldown === 0) {
-                                  setConfirmOpen(true);
-                                }
-                              }}
-                              disabled={cooldown > 0}
-                            >
-                              {cooldown > 0 ? t('auth.forgot_password.send_again_in', { seconds: cooldown }) : t('auth.forgot_password.send_again')}
-                            </Button>
-                          </Stack>
-                        </Stack>
+                  <Stack spacing={1.1}>
+                    <Stack direction="row" spacing={1.1} alignItems="center">
+                      <Box sx={{ width: 36, height: 36, borderRadius: 14, display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, isDark ? 0.16 : 0.10), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
+                        <TimerIcon size={18} />
                       </Box>
-
-                      <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                        <Button variant="outlined" sx={orangeOutlinedSx} onClick={resetForm}>
-                          {t('auth.forgot_password.change_contact')}
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          sx={orangeOutlinedSx}
-                          onClick={() => navigate("/auth/account-recovery-help")}
-                        >
-                          {t('auth.forgot_password.need_help')}
-                        </Button>
-                      </Stack>
-                    </Stack>
-                  ) : (
-                    <Stack spacing={2.0}>
-                      <Stack spacing={0.6}>
-                        <Typography variant="h6">{t('auth.forgot_password.title')}</Typography>
-                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          {t('auth.forgot_password.subtitle')}
-                        </Typography>
-                      </Stack>
-
-                      {banner ? <Alert severity={banner.severity}>{banner.msg}</Alert> : null}
-
-                      <TextField
-                        value={identifier}
-                        onChange={(e) => setIdentifier(e.target.value)}
-                        label={t('auth.forgot_password.validation_email_phone')}
-                        placeholder={t('auth.sign_in.email_phone_placeholder')}
-                        fullWidth
-                        InputProps={{
-                          startAdornment: (
-                            <Box sx={{ mr: 1, color: theme.palette.text.secondary, display: "grid", placeItems: "center" }}>
-                              {idType === "phone" ? <PhoneIcon size={18} /> : <MailIcon size={18} />}
-                            </Box>
-                          ),
-                        }}
-                        helperText={idType === "unknown" ? t('auth.forgot_password.validation_valid_email_phone') : ""}
-                      />
-
                       <Box>
-                        <Typography sx={{ fontWeight: 900, mb: 1 }}>{t('auth.forgot_password.delivery_method')}</Typography>
-                        <Box className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                          <DeliveryCard
-                            value="email_link"
-                            title={t('auth.forgot_password.email_link')}
-                            subtitle={t('auth.forgot_password.email_link_desc')}
-                            enabled={idType === "email"}
-                            accent="orange"
-                            icon={<MailIcon size={18} />}
-                          />
-                          <DeliveryCard
-                            value="sms_code"
-                            title={t('auth.forgot_password.sms_code')}
-                            subtitle={t('auth.forgot_password.sms_code_desc')}
-                            enabled={idType === "phone"}
-                            accent="orange"
-                            icon={<PhoneIcon size={18} />}
-                          />
-                          <DeliveryCard
-                            value="whatsapp_code"
-                            title={t('auth.forgot_password.whatsapp_code')}
-                            subtitle={t('auth.forgot_password.whatsapp_code_desc')}
-                            enabled={idType === "phone"}
-                            accent="whatsapp"
-                            icon={<WhatsAppIcon size={18} />}
-                          />
-                        </Box>
-                        {idType === "email" ? (
-                          <Typography variant="caption" sx={{ color: theme.palette.text.secondary, mt: 1, display: "block" }}>
-                            {t('auth.forgot_password.phone_methods_hint')}
-                          </Typography>
-                        ) : null}
+                        <Typography sx={{ fontWeight: 900 }}>{t('auth.forgot_password.rate_limiting')}</Typography>
+                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                          {t('auth.forgot_password.rate_limiting_desc')}
+                        </Typography>
                       </Box>
+                    </Stack>
+                    <Stack direction="row" spacing={1.1} alignItems="center">
+                      <Box sx={{ width: 36, height: 36, borderRadius: 14, display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, isDark ? 0.16 : 0.10), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
+                        <MailIcon size={18} />
+                      </Box>
+                      <Box>
+                        <Typography sx={{ fontWeight: 900 }}>{t('auth.forgot_password.secure_link')}</Typography>
+                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                          {t('auth.forgot_password.secure_link_desc')}
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  </Stack>
 
-                      {captchaRequired ? (
-                        <Box sx={{ borderRadius: 2, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.2 }}>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                checked={captchaChecked}
-                                onChange={(e) => setCaptchaChecked(e.target.checked)}
-                                sx={{ color: alpha(EVZONE.orange, 0.7), "&.Mui-checked": { color: EVZONE.orange } }}
-                              />
-                            }
-                            label={
-                              <Box>
-                                <Typography variant="body2" sx={{ fontWeight: 900 }}>
-                                  {t('auth.forgot_password.captcha_label')}
-                                </Typography>
-                                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                                  {t('auth.forgot_password.captcha_desc')}
-                                </Typography>
-                              </Box>
-                            }
-                          />
-                        </Box>
-                      ) : null}
+                  <Divider sx={{ my: 1 }} />
 
-                      <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                        <Button
-                          variant="contained"
-                          color="secondary"
-                          sx={orangeContainedSx}
-                          endIcon={<ArrowRightIcon size={18} />}
-                          onClick={requestSend}
-                          disabled={!canSend()}
-                        >
-                          {t('auth.forgot_password.continue')}
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          sx={orangeOutlinedSx}
-                          startIcon={<HelpCircleIcon size={18} />}
-                          onClick={() => navigate("/auth/account-recovery-help")}
-                        >
-                          {t('auth.forgot_password.account_recovery_help')}
-                        </Button>
-                      </Stack>
+                  <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => navigate("/auth/sign-in")}>
+                    {t('auth.forgot_password.back_to_signin')}
+                  </Button>
+                </Stack>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-                      <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                        {t('auth.forgot_password.tip_spam')}
+          {/* Right form */}
+          <motion.div className="md:col-span-7" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.05 }}>
+            <Card>
+              <CardContent className="p-5 md:p-7">
+                {step === "sent" ? (
+                  <Stack spacing={2.0}>
+                    <Stack spacing={0.6}>
+                      <Typography variant="h6">{t('auth.forgot_password.check_your', { type: idType === "email" ? "email" : "phone" })}</Typography>
+                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                        {t('auth.forgot_password.sent_instructions', { identifier: deliveryMask(), method: labelForDelivery(delivery) })}
                       </Typography>
                     </Stack>
-                  )}
-                </CardContent>
-              </Card>
-            </motion.div>
-          </Box>
 
-          {/* Footer */}
-          <Box className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
-            <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-              © {new Date().getFullYear()} EVzone Group.
-            </Typography>
-            <Stack direction="row" spacing={1.2} alignItems="center">
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
-                {t('auth.terms')}
-              </Button>
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
-                {t('auth.privacy')}
-              </Button>
-            </Stack>
-          </Box>
+                    <Box sx={{ borderRadius: 2, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
+                      <Stack spacing={1}>
+                        <Typography sx={{ fontWeight: 900 }}>{t('auth.forgot_password.next')}</Typography>
+                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                          {t('auth.forgot_password.next_desc')}
+                        </Typography>
+                        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                          <Button
+                            variant="contained"
+                            color="secondary"
+                            sx={orangeContainedSx}
+                            endIcon={<ArrowRightIcon size={18} />}
+                            onClick={() => navigate("/auth/reset-password")}
+                          >
+                            {t('auth.forgot_password.go_to_reset')}
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            sx={orangeOutlinedSx}
+                            startIcon={<TimerIcon size={18} />}
+                            onClick={() => {
+                              if (cooldown === 0) {
+                                setConfirmOpen(true);
+                              }
+                            }}
+                            disabled={cooldown > 0}
+                          >
+                            {cooldown > 0 ? t('auth.forgot_password.send_again_in', { seconds: cooldown }) : t('auth.forgot_password.send_again')}
+                          </Button>
+                        </Stack>
+                      </Stack>
+                    </Box>
+
+                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                      <Button variant="outlined" sx={orangeOutlinedSx} onClick={resetForm}>
+                        {t('auth.forgot_password.change_contact')}
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        sx={orangeOutlinedSx}
+                        onClick={() => navigate("/auth/account-recovery-help")}
+                      >
+                        {t('auth.forgot_password.need_help')}
+                      </Button>
+                    </Stack>
+                  </Stack>
+                ) : (
+                  <Stack spacing={2.0}>
+                    <Stack spacing={0.6}>
+                      <Typography variant="h6">{t('auth.forgot_password.title')}</Typography>
+                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                        {t('auth.forgot_password.subtitle')}
+                      </Typography>
+                    </Stack>
+
+                    {banner ? <Alert severity={banner.severity}>{banner.msg}</Alert> : null}
+
+                    <TextField
+                      value={identifier}
+                      onChange={(e) => setIdentifier(e.target.value)}
+                      label={t('auth.forgot_password.validation_email_phone')}
+                      placeholder={t('auth.sign_in.email_phone_placeholder')}
+                      fullWidth
+                      InputProps={{
+                        startAdornment: (
+                          <Box sx={{ mr: 1, color: theme.palette.text.secondary, display: "grid", placeItems: "center" }}>
+                            {idType === "phone" ? <PhoneIcon size={18} /> : <MailIcon size={18} />}
+                          </Box>
+                        ),
+                      }}
+                      helperText={idType === "unknown" ? t('auth.forgot_password.validation_valid_email_phone') : ""}
+                    />
+
+                    <Box>
+                      <Typography sx={{ fontWeight: 900, mb: 1 }}>{t('auth.forgot_password.delivery_method')}</Typography>
+                      <Box className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                        <DeliveryCard
+                          value="email_link"
+                          title={t('auth.forgot_password.email_link')}
+                          subtitle={t('auth.forgot_password.email_link_desc')}
+                          enabled={idType === "email"}
+                          accent="orange"
+                          icon={<MailIcon size={18} />}
+                        />
+                        <DeliveryCard
+                          value="sms_code"
+                          title={t('auth.forgot_password.sms_code')}
+                          subtitle={t('auth.forgot_password.sms_code_desc')}
+                          enabled={idType === "phone"}
+                          accent="orange"
+                          icon={<PhoneIcon size={18} />}
+                        />
+                        <DeliveryCard
+                          value="whatsapp_code"
+                          title={t('auth.forgot_password.whatsapp_code')}
+                          subtitle={t('auth.forgot_password.whatsapp_code_desc')}
+                          enabled={idType === "phone"}
+                          accent="whatsapp"
+                          icon={<WhatsAppIcon size={18} />}
+                        />
+                      </Box>
+                      {idType === "email" ? (
+                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary, mt: 1, display: "block" }}>
+                          {t('auth.forgot_password.phone_methods_hint')}
+                        </Typography>
+                      ) : null}
+                    </Box>
+
+                    {captchaRequired ? (
+                      <Box sx={{ borderRadius: 2, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.2 }}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={captchaChecked}
+                              onChange={(e) => setCaptchaChecked(e.target.checked)}
+                              sx={{ color: alpha(EVZONE.orange, 0.7), "&.Mui-checked": { color: EVZONE.orange } }}
+                            />
+                          }
+                          label={
+                            <Box>
+                              <Typography variant="body2" sx={{ fontWeight: 900 }}>
+                                {t('auth.forgot_password.captcha_label')}
+                              </Typography>
+                              <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                                {t('auth.forgot_password.captcha_desc')}
+                              </Typography>
+                            </Box>
+                          }
+                        />
+                      </Box>
+                    ) : null}
+
+                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        sx={orangeContainedSx}
+                        endIcon={<ArrowRightIcon size={18} />}
+                        onClick={requestSend}
+                        disabled={!canSend()}
+                      >
+                        {t('auth.forgot_password.continue')}
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        sx={orangeOutlinedSx}
+                        startIcon={<HelpCircleIcon size={18} />}
+                        onClick={() => navigate("/auth/account-recovery-help")}
+                      >
+                        {t('auth.forgot_password.account_recovery_help')}
+                      </Button>
+                    </Stack>
+
+                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                      {t('auth.forgot_password.tip_spam')}
+                    </Typography>
+                  </Stack>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
         </Box>
 
-        {/* Confirm send dialog */}
-        < Dialog
-          open={confirmOpen}
-          onClose={() => setConfirmOpen(false)
-          }
-          PaperProps={{ sx: { borderRadius: 2, border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}
-        >
-          <DialogTitle sx={{ fontWeight: 950 }}>{t('auth.forgot_password.confirm_send_title')}</DialogTitle>
-          <DialogContent>
-            <Stack spacing={1.2}>
-              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                {t('auth.forgot_password.send_to')}
-              </Typography>
-              <Box sx={{ borderRadius: 2, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.55), p: 1.2 }}>
-                <Stack direction="row" spacing={1.2} alignItems="center">
-                  <Box sx={{ color: delivery === "whatsapp_code" ? WHATSAPP.green : EVZONE.orange }}>
-                    {delivery === "email_link" ? <MailIcon size={18} /> : delivery === "sms_code" ? <PhoneIcon size={18} /> : <WhatsAppIcon size={18} />}
-                  </Box>
-                  <Box>
-                    <Typography sx={{ fontWeight: 900 }}>{deliveryMask()}</Typography>
-                    <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      {t('auth.forgot_password.delivery_label')} <b>{labelForDelivery(delivery)}</b>
-                    </Typography>
-                  </Box>
-                </Stack>
-              </Box>
-              <Alert severity="info">{t('auth.forgot_password.confirm_info')}</Alert>
-            </Stack>
-          </DialogContent>
-          <DialogActions sx={{ p: 2, pt: 0 }}>
-            <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => setConfirmOpen(false)}>
-              {t('auth.forgot_password.cancel')}
+        {/* Footer */}
+        <Box className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
+          <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+            © {new Date().getFullYear()} EVzone Group.
+          </Typography>
+          <Stack direction="row" spacing={1.2} alignItems="center">
+            <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
+              {t('auth.terms')}
             </Button>
-            <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={doSend}>
-              {t('auth.forgot_password.send')}
+            <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
+              {t('auth.privacy')}
             </Button>
-          </DialogActions>
-        </Dialog >
+          </Stack>
+        </Box>
+      </Box>
 
-        <Snackbar
-          open={snack.open}
-          autoHideDuration={3400}
+      {/* Confirm send dialog */}
+      < Dialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)
+        }
+        PaperProps={{ sx: { borderRadius: 2, border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}
+      >
+        <DialogTitle sx={{ fontWeight: 950 }}>{t('auth.forgot_password.confirm_send_title')}</DialogTitle>
+        <DialogContent>
+          <Stack spacing={1.2}>
+            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+              {t('auth.forgot_password.send_to')}
+            </Typography>
+            <Box sx={{ borderRadius: 2, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.55), p: 1.2 }}>
+              <Stack direction="row" spacing={1.2} alignItems="center">
+                <Box sx={{ color: delivery === "whatsapp_code" ? WHATSAPP.green : EVZONE.orange }}>
+                  {delivery === "email_link" ? <MailIcon size={18} /> : delivery === "sms_code" ? <PhoneIcon size={18} /> : <WhatsAppIcon size={18} />}
+                </Box>
+                <Box>
+                  <Typography sx={{ fontWeight: 900 }}>{deliveryMask()}</Typography>
+                  <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                    {t('auth.forgot_password.delivery_label')} <b>{labelForDelivery(delivery)}</b>
+                  </Typography>
+                </Box>
+              </Stack>
+            </Box>
+            <Alert severity="info">{t('auth.forgot_password.confirm_info')}</Alert>
+          </Stack>
+        </DialogContent>
+        <DialogActions sx={{ p: 2, pt: 0 }}>
+          <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => setConfirmOpen(false)}>
+            {t('auth.forgot_password.cancel')}
+          </Button>
+          <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={doSend}>
+            {t('auth.forgot_password.send')}
+          </Button>
+        </DialogActions>
+      </Dialog >
+
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={3400}
+        onClose={() => setSnack((s) => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
           onClose={() => setSnack((s) => ({ ...s, open: false }))}
-          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          severity={snack.severity}
+          variant={isDark ? "filled" : "standard"}
+          sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: isDark ? alpha(theme.palette.background.paper, 0.92) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}
         >
-          <Alert
-            onClose={() => setSnack((s) => ({ ...s, open: false }))}
-            severity={snack.severity}
-            variant={mode === "dark" ? "filled" : "standard"}
-            sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.92) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}
-          >
-            {snack.msg}
-          </Alert>
-        </Snackbar>
-      </Box >
-    </ThemeProvider >
+          {snack.msg}
+        </Alert>
+      </Snackbar>
+    </Box >
   );
 }

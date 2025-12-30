@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import Pagination from "../../../components/common/Pagination";
 import {
     Box,
     Card,
@@ -71,6 +72,8 @@ export default function WalletsList() {
     const theme = useTheme();
     const navigate = useNavigate();
     const [q, setQ] = useState("");
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const [statusFilter, setStatusFilter] = useState<WalletStatus | "All">("All");
     const [wallets, setWallets] = useState<WalletRow[]>(mkWallets);
 
@@ -263,47 +266,49 @@ export default function WalletsList() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filtered.map((w) => (
-                                <TableRow key={w.id} hover>
-                                    <TableCell sx={{ fontFamily: 'monospace', color: 'text.secondary' }}>{w.id}</TableCell>
-                                    <TableCell>
-                                        <Stack>
-                                            <Typography variant="subtitle2" fontWeight={600}>{w.ownerName}</Typography>
-                                            <Typography variant="caption" color="text.secondary">{w.ownerEmail}</Typography>
-                                        </Stack>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="subtitle2" fontWeight={700}>
-                                            {formatCurrency(w.balance, w.currency)}
-                                        </Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <StatusChip status={w.status} />
-                                    </TableCell>
-                                    <TableCell>
-                                        <ArrowUpRight size={16} color={riskColor(w.riskScore)} style={{ display: 'inline', marginRight: 4 }} />
-                                        <Typography variant="caption" fontWeight={600} color={riskColor(w.riskScore)}>
-                                            {w.riskScore}
-                                        </Typography>
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        <Stack direction="row" justifyContent="flex-end" spacing={1}>
-                                            <IconButton size="small" onClick={() => navigate(`/admin/transactions?wallet=${w.id}`)}>
-                                                <Activity size={18} />
-                                            </IconButton>
-                                            {w.status === 'Active' ? (
-                                                <IconButton size="small" color="error">
-                                                    <LockIcon size={18} />
+                            {filtered
+                                .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
+                                .map((w) => (
+                                    <TableRow key={w.id} hover>
+                                        <TableCell sx={{ fontFamily: 'monospace', color: 'text.secondary' }}>{w.id}</TableCell>
+                                        <TableCell>
+                                            <Stack>
+                                                <Typography variant="subtitle2" fontWeight={600}>{w.ownerName}</Typography>
+                                                <Typography variant="caption" color="text.secondary">{w.ownerEmail}</Typography>
+                                            </Stack>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Typography variant="subtitle2" fontWeight={700}>
+                                                {formatCurrency(w.balance, w.currency)}
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <StatusChip status={w.status} />
+                                        </TableCell>
+                                        <TableCell>
+                                            <ArrowUpRight size={16} color={riskColor(w.riskScore)} style={{ display: 'inline', marginRight: 4 }} />
+                                            <Typography variant="caption" fontWeight={600} color={riskColor(w.riskScore)}>
+                                                {w.riskScore}
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            <Stack direction="row" justifyContent="flex-end" spacing={1}>
+                                                <IconButton size="small" onClick={() => navigate(`/admin/transactions?wallet=${w.id}`)}>
+                                                    <Activity size={18} />
                                                 </IconButton>
-                                            ) : (
-                                                <IconButton size="small" color="success">
-                                                    <UnlockIcon size={18} />
-                                                </IconButton>
-                                            )}
-                                        </Stack>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                                                {w.status === 'Active' ? (
+                                                    <IconButton size="small" color="error">
+                                                        <LockIcon size={18} />
+                                                    </IconButton>
+                                                ) : (
+                                                    <IconButton size="small" color="success">
+                                                        <UnlockIcon size={18} />
+                                                    </IconButton>
+                                                )}
+                                            </Stack>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
                             {filtered.length === 0 && (
                                 <TableRow>
                                     <TableCell colSpan={6} align="center" sx={{ py: 8 }}>
@@ -316,6 +321,19 @@ export default function WalletsList() {
                         </TableBody>
                     </Table>
                 </TableContainer>
+
+                <Box sx={{ p: 2, borderTop: `1px solid ${theme.palette.divider}` }}>
+                    <Pagination
+                        page={page}
+                        count={filtered.length}
+                        rowsPerPage={rowsPerPage}
+                        onPageChange={setPage}
+                        onRowsPerPageChange={(n) => {
+                            setRowsPerPage(n);
+                            setPage(0);
+                        }}
+                    />
+                </Box>
             </Paper>
         </Box>
     );

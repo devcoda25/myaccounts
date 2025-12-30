@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import Pagination from "../../../components/common/Pagination";
 import {
     Box,
     Card,
@@ -72,6 +73,8 @@ export default function KycQueue() {
     const theme = useTheme();
     const [tab, setTab] = useState(0);
     const [q, setQ] = useState("");
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const [requests, setRequests] = useState<KycRequest[]>(mkRequests);
 
     // Review Modal State
@@ -154,42 +157,44 @@ export default function KycQueue() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filtered.map((r) => (
-                                <TableRow key={r.id} hover>
-                                    <TableCell>
-                                        <Stack direction="row" spacing={1.5} alignItems="center">
-                                            <Avatar sx={{ width: 32, height: 32 }}>{r.userName.charAt(0)}</Avatar>
-                                            <Box>
-                                                <Typography variant="subtitle2" fontWeight={600}>{r.userName}</Typography>
-                                                <Typography variant="caption" color="text.secondary">{r.email}</Typography>
-                                            </Box>
-                                        </Stack>
-                                    </TableCell>
-                                    <TableCell>{r.docType}</TableCell>
-                                    <TableCell sx={{ color: 'text.secondary' }}>
-                                        {new Date(r.submittedAt).toLocaleDateString()}
-                                    </TableCell>
-                                    <TableCell><StatusChip status={r.status} /></TableCell>
-                                    <TableCell>
-                                        <Chip label={r.riskScore} size="small" sx={{
-                                            bgcolor: r.riskScore === 'High' ? alpha(EVZONE.red, 0.1) : alpha(EVZONE.green, 0.1),
-                                            color: r.riskScore === 'High' ? EVZONE.red : EVZONE.green,
-                                            fontWeight: 700
-                                        }} />
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        <Button
-                                            size="small"
-                                            variant="outlined"
-                                            startIcon={<EyeIcon size={16} />}
-                                            onClick={() => setSelectedRequest(r)}
-                                            sx={{ borderRadius: '8px', borderColor: theme.palette.divider, color: 'text.primary' }}
-                                        >
-                                            Review
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                            {filtered
+                                .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
+                                .map((r) => (
+                                    <TableRow key={r.id} hover>
+                                        <TableCell>
+                                            <Stack direction="row" spacing={1.5} alignItems="center">
+                                                <Avatar sx={{ width: 32, height: 32 }}>{r.userName.charAt(0)}</Avatar>
+                                                <Box>
+                                                    <Typography variant="subtitle2" fontWeight={600}>{r.userName}</Typography>
+                                                    <Typography variant="caption" color="text.secondary">{r.email}</Typography>
+                                                </Box>
+                                            </Stack>
+                                        </TableCell>
+                                        <TableCell>{r.docType}</TableCell>
+                                        <TableCell sx={{ color: 'text.secondary' }}>
+                                            {new Date(r.submittedAt).toLocaleDateString()}
+                                        </TableCell>
+                                        <TableCell><StatusChip status={r.status} /></TableCell>
+                                        <TableCell>
+                                            <Chip label={r.riskScore} size="small" sx={{
+                                                bgcolor: r.riskScore === 'High' ? alpha(EVZONE.red, 0.1) : alpha(EVZONE.green, 0.1),
+                                                color: r.riskScore === 'High' ? EVZONE.red : EVZONE.green,
+                                                fontWeight: 700
+                                            }} />
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            <Button
+                                                size="small"
+                                                variant="outlined"
+                                                startIcon={<EyeIcon size={16} />}
+                                                onClick={() => setSelectedRequest(r)}
+                                                sx={{ borderRadius: '8px', borderColor: theme.palette.divider, color: 'text.primary' }}
+                                            >
+                                                Review
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
                             {filtered.length === 0 && (
                                 <TableRow>
                                     <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
@@ -200,6 +205,19 @@ export default function KycQueue() {
                         </TableBody>
                     </Table>
                 </TableContainer>
+
+                <Box sx={{ p: 2, borderTop: `1px solid ${theme.palette.divider}` }}>
+                    <Pagination
+                        page={page}
+                        count={filtered.length}
+                        rowsPerPage={rowsPerPage}
+                        onPageChange={setPage}
+                        onRowsPerPageChange={(n) => {
+                            setRowsPerPage(n);
+                            setPage(0);
+                        }}
+                    />
+                </Box>
             </Paper>
 
             {/* Review Dialog */}

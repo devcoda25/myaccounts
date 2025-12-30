@@ -24,7 +24,7 @@ import {
     FileText as FileTextIcon,
     Building2 as BuildingIcon
 } from 'lucide-react';
-import AppHeader from '../components/headers/AppHeader';
+import AdminHeader from '../components/headers/AdminHeader';
 
 const EVZONE = { green: "#03cd8c", orange: "#f77f00" } as const;
 const SIDEBAR_WIDTH = 260;
@@ -128,7 +128,7 @@ export default function AdminLayout() {
                             borderRadius: "10px",
                             py: 1.5
                         }}
-                        onClick={() => navigate('/auth/sign-in')}
+                        onClick={() => navigate('/admin/auth/login')}
                     >
                         Sign out
                     </Button>
@@ -201,7 +201,7 @@ export default function AdminLayout() {
                 }}
             >
                 {/* Header (Top Bar) */}
-                <AppHeader onDrawerToggle={handleDrawerToggle} showMobileToggle={true} />
+                <AdminHeader onDrawerToggle={handleDrawerToggle} showMobileToggle={true} />
 
                 {/* Page Content */}
                 <Box sx={{ p: { xs: 2, md: 4 }, pb: { xs: 10, md: 4 } }}>

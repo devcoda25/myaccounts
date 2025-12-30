@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import Pagination from "../../../components/common/Pagination";
 import {
     Box,
     Button,
@@ -65,6 +66,8 @@ export default function AdminOrgsListPage() {
     const isDark = theme.palette.mode === 'dark';
 
     const [q, setQ] = useState("");
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const [statusFilter, setStatusFilter] = useState<OrgStatus | "All">("All");
 
     const [rows, setRows] = useState<OrgRow[]>(() => [
@@ -157,7 +160,7 @@ export default function AdminOrgsListPage() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {filtered.map((r) => (
+                                {filtered.slice(page * rowsPerPage, (page + 1) * rowsPerPage).map((r) => (
                                     <TableRow key={r.id} hover>
                                         <TableCell>
                                             <Stack>
@@ -190,6 +193,19 @@ export default function AdminOrgsListPage() {
                             </TableBody>
                         </Table>
                     </TableContainer>
+                    <Divider />
+                    <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
+                        <Pagination
+                            page={page}
+                            count={filtered.length}
+                            rowsPerPage={rowsPerPage}
+                            onPageChange={setPage}
+                            onRowsPerPageChange={(n) => {
+                                setRowsPerPage(n);
+                                setPage(0);
+                            }}
+                        />
+                    </CardContent>
                 </Card>
             </Stack>
         </Box>
