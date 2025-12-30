@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
     Box,
@@ -43,7 +43,17 @@ export default function AdminLayout() {
     // State for Bottom Navigation
     const [bottomNavValue, setBottomNavValue] = useState(0);
 
-    const { checkPermission } = useAdminAuth();
+    const { checkPermission, isAuthenticated, isLoading } = useAdminAuth();
+
+    useEffect(() => {
+        if (!isLoading && !isAuthenticated) {
+            navigate('/admin/auth/login');
+        }
+    }, [isLoading, isAuthenticated, navigate]);
+
+    if (isLoading) {
+        return null; // Or a loading spinner
+    }
 
     const menuItems = [
         { label: "Dashboard", icon: <LayoutIcon size={18} />, route: "/admin/dashboard", permission: "view_dashboard" },

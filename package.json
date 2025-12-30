@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "build:server": "export NODE_OPTIONS=\"--max-old-space-size=4096\" && npm run build"
+    "build:server": "export NODE_OPTIONS=\"--max-old-space-size=4096\" && npm run build",
+    "build:light": "vite build"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",

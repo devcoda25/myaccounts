@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 interface AdminAuthContextType {
     user: AdminUser | null;
     isAuthenticated: boolean;
+    isLoading: boolean;
     login: (email: string) => Promise<boolean>;
     logout: () => void;
     checkPermission: (permission: string) => boolean;
@@ -31,6 +32,7 @@ const MOCK_ADMINS: Record<string, AdminUser> = {
 
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<AdminUser | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
 
     // Load from localStorage on mount
@@ -44,6 +46,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
                 localStorage.removeItem('evzone_admin_user');
             }
         }
+        setIsLoading(false);
     }, []);
 
     const login = async (email: string): Promise<boolean> => {
@@ -82,7 +85,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <AdminAuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout, checkPermission }}>
+        <AdminAuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, logout, checkPermission }}>
             {children}
         </AdminAuthContext.Provider>
     );
