@@ -25,6 +25,7 @@ import {
     Building2 as BuildingIcon
 } from 'lucide-react';
 import AdminHeader from '../components/headers/AdminHeader';
+import { useAdminAuth } from '../hooks/useAdminAuth';
 
 const EVZONE = { green: "#03cd8c", orange: "#f77f00" } as const;
 const SIDEBAR_WIDTH = 260;
@@ -42,16 +43,19 @@ export default function AdminLayout() {
     // State for Bottom Navigation
     const [bottomNavValue, setBottomNavValue] = useState(0);
 
+    const { checkPermission } = useAdminAuth();
+
     const menuItems = [
-        { label: "Dashboard", icon: <LayoutIcon size={18} />, route: "/admin/dashboard" },
-        { label: "Users", icon: <ShieldIcon size={18} />, route: "/admin/users" },
-        { label: "Organizations", icon: <BuildingIcon size={18} />, route: "/admin/orgs" },
-        { label: "KYC Requests", icon: <FileTextIcon size={18} />, route: "/admin/kyc" },
-        { label: "Wallets", icon: <RefreshIcon size={18} />, route: "/admin/wallets" },
-        { label: "Transactions", icon: <ClipboardIcon size={18} />, route: "/admin/transactions" },
-        { label: "Audit logs", icon: <ClipboardIcon size={18} />, route: "/admin/audit" },
-        { label: "System status", icon: <ShieldIcon size={18} />, route: "/admin/status" },
-    ];
+        { label: "Dashboard", icon: <LayoutIcon size={18} />, route: "/admin/dashboard", permission: "view_dashboard" },
+        { label: "Users", icon: <ShieldIcon size={18} />, route: "/admin/users", permission: "manage_users" },
+        { label: "Organizations", icon: <BuildingIcon size={18} />, route: "/admin/orgs", permission: "manage_orgs" },
+        { label: "KYC Requests", icon: <FileTextIcon size={18} />, route: "/admin/kyc", permission: "view_kyc" },
+        { label: "Wallets", icon: <RefreshIcon size={18} />, route: "/admin/wallets", permission: "view_wallets" },
+        { label: "Transactions", icon: <ClipboardIcon size={18} />, route: "/admin/transactions", permission: "view_transactions" },
+        { label: "Audit logs", icon: <ClipboardIcon size={18} />, route: "/admin/audit", permission: "view_audit_logs" },
+        { label: "Administrators", icon: <ShieldIcon size={18} />, route: "/admin/administrators", permission: "manage_admins" }, // New
+        { label: "System status", icon: <ShieldIcon size={18} />, route: "/admin/status", permission: "view_status" },
+    ].filter(item => checkPermission(item.permission));
 
     // Sync bottom nav state with current path
     React.useEffect(() => {

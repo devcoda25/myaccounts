@@ -11,6 +11,16 @@ export type Step = "request" | "sent" | "verify" | "success" | "confirm" | "set"
 export type OrgRole = "Owner" | "Admin" | "Manager" | "Member" | "Viewer";
 export type AuthState = "not_logged_in" | "logged_in_same_user" | "logged_in_different_user";
 
+// Admin Types
+export type AdminRole = "SuperAdmin" | "Admin";
+export interface AdminUser {
+    id: string;
+    email: string;
+    name: string;
+    role: AdminRole;
+    avatar?: string;
+}
+
 // Status Types
 export type Health = "Operational" | "Degraded" | "Maintenance";
 export type Service = {

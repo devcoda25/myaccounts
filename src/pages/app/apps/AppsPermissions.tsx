@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Avatar,
@@ -188,6 +189,7 @@ function mfaCodeFor(channel: MfaChannel) {
 
 export default function AppsPermissionsPage() {
   const theme = useTheme();
+  const navigate = useNavigate();
   const { mode } = useThemeContext();
   const isDark = mode === "dark";
 
@@ -360,7 +362,7 @@ export default function AppsPermissionsPage() {
                       </Typography>
                     </Box>
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                      <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/apps (demo)." })}>
+                      <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/app/apps")}>
                         Back to apps
                       </Button>
                       <Button variant="contained" color="secondary" sx={orangeContained} startIcon={<ShieldCheckIcon size={18} />} onClick={() => setSnack({ open: true, severity: "info", msg: "Review security settings (demo)." })}>
@@ -453,7 +455,7 @@ export default function AppsPermissionsPage() {
               <Card sx={{ borderRadius: 999, backgroundColor: alpha(theme.palette.background.paper, 0.85), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backdropFilter: "blur(10px)" }}>
                 <CardContent sx={{ py: 1.1, px: 1.2 }}>
                   <Stack direction="row" spacing={1}>
-                    <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/apps (demo)." })}>
+                    <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => navigate("/app/apps")}>
                       Apps
                     </Button>
                     <Button fullWidth variant="contained" color="secondary" sx={orangeContained} onClick={() => setSnack({ open: true, severity: "info", msg: "Review login activity (demo)." })}>

@@ -27,6 +27,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useThemeContext } from '../../theme/ThemeContext';
 import { EVZONE } from '../../theme/evzone';
+import { useAdminAuth } from '../../hooks/useAdminAuth';
 import NotificationsPopover from './NotificationsPopover';
 import LanguageSwitcher from '../common/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
@@ -40,6 +41,7 @@ export default function AdminHeader({ onDrawerToggle, showMobileToggle = false }
     const theme = useTheme();
     const navigate = useNavigate();
     const { mode, toggleMode } = useThemeContext();
+    const { user, logout } = useAdminAuth();
     const isDark = mode === 'dark';
 
     const notifRef = useRef<HTMLButtonElement>(null);
@@ -228,10 +230,13 @@ export default function AdminHeader({ onDrawerToggle, showMobileToggle = false }
                     >
                         <Box sx={{ p: 2, pt: 1.5, pb: 1 }}>
                             <Typography variant="subtitle2" fontWeight={700} noWrap>
-                                Admin User
+                                {user?.name || "Admin User"}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary" display="block" noWrap>
+                                {user?.role || "Role"}
                             </Typography>
                             <Typography variant="caption" color="text.secondary" noWrap>
-                                admin@evzone.com
+                                {user?.email || "admin@evzone.com"}
                             </Typography>
                         </Box>
                         <Divider />
@@ -244,7 +249,7 @@ export default function AdminHeader({ onDrawerToggle, showMobileToggle = false }
                             {t('header.settings')}
                         </MenuItem>
                         <Divider />
-                        <MenuItem onClick={() => navigate('/admin/auth/login')} sx={{ py: 1.5, color: 'error.main' }}>
+                        <MenuItem onClick={() => { handleMenuClose(); logout(); }} sx={{ py: 1.5, color: 'error.main' }}>
                             <ListItemIcon><LogOut size={18} color={theme.palette.error.main} /></ListItemIcon>
                             {t('auth.sign_out')}
                         </MenuItem>

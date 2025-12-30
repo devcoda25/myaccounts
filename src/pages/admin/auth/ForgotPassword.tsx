@@ -61,11 +61,11 @@ export default function AdminForgotPassword() {
                                     <ShieldIcon size={32} />
                                 </Box>
 
-                                <Typography variant="h4" fontWeight={800}>
+                                <Typography variant="h4" fontWeight={800} sx={{ color: isDark ? "text.primary" : "#000000" }}>
                                     Contact Super Admin
                                 </Typography>
 
-                                <Typography variant="body1" sx={{ color: theme.palette.text.secondary }}>
+                                <Typography variant="body1" sx={{ color: isDark ? theme.palette.text.secondary : "#000000" }}>
                                     Admin passwords cannot be reset automatically.<br />
                                     Please contact a Super Administrator or the IT Security Team to request a password reset for your account.
                                 </Typography>
