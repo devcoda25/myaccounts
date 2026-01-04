@@ -30,7 +30,7 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
 
 /**
@@ -196,7 +196,7 @@ function mkId(prefix: string) {
 import { useNavigate } from "react-router-dom";
 
 export default function ReportSecurityIssuePage() {
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const theme = useTheme();
   const navigate = useNavigate();
 

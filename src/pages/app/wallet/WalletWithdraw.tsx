@@ -27,7 +27,9 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { api } from "../../../utils/api";
+import { getProviderIcon, getProviderColor } from "../../../assets/paymentIcons";
+
 
 /**
  * EVzone My Accounts - Withdraw Funds
@@ -290,30 +292,80 @@ function runSelfTestsOnce() {
   }
 }
 
+import { useThemeStore } from "../../../stores/themeStore";
+
 export default function WithdrawFundsPage() {
   const navigate = useNavigate();
   const theme = useTheme();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const isDark = mode === "dark";
 
   const currency = "UGX";
-  const [balance] = useState<number>(1250000);
-  const [available] = useState<number>(1135000);
+  const [balance, setBalance] = useState<number>(0);
+  const [available, setAvailable] = useState<number>(0);
 
-  // Demo KYC tier and limits
-  const [kycTier] = useState<"Unverified" | "Basic" | "Full">("Basic");
+  // Real KYC tier and limits
+  const [kycTier, setKycTier] = useState<"Unverified" | "Basic" | "Full">("Unverified");
+  const [loadingConfig, setLoadingConfig] = useState(true);
+
+  // Fetch data
+  useEffect(() => {
+    setLoadingConfig(true);
+
+    const fetchData = async () => {
+      try {
+        const [walletRes, kycRes, methodsRes] = await Promise.all([
+          api.get('/wallets/me').catch(e => { console.warn("Wallet fetch failed", e); return null; }),
+          api.get('/kyc/status').catch(e => { console.warn("KYC fetch failed", e); return { tier: "Unverified" }; }),
+          api.get('/wallets/me/methods').catch(e => { console.warn("Methods fetch failed", e); return []; })
+        ]);
+
+        if (walletRes) {
+          setBalance(Number(walletRes.balance) || 0);
+          setAvailable(Number(walletRes.balance) || 0);
+        }
+
+        if (kycRes && kycRes.tier) {
+          setKycTier(kycRes.tier);
+        }
+
+        if (Array.isArray(methodsRes)) {
+          const mapped: Dest[] = methodsRes.map((m: any) => ({
+            id: m.id,
+            type: m.type === 'card' ? 'bank' : m.type, // Simplify type mapping for icon
+            label: m.provider, // Provider name like "MTN MoMo"
+            details: m.details?.number || m.details?.accountNumber || `•••• ${m.details?.last4 || '????'}`,
+            verified: true, // Assume saved methods are verified for now
+            default: m.isDefault
+          }));
+
+          if (mapped.length > 0) {
+            setDestinations(mapped);
+            // Pre-select default
+            const def = mapped.find(d => d.default);
+            setDestId(def ? def.id : mapped[0].id);
+          } else {
+            setDestinations([]);
+          }
+        }
+
+      } finally {
+        setLoadingConfig(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const dailyLimit = kycTier === "Full" ? 20000000 : kycTier === "Basic" ? 5000000 : 1000000;
 
-  const [destinations, setDestinations] = useState<Dest[]>(() => [
-    { id: "d_mtn", type: "momo", label: "MTN MoMo", details: "+256 761 677 709", verified: true, default: true },
-    { id: "d_airtel", type: "momo", label: "Airtel Money", details: "+256 704 169 173", verified: false },
-    { id: "d_bank", type: "bank", label: "Bank Account", details: "Stanbic •••• 3311", verified: true },
-  ]);
+  // Initial state empty, populated by API
+  const [destinations, setDestinations] = useState<Dest[]>([]);
 
-  const [destId, setDestId] = useState<string>("d_mtn");
+  const [destId, setDestId] = useState<string>("");
   const selectedDest = useMemo(() => destinations.find((d) => d.id === destId) || destinations[0], [destId, destinations]);
 
-  const [amount, setAmount] = useState<number>(200000);
+  const [amount, setAmount] = useState<number>(0);
   const [note, setNote] = useState<string>("");
 
   const [state, setState] = useState<WithdrawState>("form");
@@ -369,12 +421,14 @@ export default function WithdrawFundsPage() {
     "&:hover": { borderColor: WHATSAPP.green, backgroundColor: WHATSAPP.green, color: "#FFFFFF" },
   } as const;
 
-  const fee = feeFor(selectedDest.type, amount);
+  const fee = selectedDest ? feeFor(selectedDest.type, amount) : 0;
   const total = clampMoney(amount) + fee;
 
-  const canSubmit = clampMoney(amount) >= 1000 && clampMoney(amount) <= available && clampMoney(amount) <= dailyLimit;
+  const canSubmit = !!selectedDest && clampMoney(amount) >= 1000 && clampMoney(amount) <= available && clampMoney(amount) <= dailyLimit;
 
   const openReauth = () => {
+    if (!selectedDest) return setSnack({ open: true, severity: "warning", msg: "Please select a destination." });
+
     if (!canSubmit) {
       if (clampMoney(amount) < 1000) return setSnack({ open: true, severity: "warning", msg: "Minimum withdrawal is UGX 1,000." });
       if (clampMoney(amount) > available) return setSnack({ open: true, severity: "warning", msg: "Amount exceeds available balance." });
@@ -407,20 +461,40 @@ export default function WithdrawFundsPage() {
   };
 
   const submit = async () => {
-    if (!validateReauth()) return;
+    if (!selectedDest || !validateReauth()) return;
 
     setReauthOpen(false);
     setState("processing");
     setReceipt(null);
 
-    await new Promise((r) => setTimeout(r, 900));
+    try {
+      const destMapping: Record<string, string> = {
+        'd_mtn': 'mtn',
+        'd_airtel': 'airtel',
+        'd_bank': 'standard_chartered' // demo mapping
+      };
 
-    // Demo success: verified destination 90%, unverified 70%
-    const ok = selectedDest.verified ? Math.random() < 0.9 : Math.random() < 0.7;
+      const res = await api('/wallets/me/withdraw', {
+        method: 'POST',
+        body: JSON.stringify({
+          amount: clampMoney(amount),
+          currency: "UGX",
+          method: selectedDest.type === 'momo' ? 'mobile_money' : 'bank_transfer',
+          provider: selectedDest.label.includes('MTN') ? 'mtn' : selectedDest.label.includes('Airtel') ? 'airtel' : 'standard_chartered',
+          accountNumber: selectedDest.details
+        })
+      });
 
-    setReceipt({ id: shortId("WD"), reference: shortId("EVZ") });
-    setState(ok ? "success" : "failed");
-    setSnack({ open: true, severity: ok ? "success" : "error", msg: ok ? "Withdrawal submitted." : "Withdrawal failed. Try again." });
+      // The API returns the transaction
+      const ref = res.referenceId || shortId("EVZ");
+      setReceipt({ id: res.id, reference: ref });
+      setState("success");
+      setSnack({ open: true, severity: "success", msg: "Withdrawal submitted." });
+    } catch (err) {
+      console.error(err);
+      setState("failed");
+      setSnack({ open: true, severity: "error", msg: "Withdrawal failed. Try again." });
+    }
   };
 
   const reset = () => {
@@ -452,7 +526,7 @@ export default function WithdrawFundsPage() {
         <Stack direction="row" spacing={1.2} alignItems="center" justifyContent="space-between" flexWrap="wrap" useFlexGap>
           <Stack direction="row" spacing={1.2} alignItems="center">
             <Avatar sx={{ bgcolor: alpha(accent, 0.18), color: theme.palette.text.primary, borderRadius: 16 }}>
-              {d.type === "bank" ? <BankIcon size={18} /> : <PhoneIcon size={18} />}
+              {getProviderIcon(d.type === 'bank' ? 'bank' : d.label, 24)}
             </Avatar>
             <Box>
               <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
@@ -512,7 +586,7 @@ export default function WithdrawFundsPage() {
                 </Stack>
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
                   <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Destination</Typography>
-                  <Typography sx={{ fontWeight: 950 }}>{selectedDest.label}</Typography>
+                  <Typography sx={{ fontWeight: 950 }}>{selectedDest?.label || "None"}</Typography>
                 </Stack>
                 {receipt ? (
                   <>
@@ -629,19 +703,33 @@ export default function WithdrawFundsPage() {
                         <Divider />
 
                         <Typography variant="h6">Destination</Typography>
-                        <Stack spacing={1.2}>
-                          {destinations.map((d) => (
-                            <DestCard key={d.id} d={d} />
-                          ))}
-                        </Stack>
+                        {loadingConfig ? (
+                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Loading payment methods...</Typography>
+                        ) : destinations.length === 0 ? (
+                          <Alert severity="warning">
+                            No withdrawal destinations found. Please add a payment method first.
+                          </Alert>
+                        ) : (
+                          <Stack spacing={1.2}>
+                            {destinations.map((d) => (
+                              <DestCard key={d.id} d={d} />
+                            ))}
+                          </Stack>
+                        )}
 
                         <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                           <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/app/wallet/payment-methods")}>
-                            Manage destinations
+                            {destinations.length === 0 ? "Add method" : "Manage destinations"}
                           </Button>
-                          <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/app/wallet/kyc")}>
-                            Upgrade KYC
-                          </Button>
+                          {kycTier === "Full" ? (
+                            <Button variant="outlined" color="success" startIcon={<CheckCircleIcon size={18} />} sx={{ borderColor: theme.palette.success.main, color: theme.palette.success.main, pointerEvents: "none" }}>
+                              Verified Account
+                            </Button>
+                          ) : (
+                            <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/app/wallet/kyc")}>
+                              Upgrade KYC
+                            </Button>
+                          )}
                         </Stack>
 
                         <Alert severity="info">

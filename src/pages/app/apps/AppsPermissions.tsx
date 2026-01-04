@@ -27,7 +27,7 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
 
 /**
@@ -190,46 +190,35 @@ function mfaCodeFor(channel: MfaChannel) {
 export default function AppsPermissionsPage() {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const isDark = mode === "dark";
 
-  const [apps, setApps] = useState<AppPerm[]>(() => {
-    const now = Date.now();
-    return [
-      {
-        id: "a_charging",
-        name: "EVzone Charging",
-        kind: "EVzone",
-        lastUsedAt: now - 1000 * 60 * 18,
-        scopes: ["openid", "profile", "email", "wallet:read", "charging:read", "charging:book"],
-        revoked: false,
-      },
-      {
-        id: "a_marketplace",
-        name: "EVzone Marketplace",
-        kind: "EVzone",
-        lastUsedAt: now - 1000 * 60 * 60 * 6,
-        scopes: ["openid", "profile", "email", "wallet:read", "orders:read", "orders:write"],
-        revoked: false,
-      },
-      {
-        id: "a_pay",
-        name: "EVzone Pay",
-        kind: "EVzone",
-        lastUsedAt: now - 1000 * 60 * 12,
-        scopes: ["openid", "profile", "email", "wallet:read", "wallet:spend", "payments:write"],
-        revoked: false,
-      },
-      {
-        id: "a_analytics",
-        name: "Partner Analytics (Example)",
-        kind: "Third-party",
-        lastUsedAt: now - 1000 * 60 * 60 * 24 * 2,
-        scopes: ["openid", "profile", "email", "wallet:read"],
-        revoked: false,
-      },
-    ];
-  });
+  const [apps, setApps] = useState<AppPerm[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPerms = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch("/api/apps/permissions", {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('access_token') || ''}`
+          }
+        });
+        if (!res.ok) throw new Error("Failed to load permissions");
+        const data = await res.json();
+        // Backend returns active consents. Backend does not return "revoked" items usually (they are deleted).
+        // But frontend UI has a "Revoked" tab.
+        // For now, we only show Active consents from backend.
+        setApps(data);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPerms();
+  }, []);
 
   const [tab, setTab] = useState<0 | 1 | 2>(0);
   const [search, setSearch] = useState("");
@@ -317,13 +306,26 @@ export default function AppsPermissionsPage() {
     return true;
   };
 
-  const revoke = () => {
+  const revoke = async () => {
     if (!pendingRevoke) return;
     if (!validateReauth()) return;
 
-    setApps((prev) => prev.map((a) => (a.id === pendingRevoke ? { ...a, revoked: true } : a)));
-    setSnack({ open: true, severity: "success", msg: "Access revoked. You will be logged out of that service (demo)." });
-    closeReauth();
+    try {
+      const res = await fetch(`/api/apps/${pendingRevoke}/revoke`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token') || ''}`
+        }
+      });
+      if (!res.ok) throw new Error("Failed to revoke");
+
+      // Update local state to show as revoked
+      setApps((prev) => prev.map((a) => (a.id === pendingRevoke ? { ...a, revoked: true } : a)));
+      setSnack({ open: true, severity: "success", msg: "Access revoked. You will be logged out of that service." });
+      closeReauth();
+    } catch (e) {
+      setSnack({ open: true, severity: "error", msg: "Failed to revoke access." });
+    }
   };
 
   const restore = (id: string) => {

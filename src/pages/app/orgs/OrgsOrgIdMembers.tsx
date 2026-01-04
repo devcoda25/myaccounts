@@ -7,6 +7,7 @@ import {
   Card,
   CardContent,
   Chip,
+  CircularProgress,
   CssBaseline,
   Dialog,
   DialogActions,
@@ -30,26 +31,13 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useNavigate, useParams } from 'react-router-dom';
+import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
-
-/**
- * EVzone My Accounts - Org Members
- * Route: /app/orgs/:orgId/members
- *
- * Features:
- * - Members table (name, email, role, status)
- * - Search + filter
- * - Change role (admin only)
- * - Remove member (admin only)
- */
-
-type ThemeMode = "light" | "dark";
+import { api } from "../../../utils/api";
 
 type Severity = "info" | "warning" | "error" | "success";
-
 type OrgRole = "Owner" | "Admin" | "Manager" | "Member" | "Viewer";
-
 type MemberStatus = "Active" | "Pending" | "Suspended";
 
 type Member = {
@@ -59,13 +47,10 @@ type Member = {
   role: OrgRole;
   status: MemberStatus;
   joinedAt: number;
+  avatarUrl?: string;
 };
 
-// Local EVZONE and THEME_KEY removed
-
-// -----------------------------
-// Icons (inline)
-// -----------------------------
+// ... Icons ...
 function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{ display: "block" }}>
@@ -75,115 +60,38 @@ function IconBase({ size = 18, children }: { size?: number; children: React.Reac
 }
 
 function SunIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
-      <path d="M12 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 12H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M22 12h-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
+  return (<IconBase size={size}><circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" /><path d="M12 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M12 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M4 12H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M22 12h-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></IconBase>);
 }
-
 function MoonIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M21 13a8 8 0 0 1-10-10 7.5 7.5 0 1 0 10 10Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
+  return (<IconBase size={size}><path d="M21 13a8 8 0 0 1-10-10 7.5 7.5 0 1 0 10 10Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" /></IconBase>);
 }
-
 function GlobeIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
+  return (<IconBase size={size}><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" /><path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></IconBase>);
 }
-
 function UsersIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <circle cx="9" cy="7" r="3" stroke="currentColor" strokeWidth="2" />
-      <path d="M22 21v-2a3 3 0 0 0-2.5-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M16.5 3.3a3 3 0 0 1 0 7.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
+  return (<IconBase size={size}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><circle cx="9" cy="7" r="3" stroke="currentColor" strokeWidth="2" /><path d="M22 21v-2a3 3 0 0 0-2.5-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M16.5 3.3a3 3 0 0 1 0 7.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></IconBase>);
 }
-
 function SearchIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
-      <path d="M20 20l-3-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
+  return (<IconBase size={size}><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" /><path d="M20 20l-3-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></IconBase>);
 }
-
 function ShieldCheckIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-      <path d="m9 12 2 2 4-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
+  return (<IconBase size={size}><path d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" /><path d="m9 12 2 2 4-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></IconBase>);
 }
-
 function UserIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="2" />
-      <path d="M4 22a8 8 0 0 1 16 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
+  return (<IconBase size={size}><circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="2" /><path d="M4 22a8 8 0 0 1 16 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></IconBase>);
 }
-
 function TrashIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M4 7h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M10 11v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M14 11v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M6 7l1 14h10l1-14" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-      <path d="M9 7V4h6v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
+  return (<IconBase size={size}><path d="M4 7h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M10 11v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M14 11v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M6 7l1 14h10l1-14" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" /><path d="M9 7V4h6v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></IconBase>);
 }
-
 function PencilIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M12 20h9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
+  return (<IconBase size={size}><path d="M12 20h9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" /></IconBase>);
 }
-
 function PlusIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M12 5v14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
+  return (<IconBase size={size}><path d="M12 5v14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></IconBase>);
 }
-
 function ArrowRightIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
+  return (<IconBase size={size}><path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></IconBase>);
 }
-
-// -----------------------------
-// Theme helpers
-// -----------------------------
-// Local theme logic removed
 
 function initials(name: string) {
   const parts = name.trim().split(/\s+/);
@@ -220,31 +128,21 @@ function isAdminRole(role: OrgRole) {
   return role === "Owner" || role === "Admin";
 }
 
-// Self-tests removed
-
 export default function OrgMembersPage() {
-  // const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
-  // const theme = useMemo(() => buildTheme(mode), [mode]);
   const theme = useTheme();
-  const { mode } = useThemeContext();
+  const { mode, toggleMode } = useThemeStore();
   const isDark = mode === "dark";
+  const { orgId } = useParams<{ orgId: string }>();
+  const navigate = useNavigate();
 
-  // Demo role
-  const [myRole, setMyRole] = useState<OrgRole>("Admin");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const [members, setMembers] = useState<Member[]>([]);
+  const [orgName, setOrgName] = useState("");
+  const [myRole, setMyRole] = useState<OrgRole>("Viewer");
+
   const canAdmin = isAdminRole(myRole);
-
-  const [orgName] = useState("EV World");
-
-  const [members, setMembers] = useState<Member[]>(() => {
-    const now = Date.now();
-    return [
-      { id: "m1", name: "Ronald Isabirye", email: "ronald@evworld.africa", role: "Owner", status: "Active", joinedAt: now - 1000 * 60 * 60 * 24 * 200 },
-      { id: "m2", name: "Dacy Dong", email: "dacy@evworld.africa", role: "Admin", status: "Active", joinedAt: now - 1000 * 60 * 60 * 24 * 120 },
-      { id: "m3", name: "Support Agent", email: "support@evworld.africa", role: "Manager", status: "Active", joinedAt: now - 1000 * 60 * 60 * 24 * 40 },
-      { id: "m4", name: "Finance Team", email: "finance@evworld.africa", role: "Member", status: "Pending", joinedAt: now - 1000 * 60 * 60 * 22 },
-      { id: "m5", name: "Temporary Contractor", email: "temp.contractor@example.com", role: "Viewer", status: "Suspended", joinedAt: now - 1000 * 60 * 60 * 24 * 18 },
-    ];
-  });
 
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<"all" | OrgRole>("all");
@@ -259,32 +157,31 @@ export default function OrgMembersPage() {
 
   const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
-  // Self-tests effect removed
+  useEffect(() => {
+    loadData();
+  }, [orgId]);
 
-  const pageBg =
-    mode === "dark"
-      ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
-      : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
+  const loadData = async () => {
+    if (!orgId) return;
+    try {
+      setLoading(true);
+      setError("");
 
-  const orangeContained = {
-    backgroundColor: EVZONE.orange,
-    color: "#FFFFFF",
-    boxShadow: `0 4px 14px ${alpha(EVZONE.orange, 0.4)}`, // Standardized
-    borderRadius: "4px", // Standardized to 4px
-    "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
-    "&:active": { backgroundColor: alpha(EVZONE.orange, 0.86), color: "#FFFFFF" },
-  } as const;
+      const [orgData, membersData] = await Promise.all([
+        api(`/orgs/${orgId}`),
+        api(`/orgs/${orgId}/members`)
+      ]);
 
-  const orangeOutlined = {
-    borderColor: alpha(EVZONE.orange, 0.65),
-    color: EVZONE.orange,
-    backgroundColor: alpha(theme.palette.background.paper, 0.20),
-    borderRadius: "4px", // Standardized to 4px
-    "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
-  } as const;
+      setOrgName(orgData.name);
+      setMyRole(orgData.role);
+      setMembers(membersData);
 
-  const toggleMode = () => {
-    // Mode toggling handled by ContextSwitcher or outside
+    } catch (err: any) {
+      setError(err.message || "Failed to load members");
+      setSnack({ open: true, severity: "error", msg: "Failed to load data" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const filtered = useMemo(() => {
@@ -308,19 +205,17 @@ export default function OrgMembersPage() {
     setEditOpen(true);
   };
 
-  const saveRole = () => {
-    if (!editId) return;
-    const target = members.find((x) => x.id === editId);
-    if (!target) return;
-    if (target.role === "Owner") {
-      setSnack({ open: true, severity: "warning", msg: "Owner role cannot be changed here." });
+  const saveRole = async () => {
+    if (!editId || !orgId) return;
+    try {
+      await api.patch(`/orgs/${orgId}/members/${editId}`, { role: editRole });
+      setSnack({ open: true, severity: "success", msg: "Role updated successfully." });
+      loadData();
       setEditOpen(false);
-      return;
+    } catch (err: any) {
+      setSnack({ open: true, severity: "error", msg: err.message || "Failed to update role" });
+      setEditOpen(false);
     }
-
-    setMembers((prev) => prev.map((m) => (m.id === editId ? { ...m, role: editRole } : m)));
-    setEditOpen(false);
-    setSnack({ open: true, severity: "success", msg: "Role updated (demo)." });
   };
 
   const openRemove = (id: string) => {
@@ -332,25 +227,54 @@ export default function OrgMembersPage() {
     setRemoveOpen(true);
   };
 
-  const confirmRemove = () => {
-    if (!removeId) return;
-    const target = members.find((x) => x.id === removeId);
-    if (!target) return;
-    if (target.role === "Owner") {
-      setSnack({ open: true, severity: "warning", msg: "Owners cannot be removed. Transfer ownership first." });
+  const confirmRemove = async () => {
+    if (!removeId || !orgId) return;
+    try {
+      await api.delete(`/orgs/${orgId}/members/${removeId}`);
+      setSnack({ open: true, severity: "success", msg: "Member removed successfully." });
+      loadData();
       setRemoveOpen(false);
-      return;
+    } catch (err: any) {
+      setSnack({ open: true, severity: "error", msg: err.message || "Failed to remove member" });
+      setRemoveOpen(false);
     }
-    setMembers((prev) => prev.filter((m) => m.id !== removeId));
-    setRemoveOpen(false);
-    setSnack({ open: true, severity: "success", msg: "Member removed (demo)." });
   };
 
-  const goInvite = () => setSnack({ open: true, severity: "info", msg: "Navigate to /app/orgs/:orgId/invite (demo)." });
-  const goRoles = () => setSnack({ open: true, severity: "info", msg: "Navigate to /app/orgs/:orgId/roles-permissions (demo)." });
+  const goInvite = () => navigate(`/app/orgs/${orgId}/invite`);
+  const goRoles = () => navigate(`/app/orgs/${orgId}/settings`); // Roles in settings for now
 
   const membersCount = members.length;
   const pendingCount = members.filter((m) => m.status === "Pending").length;
+
+  const pageBg =
+    mode === "dark"
+      ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
+      : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
+
+  const orangeContained = {
+    backgroundColor: EVZONE.orange,
+    color: "#FFFFFF",
+    boxShadow: `0 4px 14px ${alpha(EVZONE.orange, 0.4)}`,
+    borderRadius: "4px",
+    "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
+    "&:active": { backgroundColor: alpha(EVZONE.orange, 0.86), color: "#FFFFFF" },
+  } as const;
+
+  const orangeOutlined = {
+    borderColor: alpha(EVZONE.orange, 0.65),
+    color: EVZONE.orange,
+    backgroundColor: alpha(theme.palette.background.paper, 0.20),
+    borderRadius: "4px",
+    "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
+  } as const;
+
+  if (loading && !members.length) {
+    return (
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <CircularProgress size={40} sx={{ color: EVZONE.green }} />
+      </Box>
+    );
+  }
 
   return (
     <>
@@ -374,7 +298,7 @@ export default function OrgMembersPage() {
 
               <Stack direction="row" spacing={1} alignItems="center">
                 {/* Demo role selector */}
-                <TextField select size="small" label="My role" value={myRole} onChange={(e) => setMyRole(e.target.value as OrgRole)} sx={{ minWidth: 140, display: { xs: "none", md: "block" } }}>
+                <TextField select size="small" label="My role" value={myRole} disabled onChange={() => { }} sx={{ minWidth: 140, display: { xs: "none", md: "block" } }}>
                   {(["Owner", "Admin", "Manager", "Member", "Viewer"] as OrgRole[]).map((r) => (
                     <MenuItem key={r} value={r}>
                       {r}

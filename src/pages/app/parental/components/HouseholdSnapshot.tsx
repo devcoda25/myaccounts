@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Card, CardContent, Typography, Stack, Button, Chip, Divider, Alert, useTheme, alpha } from '@mui/material';
 import { Plus as PlusIcon, Shield as ShieldIcon } from 'lucide-react';
-import { useThemeContext } from '../../../../theme/ThemeContext';
+import { useThemeStore } from "../../../../stores/themeStore";
 import { getStyles } from '../styles';
 
 // Types (mirrored from Index.tsx for now)
@@ -35,7 +35,7 @@ export default function HouseholdSnapshot({
     updateApprovalMode
 }: HouseholdSnapshotProps) {
     const theme = useTheme();
-    const { mode } = useThemeContext();
+    const { mode } = useThemeStore();
     const { evOrangeContainedSx, evOrangeOutlinedSx, cardSx } = getStyles(theme, mode);
 
     return (
@@ -49,10 +49,10 @@ export default function HouseholdSnapshot({
                                 Co-guardians can approve requests. Emergency contacts receive urgent alerts only.
                             </Typography>
                             <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 1 }}>
-                                <Chip size="small" variant="outlined" label={`Co-guardians: ${householdCounts.co}`} sx={{ borderRadius: "4px" }} />
-                                <Chip size="small" variant="outlined" label={`Emergency: ${householdCounts.em}`} sx={{ borderRadius: "4px" }} />
-                                <Chip size="small" variant="outlined" label={`Pending invites: ${householdCounts.pending}`} sx={{ borderRadius: "4px" }} />
-                                <Chip size="small" variant="outlined" label={`Approval mode: ${approvalMode}`} sx={{ borderRadius: "4px" }} />
+                                <Chip size="small" variant="outlined" label={`Co - guardians: ${householdCounts.co} `} sx={{ borderRadius: "4px" }} />
+                                <Chip size="small" variant="outlined" label={`Emergency: ${householdCounts.em} `} sx={{ borderRadius: "4px" }} />
+                                <Chip size="small" variant="outlined" label={`Pending invites: ${householdCounts.pending} `} sx={{ borderRadius: "4px" }} />
+                                <Chip size="small" variant="outlined" label={`Approval mode: ${approvalMode} `} sx={{ borderRadius: "4px" }} />
                             </Stack>
                         </Box>
 
@@ -71,7 +71,7 @@ export default function HouseholdSnapshot({
                     <Box className="grid gap-2 md:grid-cols-2">
                         <Box sx={{
                             borderRadius: "4px", // Wallet Match: 4px
-                            border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
+                            border: `1px solid ${alpha(theme.palette.text.primary, 0.10)} `,
                             backgroundColor: alpha(theme.palette.background.paper, 0.40),
                             p: 1.2
                         }}>
@@ -99,7 +99,7 @@ export default function HouseholdSnapshot({
 
                         <Box sx={{
                             borderRadius: "4px", // Wallet Match: 4px
-                            border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
+                            border: `1px solid ${alpha(theme.palette.text.primary, 0.10)} `,
                             backgroundColor: alpha(theme.palette.background.paper, 0.40),
                             p: 1.2
                         }}>
@@ -109,9 +109,9 @@ export default function HouseholdSnapshot({
                             </Typography>
                             <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 1 }}>
                                 {householdMembers.slice(0, 4).map((m) => (
-                                    <Chip key={m.id} size="small" variant="outlined" label={`${m.name}${m.isPrimary ? " (Primary)" : ""}`} sx={{ borderRadius: "4px" }} />
+                                    <Chip key={m.id} size="small" variant="outlined" label={`${m.name}${m.isPrimary ? " (Primary)" : ""} `} sx={{ borderRadius: "4px" }} />
                                 ))}
-                                {householdMembers.length > 4 ? <Chip size="small" variant="outlined" label={`+${householdMembers.length - 4}`} sx={{ borderRadius: "4px" }} /> : null}
+                                {householdMembers.length > 4 ? <Chip size="small" variant="outlined" label={`+ ${householdMembers.length - 4} `} sx={{ borderRadius: "4px" }} /> : null}
                             </Stack>
                         </Box>
                     </Box>

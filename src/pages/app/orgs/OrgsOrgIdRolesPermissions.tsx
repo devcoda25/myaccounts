@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
 
 /**
@@ -208,7 +208,7 @@ export default function OrgRolesPermissionsPage() {
   // const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   // const theme = useMemo(() => buildTheme(mode), [mode]);
   const theme = useTheme();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const isDark = mode === "dark";
 
   // Demo: my org role

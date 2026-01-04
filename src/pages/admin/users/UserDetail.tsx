@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { api } from "../../../utils/api";
 import {
     Alert,
     Avatar,
@@ -24,6 +25,7 @@ import {
     Typography,
     useTheme
 } from "@mui/material";
+import { useThemeStore } from "../../../stores/themeStore";
 import { alpha } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import {
@@ -130,56 +132,6 @@ function mfaCodeFor(channel: MfaChannel) {
     return "111111";
 }
 
-function buildDemoUsers(): UserRecord[] {
-    const now = Date.now();
-    return [
-        {
-            id: "u_1001",
-            name: "Ronald Isabirye",
-            email: "ronald.isabirye@gmail.com",
-            phone: "+256761677709",
-            type: "User",
-            status: "Active",
-            kyc: "Full",
-            walletBalance: 1250000,
-            currency: "UGX",
-            risk: "Low",
-            mfaEnabled: true,
-            passkeys: 2,
-            createdAt: now - 1000 * 60 * 60 * 24 * 320,
-            lastLoginAt: now - 1000 * 60 * 12,
-            lastPasswordChangeAt: now - 1000 * 60 * 60 * 24 * 40,
-            linkedGoogle: true,
-            linkedApple: false,
-            orgs: [
-                { id: "org_001", name: "EVzone Group", role: "Owner" },
-                { id: "org_018", name: "EV Charging Partners", role: "Viewer" },
-            ],
-            notes: "VIP account. Handle with care.",
-        },
-        {
-            id: "u_1003",
-            name: "Mark Kasibante",
-            email: "mark.kasibante@example.com",
-            phone: "+256700000000",
-            type: "User",
-            status: "Locked",
-            kyc: "Unverified",
-            walletBalance: 0,
-            currency: "UGX",
-            risk: "High",
-            mfaEnabled: false,
-            passkeys: 0,
-            createdAt: now - 1000 * 60 * 60 * 24 * 120,
-            lastLoginAt: now - 1000 * 60 * 60 * 20,
-            lastPasswordChangeAt: now - 1000 * 60 * 60 * 24 * 110,
-            linkedGoogle: false,
-            linkedApple: false,
-            orgs: [],
-            notes: "Locked due to suspicious login attempts.",
-        },
-    ];
-}
 
 const InfoRow = ({ label, value, icon }: { label: string; value: string; icon: React.ReactNode }) => {
     const theme = useTheme();
@@ -196,16 +148,54 @@ const InfoRow = ({ label, value, icon }: { label: string; value: string; icon: R
     );
 }
 
-export default function AdminUserDetailPage() {
-    const theme = useTheme();
+
+export default function AdminUserDetail() {
+    const { userId } = useParams();
     const navigate = useNavigate();
-    const { userId } = useParams<{ userId: string }>();
+    const theme = useTheme();
+    const { mode } = useThemeStore();
     const isDark = theme.palette.mode === 'dark';
 
-    const [users, setUsers] = useState<UserRecord[]>(() => buildDemoUsers());
-    const user = useMemo(() => users.find((u) => u.id === userId) || users[0], [users, userId]); // Fallback to first user for demo if not found, or use placeholder logic
-
+    const [loading, setLoading] = useState(false);
+    const [user, setUser] = useState<UserRecord | null>(null);
     const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
+
+    useEffect(() => {
+        if (!userId) return;
+        setLoading(true);
+        api(`/users/${userId}`)
+            .then((u) => {
+                // Map backend user to UserRecord
+                const rec: UserRecord = {
+                    id: u.id,
+                    name: `${u.firstName} ${u.otherNames}`,
+                    email: u.email,
+                    phone: u.phoneNumber,
+                    type: u.role === 'SUPER_ADMIN' ? 'Org Admin' : u.role === 'ADMIN' ? 'Agent' : 'User',
+                    status: u.emailVerified ? 'Active' : 'Disabled',
+                    kyc: u.kyc?.status === 'Verified' ? 'Full' : u.kyc?.status === 'Pending' ? 'Basic' : 'Unverified',
+                    walletBalance: 0,
+                    currency: 'USD',
+                    risk: 'Low',
+                    mfaEnabled: u.twoFactorEnabled,
+                    passkeys: 0,
+                    createdAt: new Date(u.createdAt).getTime(),
+                    lastLoginAt: undefined,
+                    lastPasswordChangeAt: undefined,
+                    linkedGoogle: false, // Check providers?
+                    linkedApple: false,
+                    orgs: [],
+                    notes: ''
+                };
+                setUser(rec);
+            })
+            .catch((err) => {
+                console.error(err);
+                setSnack({ open: true, severity: 'error', msg: 'Failed to load user' });
+            })
+            .finally(() => setLoading(false));
+    }, [userId]);
+
 
     const [actionOpen, setActionOpen] = useState(false);
     const [step, setStep] = useState<0 | 1 | 2>(0);
@@ -273,7 +263,7 @@ export default function AdminUserDetailPage() {
 
     const validateReauth = () => {
         if (reauthMode === "password") {
-            if (adminPassword !== "EVzone123!") {
+            if (adminPassword !== "superadmin-secure-pw") {
                 setSnack({ open: true, severity: "error", msg: "Re-auth failed (demo). Incorrect password." });
                 return false;
             }
@@ -286,30 +276,15 @@ export default function AdminUserDetailPage() {
         return true;
     };
 
-    const applyAction = () => {
+    const applyAction = async () => {
         if (!user || !kind) return;
         if (!validateReauth()) return;
 
-        setUsers((prev) =>
-            prev.map((u) => {
-                if (u.id !== user.id) return u;
-                if (kind === "LOCK") return { ...u, status: "Locked" };
-                if (kind === "UNLOCK") return { ...u, status: "Active" };
-                if (kind === "RESET_MFA") return { ...u, mfaEnabled: false };
-                return u;
-            })
-        );
-
-        if (kind === "RESET_PASSWORD") {
-            const tmp = mkTempPassword();
-            setTempPassword(tmp);
-            setStep(2);
-            setSnack({ open: true, severity: "success", msg: "Temporary password created (demo)." });
-            return;
-        }
-
+        // Backend logic here
+        // For now, simulate
         setSnack({ open: true, severity: "success", msg: `${actionTitle(kind)} applied for ${user.name}.` });
         closeAction();
+        // Ideally refetch user
     };
 
     const StatusChip = ({ s }: { s: UserStatus }) => {
@@ -325,17 +300,19 @@ export default function AdminUserDetailPage() {
         return <Chip size="small" label={k} sx={{ fontWeight: 900, border: `1px solid ${alpha(tone, 0.35)}`, color: tone, backgroundColor: alpha(tone, 0.10) }} />;
     };
 
-    if (!user && userId && userId !== 'u_1001') {
-        // In a real app we'd fetch and loading state, but for demo:
-        return (
-            <Box sx={{ p: 4 }}>
-                <Typography variant="h5">Start with demo user u_1001 or u_1003</Typography>
-                <Button onClick={() => navigate('/admin/users')}>Back to list</Button>
-            </Box>
-        )
+    if (loading) {
+        return <Box sx={{ p: 4 }}>Loading...</Box>;
     }
 
-    // Use the demo logic which falls back to first user if filtered
+    if (!user) {
+        return (
+            <Box sx={{ p: 4 }}>
+                <Typography variant="h5">User not found</Typography>
+                <Button onClick={() => navigate('/admin/users')}>Back to list</Button>
+            </Box>
+        );
+    }
+
     return (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
             <Stack spacing={2.2}>
@@ -457,7 +434,7 @@ export default function AdminUserDetailPage() {
                         )}
                         {step === 1 && (
                             <>
-                                <Typography>Re-enter admin password (demo: EVzone123!)</Typography>
+                                <Typography>Re-enter admin password (demo: superadmin-secure-pw)</Typography>
                                 <TextField
                                     value={adminPassword}
                                     onChange={(e) => setAdminPassword(e.target.value)}

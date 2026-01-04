@@ -21,10 +21,12 @@ import {
   TableRow,
   Tooltip,
   Typography,
+  Grid,
 } from "@mui/material";
+import { api } from "../../../utils/api";
 import { alpha } from "@mui/material/styles";
 import { useTheme } from "@mui/material/styles";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 import { motion } from "framer-motion";
 
 /**
@@ -92,6 +94,15 @@ function GlobeIcon({ size = 18 }: { size?: number }) {
     <IconBase size={size}>
       <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
       <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </IconBase>
+  );
+}
+
+function CheckCircleIcon({ size = 18 }: { size?: number }) {
+  return (
+    <IconBase size={size}>
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
+      <path d="m8.5 12 2.3 2.3L15.8 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </IconBase>
   );
 }
@@ -175,12 +186,20 @@ function runSelfTestsOnce() {
 
 export default function WalletLimitsFeesPage() {
   const navigate = useNavigate();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const theme = useTheme();
   const isDark = mode === "dark";
 
   const currency = "UGX";
-  const [tier] = useState<KycTier>("Basic");
+  const [tier, setTier] = useState<KycTier>("Basic");
+
+  useEffect(() => {
+    api('/kyc/status').then(res => {
+      if (res && res.tier) {
+        setTier(res.tier);
+      }
+    }).catch(err => console.error("Failed to load limits/tier", err));
+  }, []);
 
   // Demo limits
   const dailyLimit = tier === "Full" ? 20000000 : tier === "Basic" ? 5000000 : 1000000;
@@ -276,9 +295,15 @@ export default function WalletLimitsFeesPage() {
                       <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/app/wallet")}>
                         Back to wallet
                       </Button>
-                      <Button variant="contained" sx={greenContained} startIcon={<ArrowUpIcon size={18} />} onClick={() => navigate("/app/wallet/kyc")}>
-                        Upgrade KYC
-                      </Button>
+                      {tier === "Full" ? (
+                        <Button variant="outlined" disabled startIcon={<CheckCircleIcon size={18} />}>
+                          Verified
+                        </Button>
+                      ) : (
+                        <Button variant="contained" sx={greenContained} startIcon={<ArrowUpIcon size={18} />} onClick={() => navigate("/app/wallet/kyc")}>
+                          Upgrade KYC
+                        </Button>
+                      )}
                     </Stack>
                   </Stack>
 
@@ -340,47 +365,82 @@ export default function WalletLimitsFeesPage() {
                   </Card>
                 </Box>
 
-                {/* Upgrade prompt */}
+                {/* Upgrade prompt OR Premium Status */}
                 <Box className="md:col-span-6">
-                  <Card>
-                    <CardContent className="p-5 md:p-7">
-                      <Stack spacing={1.4}>
-                        <Typography variant="h6">Upgrade</Typography>
-                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Increase limits and unlock advanced wallet features.
-                        </Typography>
-                        <Divider />
+                  {tier === "Full" ? (
+                    <Card sx={{ height: '100%', background: `linear-gradient(135deg, ${alpha(EVZONE.green, 0.15)} 0%, ${alpha(theme.palette.background.paper, 0.8)} 100%)`, border: `1px solid ${alpha(EVZONE.green, 0.3)}` }}>
+                      <CardContent className="p-5 md:p-7">
+                        <Stack spacing={1.4} height="100%" justifyContent="center">
+                          <Stack direction="row" spacing={1.5} alignItems="center">
+                            <Box sx={{ p: 1, borderRadius: '50%', bgcolor: EVZONE.green, color: 'white', display: 'flex' }}>
+                              <ShieldCheckIcon size={24} />
+                            </Box>
+                            <Box>
+                              <Typography variant="h6" fontWeight={800} sx={{ color: EVZONE.green }}>Premium Status</Typography>
+                              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Account Fully Verified</Typography>
+                            </Box>
+                          </Stack>
 
-                        <Box className="grid gap-3 sm:grid-cols-2">
-                          <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(EVZONE.green, 0.10), p: 1.4 }}>
-                            <Typography sx={{ fontWeight: 950 }}>Full KYC</Typography>
-                            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                              Higher limits, faster withdrawals.
-                            </Typography>
-                          </Box>
-                          <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(EVZONE.orange, 0.10), p: 1.4 }}>
-                            <Typography sx={{ fontWeight: 950 }}>Trusted devices</Typography>
-                            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                              Reduce friction on re-auth.
-                            </Typography>
-                          </Box>
-                        </Box>
+                          <Divider sx={{ my: 1.5, borderColor: alpha(EVZONE.green, 0.2) }} />
 
-                        <Alert severity="warning" icon={<AlertTriangleIcon size={18} />}>
-                          Unverified accounts may have reduced limits and fewer payout options.
-                        </Alert>
-
-                        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                          <Button variant="contained" sx={greenContained} onClick={() => navigate("/app/wallet/kyc")}>
-                            Start KYC
-                          </Button>
-                          <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/app/support")}>
-                            Learn more
-                          </Button>
+                          <Stack spacing={1.5}>
+                            <Stack direction="row" spacing={1.5} alignItems="center">
+                              <CheckCircleIcon size={20} />
+                              <Typography variant="body2" fontWeight={600}>Maximum limits active</Typography>
+                            </Stack>
+                            <Stack direction="row" spacing={1.5} alignItems="center">
+                              <CheckCircleIcon size={20} />
+                              <Typography variant="body2" fontWeight={600}>Priority support</Typography>
+                            </Stack>
+                            <Stack direction="row" spacing={1.5} alignItems="center">
+                              <CheckCircleIcon size={20} />
+                              <Typography variant="body2" fontWeight={600}>Exclusive features unlocked</Typography>
+                            </Stack>
+                          </Stack>
                         </Stack>
-                      </Stack>
-                    </CardContent>
-                  </Card>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <Card>
+                      <CardContent className="p-5 md:p-7">
+                        <Stack spacing={1.4}>
+                          <Typography variant="h6">Upgrade</Typography>
+                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                            Increase limits and unlock advanced wallet features.
+                          </Typography>
+                          <Divider />
+
+                          <Box className="grid gap-3 sm:grid-cols-2">
+                            <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(EVZONE.green, 0.10), p: 1.4 }}>
+                              <Typography sx={{ fontWeight: 950 }}>Full KYC</Typography>
+                              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                                Higher limits, faster withdrawals.
+                              </Typography>
+                            </Box>
+                            <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(EVZONE.orange, 0.10), p: 1.4 }}>
+                              <Typography sx={{ fontWeight: 950 }}>Trusted devices</Typography>
+                              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                                Reduce friction on re-auth.
+                              </Typography>
+                            </Box>
+                          </Box>
+
+                          <Alert severity="warning" icon={<AlertTriangleIcon size={18} />}>
+                            Unverified accounts may have reduced limits and fewer payout options.
+                          </Alert>
+
+                          <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                            <Button variant="contained" sx={greenContained} onClick={() => navigate("/app/wallet/kyc")}>
+                              Start KYC
+                            </Button>
+                            <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/app/support")}>
+                              Learn more
+                            </Button>
+                          </Stack>
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  )}
                 </Box>
               </Box>
 
@@ -439,9 +499,15 @@ export default function WalletLimitsFeesPage() {
                       <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => navigate("/app/wallet")}>
                         Wallet
                       </Button>
-                      <Button fullWidth variant="contained" sx={greenContained} onClick={() => navigate("/app/wallet/kyc")}>
-                        Upgrade
-                      </Button>
+                      {tier === "Full" ? (
+                        <Button fullWidth variant="outlined" disabled startIcon={<CheckCircleIcon size={18} />}>
+                          Verified
+                        </Button>
+                      ) : (
+                        <Button fullWidth variant="contained" sx={greenContained} onClick={() => navigate("/app/wallet/kyc")}>
+                          Upgrade
+                        </Button>
+                      )}
                     </Stack>
                   </CardContent>
                 </Card>

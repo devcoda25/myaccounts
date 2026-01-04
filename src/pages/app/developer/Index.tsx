@@ -24,7 +24,8 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
+import { api } from "../../../utils/api";
 
 /**
  * EVzone My Accounts - Developer / API Access
@@ -264,42 +265,16 @@ function mfaCodeFor(channel: MfaChannel) {
 
 export default function DeveloperAccessPage() {
   const navigate = useNavigate();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const theme = useTheme();
 
   const isDark = mode === "dark";
 
   const [tab, setTab] = useState<0 | 1>(0);
 
-  const [apiKeys, setApiKeys] = useState<ApiKey[]>(() => {
-    const now = Date.now();
-    return [
-      {
-        id: "key_01",
-        name: "Server integration",
-        prefix: "EVZK_7D2F…",
-        createdAt: now - 1000 * 60 * 60 * 24 * 40,
-        lastUsedAt: now - 1000 * 60 * 12,
-        scopes: ["profile.read", "wallet.read", "transactions.read"],
-        status: "Active",
-      },
-    ];
-  });
-
-  const [clients, setClients] = useState<OAuthClient[]>(() => {
-    const now = Date.now();
-    return [
-      {
-        id: "cli_01",
-        name: "EVzone Partner App",
-        clientId: "client_3H9K…",
-        type: "confidential",
-        redirectUris: ["https://partner.example.com/callback"],
-        createdAt: now - 1000 * 60 * 60 * 24 * 70,
-        status: "Active",
-      },
-    ];
-  });
+  const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
+  const [clients, setClients] = useState<OAuthClient[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Sensitive action gating (re-auth)
   const [reauthOpen, setReauthOpen] = useState(false);
@@ -327,6 +302,25 @@ export default function DeveloperAccessPage() {
   const [createdClientId, setCreatedClientId] = useState<string | null>(null);
 
   const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setLoading(true);
+        const [keys, cls] = await Promise.all([
+          api('/developer/api-keys'),
+          api('/developer/oauth-clients')
+        ]);
+        setApiKeys(keys);
+        setClients(cls);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
 
 
   const pageBg =
@@ -403,30 +397,35 @@ export default function DeveloperAccessPage() {
       setSnack({ open: true, severity: "warning", msg: "Name is too short." });
       return;
     }
-    requireReauth(() => {
-      const secret = mkKeySecret("EVZK");
-      const prefix = secret.slice(0, 9) + "…";
-      const key: ApiKey = {
-        id: mkKeySecret("key").slice(0, 12),
-        name: keyName.trim(),
-        prefix,
-        createdAt: Date.now(),
-        lastUsedAt: undefined,
-        scopes: keyScopes,
-        status: "Active",
-      };
-      setApiKeys((prev) => [key, ...prev]);
-      setCreateKeyOpen(false);
-      setCreatedSecret(secret);
-      setCreatedLabel(key.name);
-      setSnack({ open: true, severity: "success", msg: "API key created. Copy the secret now." });
+    requireReauth(async () => {
+      try {
+        setLoading(true);
+        const res = await api.post('/developer/api-keys', { name: keyName.trim(), scopes: keyScopes });
+        setApiKeys((prev) => [res, ...prev]);
+        setCreateKeyOpen(false);
+        setCreatedSecret(res.secret);
+        setCreatedLabel(res.name);
+        setSnack({ open: true, severity: "success", msg: "API key created. Copy the secret now." });
+      } catch (err) {
+        setSnack({ open: true, severity: "error", msg: "Failed to create API key." });
+      } finally {
+        setLoading(false);
+      }
     });
   };
 
   const revokeKey = (id: string) => {
-    requireReauth(() => {
-      setApiKeys((prev) => prev.map((k) => (k.id === id ? { ...k, status: "Revoked" } : k)));
-      setSnack({ open: true, severity: "success", msg: "API key revoked." });
+    requireReauth(async () => {
+      try {
+        setLoading(true);
+        await api.delete(`/developer/api-keys/${id}`);
+        setApiKeys((prev) => prev.map((k) => (k.id === id ? { ...k, status: "Revoked" } : k)));
+        setSnack({ open: true, severity: "success", msg: "API key revoked." });
+      } catch (err) {
+        setSnack({ open: true, severity: "error", msg: "Failed to revoke API key." });
+      } finally {
+        setLoading(false);
+      }
     });
   };
 
@@ -452,30 +451,35 @@ export default function DeveloperAccessPage() {
       return;
     }
 
-    requireReauth(() => {
-      const cid = mkKeySecret("client").slice(0, 14);
-      const secret = clientType === "confidential" ? mkKeySecret("secret") : null;
-      const client: OAuthClient = {
-        id: mkKeySecret("cli").slice(0, 10),
-        name: clientName.trim(),
-        clientId: cid.slice(0, 10) + "…",
-        type: clientType,
-        redirectUris: uris,
-        createdAt: Date.now(),
-        status: "Active",
-      };
-      setClients((prev) => [client, ...prev]);
-      setCreateClientOpen(false);
-      setCreatedClientId(cid);
-      setCreatedClientSecret(secret);
-      setSnack({ open: true, severity: "success", msg: "OAuth client created." });
+    requireReauth(async () => {
+      try {
+        setLoading(true);
+        const res = await api.post('/developer/oauth-clients', { name: clientName.trim(), type: clientType, redirectUris: uris });
+        setClients((prev) => [res, ...prev]);
+        setCreateClientOpen(false);
+        setCreatedClientId(res.clientId);
+        setCreatedClientSecret(res.clientSecret);
+        setSnack({ open: true, severity: "success", msg: "OAuth client created." });
+      } catch (err) {
+        setSnack({ open: true, severity: "error", msg: "Failed to create client." });
+      } finally {
+        setLoading(false);
+      }
     });
   };
 
   const revokeClient = (id: string) => {
-    requireReauth(() => {
-      setClients((prev) => prev.map((c) => (c.id === id ? { ...c, status: "Revoked" } : c)));
-      setSnack({ open: true, severity: "success", msg: "OAuth client revoked." });
+    requireReauth(async () => {
+      try {
+        setLoading(true);
+        await api.delete(`/developer/oauth-clients/${id}`);
+        setClients((prev) => prev.filter((c) => c.id !== id));
+        setSnack({ open: true, severity: "success", msg: "OAuth client revoked." });
+      } catch (err) {
+        setSnack({ open: true, severity: "error", msg: "Failed to revoke client." });
+      } finally {
+        setLoading(false);
+      }
     });
   };
 

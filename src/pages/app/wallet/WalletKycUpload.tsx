@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { api } from "../../../utils/api";
 import {
   Alert,
   Avatar,
@@ -12,6 +13,7 @@ import {
   Divider,
   IconButton,
   LinearProgress,
+  Grid,
   Snackbar,
   Stack,
   Step,
@@ -22,7 +24,7 @@ import {
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { useTheme } from "@mui/material/styles";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 import { motion } from "framer-motion";
 
 /**
@@ -38,7 +40,7 @@ import { motion } from "framer-motion";
 
 type Severity = "info" | "warning" | "error" | "success";
 
-type UploadSlot = "idFront" | "idBack" | "selfie";
+type UploadSlot = "idFront" | "idBack" | "selfie" | "proofAddress";
 
 type UploadFile = {
   slot: UploadSlot;
@@ -213,6 +215,7 @@ function toSize(bytes: number) {
 function slotLabel(slot: UploadSlot) {
   if (slot === "idFront") return "ID front";
   if (slot === "idBack") return "ID back";
+  if (slot === "proofAddress") return "Proof of Address";
   return "Selfie (optional)";
 }
 
@@ -229,14 +232,32 @@ function runSelfTestsOnce() {
 
 export default function KycDocumentUploadPage() {
   const navigate = useNavigate();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const theme = useTheme();
   const isDark = mode === "dark";
 
-  const [uploads, setUploads] = useState<Record<UploadSlot, UploadFile | null>>({
+  // Check for tier param
+  const searchParams = new URLSearchParams(window.location.search);
+  const paramTier = searchParams.get("tier");
+  const [isFullTier, setIsFullTier] = useState(paramTier === "full");
+
+  // Auto-detect if user is already basic verified
+  useEffect(() => {
+    api('/kyc/status').then((res) => {
+      // If already Verified (Basic) and we are not explicitly Full yet, upgrade to Full
+      if (res && res.status === 'Verified' && res.tier !== 'Full') {
+        setIsFullTier(true);
+        // Optional: Update URL without reload to reflect state?
+        // window.history.replaceState(null, '', window.location.pathname + '?tier=full');
+      }
+    }).catch(() => { }); // silent fail
+  }, []);
+
+  const [uploads, setUploads] = useState<Record<string, UploadFile | null>>({
     idFront: null,
     idBack: null,
     selfie: null,
+    proofAddress: null,
   });
 
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
@@ -246,10 +267,12 @@ export default function KycDocumentUploadPage() {
   const inIdFront = useRef<HTMLInputElement | null>(null);
   const inIdBack = useRef<HTMLInputElement | null>(null);
   const inSelfie = useRef<HTMLInputElement | null>(null);
+  const inProofAddress = useRef<HTMLInputElement | null>(null);
 
   const inIdFrontCam = useRef<HTMLInputElement | null>(null);
   const inIdBackCam = useRef<HTMLInputElement | null>(null);
   const inSelfieCam = useRef<HTMLInputElement | null>(null);
+  const inProofAddressCam = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") runSelfTestsOnce();
@@ -258,7 +281,7 @@ export default function KycDocumentUploadPage() {
   useEffect(() => {
     // cleanup object URLs
     return () => {
-      (Object.keys(uploads) as UploadSlot[]).forEach((k) => {
+      Object.keys(uploads).forEach((k) => {
         const u = uploads[k];
         if (u?.url) URL.revokeObjectURL(u.url);
       });
@@ -293,12 +316,14 @@ export default function KycDocumentUploadPage() {
     "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
   } as const;
 
-  const requiredOk = !!uploads.idFront && !uploads.idFront?.error && !!uploads.idBack && !uploads.idBack?.error;
+  const requiredOk = isFullTier
+    ? !!uploads.proofAddress && !uploads.proofAddress.error
+    : !!uploads.idFront && !uploads.idFront?.error && !!uploads.idBack && !uploads.idBack?.error;
 
-  const onPick = (slot: UploadSlot, file?: File | null) => {
+  const onPick = (slot: string, file?: File | null) => {
     if (!file) return;
 
-    const err = validate(file, slot);
+    const err = validate(file, slot as UploadSlot);
     const isPdf = file.type === "application/pdf";
     const url = !isPdf ? URL.createObjectURL(file) : undefined;
 
@@ -307,14 +332,14 @@ export default function KycDocumentUploadPage() {
       if (old?.url) URL.revokeObjectURL(old.url);
       return {
         ...prev,
-        [slot]: { slot, file, url, isPdf, error: err || undefined },
+        [slot]: { slot: slot as UploadSlot, file, url, isPdf, error: err || undefined },
       };
     });
 
-    setSnack({ open: true, severity: err ? "warning" : "success", msg: err ? `${slotLabel(slot)}: ${err}` : `${slotLabel(slot)} selected.` });
+    setSnack({ open: true, severity: err ? "warning" : "success", msg: err ? `${slotLabel(slot as UploadSlot)}: ${err}` : `${slotLabel(slot as UploadSlot)} selected.` });
   };
 
-  const remove = (slot: UploadSlot) => {
+  const remove = (slot: string) => {
     setUploads((prev) => {
       const old = prev[slot];
       if (old?.url) URL.revokeObjectURL(old.url);
@@ -324,36 +349,89 @@ export default function KycDocumentUploadPage() {
 
   const submit = async () => {
     if (!requiredOk) {
-      setSnack({ open: true, severity: "warning", msg: "Upload a valid front and back ID first." });
+      setSnack({ open: true, severity: "warning", msg: isFullTier ? "Upload Proof of Address." : "Upload a valid front and back ID." });
       return;
     }
 
     setSubmitState("submitting");
-    await new Promise((r) => setTimeout(r, 1100));
 
-    const ok = Math.random() > 0.08;
-    setSubmitState(ok ? "success" : "failed");
+    try {
+      // 1. Upload files
+      const formData = new FormData();
+      if (isFullTier) {
+        if (uploads.proofAddress?.file) formData.append('files', uploads.proofAddress.file);
+      } else {
+        if (uploads.idFront?.file) formData.append('files', uploads.idFront.file);
+        if (uploads.idBack?.file) formData.append('files', uploads.idBack.file);
+        if (uploads.selfie?.file) formData.append('files', uploads.selfie.file);
+      }
 
-    setSnack({ open: true, severity: ok ? "success" : "error", msg: ok ? "Documents submitted (demo)." : "Submission failed (demo)." });
+      // Upload endpoint returns array of { originalName, filename, url }
+      const uploadRes = await api('/kyc/upload', {
+        method: 'POST',
+        body: formData
+      });
 
-    if (ok) {
-      // In production: redirect to status
-      navigate("/app/wallet/kyc/status");
+      const filesPayload: any[] = [];
+      // Helper to find url
+      const findUrl = (file: File) => uploadRes.find((r: any) => r.originalName === file.name)?.url;
+
+      if (isFullTier) {
+        if (uploads.proofAddress?.file) filesPayload.push({ slot: 'proofAddress', url: findUrl(uploads.proofAddress.file) });
+      } else {
+        if (uploads.idFront?.file) filesPayload.push({ slot: 'idFront', url: findUrl(uploads.idFront.file) });
+        if (uploads.idBack?.file) filesPayload.push({ slot: 'idBack', url: findUrl(uploads.idBack.file) });
+        if (uploads.selfie?.file) filesPayload.push({ slot: 'selfie', url: findUrl(uploads.selfie.file) });
+      }
+
+      // 2. Submit Data
+      await api('/kyc/submit', {
+        method: 'POST',
+        body: JSON.stringify({
+          docType: isFullTier ? "Proof of Address" : "National ID",
+          level: isFullTier ? 2 : 1,
+          files: filesPayload
+        })
+      });
+
+      setSubmitState("success");
+      setSnack({ open: true, severity: "success", msg: "Documents submitted successfully." });
+
+      setTimeout(() => {
+        navigate("/app/wallet/kyc/status");
+      }, 1500);
+
+    } catch (err: any) {
+      console.error(err);
+      setSubmitState("failed");
+
+      // Handle "Already verified" gracefully
+      const errMsg = err?.message || JSON.stringify(err);
+      if (errMsg.includes("Already verified")) {
+        setSubmitState("success");
+        setSnack({ open: true, severity: "success", msg: "You are already verified at this level!" });
+        setTimeout(() => navigate("/app/wallet/kyc/status"), 1500);
+        return;
+      }
+
+      setSnack({ open: true, severity: "error", msg: "Submission failed. Please try again." });
     }
   };
 
   const reset = () => {
-    (Object.keys(uploads) as UploadSlot[]).forEach((k) => {
+    Object.keys(uploads).forEach((k) => {
       if (uploads[k]?.url) URL.revokeObjectURL(uploads[k]!.url!);
     });
-    setUploads({ idFront: null, idBack: null, selfie: null });
+    setUploads({ idFront: null, idBack: null, selfie: null, proofAddress: null });
     setSubmitState("idle");
     setSnack({ open: true, severity: "info", msg: "Cleared uploads." });
   };
 
-  const steps = ["Start", "Personal details", "Upload documents", "Status"];
+  const steps = isFullTier
+    ? ["Start", "Proof of Address", "Review", "Status"]
+    : ["Start", "Personal details", "Upload documents", "Status"];
 
-  const UploadCard = ({ slot, required }: { slot: UploadSlot; required: boolean }) => {
+  const UploadCard = ({ slot, required }: { slot: string; required: boolean }) => {
     const u = uploads[slot];
     const has = !!u;
 
@@ -366,7 +444,7 @@ export default function KycDocumentUploadPage() {
                 {slot === "selfie" ? <CameraIcon size={18} /> : <FileIcon size={18} />}
               </Avatar>
               <Box>
-                <Typography sx={{ fontWeight: 950 }}>{slotLabel(slot)}{required ? "" : ""}</Typography>
+                <Typography sx={{ fontWeight: 950 }}>{slotLabel(slot as UploadSlot)}{required ? "" : ""}</Typography>
                 <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                   {required ? "Required" : "Optional"}
                 </Typography>
@@ -402,7 +480,7 @@ export default function KycDocumentUploadPage() {
                 <Box sx={{ borderRadius: 18, overflow: "hidden", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
                   <img
                     src={u.url}
-                    alt={`${slotLabel(slot)} preview`}
+                    alt={`${slotLabel(slot as UploadSlot)} preview`}
                     style={{ display: "block", width: "100%", height: 220, objectFit: "cover" }}
                   />
                 </Box>
@@ -418,7 +496,8 @@ export default function KycDocumentUploadPage() {
                   onClick={() => {
                     if (slot === "idFront") inIdFront.current?.click();
                     else if (slot === "idBack") inIdBack.current?.click();
-                    else inSelfie.current?.click();
+                    else if (slot === "selfie") inSelfie.current?.click();
+                    else if (slot === "proofAddress") inProofAddress.current?.click();
                   }}
                 >
                   Upload file
@@ -430,7 +509,8 @@ export default function KycDocumentUploadPage() {
                   onClick={() => {
                     if (slot === "idFront") inIdFrontCam.current?.click();
                     else if (slot === "idBack") inIdBackCam.current?.click();
-                    else inSelfieCam.current?.click();
+                    else if (slot === "selfie") inSelfieCam.current?.click();
+                    else if (slot === "proofAddress") inProofAddressCam.current?.click();
                   }}
                 >
                   Use camera
@@ -455,11 +535,13 @@ export default function KycDocumentUploadPage() {
       <input ref={inIdFront} type="file" accept={ALLOWED_TYPES.join(",")} style={{ display: "none" }} onChange={(e) => onPick("idFront", e.target.files?.[0])} />
       <input ref={inIdBack} type="file" accept={ALLOWED_TYPES.join(",")} style={{ display: "none" }} onChange={(e) => onPick("idBack", e.target.files?.[0])} />
       <input ref={inSelfie} type="file" accept={"image/*"} style={{ display: "none" }} onChange={(e) => onPick("selfie", e.target.files?.[0])} />
+      <input ref={inProofAddress} type="file" accept={ALLOWED_TYPES.join(",")} style={{ display: "none" }} onChange={(e) => onPick("proofAddress", e.target.files?.[0])} />
 
       {/* Camera capture inputs */}
       <input ref={inIdFrontCam} type="file" accept={"image/*"} capture="environment" style={{ display: "none" }} onChange={(e) => onPick("idFront", e.target.files?.[0])} />
       <input ref={inIdBackCam} type="file" accept={"image/*"} capture="environment" style={{ display: "none" }} onChange={(e) => onPick("idBack", e.target.files?.[0])} />
       <input ref={inSelfieCam} type="file" accept={"image/*"} capture="user" style={{ display: "none" }} onChange={(e) => onPick("selfie", e.target.files?.[0])} />
+      <input ref={inProofAddressCam} type="file" accept={"image/*"} capture="environment" style={{ display: "none" }} onChange={(e) => onPick("proofAddress", e.target.files?.[0])} />
 
       <Box className="min-h-screen" sx={{ background: pageBg }}>
 
@@ -473,14 +555,40 @@ export default function KycDocumentUploadPage() {
                   <Stack spacing={1.2}>
                     <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ xs: "flex-start", md: "center" }} justifyContent="space-between">
                       <Box>
-                        <Typography variant="h5">Upload documents</Typography>
+                        <Typography variant="h5">{isFullTier ? "Full Verification" : "Upload documents"}</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Upload clear photos of your ID. Avoid glare and blur.
+                          {isFullTier
+                            ? "Upload a recent utility bill or bank statement (proof of address)."
+                            : "Upload clear photos of your ID. Avoid glare and blur."}
                         </Typography>
                         <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 1 }}>
                           <Chip size="small" variant="outlined" label={`Max file size: ${MAX_MB}MB`} />
-                          <Chip size="small" variant="outlined" label={requiredOk ? "Front/back ready" : "Front/back required"} />
+                          <Chip size="small" variant="outlined" label={requiredOk ? "Ready to submit" : "Documents required"} />
                         </Stack>
+
+                        <Box sx={{ mt: 2, p: 2, bgcolor: alpha(theme.palette.background.default, 0.5), borderRadius: 2, border: `1px solid ${theme.palette.divider}` }}>
+                          <Typography variant="subtitle2" fontWeight={700} gutterBottom>Required documents</Typography>
+                          <Typography variant="caption" color="text.secondary" component="div">
+                            Prepare these items before you begin.
+                          </Typography>
+
+                          <Grid container spacing={2} sx={{ mt: 0.5 }}>
+                            <Grid item xs={12} sm={6}>
+                              <Typography variant="body2" fontWeight={600} gutterBottom>Basic verification</Typography>
+                              <Stack spacing={0.5}>
+                                <Typography variant="caption">• National ID or Passport (Clear photo)</Typography>
+                                <Typography variant="caption">• Selfie (Quick scan)</Typography>
+                              </Stack>
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                              <Typography variant="body2" fontWeight={600} gutterBottom>Full verification</Typography>
+                              <Stack spacing={0.5}>
+                                <Typography variant="caption">• Proof of address (Utility bill/bank statement)</Typography>
+                                <Typography variant="caption">• Recent document (last 3 months)</Typography>
+                              </Stack>
+                            </Grid>
+                          </Grid>
+                        </Box>
                       </Box>
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                         <Button variant="outlined" sx={orangeOutlined} startIcon={<ArrowLeftIcon size={18} />} onClick={() => navigate("/app/wallet/kyc/details")}>
@@ -506,7 +614,7 @@ export default function KycDocumentUploadPage() {
                     </Stepper>
 
                     <Alert severity="info" icon={<ShieldCheckIcon size={18} />}>
-                      Tip: Use the camera button on mobile for best results.
+                      Tip: Ensure your address matches your profile exactly.
                     </Alert>
 
                     {submitState === "submitting" ? (
@@ -515,24 +623,32 @@ export default function KycDocumentUploadPage() {
                         <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Submitting…</Typography>
                       </Box>
                     ) : submitState === "success" ? (
-                      <Alert severity="success" icon={<CheckCircleIcon size={18} />}>Submitted successfully (demo).</Alert>
+                      <Alert severity="success" icon={<CheckCircleIcon size={18} />}>Submitted successfully.</Alert>
                     ) : submitState === "failed" ? (
-                      <Alert severity="error" icon={<XCircleIcon size={18} />}>Submission failed (demo). Try again.</Alert>
+                      <Alert severity="error" icon={<XCircleIcon size={18} />}>Submission failed. Try again.</Alert>
                     ) : null}
                   </Stack>
                 </CardContent>
               </Card>
 
               <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
-                <Box className="md:col-span-6">
-                  <UploadCard slot="idFront" required />
-                </Box>
-                <Box className="md:col-span-6">
-                  <UploadCard slot="idBack" required />
-                </Box>
-                <Box className="md:col-span-12">
-                  <UploadCard slot="selfie" required={false} />
-                </Box>
+                {isFullTier ? (
+                  <Box className="md:col-span-12">
+                    <UploadCard slot="proofAddress" required />
+                  </Box>
+                ) : (
+                  <>
+                    <Box className="md:col-span-6">
+                      <UploadCard slot="idFront" required />
+                    </Box>
+                    <Box className="md:col-span-6">
+                      <UploadCard slot="idBack" required />
+                    </Box>
+                    <Box className="md:col-span-12">
+                      <UploadCard slot="selfie" required={false} />
+                    </Box>
+                  </>
+                )}
               </Box>
 
               {/* Mobile sticky */}

@@ -21,16 +21,17 @@ import {
     Sun as SunIcon,
     Moon as MoonIcon,
     Bell,
-    User,
+    User as UserIcon,
     Settings,
     LogOut,
     Globe
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { useThemeContext } from '../../theme/ThemeContext';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { EVZONE } from '../../theme/evzone';
 import NotificationsPopover from './NotificationsPopover';
 import LanguageSwitcher from '../common/LanguageSwitcher';
+import { useThemeStore } from '../../stores/themeStore';
+import { useAuthStore } from '../../stores/authStore';
 import { useTranslation } from 'react-i18next';
 
 interface AppHeaderProps {
@@ -41,8 +42,12 @@ interface AppHeaderProps {
 export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: AppHeaderProps) {
     const theme = useTheme();
     const navigate = useNavigate();
-    const { mode, toggleMode } = useThemeContext();
-    const isDark = mode === 'dark';
+    const location = useLocation();
+    const { toggleMode } = useThemeStore();
+    const isDark = theme.palette.mode === 'dark';
+
+    // Use store
+    const { user, logout } = useAuthStore();
 
     const notifRef = useRef<HTMLButtonElement>(null);
     const [openNotif, setOpenNotif] = useState(false);
@@ -65,6 +70,7 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
     };
 
     const { t } = useTranslation();
+
 
     return (
         <Box sx={{
@@ -194,7 +200,10 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
                         aria-haspopup="true"
                         aria-expanded={openMenu ? 'true' : undefined}
                     >
-                        <Avatar src="https://i.pravatar.cc/150?u=ronald" sx={{ width: 32, height: 32, border: `2px solid ${alpha(theme.palette.primary.main, 0.2)}` }} />
+                        <Avatar
+                            src={user?.avatarUrl || `https://ui-avatars.com/api/?name=${user?.firstName}+${user?.otherNames}&background=random`}
+                            sx={{ width: 32, height: 32, border: `2px solid ${alpha(theme.palette.primary.main, 0.2)}` }}
+                        />
                     </IconButton>
                     <Menu
                         disableScrollLock
@@ -231,15 +240,15 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
                     >
                         <Box sx={{ p: 2, pt: 1.5, pb: 1 }}>
                             <Typography variant="subtitle2" fontWeight={700} noWrap>
-                                Ronald Isabirye
+                                {user ? `${user.firstName} ${user.otherNames}` : 'Guest'}
                             </Typography>
                             <Typography variant="caption" color="text.secondary" noWrap>
-                                ronald@evzone.com
+                                {user?.email || ''}
                             </Typography>
                         </Box>
                         <Divider />
                         <MenuItem onClick={handleProfileClick} sx={{ py: 1.5 }}>
-                            <ListItemIcon><User size={18} /></ListItemIcon>
+                            <ListItemIcon><UserIcon size={18} /></ListItemIcon>
                             {t('header.profile')}
                         </MenuItem>
                         <MenuItem onClick={() => { navigate('/app/settings'); handleMenuClose(); }} sx={{ py: 1.5 }}>
@@ -247,7 +256,7 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
                             {t('header.settings')}
                         </MenuItem>
                         <Divider />
-                        <MenuItem onClick={() => navigate('/auth/sign-in')} sx={{ py: 1.5, color: 'error.main' }}>
+                        <MenuItem onClick={logout} sx={{ py: 1.5, color: 'error.main' }}>
                             <ListItemIcon><LogOut size={18} color={theme.palette.error.main} /></ListItemIcon>
                             {t('auth.sign_out')}
                         </MenuItem>

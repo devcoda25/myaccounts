@@ -8,39 +8,33 @@ import {
   Card,
   CardContent,
   Chip,
-  CssBaseline,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Divider,
-  IconButton,
   InputAdornment,
   MenuItem,
   Snackbar,
   Stack,
   TextField,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
+import { api } from "../../../utils/api";
+import { Organization, OrgRole } from "../../../utils/types";
 
 import CreateOrgModal from "../../../components/modals/CreateOrgModal";
 import JoinOrgModal from "../../../components/modals/JoinOrgModal";
 import LeaveOrgModal from "../../../components/modals/LeaveOrgModal";
 
-/**
- * EVzone My Accounts - Organizations List
- * Route: /app/orgs
- */
-
 const STORAGE_LAST_ORG = "evzone_myaccounts_last_org";
 
 // -----------------------------
-// Inline icons (CDN-safe)
+// Icons
 // -----------------------------
 function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
   return (
@@ -148,30 +142,6 @@ function initials(name: string) {
   return (a + b).toUpperCase();
 }
 
-function makeOrgId(name: string) {
-  const slug = name
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 24);
-  return `org_${slug}_${Math.random().toString(16).slice(2, 6)}`;
-}
-
-// Self-tests removed
-
-type OrgRole = "Owner" | "Admin" | "Manager" | "Member" | "Viewer";
-
-type Org = {
-  id: string;
-  name: string;
-  role: OrgRole;
-  membersCount: number;
-  country: string;
-  ssoEnabled: boolean;
-  walletEnabled: boolean;
-};
-
 type Severity = "info" | "warning" | "error" | "success";
 
 function getStoredLastOrg(): string | null {
@@ -194,16 +164,13 @@ function setStoredLastOrg(id: string | null) {
 export default function OrganizationsListPage() {
   const navigate = useNavigate();
   const theme = useTheme();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const isDark = mode === "dark";
 
-  const [orgs, setOrgs] = useState<Org[]>(() => [
-    { id: "org_evworld", name: "EV World", role: "Owner", membersCount: 12, country: "Uganda", ssoEnabled: true, walletEnabled: true },
-    { id: "org_evzone_group", name: "EVzone Group", role: "Admin", membersCount: 38, country: "Uganda", ssoEnabled: false, walletEnabled: false },
-    { id: "org_partner", name: "Partner Organization", role: "Member", membersCount: 9, country: "Kenya", ssoEnabled: false, walletEnabled: false },
-  ]);
+  const [orgs, setOrgs] = useState<Organization[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [currentOrgId, setCurrentOrgId] = useState<string>(() => getStoredLastOrg() || "org_evworld");
+  const [currentOrgId, setCurrentOrgId] = useState<string>(() => getStoredLastOrg() || "");
 
   const [search, setSearch] = useState("");
 
@@ -214,7 +181,27 @@ export default function OrganizationsListPage() {
 
   const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
-  // Self-tests effect removed
+  const fetchOrgs = async () => {
+    try {
+      setLoading(true);
+      const data = await api('/orgs');
+      setOrgs(data);
+      // If we have orgs but none selected (or selected one isn't in list), select first
+      const hasCurrent = data.some((o: Organization) => o.id === currentOrgId);
+      if (!currentOrgId || !hasCurrent) {
+        if (data.length > 0) setCurrentOrgId(data[0].id);
+      }
+    } catch (err) {
+      console.error(err);
+      setSnack({ open: true, severity: "error", msg: "Failed to load organizations." });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrgs();
+  }, []);
 
   useEffect(() => {
     setStoredLastOrg(currentOrgId);
@@ -228,8 +215,8 @@ export default function OrganizationsListPage() {
   const evOrangeContainedSx = {
     backgroundColor: EVZONE.orange,
     color: "#FFFFFF",
-    boxShadow: `0 4px 14px ${alpha(EVZONE.orange, 0.4)}`, // Standardized
-    borderRadius: "4px", // Standardized to 4px
+    boxShadow: `0 4px 14px ${alpha(EVZONE.orange, 0.4)}`,
+    borderRadius: "4px",
     "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
     "&:active": { backgroundColor: alpha(EVZONE.orange, 0.86), color: "#FFFFFF" },
   } as const;
@@ -238,7 +225,7 @@ export default function OrganizationsListPage() {
     borderColor: alpha(EVZONE.orange, 0.65),
     color: EVZONE.orange,
     backgroundColor: alpha(theme.palette.background.paper, 0.20),
-    borderRadius: "4px", // Standardized to 4px
+    borderRadius: "4px",
     "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
   } as const;
 
@@ -273,17 +260,8 @@ export default function OrganizationsListPage() {
     setLeaveOpen(true);
   };
 
-  const doLeave = () => {
+  const doLeave = async () => {
     if (!leaveTarget) return;
-    const org = orgs.find((o) => o.id === leaveTarget);
-    if (!org) return;
-
-    if (org.role === "Owner") {
-      setSnack({ open: true, severity: "warning", msg: "Owners cannot leave. Transfer ownership first." });
-      setLeaveOpen(false);
-      return;
-    }
-
     setOrgs((prev) => prev.filter((o) => o.id !== leaveTarget));
     setLeaveOpen(false);
 
@@ -292,52 +270,39 @@ export default function OrganizationsListPage() {
       if (next) setCurrentOrgId(next);
     }
 
-    setSnack({ open: true, severity: "success", msg: `Left organization: ${org.name}` });
+    setSnack({ open: true, severity: "success", msg: `Left organization.` });
   };
 
-  const createOrg = (name: string, _type: string, country: string) => {
-    const id = makeOrgId(name);
-    const newOrg: Org = {
-      id,
-      name,
-      role: "Owner",
-      membersCount: 1,
-      country: country,
-      ssoEnabled: false,
-      walletEnabled: false,
-    };
-    setOrgs((prev) => [newOrg, ...prev]);
-    setCurrentOrgId(id);
-    setCreateOpen(false);
-    setSnack({ open: true, severity: "success", msg: `Organization created: ${name}` });
-  };
-
-  const joinOrg = (code: string) => {
-    if (code.length < 6) {
-      setSnack({ open: true, severity: "warning", msg: "Enter a valid invite code." });
-      return;
+  const createOrg = async (name: string, _type: string, country: string) => {
+    try {
+      const newOrg = await api('/orgs', {
+        method: 'POST',
+        body: JSON.stringify({ name, country })
+      });
+      setOrgs((prev) => [newOrg, ...prev]);
+      setCurrentOrgId(newOrg.id);
+      setCreateOpen(false);
+      setSnack({ open: true, severity: "success", msg: `Organization created: ${name}` });
+    } catch (err) {
+      setSnack({ open: true, severity: "error", msg: "Failed to create organization." });
     }
-
-    const joined: Org = {
-      id: `org_join_${code.toLowerCase()}`,
-      name: `Joined Org (${code.slice(0, 4)})`,
-      role: "Member",
-      membersCount: 5,
-      country: "Uganda",
-      ssoEnabled: false,
-      walletEnabled: false,
-    };
-
-    setOrgs((prev) => {
-      if (prev.some((o) => o.id === joined.id)) return prev;
-      return [joined, ...prev];
-    });
-    setCurrentOrgId(joined.id);
-    setJoinOpen(false);
-    setSnack({ open: true, severity: "success", msg: "Joined organization successfully." });
   };
 
-  const OrgCard = ({ org }: { org: Org }) => {
+  const joinOrg = async (code: string) => {
+    // Assuming code is ID for now
+    try {
+      await api(`/orgs/${code}/join`, { method: 'POST' });
+      // Refresh list
+      await fetchOrgs();
+
+      setJoinOpen(false);
+      setSnack({ open: true, severity: "success", msg: "Joined organization successfully." });
+    } catch (err) {
+      setSnack({ open: true, severity: "error", msg: "Failed to join (Invalid ID?)" });
+    }
+  };
+
+  const OrgCard = ({ org }: { org: Organization }) => {
     const isCurrent = org.id === currentOrgId;
     const admin = isAdminRole(org.role);
     const canLeave = org.role !== "Owner";
@@ -360,6 +325,7 @@ export default function OrganizationsListPage() {
                 <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
                   <Typography sx={{ fontWeight: 950 }}>{org.name}</Typography>
                   {isCurrent ? <Chip size="small" color="success" label="Current" /> : null}
+                  {/* Reuse local OrgRole string or just display role */}
                   <Chip size="small" variant="outlined" label={org.role} />
                 </Stack>
                 <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>

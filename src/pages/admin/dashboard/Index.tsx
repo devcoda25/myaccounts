@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
     Alert,
     Box,
@@ -17,6 +17,7 @@ import {
     Typography,
     useTheme
 } from "@mui/material";
+import { useThemeStore } from "../../../stores/themeStore";
 import { alpha } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import {
@@ -39,16 +40,7 @@ import { useNavigate } from "react-router-dom";
 // Types
 type Health = "Operational" | "Degraded" | "Maintenance";
 
-type AuditEvent = {
-    id: string;
-    at: number;
-    actor: string;
-    action: string;
-    target: string;
-    ip: string;
-    result: "Success" | "Failed";
-    risk: "Low" | "Medium" | "High";
-};
+
 
 const EVZONE = { green: "#03cd8c", orange: "#f77f00" } as const;
 
@@ -69,30 +61,54 @@ function healthBadge(health: Health) {
     return { tone: EVZONE.orange, label: health };
 }
 
-function mkEvents(): AuditEvent[] {
-    const now = Date.now();
-    return [
-        { id: "A-1001", at: now - 1000 * 60 * 3, actor: "admin@evzone.com", action: "Revoke API key", target: "key_01", ip: "197.157.x.x", result: "Success", risk: "Medium" },
-        { id: "A-1002", at: now - 1000 * 60 * 15, actor: "secops@evzone.com", action: "Lock account", target: "user: john@example.com", ip: "102.90.x.x", result: "Success", risk: "High" },
-        { id: "A-1003", at: now - 1000 * 60 * 40, actor: "admin@evzone.com", action: "Change org role", target: "org_004 member", ip: "41.90.x.x", result: "Success", risk: "Low" },
-        { id: "A-1004", at: now - 1000 * 60 * 80, actor: "admin@evzone.com", action: "Sign-in attempt", target: "admin@evzone.com", ip: "197.157.x.x", result: "Failed", risk: "Medium" },
-    ];
-}
+import { api } from "../../../utils/api";
+import { AuditLog } from "../../../utils/types";
+
+// ... (keep types like Health)
+
+// Remove mkEvents
 
 export default function AdminDashboard() {
     const theme = useTheme();
     const navigate = useNavigate();
+    const { mode } = useThemeStore();
     const [snack, setSnack] = useState<{ open: boolean; severity: "success" | "info" | "warning" | "error"; msg: string }>({ open: false, severity: "info", msg: "" });
-    const [events] = useState<AuditEvent[]>(() => mkEvents());
-    const isDark = theme.palette.mode === 'dark';
+
+    // API Data
+    const [stats, setStats] = useState({ usersCount: 0, orgsCount: 0, sessionsCount: 0, balance: 0 });
+    const [logs, setLogs] = useState<AuditLog[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    const isDark = mode === 'dark';
+
+    useEffect(() => {
+        const load = async () => {
+            try {
+                setLoading(true);
+                const [s, l] = await Promise.all([
+                    api('/admin/stats').catch(() => null),
+                    api('/admin/audit-logs?take=5').catch(() => null)
+                ]);
+                setStats(s || { usersCount: 0, orgsCount: 0, sessionsCount: 0, balance: 0 });
+                setLogs(Array.isArray(l) ? l : []);
+            } catch (err) {
+                console.error(err);
+                setSnack({ open: true, severity: "error", msg: "Failed to load dashboard data." });
+            } finally {
+                setLoading(false);
+            }
+        };
+        load();
+    }, []);
 
     const services = useMemo(() => {
         const now = Date.now();
+        // Static for now as APi doesn't provide this yet
         return [
-            { key: "auth", name: "Auth", icon: <ShieldIcon size={18} />, health: "Operational" as Health, updatedAt: now - 1000 * 60 * 2 },
-            { key: "wallet", name: "Wallet", icon: <WalletIcon size={18} />, health: "Degraded" as Health, updatedAt: now - 1000 * 60 * 5 },
-            { key: "notifications", name: "Notifications", icon: <BellIcon size={18} />, health: "Operational" as Health, updatedAt: now - 1000 * 60 * 4 },
-            { key: "integrations", name: "Integrations", icon: <PlugIcon size={18} />, health: "Operational" as Health, updatedAt: now - 1000 * 60 * 6 },
+            { key: "auth", name: "Auth Service", icon: <ShieldIcon size={18} />, health: "Operational" as Health, updatedAt: now },
+            { key: "wallet", name: "Wallet Service", icon: <WalletIcon size={18} />, health: "Operational" as Health, updatedAt: now },
+            { key: "api", name: "API Gateway", icon: <PlugIcon size={18} />, health: "Operational" as Health, updatedAt: now },
+            { key: "db", name: "Database", icon: <Zap size={18} />, health: "Operational" as Health, updatedAt: now },
         ];
     }, []);
 
@@ -252,16 +268,16 @@ export default function AdminDashboard() {
                         <motion.div variants={itemVars}>
                             <Grid container spacing={2} sx={{ mb: 4 }}>
                                 <Grid item xs={12} sm={6} lg={3}>
-                                    <StatsCard title="Active Users" value="1,240" hint="+12% this week" icon={<Users size={20} />} color={EVZONE.green} />
+                                    <StatsCard title="Total Users" value={(stats?.usersCount ?? 0).toString()} hint="Registered accounts" icon={<Users size={20} />} color={EVZONE.green} />
                                 </Grid>
                                 <Grid item xs={12} sm={6} lg={3}>
-                                    <StatsCard title="Security Events" value="3" hint="Requires Review" icon={<ShieldIcon size={20} />} color="#B42318" />
+                                    <StatsCard title="Organizations" value={(stats?.orgsCount ?? 0).toString()} hint="Active organizations" icon={<ShieldIcon size={20} />} color="#B42318" />
                                 </Grid>
                                 <Grid item xs={12} sm={6} lg={3}>
-                                    <StatsCard title="Wallet Disputes" value="7" hint="Open Cases" icon={<WalletIcon size={20} />} color={EVZONE.orange} />
+                                    <StatsCard title="Total Balance" value={`UGX ${(stats?.balance ?? 0).toLocaleString()}`} hint="System wide" icon={<WalletIcon size={20} />} color={EVZONE.orange} />
                                 </Grid>
                                 <Grid item xs={12} sm={6} lg={3}>
-                                    <StatsCard title="Admin Sessions" value="4" hint="Online Now" icon={<Lock size={20} />} color={theme.palette.primary.main} />
+                                    <StatsCard title="Active Sessions" value={(stats?.sessionsCount ?? 0).toString()} hint="Logged in now" icon={<Lock size={20} />} color={theme.palette.primary.main} />
                                 </Grid>
                             </Grid>
                         </motion.div>
@@ -328,26 +344,38 @@ export default function AdminDashboard() {
                                 </Box>
 
                                 <Stack spacing={3}>
-                                    {events.map((e) => (
-                                        <Box key={e.id} sx={{ display: 'flex', gap: 2 }}>
-                                            <Box sx={{
-                                                mt: 0.5,
-                                                width: 8, height: 8, borderRadius: '50%',
-                                                bgcolor: e.risk === 'High' ? '#B42318' : e.risk === 'Medium' ? EVZONE.orange : EVZONE.green
-                                            }} />
-                                            <Box sx={{ flex: 1 }}>
-                                                <Typography variant="subtitle2" fontWeight={600} color="text.primary">
-                                                    {e.action}
-                                                </Typography>
-                                                <Typography variant="caption" color="text.secondary" display="block">
-                                                    {e.actor} • {timeAgo(e.at)}
-                                                </Typography>
-                                                <Typography variant="caption" sx={{ fontFamily: 'monospace', color: 'text.secondary', bgcolor: alpha(theme.palette.divider, 0.1), px: 0.5, borderRadius: 0.5 }}>
-                                                    {e.target}
-                                                </Typography>
+                                    {logs.map((e) => {
+                                        const method = e.method || e.details?.method || 'UNK';
+                                        const ip = e.ip || e.details?.ip || 'N/A';
+                                        const route = e.route || e.details?.route || 'N/A';
+                                        const status = e.status || e.details?.status || 200;
+
+                                        return (
+                                            <Box key={e.id} sx={{ display: 'flex', gap: 2 }}>
+                                                <Box sx={{
+                                                    mt: 0.5,
+                                                    width: 8, height: 8, borderRadius: '50%',
+                                                    bgcolor: method === 'DELETE' ? '#B42318' : method === 'POST' ? EVZONE.orange : EVZONE.green
+                                                }} />
+                                                <Box sx={{ flex: 1 }}>
+                                                    <Typography variant="subtitle2" fontWeight={600} color="text.primary">
+                                                        {e.action} ({method})
+                                                    </Typography>
+                                                    <Typography variant="caption" color="text.secondary" display="block">
+                                                        {ip} • {timeAgo(new Date(e.createdAt).getTime())}
+                                                    </Typography>
+                                                    <Typography variant="caption" sx={{ fontFamily: 'monospace', color: 'text.secondary', bgcolor: alpha(theme.palette.divider, 0.1), px: 0.5, borderRadius: 0.5 }}>
+                                                        {route} (Status: {status})
+                                                    </Typography>
+                                                </Box>
                                             </Box>
-                                        </Box>
-                                    ))}
+                                        )
+                                    })}
+                                    {logs.length === 0 && (
+                                        <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center", py: 2 }}>
+                                            No recent audit logs.
+                                        </Typography>
+                                    )}
                                 </Stack>
 
                                 <Divider sx={{ my: 3 }} />

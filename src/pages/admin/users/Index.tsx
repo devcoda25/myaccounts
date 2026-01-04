@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { api } from "../../../utils/api";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../../../components/common/Pagination";
 import {
@@ -32,6 +33,7 @@ import {
     useTheme,
     IconButton
 } from "@mui/material";
+import { useThemeStore } from "../../../stores/themeStore";
 import { alpha } from "@mui/material/styles";
 import {
     Users as UsersIcon,
@@ -46,7 +48,8 @@ import {
     Grip as KeypadIcon,
     MessageSquare as SmsIcon,
     Mail as MailIcon,
-    Phone as WhatsAppIcon
+    Phone as WhatsAppIcon,
+    Trash as TrashIcon
 } from "lucide-react";
 
 // Types
@@ -77,7 +80,7 @@ type UserRow = {
 type ReAuthMode = "password" | "mfa";
 type MfaChannel = "Authenticator" | "SMS" | "WhatsApp" | "Email";
 
-type ActionKind = "LOCK" | "UNLOCK" | "RESET_PASSWORD" | "RESET_MFA" | "FORCE_SIGNOUT";
+type ActionKind = "LOCK" | "UNLOCK" | "RESET_PASSWORD" | "RESET_MFA" | "FORCE_SIGNOUT" | "DELETE_USER";
 
 type PendingAction = {
     kind: ActionKind;
@@ -131,10 +134,11 @@ function kycTone(t: KycTier) {
     return "#B42318";
 }
 
-export default function AdminUsersListPage() {
-    const theme = useTheme();
+export default function AdminUsersList() {
     const navigate = useNavigate();
-    const isDark = theme.palette.mode === 'dark';
+    const theme = useTheme();
+    const { mode } = useThemeStore();
+    const isDark = mode === 'dark';
 
     const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
@@ -149,17 +153,72 @@ export default function AdminUsersListPage() {
 
     const [selected, setSelected] = useState<Record<string, boolean>>({});
 
-    const [rows, setRows] = useState<UserRow[]>(() => {
-        const now = Date.now();
-        return [
-            { id: "u_1001", name: "Ronald Isabirye", email: "ronald.isabirye@gmail.com", phone: "+256761677709", type: "User", status: "Active", kyc: "Full", walletBalance: 1250000, currency: "UGX", lastLoginAt: now - 1000 * 60 * 10, risk: "Low", mfaEnabled: true, passkeys: 2 },
-            { id: "u_1002", name: "Mary I. Naiga", email: "naigamaryimmaculate@gmail.com", phone: "+256704169173", type: "Provider", status: "Active", kyc: "Basic", walletBalance: 220000, currency: "UGX", lastLoginAt: now - 1000 * 60 * 60 * 3, risk: "Medium", mfaEnabled: true, passkeys: 0 },
-            { id: "u_1003", name: "Mark Kasibante", email: "mark.kasibante@example.com", phone: "+256700000000", type: "User", status: "Locked", kyc: "Unverified", walletBalance: 0, currency: "UGX", lastLoginAt: now - 1000 * 60 * 60 * 20, risk: "High", mfaEnabled: false, passkeys: 0 },
-            { id: "u_1004", name: "Susan Birungi", email: "susan.birungi@example.com", phone: "+256710000000", type: "User", status: "Active", kyc: "Basic", walletBalance: 78000, currency: "UGX", lastLoginAt: now - 1000 * 60 * 60 * 6, risk: "Low", mfaEnabled: false, passkeys: 1 },
-            { id: "u_1005", name: "EV Charging Operator", email: "operator@evzone.com", phone: "+256720000000", type: "Org Admin", status: "Active", kyc: "Full", walletBalance: 9100000, currency: "UGX", lastLoginAt: now - 1000 * 60 * 45, risk: "Medium", mfaEnabled: true, passkeys: 3 },
-            { id: "u_1006", name: "Field Agent Kampala", email: "agent.kla@evzone.com", phone: "+256730000000", type: "Agent", status: "Disabled", kyc: "Full", walletBalance: 0, currency: "UGX", lastLoginAt: now - 1000 * 60 * 60 * 24 * 12, risk: "Low", mfaEnabled: true, passkeys: 0 },
-        ];
+    const [loading, setLoading] = useState(false);
+    const [rows, setRows] = useState<UserRow[]>([]);
+    const [total, setTotal] = useState(0);
+
+    const mapUserToRow = (u: any): UserRow => ({
+        id: u.id,
+        name: `${u.firstName || ''} ${u.otherNames || ''}`.trim() || 'Unknown',
+        email: u.email,
+        phone: u.phoneNumber,
+        type: u.role === 'SUPER_ADMIN' ? 'Org Admin' : u.role === 'ADMIN' ? 'Agent' : 'User', // approximate mapping
+        status: u.emailVerified ? 'Active' : 'Disabled', // simplified status because backend uses emailVerified
+        kyc: 'Unverified', // Placeholder
+        walletBalance: 0,
+        currency: 'USD',
+        risk: 'Low',
+        mfaEnabled: u.twoFactorEnabled,
+        passkeys: 0
     });
+
+    const fetchUsers = async () => {
+        setLoading(true);
+        try {
+            const skip = page * rowsPerPage;
+            // Clean filters
+            const rParams: any = {};
+            if (q) rParams.query = q;
+
+            // Map Frontend filters to Backend values
+            // Type Filter
+            if (typeFilter !== 'All') {
+                if (typeFilter === 'Org Admin') rParams.role = 'SUPER_ADMIN';
+                else if (typeFilter === 'Agent') rParams.role = 'ADMIN';
+                else if (typeFilter === 'User') rParams.role = 'USER';
+                // Provider? -> USER for now
+            }
+
+            // Status Filter
+            // Backend accepts 'Active' (emailVerified=true) or 'Disabled' (false)
+            if (statusFilter !== 'All') {
+                if (statusFilter === 'Active') rParams.status = 'Active';
+                if (statusFilter === 'Disabled') rParams.status = 'Disabled';
+                if (statusFilter === 'Locked') rParams.status = 'Disabled'; // Map Locked to Disabled
+            }
+
+            const queryStr = new URLSearchParams(rParams).toString();
+            const url = `/users?skip=${skip}&take=${rowsPerPage}&${queryStr}`;
+
+            const res = await api(url);
+            if (res && Array.isArray(res.users)) {
+                setRows(res.users.map(mapUserToRow));
+                setTotal(res.total || 0);
+            }
+        } catch (err) {
+            console.error(err);
+            setSnack({ open: true, severity: 'error', msg: 'Failed to load users' });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchUsers();
+        }, 300); // Debounce search
+        return () => clearTimeout(timer);
+    }, [page, rowsPerPage, q, typeFilter, statusFilter]);
 
     // Action dialog
     const [actionOpen, setActionOpen] = useState(false);
@@ -235,6 +294,7 @@ export default function AdminUsersListPage() {
         if (k === "UNLOCK") return "Unlock account";
         if (k === "RESET_PASSWORD") return "Reset password";
         if (k === "RESET_MFA") return "Reset MFA";
+        if (k === "DELETE_USER") return "Delete User";
         return "Force sign out";
     };
 
@@ -243,6 +303,7 @@ export default function AdminUsersListPage() {
         if (k === "UNLOCK") return "info";
         if (k === "RESET_PASSWORD") return "warning";
         if (k === "RESET_MFA") return "warning";
+        if (k === "DELETE_USER") return "error";
         return "warning";
     };
 
@@ -257,7 +318,7 @@ export default function AdminUsersListPage() {
 
     const validateReauth = () => {
         if (reauthMode === "password") {
-            if (adminPassword !== "EVzone123!") {
+            if (adminPassword !== "superadmin-secure-pw") {
                 setSnack({ open: true, severity: "error", msg: "Re-auth failed (demo). Incorrect password." });
                 return false;
             }
@@ -271,90 +332,87 @@ export default function AdminUsersListPage() {
         return true;
     };
 
-    const applyAction = () => {
+    const applyAction = async () => {
         if (!pending || !pendingUser) return;
         if (!validateReauth()) return;
 
-        setRows((prev) => {
-            return prev.map((u) => {
-                if (u.id !== pending.userId) return u;
-
-                if (pending.kind === "LOCK") return { ...u, status: "Locked" };
-                if (pending.kind === "UNLOCK") return { ...u, status: "Active" };
-                if (pending.kind === "RESET_MFA") return { ...u, mfaEnabled: false };
-                if (pending.kind === "RESET_PASSWORD") return u; // state change could be added
-                if (pending.kind === "FORCE_SIGNOUT") return u;
-                return u;
-            });
-        });
-
-        if (pending.kind === "RESET_PASSWORD") {
-            const tmp = mkTempPassword();
-            setGeneratedTempPassword(tmp);
-            setSnack({ open: true, severity: "success", msg: `Temporary password generated: ${tmp} (demo).` });
-        } else {
-            setSnack({ open: true, severity: "success", msg: `${actionTitle(pending.kind)} applied for ${pendingUser.name}.` });
+        try {
+            if (pending.kind === 'DELETE_USER') {
+                await api(`/users/${pending.userId}`, { method: 'DELETE' });
+                setRows((prev) => prev.filter((u) => u.id !== pending.userId));
+                setSnack({ open: true, severity: "success", msg: `User ${pendingUser.name} deleted.` });
+            } else if (pending.kind === 'LOCK') {
+                await api(`/users/${pending.userId}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ emailVerified: false })
+                });
+                setSnack({ open: true, severity: "success", msg: "User locked (disabled)." });
+                fetchUsers();
+            } else if (pending.kind === 'UNLOCK') {
+                await api(`/users/${pending.userId}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ emailVerified: true })
+                });
+                setSnack({ open: true, severity: "success", msg: "User unlocked (enabled)." });
+                fetchUsers();
+            } else {
+                setSnack({ open: true, severity: "info", msg: `${actionTitle(pending.kind)} simulated.` });
+            }
+        } catch (err: any) {
+            console.error(err);
+            setSnack({ open: true, severity: "error", msg: err.message || "Action failed" });
         }
-
-        setSnack({
-            open: true,
-            severity: "info",
-            msg: notifyUser ? "User will be notified (demo)." : "No user notification (demo).",
-        });
 
         closeAction();
     };
 
-    const handleCreateUser = () => {
+    const handleCreateUser = async () => {
         if (!newName.trim() || !newEmail.trim()) {
             setSnack({ open: true, severity: "warning", msg: "Name and email are required." });
             return;
         }
 
-        const newUser: UserRow = {
-            id: uid("u"),
-            name: newName,
-            email: newEmail,
-            phone: newPhone || undefined,
-            type: newType,
-            status: "Active",
-            kyc: newKyc,
-            walletBalance: 0,
-            currency: "UGX",
-            risk: "Low",
-            mfaEnabled: false,
-            passkeys: 0,
-            lastLoginAt: undefined
-        };
+        const nameParts = newName.trim().split(' ');
+        const firstName = nameParts[0];
+        const otherNames = nameParts.slice(1).join(' ') || '.'; // Backend might require otherNames
 
-        setRows((prev) => [newUser, ...prev]);
-        setSnack({ open: true, severity: "success", msg: `User ${newName} created successfully.` });
-        setCreateOpen(false);
+        let role = 'USER';
+        if (newType === 'Org Admin') role = 'SUPER_ADMIN';
+        if (newType === 'Agent') role = 'ADMIN';
+        // Provider -> USER for now
 
-        // Reset form
-        setNewName("");
-        setNewEmail("");
-        setNewPhone("");
-        setNewType("User");
-        setNewKyc("Unverified");
+        try {
+            await api('/users/create', {
+                method: 'POST',
+                body: JSON.stringify({
+                    firstName,
+                    otherNames,
+                    email: newEmail,
+                    phone: newPhone || undefined,
+                    role,
+                    password: 'Password123!', // Temporary password or auto-generate?
+                    // Ideally we send an invite. For now, hardcode a known temp pw or generate one.
+                    // Let's use a standard one and notify.
+                    acceptTerms: true
+                })
+            });
+            setSnack({ open: true, severity: "success", msg: `User ${newName} created successfully.` });
+            setCreateOpen(false);
+            fetchUsers(); // Refresh list
+
+            // Reset form
+            setNewName("");
+            setNewEmail("");
+            setNewPhone("");
+            setNewType("User");
+            setNewKyc("Unverified");
+        } catch (err: any) {
+            console.error(err);
+            setSnack({ open: true, severity: "error", msg: err.message || "Failed to create user" });
+        }
     };
 
-    const filtered = useMemo(() => {
-        const s = q.trim().toLowerCase();
-        return rows
-            .filter((r) => (statusFilter === "All" ? true : r.status === statusFilter))
-            .filter((r) => (typeFilter === "All" ? true : r.type === typeFilter))
-            .filter((r) => (kycFilter === "All" ? true : r.kyc === kycFilter))
-            .filter((r) => (riskFilter === "All" ? true : r.risk === riskFilter))
-            .filter((r) =>
-                !s
-                    ? true
-                    : [r.id, r.name, r.email || "", r.phone || "", r.type, r.status, r.kyc]
-                        .join(" ")
-                        .toLowerCase()
-                        .includes(s)
-            );
-    }, [rows, q, statusFilter, typeFilter, kycFilter, riskFilter]);
+    const filtered = rows; // Server-side filtering is active
 
     const RowActions = ({ r }: { r: UserRow }) => (
         <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ width: { xs: "100%", sm: "auto" } }}>
@@ -373,6 +431,9 @@ export default function AdminUsersListPage() {
                     Lock
                 </Button>
             )}
+            <Button variant="outlined" color="error" startIcon={<TrashIcon size={18} />} onClick={() => openAction("DELETE_USER", r.id)} sx={{ borderColor: theme.palette.error.main, color: theme.palette.error.main, '&:hover': { bgcolor: alpha(theme.palette.error.main, 0.1) } }}>
+                Delete
+            </Button>
         </Stack>
     );
 
@@ -502,7 +563,7 @@ export default function AdminUsersListPage() {
                         <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
                             <Pagination
                                 page={page}
-                                count={filtered.length}
+                                count={total}
                                 rowsPerPage={rowsPerPage}
                                 onPageChange={setPage}
                                 onRowsPerPageChange={(n) => {
@@ -601,7 +662,7 @@ export default function AdminUsersListPage() {
                                         type="password"
                                         fullWidth
                                         InputProps={{ startAdornment: (<InputAdornment position="start"><LockIcon size={18} /></InputAdornment>) }}
-                                        helperText="Demo password: EVzone123!"
+                                        helperText="Demo password: superadmin-secure-pw"
                                         sx={{ '& .MuiOutlinedInput-root': { borderRadius: 3 }, mt: 2 }}
                                     />
                                 ) : (

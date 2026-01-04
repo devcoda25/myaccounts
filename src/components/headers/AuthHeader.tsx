@@ -3,7 +3,7 @@ import { Box, Stack, Typography, IconButton, Tooltip, alpha, useTheme } from '@m
 import { Sun as SunIcon, Moon as MoonIcon, HelpCircle as HelpIcon } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useThemeContext } from '../../theme/ThemeContext';
+import { useThemeStore } from '../../stores/themeStore';
 import { EVZONE } from '../../theme/evzone';
 import LanguageSwitcher from '../common/LanguageSwitcher';
 
@@ -18,7 +18,7 @@ export default function AuthHeader({ title = "EVzone", subtitle, showHelp = true
     const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation();
-    const { mode, toggleMode } = useThemeContext();
+    const { mode, toggleMode } = useThemeStore();
     const isDark = mode === 'dark';
 
     // Check if we are already on the help page to avoid redundant navigation/snackbar

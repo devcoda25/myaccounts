@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { createTheme, ThemeProvider, CssBaseline, alpha } from '@mui/material';
-import { ThemeProviderWrapper, useThemeContext } from './ThemeContext';
+import { useThemeStore } from '../stores/themeStore';
 import { EVZONE } from './evzone';
 
-const AppTheme: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { mode } = useThemeContext();
+export const AppThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const { mode } = useThemeStore();
 
     const theme = useMemo(() => {
         const isDark = mode === 'dark';
@@ -63,15 +63,5 @@ const AppTheme: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <CssBaseline />
             {children}
         </ThemeProvider>
-    );
-};
-
-export const AppThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    return (
-        <ThemeProviderWrapper>
-            <AppTheme>
-                {children}
-            </AppTheme>
-        </ThemeProviderWrapper>
     );
 };

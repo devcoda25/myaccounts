@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Card, CardContent, Typography, Stack, Switch, Divider, Alert, useTheme, alpha } from '@mui/material';
-import { useThemeContext } from '../../../../../theme/ThemeContext';
+import { useThemeStore } from "../../../../../stores/themeStore";
 import { getStyles } from '../../styles';
 import { School as SchoolIcon, Zap as ZapIcon, ShoppingBag as ShoppingBagIcon, Shield as ShieldIcon } from 'lucide-react';
 import { ChildProfile, AppKey } from '../../types';
@@ -14,7 +14,7 @@ interface AppsTabProps {
 
 export default function AppsTab({ selectedChild, updateChild, requestStepUp, setSnack }: AppsTabProps) {
     const theme = useTheme();
-    const { mode } = useThemeContext();
+    const { mode } = useThemeStore();
     const { cardSx, EVZONE } = getStyles(theme, mode);
 
     return (
@@ -39,7 +39,7 @@ export default function AppsTab({ selectedChild, updateChild, requestStepUp, set
                             return (
                                 <Box key={key} sx={{
                                     borderRadius: "4px", // Wallet Match: 4px
-                                    border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
+                                    border: `1px solid ${alpha(theme.palette.text.primary, 0.10)} `,
                                     backgroundColor: alpha(theme.palette.background.paper, 0.40),
                                     p: 1.2
                                 }}>
@@ -52,7 +52,7 @@ export default function AppsTab({ selectedChild, updateChild, requestStepUp, set
                                                 display: "grid",
                                                 placeItems: "center",
                                                 backgroundColor: alpha(EVZONE.green, 0.12),
-                                                border: `1px solid ${alpha(theme.palette.text.primary, 0.08)}`
+                                                border: `1px solid ${alpha(theme.palette.text.primary, 0.08)} `
                                             }}>
                                                 {icon}
                                             </Box>
@@ -72,7 +72,7 @@ export default function AppsTab({ selectedChild, updateChild, requestStepUp, set
                                                         updateChild(
                                                             selectedChild.id,
                                                             { apps: { ...selectedChild.apps, [key]: e.target.checked } as any },
-                                                            { kind: "App Access Updated", summary: `${e.target.checked ? "Allowed" : "Blocked"} ${key}`, severity: e.target.checked ? "info" : "warning" }
+                                                            { kind: "App Access Updated", summary: `${e.target.checked ? "Allowed" : "Blocked"} ${key} `, severity: e.target.checked ? "info" : "warning" }
                                                         );
                                                         setSnack({ open: true, severity: "success", msg: "Updated." });
                                                     }

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { api } from "../../../utils/api";
 import {
   Alert,
   Box,
@@ -20,7 +21,7 @@ import {
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { useTheme } from "@mui/material/styles";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 import { motion } from "framer-motion";
 
 /**
@@ -166,16 +167,23 @@ function runSelfTestsOnce() {
 
 export default function KycStartPage() {
   const navigate = useNavigate();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const theme = useTheme();
   const isDark = mode === "dark";
 
-  const [tier] = useState<KycTier>("Unverified");
-
+  const [tier, setTier] = useState<KycTier>("Unverified");
+  const [loading, setLoading] = useState(true);
   const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
   useEffect(() => {
     if (typeof window !== "undefined") runSelfTestsOnce();
+    // Fetch status
+    api('/kyc/status')
+      .then(res => {
+        setTier(res.tier);
+      })
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false));
   }, []);
 
 

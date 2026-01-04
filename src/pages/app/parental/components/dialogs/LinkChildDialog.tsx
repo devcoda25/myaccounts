@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Typography, Stack, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, InputAdornment, Alert, useTheme } from '@mui/material';
 import { Link as LinkIcon, Shield as ShieldIcon } from 'lucide-react';
-import { useThemeContext } from '../../../../../theme/ThemeContext';
+import { useThemeStore } from "../../../../../stores/themeStore";
 import { getStyles } from '../../styles';
 import { makeInviteCode } from '../../utils';
 
@@ -18,7 +18,7 @@ interface LinkChildDialogProps {
 
 export default function LinkChildDialog({ open, setOpen, onSubmit }: LinkChildDialogProps) {
     const theme = useTheme();
-    const { mode } = useThemeContext();
+    const { mode } = useThemeStore();
     const { evOrangeContainedSx, evOrangeOutlinedSx, dialogPaperSx } = getStyles(theme, mode);
     const [linkCode, setLinkCode] = useState("");
 

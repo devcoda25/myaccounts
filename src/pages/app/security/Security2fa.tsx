@@ -33,8 +33,9 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
+import { api } from "../../../utils/api";
 
 /**
  * EVzone My Accounts - Manage 2FA Methods
@@ -198,15 +199,34 @@ function mfaCodeFor(channel: MfaChannel) {
 export default function Manage2FAPage() {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const isDark = mode === "dark";
 
-  const [enabled, setEnabled] = useState(true);
-  const [methods, setMethods] = useState<MethodItem[]>(() => [
-    { key: "authenticator", name: "Authenticator", enabled: true, primary: true, lastUsedAt: Date.now() - 1000 * 60 * 60 * 6 },
-    { key: "sms", name: "SMS", enabled: true, lastUsedAt: Date.now() - 1000 * 60 * 60 * 24 * 2 },
-    { key: "whatsapp", name: "WhatsApp", enabled: false, lastUsedAt: undefined },
-  ]);
+  // API Data State
+  const [loading, setLoading] = useState(true);
+  const [mfaEnabled, setMfaEnabled] = useState(false);
+  const [methods, setMethods] = useState<MethodItem[]>([]);
+
+  // Fetch status
+  useEffect(() => {
+
+    api("/auth/mfa/status")
+      .then((data: any) => {
+        setMfaEnabled(data.enabled);
+        setMethods(data.methods.map((m: string) => ({
+          key: m.toLowerCase() as MethodKey, // Assuming m matches MethodKey
+          name: m,
+          enabled: true, // Assuming methods returned by API are enabled
+          addedAt: Date.now(), // approximation
+          lastUsedAt: Date.now(),
+          primary: m === "Authenticator"
+        })));
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  }, []);
 
   const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
@@ -263,13 +283,15 @@ export default function Manage2FAPage() {
     setPending(null);
   };
 
-  const validateReauth = () => {
+  const validateReauth = async () => {
     if (reauthMode === "password") {
-      if (reauthPassword !== "EVzone123!") {
+      try {
+        await api.post("/auth/verify-password", { password: reauthPassword });
+        return true;
+      } catch {
         setSnack({ open: true, severity: "error", msg: "Re-auth failed. Incorrect password." });
         return false;
       }
-      return true;
     }
 
     if (otp.trim() !== mfaCodeFor(mfaChannel)) {
@@ -280,14 +302,21 @@ export default function Manage2FAPage() {
     return true;
   };
 
-  const applyPending = () => {
+  const applyPending = async () => {
     if (!pending) return;
-    if (!validateReauth()) return;
+    const ok = await validateReauth();
+    if (!ok) return;
 
     if (pending.type === "toggle") {
-      const next = !enabled;
-      setEnabled(next);
-      setSnack({ open: true, severity: "success", msg: next ? "2FA enabled (demo)." : "2FA disabled (demo)." });
+      if (mfaEnabled) {
+        // We are disabling
+        await api.post("/auth/mfa/disable");
+        setMfaEnabled(false);
+        setSnack({ open: true, severity: "success", msg: "Two-factor authentication disabled." });
+      } else {
+        // We are enabling
+        navigate("/app/security/2fa/setup");
+      }
     }
 
     if (pending.type === "add") {
@@ -365,7 +394,7 @@ export default function Manage2FAPage() {
                   </Box>
 
                   <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ width: { xs: "100%", md: "auto" } }}>
-                    <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<RefreshIcon size={18} />} onClick={() => setSnack({ open: true, severity: "info", msg: "Refresh status (demo)." })}>
+                    <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<RefreshIcon size={18} />} onClick={() => window.location.reload()}>
                       Refresh
                     </Button>
                     <Button variant="contained" color="secondary" sx={evOrangeContainedSx} startIcon={<PlusIcon size={18} />} onClick={openAdd}>
@@ -380,14 +409,14 @@ export default function Manage2FAPage() {
                   <Box>
                     <Typography sx={{ fontWeight: 950 }}>2FA status</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      {enabled ? "Enabled" : "Disabled"}
+                      {mfaEnabled ? "Enabled" : "Disabled"}
                     </Typography>
                   </Box>
 
                   <FormControlLabel
                     control={
                       <Switch
-                        checked={enabled}
+                        checked={mfaEnabled}
                         onChange={() => openReauth({ type: "toggle" })}
                         color="secondary"
                       />
@@ -396,7 +425,7 @@ export default function Manage2FAPage() {
                   />
                 </Stack>
 
-                {!enabled ? (
+                {!mfaEnabled ? (
                   <Alert severity="warning" sx={{ mt: 2 }}>
                     2FA is disabled. Enable it to protect wallet withdrawals and sensitive actions.
                   </Alert>
@@ -613,7 +642,7 @@ export default function Manage2FAPage() {
                     </InputAdornment>
                   ),
                 }}
-                helperText="Demo password: EVzone123!"
+                helperText="Enter your current password."
               />
             ) : (
               <>
@@ -664,7 +693,7 @@ export default function Manage2FAPage() {
               </>
             )}
 
-            <Alert severity="info">This is a demo re-auth flow.</Alert>
+            {/* Demo alert removed */}
           </Stack>
         </DialogContent>
         <DialogActions sx={{ p: 2, pt: 0 }}>

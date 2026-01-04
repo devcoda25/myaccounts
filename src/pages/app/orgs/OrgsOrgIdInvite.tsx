@@ -7,6 +7,7 @@ import {
   Card,
   CardContent,
   Chip,
+  CircularProgress,
   CssBaseline,
   Dialog,
   DialogActions,
@@ -24,165 +25,69 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useNavigate, useParams } from 'react-router-dom';
+import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
-
-/**
- * EVzone My Accounts - Invite Members
- * Route: /app/orgs/:orgId/invite
- *
- * Features:
- * - Invite by email
- * - Assign role before sending
- * - Pending invites list + revoke invite
- */
-
-type ThemeMode = "light" | "dark";
+import { api } from "../../../utils/api";
 
 type Severity = "info" | "warning" | "error" | "success";
-
 type OrgRole = "Owner" | "Admin" | "Manager" | "Member" | "Viewer";
 
 type Invite = {
   id: string;
   email: string;
   role: Exclude<OrgRole, "Owner">;
-  createdAt: number;
-  expiresAt: number;
+  token: string;
+  createdAt: string; // ISO string from backend
+  expiresAt: string; // ISO string from backend
   status: "Pending" | "Revoked" | "Accepted";
 };
 
-// Local EVZONE and THEME_KEY removed
-
-// -----------------------------
-// Inline icons
-// -----------------------------
+// ... Icons ...
 function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{ display: "block" }}>
-      {children}
-    </svg>
-  );
+  return (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{ display: "block" }}>{children}</svg>);
 }
-
 function SunIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
-      <path d="M12 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 12H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M22 12h-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
+  return (<IconBase size={size}><circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" /><path d="M12 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M12 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M4 12H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M22 12h-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></IconBase>);
 }
-
 function MoonIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M21 13a8 8 0 0 1-10-10 7.5 7.5 0 1 0 10 10Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
+  return (<IconBase size={size}><path d="M21 13a8 8 0 0 1-10-10 7.5 7.5 0 1 0 10 10Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" /></IconBase>);
 }
-
 function GlobeIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
+  return (<IconBase size={size}><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" /><path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></IconBase>);
 }
-
 function MailIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <rect x="4" y="6" width="16" height="12" rx="2" stroke="currentColor" strokeWidth="2" />
-      <path d="M4 8l8 6 8-6" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
+  return (<IconBase size={size}><rect x="4" y="6" width="16" height="12" rx="2" stroke="currentColor" strokeWidth="2" /><path d="M4 8l8 6 8-6" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" /></IconBase>);
 }
-
 function UsersIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <circle cx="9" cy="7" r="3" stroke="currentColor" strokeWidth="2" />
-      <path d="M22 21v-2a3 3 0 0 0-2.5-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M16.5 3.3a3 3 0 0 1 0 7.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
+  return (<IconBase size={size}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><circle cx="9" cy="7" r="3" stroke="currentColor" strokeWidth="2" /><path d="M22 21v-2a3 3 0 0 0-2.5-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M16.5 3.3a3 3 0 0 1 0 7.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></IconBase>);
 }
-
 function TicketIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M4 9V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 15v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 12h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
+  return (<IconBase size={size}><path d="M4 9V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M4 15v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M4 12h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></IconBase>);
 }
-
 function CopyIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" strokeWidth="2" />
-      <rect x="4" y="4" width="11" height="11" rx="2" stroke="currentColor" strokeWidth="2" />
-    </IconBase>
-  );
+  return (<IconBase size={size}><rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" strokeWidth="2" /><rect x="4" y="4" width="11" height="11" rx="2" stroke="currentColor" strokeWidth="2" /></IconBase>);
 }
-
 function TrashIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M4 7h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M10 11v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M14 11v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M6 7l1 14h10l1-14" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-      <path d="M9 7V4h6v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
+  return (<IconBase size={size}><path d="M4 7h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M10 11v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M14 11v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M6 7l1 14h10l1-14" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" /><path d="M9 7V4h6v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></IconBase>);
 }
-
 function CheckCircleIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="m8.5 12 2.3 2.3L15.8 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
+  return (<IconBase size={size}><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" /><path d="m8.5 12 2.3 2.3L15.8 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></IconBase>);
 }
-
 function ShieldCheckIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-      <path d="m9 12 2 2 4-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
+  return (<IconBase size={size}><path d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" /><path d="m9 12 2 2 4-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></IconBase>);
 }
-
 function ArrowRightIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
+  return (<IconBase size={size}><path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></IconBase>);
 }
-
-// -----------------------------
-// Theme helpers
-// -----------------------------
-// Local theme logic removed
 
 function initials(email: string) {
   const u = email.split("@")[0] || "user";
   return (u.slice(0, 2) || "EV").toUpperCase();
 }
 
-function timeAgo(ts: number) {
+function timeAgo(dateString: string) {
+  const ts = new Date(dateString).getTime();
   const diff = Date.now() - ts;
   const min = Math.floor(diff / 60000);
   if (min < 1) return "Just now";
@@ -193,8 +98,8 @@ function timeAgo(ts: number) {
   return `${d} day${d === 1 ? "" : "s"} ago`;
 }
 
-function buildInviteLink(inviteId: string) {
-  return `${window.location.origin}/org-invite/accept?token=${encodeURIComponent(inviteId)}`;
+function buildInviteLink(token: string) {
+  return `${window.location.origin}/accept-invite?token=${encodeURIComponent(token)}`;
 }
 
 async function copyToClipboard(text: string) {
@@ -230,40 +135,51 @@ function uniqueLower(arr: string[]) {
   return Array.from(set);
 }
 
-function newInviteId() {
-  return `inv_${Math.random().toString(16).slice(2, 10)}`;
-}
-
-// Self-tests removed
-
 export default function InviteMembersPage() {
-  // const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
-  // const theme = useMemo(() => buildTheme(mode), [mode]);
   const theme = useTheme();
-  const { mode } = useThemeContext();
+  const { mode, toggleMode } = useThemeStore();
   const isDark = mode === "dark";
+  const { orgId } = useParams<{ orgId: string }>();
+  const navigate = useNavigate();
 
-  const [orgName] = useState("EV World");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [orgName, setOrgName] = useState("");
 
   const [emailInput, setEmailInput] = useState("");
   const [emails, setEmails] = useState<string[]>([]);
   const [role, setRole] = useState<Exclude<OrgRole, "Owner">>("Member");
   const [message, setMessage] = useState("");
 
-  const [invites, setInvites] = useState<Invite[]>(() => {
-    const now = Date.now();
-    return [
-      { id: "inv_ab12cd34", email: "finance@evworld.africa", role: "Member", createdAt: now - 1000 * 60 * 60 * 3, expiresAt: now + 1000 * 60 * 60 * 24 * 6, status: "Pending" },
-      { id: "inv_ef56aa88", email: "ops@evworld.africa", role: "Manager", createdAt: now - 1000 * 60 * 60 * 12, expiresAt: now + 1000 * 60 * 60 * 24 * 6, status: "Pending" },
-    ];
-  });
+  const [invites, setInvites] = useState<Invite[]>([]);
 
   const [revokeOpen, setRevokeOpen] = useState(false);
   const [revokeId, setRevokeId] = useState<string | null>(null);
 
   const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
-  // Self-tests effect removed
+  useEffect(() => {
+    loadData();
+  }, [orgId]);
+
+  const loadData = async () => {
+    if (!orgId) return;
+    try {
+      setLoading(true);
+      setError("");
+      const [orgData, invitesData] = await Promise.all([
+        api(`/orgs/${orgId}`),
+        api(`/orgs/${orgId}/invites`)
+      ]);
+      setOrgName(orgData.name);
+      setInvites(invitesData);
+    } catch (err: any) {
+      setError(err.message);
+      setSnack({ open: true, severity: "error", msg: "Failed to load data" });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const pageBg =
     mode === "dark"
@@ -273,8 +189,8 @@ export default function InviteMembersPage() {
   const orangeContained = {
     backgroundColor: EVZONE.orange,
     color: "#FFFFFF",
-    boxShadow: `0 4px 14px ${alpha(EVZONE.orange, 0.4)}`, // Standardized
-    borderRadius: "4px", // Standardized to 4px
+    boxShadow: `0 4px 14px ${alpha(EVZONE.orange, 0.4)}`,
+    borderRadius: "4px",
     "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
     "&:active": { backgroundColor: alpha(EVZONE.orange, 0.86), color: "#FFFFFF" },
   } as const;
@@ -283,13 +199,10 @@ export default function InviteMembersPage() {
     borderColor: alpha(EVZONE.orange, 0.65),
     color: EVZONE.orange,
     backgroundColor: alpha(theme.palette.background.paper, 0.20),
-    borderRadius: "4px", // Standardized to 4px
+    borderRadius: "4px",
     "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
   } as const;
 
-  const toggleMode = () => {
-    // Mode toggling handled by ContextSwitcher or outside
-  };
 
   const addEmail = (raw: string) => {
     const val = raw.trim().replace(/[,;]$/, "");
@@ -312,31 +225,28 @@ export default function InviteMembersPage() {
 
   const removeEmail = (email: string) => setEmails((prev) => prev.filter((e) => e.toLowerCase() !== email.toLowerCase()));
 
-  const sendInvites = () => {
+  const sendInvites = async () => {
     const cleaned = uniqueLower(emails);
     if (!cleaned.length) {
       setSnack({ open: true, severity: "warning", msg: "Add at least one email." });
       return;
     }
 
-    const now = Date.now();
-    const expiry = now + 1000 * 60 * 60 * 24 * 7;
+    if (!orgId) return;
 
-    const newItems: Invite[] = cleaned.map((e) => ({
-      id: newInviteId(),
-      email: e,
-      role,
-      createdAt: now,
-      expiresAt: expiry,
-      status: "Pending",
-    }));
+    try {
+      await Promise.all(cleaned.map(email =>
+        api.post(`/orgs/${orgId}/invites`, { email, role })
+      ));
 
-    setInvites((prev) => [...newItems, ...prev]);
-    setEmails([]);
-    setEmailInput("");
-    setMessage("");
-
-    setSnack({ open: true, severity: "success", msg: `Invites sent: ${newItems.length} (demo).` });
+      setSnack({ open: true, severity: "success", msg: `Invites sent: ${cleaned.length}` });
+      setEmails([]);
+      setEmailInput("");
+      setMessage("");
+      loadData(); // Reload invites list
+    } catch (err: any) {
+      setSnack({ open: true, severity: "error", msg: "Failed to send invites: " + err.message });
+    }
   };
 
   const openRevoke = (id: string) => {
@@ -344,15 +254,21 @@ export default function InviteMembersPage() {
     setRevokeOpen(true);
   };
 
-  const revoke = () => {
-    if (!revokeId) return;
-    setInvites((prev) => prev.map((i) => (i.id === revokeId ? { ...i, status: "Revoked" } : i)));
-    setRevokeOpen(false);
-    setSnack({ open: true, severity: "success", msg: "Invite revoked (demo)." });
+  const revoke = async () => {
+    if (!revokeId || !orgId) return;
+    try {
+      await api.delete(`/orgs/${orgId}/invites/${revokeId}`);
+      setSnack({ open: true, severity: "success", msg: "Invite revoked." });
+      setRevokeOpen(false);
+      loadData();
+    } catch (err: any) {
+      setSnack({ open: true, severity: "error", msg: "Failed to revoke: " + err.message });
+      setRevokeOpen(false);
+    }
   };
 
-  const copyLink = async (id: string) => {
-    const link = buildInviteLink(id);
+  const copyLink = async (token: string) => {
+    const link = buildInviteLink(token);
     const ok = await copyToClipboard(link);
     setSnack({ open: true, severity: ok ? "success" : "warning", msg: ok ? "Invite link copied." : "Copy failed." });
   };
@@ -365,7 +281,15 @@ export default function InviteMembersPage() {
     return <Chip size="small" color="warning" label="Pending" />;
   };
 
-  const goMembers = () => setSnack({ open: true, severity: "info", msg: "Navigate to /app/orgs/:orgId/members (demo)." });
+  const goMembers = () => navigate(`/app/orgs/${orgId}/members`);
+
+  if (loading && !invites.length) {
+    return (
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <CircularProgress size={40} sx={{ color: EVZONE.green }} />
+      </Box>
+    );
+  }
 
   return (
     <>
@@ -422,7 +346,7 @@ export default function InviteMembersPage() {
                       <Button variant="outlined" sx={orangeOutlined} onClick={goMembers}>
                         View members
                       </Button>
-                      <Button variant="contained" color="secondary" sx={orangeContained} endIcon={<ArrowRightIcon size={18} />} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/orgs/:orgId (demo)." })}>
+                      <Button variant="contained" color="secondary" sx={orangeContained} endIcon={<ArrowRightIcon size={18} />} onClick={() => navigate(`/app/orgs/${orgId}`)}>
                         Org dashboard
                       </Button>
                     </Stack>
@@ -433,6 +357,7 @@ export default function InviteMembersPage() {
                   <Alert severity="info" icon={<ShieldCheckIcon size={18} />}>
                     Invites and revocations are recorded in audit logs.
                   </Alert>
+
                 </CardContent>
               </Card>
 
@@ -537,7 +462,7 @@ export default function InviteMembersPage() {
                             <Divider />
 
                             <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                              <Button variant="outlined" sx={orangeOutlined} startIcon={<CopyIcon size={18} />} onClick={() => copyLink(i.id)}>
+                              <Button variant="outlined" sx={orangeOutlined} startIcon={<CopyIcon size={18} />} onClick={() => copyLink(i.token || i.id)}>
                                 Copy link
                               </Button>
                               <Button variant="outlined" sx={orangeOutlined} startIcon={<TrashIcon size={18} />} disabled={i.status !== "Pending"} onClick={() => openRevoke(i.id)}>

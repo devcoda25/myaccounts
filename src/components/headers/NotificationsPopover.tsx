@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
     Box,
     Typography,
@@ -9,7 +9,6 @@ import {
     ListItemText,
     ListItemAvatar,
     Avatar,
-    Divider,
     Button,
     alpha,
     useTheme,
@@ -29,51 +28,8 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { EVZONE } from '../../theme/evzone';
-import { useThemeContext } from '../../theme/ThemeContext';
-
-interface Notification {
-    id: string;
-    title: string;
-    description: string;
-    time: string;
-    type: 'security' | 'info' | 'success' | 'warning';
-    read: boolean;
-}
-
-const MOCK_NOTIFICATIONS: Notification[] = [
-    {
-        id: '1',
-        title: 'New Device Sign-in',
-        description: 'New login detected from Chrome (Windows) in Kampala, UG.',
-        time: '2 mins ago',
-        type: 'security',
-        read: false,
-    },
-    {
-        id: '2',
-        title: 'Wallet Top-up Successful',
-        description: 'Your deposit of UGX 500,000 has been confirmed.',
-        time: '1 hr ago',
-        type: 'success',
-        read: false,
-    },
-    {
-        id: '3',
-        title: 'System Update',
-        description: 'EVzone My Accounts will undergo maintenance tonight at 2 AM.',
-        time: '5 hrs ago',
-        type: 'info',
-        read: true,
-    },
-    {
-        id: '4',
-        title: 'Profile Incomplete',
-        description: 'Please add a recovery phone number to secure your account.',
-        time: '1 day ago',
-        type: 'warning',
-        read: true,
-    }
-];
+import { useThemeStore } from '../../stores/themeStore';
+import { useNotifications, Notification } from '../../hooks/useNotifications';
 
 interface NotificationsPopoverProps {
     onClose: () => void;
@@ -82,38 +38,36 @@ interface NotificationsPopoverProps {
 export default function NotificationsPopover({ onClose }: NotificationsPopoverProps) {
     const theme = useTheme();
     const navigate = useNavigate();
-    const { mode } = useThemeContext();
-    const isDark = mode === 'dark';
-
-    const [notifications, setNotifications] = useState<Notification[]>(MOCK_NOTIFICATIONS);
+    const { mode } = useThemeStore();
+    const { notifications, markAllAsRead, markAsRead, remove } = useNotifications();
 
     const handleMarkAllRead = () => {
-        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+        markAllAsRead();
     };
 
     const handleDismiss = (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
-        setNotifications(prev => prev.filter(n => n.id !== id));
+        remove(id);
     };
 
     const handleItemClick = (id: string) => {
-        setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+        markAsRead(id);
     };
 
     const getIcon = (type: Notification['type']) => {
         switch (type) {
-            case 'security': return <ShieldAlert size={20} color={theme.palette.error.main} />;
-            case 'success': return <CheckCircle2 size={20} color={EVZONE.green} />;
-            case 'warning': return <Info size={20} color={theme.palette.warning.main} />;
+            case 'SECURITY': return <ShieldAlert size={20} color={theme.palette.error.main} />;
+            case 'SUCCESS': return <CheckCircle2 size={20} color={EVZONE.green} />;
+            case 'WARNING': return <Info size={20} color={theme.palette.warning.main} />;
             default: return <MessageSquare size={20} color={theme.palette.info.main} />;
         }
     };
 
     const getBgColor = (type: Notification['type']) => {
         switch (type) {
-            case 'security': return alpha(theme.palette.error.main, 0.1);
-            case 'success': return alpha(EVZONE.green, 0.1);
-            case 'warning': return alpha(theme.palette.warning.main, 0.1);
+            case 'SECURITY': return alpha(theme.palette.error.main, 0.1);
+            case 'SUCCESS': return alpha(EVZONE.green, 0.1);
+            case 'WARNING': return alpha(theme.palette.warning.main, 0.1);
             default: return alpha(theme.palette.info.main, 0.1);
         }
     };
@@ -186,7 +140,7 @@ export default function NotificationsPopover({ onClose }: NotificationsPopoverPr
                                             {n.title}
                                         </Typography>
                                         <Typography variant="caption" sx={{ color: theme.palette.text.secondary, whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                            <Clock size={10} /> {n.time}
+                                            <Clock size={10} /> {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                         </Typography>
                                     </Box>
                                 }

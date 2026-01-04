@@ -22,8 +22,10 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
+
+import { api } from "../../../utils/api";
 
 /**
  * EVzone My Accounts - Active Devices & Sessions
@@ -146,57 +148,53 @@ function riskChipProps(r: RiskTag) {
 
 export default function ActiveSessionsPage() {
   const theme = useTheme();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const isDark = mode === "dark";
 
+  // const { api } = useAuth(); // Removed
+  const [loading, setLoading] = useState(true);
+
+  // UI State
   const [query, setQuery] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmMode, setConfirmMode] = useState<"one" | "others" | "all">("one");
   const [selectedId, setSelectedId] = useState<string | null>(null);
-
   const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
-  const [sessions, setSessions] = useState<Session[]>(() => [
-    {
-      id: "s_current",
-      isCurrent: true,
-      deviceLabel: "Windows PC",
-      os: "Windows 10",
-      browser: "Chrome",
-      location: "Kampala, Uganda",
-      ip: "197.157.12.44",
-      lastActiveAt: Date.now() - 1000 * 60 * 2,
-      createdAt: Date.now() - 1000 * 60 * 60 * 8,
-      trust: "trusted",
-      risk: [],
-    },
-    {
-      id: "s_android",
-      isCurrent: false,
-      deviceLabel: "Android phone",
-      os: "Android 14",
-      browser: "EVzone App",
-      location: "Entebbe, Uganda",
-      ip: "102.90.44.18",
-      lastActiveAt: Date.now() - 1000 * 60 * 28,
-      createdAt: Date.now() - 1000 * 60 * 60 * 26,
-      trust: "trusted",
-      risk: ["old_device"],
-    },
-    {
-      id: "s_unknown",
-      isCurrent: false,
-      deviceLabel: "Unknown device",
-      os: "Unknown OS",
-      browser: "Safari",
-      location: "Nairobi, Kenya",
-      ip: "41.90.1.200",
-      lastActiveAt: Date.now() - 1000 * 60 * 60 * 20,
-      createdAt: Date.now() - 1000 * 60 * 60 * 20,
-      trust: "untrusted",
-      risk: ["new_location", "suspicious"],
-    },
-  ]);
+  const [sessions, setSessions] = useState<Session[]>([]);
+
+  const fetchSessions = async () => {
+    try {
+      setLoading(true);
+      const data = await api("/auth/sessions");
+      // Map backend response to UI model
+      // Backend: { id, deviceInfo, lastUsedAt, isCurrent }
+      // userAgent parsing could be done here or in backend. For MVP assuming basic parsing/defaults.
+      const mapped: Session[] = (Array.isArray(data) ? data : []).map((s: any) => ({
+        id: s.id,
+        isCurrent: s.isCurrent,
+        deviceLabel: s.deviceInfo?.device || "Unknown Device",
+        os: s.deviceInfo?.os || "Unknown OS",
+        browser: s.deviceInfo?.browser || "Unknown Browser",
+        location: s.deviceInfo?.location || "Unknown Location",
+        ip: s.deviceInfo?.ip || "Unknown IP",
+        lastActiveAt: new Date(s.lastUsedAt).getTime(),
+        createdAt: Date.now(), // Backend doesn't send this yet, could add if needed
+        trust: "trusted", // Default
+        risk: [],
+      }));
+      setSessions(mapped);
+    } catch (err) {
+      console.error(err);
+      setSnack({ open: true, severity: "error", msg: "Failed to load sessions." });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSessions();
+  }, []);
 
   const pageBg =
     mode === "dark"
@@ -250,21 +248,29 @@ export default function ActiveSessionsPage() {
     setConfirmOpen(true);
   };
 
-  const applySignOut = () => {
-    if (confirmMode === "one" && selectedId) {
-      const s = sessions.find((x) => x.id === selectedId);
-      setSessions((prev) => prev.filter((x) => x.id !== selectedId));
-      setSnack({ open: true, severity: "success", msg: `Signed out: ${s?.deviceLabel || "device"}.` });
+  const applySignOut = async () => {
+    try {
+      if (confirmMode === "one" && selectedId) {
+        await api(`/auth/sessions/${selectedId}`, { method: "DELETE" });
+        setSessions((prev) => prev.filter((x) => x.id !== selectedId));
+        setSnack({ open: true, severity: "success", msg: "Device signed out." });
+      }
+      if (confirmMode === "others") {
+        await api("/auth/sessions", { method: "DELETE" });
+        setSessions((prev) => prev.filter((x) => x.isCurrent));
+        setSnack({ open: true, severity: "success", msg: "Signed out all other devices." });
+      }
+      if (confirmMode === "all") {
+        await api("/auth/sessions", { method: "DELETE" }); // revokes others
+        // Revoke current by logging out? For now just visual clear or we could call logout endpoint
+        setSessions([]);
+        setSnack({ open: true, severity: "success", msg: "Signed out active sessions." });
+      }
+    } catch (e) {
+      setSnack({ open: true, severity: "error", msg: "Action failed." });
+    } finally {
+      setConfirmOpen(false);
     }
-    if (confirmMode === "others") {
-      setSessions((prev) => prev.filter((x) => x.isCurrent));
-      setSnack({ open: true, severity: "success", msg: "Signed out all other devices." });
-    }
-    if (confirmMode === "all") {
-      setSessions([]);
-      setSnack({ open: true, severity: "success", msg: "Signed out all devices (demo)." });
-    }
-    setConfirmOpen(false);
   };
 
   const confirmTitle =

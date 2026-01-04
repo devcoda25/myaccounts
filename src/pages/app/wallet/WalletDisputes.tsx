@@ -34,7 +34,7 @@ import {
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { useTheme } from "@mui/material/styles";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 import { motion } from "framer-motion";
 
 /**
@@ -295,7 +295,7 @@ function runSelfTestsOnce() {
 
 export default function DisputesChargebacksPage() {
   const navigate = useNavigate();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const theme = useTheme();
   const isDark = mode === "dark";
 

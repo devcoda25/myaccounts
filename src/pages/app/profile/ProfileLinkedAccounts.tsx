@@ -26,7 +26,10 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
+import { api } from "../../../utils/api";
+import { useSocialLogin } from "../../../hooks/useSocialLogin"; // Added import
+import { ProfileSidebar } from "./components/ProfileSidebar";
 
 /**
  * EVzone My Accounts - Linked Accounts
@@ -372,29 +375,56 @@ function mfaCodeFor(channel: MfaChannel) {
 }
 
 export default function LinkedAccountsPage() {
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const theme = useTheme();
   const navigate = useNavigate();
   const isDark = mode === "dark";
 
-  const [providers, setProviders] = useState<Provider[]>(() => [
+  const [providers, setProviders] = useState<Provider[]>([
     {
       key: "google",
       name: "Google",
-      connected: true,
-      connectedEmail: "ronald.isabirye@gmail.com",
-      connectedAt: Date.now() - 1000 * 60 * 60 * 24 * 98,
-      lastUsedAt: Date.now() - 1000 * 60 * 60 * 6,
-      lastLoginMethod: "Google",
+      connected: false,
+      lastUsedAt: undefined,
+      lastLoginMethod: undefined,
     },
     {
       key: "apple",
       name: "Apple",
       connected: false,
       lastUsedAt: undefined,
-      lastLoginMethod: "Password",
+      lastLoginMethod: undefined,
     },
   ]);
+
+  const { initGoogleCustomLogin, initAppleLogin } = useSocialLogin(); // Hook usage
+
+  useEffect(() => {
+    // Load Connections
+    reloadProviders();
+  }, []);
+
+  const reloadProviders = () => {
+    api('/users/me')
+      .then((user: any) => {
+        if (user && user.credentials) {
+          setProviders(prev => prev.map(p => {
+            const cred = user.credentials.find((c: any) => c.providerType === p.key);
+            if (cred) {
+              return {
+                ...p,
+                connected: true,
+                connectedEmail: cred.providerId.includes('@') ? cred.providerId : undefined, // providerId often stores sub, but for display we might need email from metadata or just show Connected
+                connectedAt: Date.now(),
+                lastUsedAt: Date.now()
+              };
+            }
+            return { ...p, connected: false };
+          }));
+        }
+      })
+      .catch(err => console.error(err));
+  };
 
   const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({
     open: false,
@@ -461,53 +491,57 @@ export default function LinkedAccountsPage() {
     setPendingAction(null);
   };
 
-  const applyAction = () => {
+  const applyAction = async () => {
     if (!pendingAction) return;
 
-    // Demo re-auth validation
-    if (reauthMode === "password") {
-      if (reauthPassword !== "EVzone123!") {
-        setSnack({ open: true, severity: "error", msg: "Re-auth failed. Incorrect password." });
-        return;
+    // 1. Re-authenticate
+    try {
+      if (reauthMode === "password") {
+        await api('/auth/verify-password', { method: 'POST', body: JSON.stringify({ password: reauthPassword }) });
+      } else {
+        // Validation for MFA not fully implemented in this refactor step as MFA verification endpoint might differ
+        // Assuming verify-password handles password. For now we only support Password re-auth fully.
+        if (otp.trim() !== mfaCodeFor(mfaChannel)) {
+          throw new Error("Invalid MFA code (Demo check)");
+        }
       }
-    } else {
-      if (otp.trim() !== mfaCodeFor(mfaChannel)) {
-        setSnack({ open: true, severity: "error", msg: "Re-auth failed. Incorrect code." });
-        return;
-      }
+    } catch (err) {
+      setSnack({ open: true, severity: "error", msg: "Re-authentication failed. Incorrect credentials." });
+      return;
     }
 
-    setProviders((prev) =>
-      prev.map((p) => {
-        if (p.key !== pendingAction.provider) return p;
-        if (pendingAction.action === "unlink") {
-          return {
-            ...p,
-            connected: false,
-            connectedEmail: undefined,
-            connectedAt: undefined,
-          };
+    // 2. Perform Action
+    try {
+      if (pendingAction.action === "unlink") {
+        await api(`/users/me/credentials/${pendingAction.provider}`, { method: 'DELETE' });
+        setSnack({ open: true, severity: "success", msg: "Account unlinked successfully." });
+        reloadProviders();
+        closeReauth();
+      } else {
+        // Link Action
+        closeReauth(); // Close dialog to show popup
+        if (pendingAction.provider === 'google') {
+          initGoogleCustomLogin(async (token) => {
+            try {
+              await api('/auth/link/google', { method: 'POST', body: JSON.stringify({ token }) });
+              setSnack({ open: true, severity: "success", msg: "Account linked successfully." });
+              reloadProviders();
+            } catch (lErr: any) {
+              console.error(lErr);
+              setSnack({ open: true, severity: "error", msg: lErr.message || "Failed to link account." });
+            }
+          });
+        } else {
+          // Apple Link
+          // TODO: Update useSocialLogin to support Apple Link callback or implement here
+          // Using stub for now as Apple Link requires specific JS structure
+          setSnack({ open: true, severity: "info", msg: "Apple linking coming soon." });
         }
-
-        const email = p.key === "google" ? "ronald.isabirye@gmail.com" : "ronald@privaterelay.appleid.com";
-        return {
-          ...p,
-          connected: true,
-          connectedEmail: email,
-          connectedAt: Date.now(),
-          lastUsedAt: Date.now(),
-          lastLoginMethod: p.key === "google" ? "Google" : "Apple",
-        };
-      })
-    );
-
-    setSnack({
-      open: true,
-      severity: "success",
-      msg: pendingAction.action === "unlink" ? "Account unlinked successfully." : "Account linked successfully.",
-    });
-
-    closeReauth();
+      }
+    } catch (err: any) {
+      console.error(err);
+      setSnack({ open: true, severity: "error", msg: err.message || "Action failed." });
+    }
   };
 
   const lastLogin = useMemo(() => {
@@ -573,58 +607,7 @@ export default function LinkedAccountsPage() {
             <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
               {/* Sidebar */}
               <Box className="hidden md:col-span-3 md:block">
-                <Card>
-                  <CardContent className="p-4">
-                    <Stack spacing={1.2}>
-                      <Typography sx={{ fontWeight: 950 }}>Navigation</Typography>
-                      <Divider />
-                      {[
-                        { label: "Profile", icon: <LockIcon size={18} />, route: "/app/profile" },
-                        { label: "Contact", icon: <MailIcon size={18} />, route: "/app/profile/contact" },
-                        {
-                          label: "Linked accounts",
-                          icon: <LinkIcon size={18} />,
-                          route: "/app/profile/linked-accounts",
-                          active: true,
-                        },
-                        { label: "Security", icon: <ShieldCheckIcon size={18} />, route: "/app/security" },
-                      ].map((item) => (
-                        <Button
-                          key={item.label}
-                          variant={item.active ? "contained" : "text"}
-                          color="secondary"
-                          startIcon={item.icon}
-                          sx={
-                            item.active
-                              ? ({
-                                backgroundColor: EVZONE.orange,
-                                color: "#FFFFFF",
-                                "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92) },
-                                justifyContent: "flex-start",
-                              } as const)
-                              : {
-                                justifyContent: "flex-start",
-                                color: theme.palette.text.primary,
-                                "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.10) },
-                              }
-                          }
-                          onClick={() => navigate(item.route)}
-                        >
-                          {item.label}
-                        </Button>
-                      ))}
-                      <Divider />
-                      <Button
-                        variant="outlined"
-                        sx={evOrangeOutlinedSx}
-                        startIcon={<ShieldCheckIcon size={18} />}
-                        onClick={() => navigate('/app/security')}
-                      >
-                        Security settings
-                      </Button>
-                    </Stack>
-                  </CardContent>
-                </Card>
+                <ProfileSidebar />
               </Box>
 
               {/* Main */}

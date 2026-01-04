@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Avatar,
@@ -7,54 +7,52 @@ import {
   Card,
   CardContent,
   Chip,
+  CircularProgress,
+  Container,
   CssBaseline,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Divider,
   IconButton,
-  InputAdornment,
   MenuItem,
-  Snackbar,
   Stack,
   TextField,
   Tooltip,
   Typography,
+  Snackbar,
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from "react-i18next";
+import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
+import { api } from "../../../utils/api";
+import {
+  Building,
+  Users,
+  ShieldCheck,
+  Key,
+  Wallet,
+  Activity,
+  Plus,
+  ArrowRight,
+  RefreshCw,
+  Globe,
+  Sun,
+  Moon,
+  LayoutGrid
+} from 'lucide-react';
 
-/**
- * EVzone My Accounts - Organization Dashboard
- * Route: /app/orgs/:orgId
- *
- * Features:
- * - Org profile summary
- * - Members snapshot
- * - SSO status
- * - Wallet scope (org wallet if enabled)
- * - Audit highlights (admin actions)
- */
-
-type ThemeMode = "light" | "dark";
-
-type Severity = "info" | "warning" | "error" | "success";
-
-type OrgRole = "Owner" | "Admin" | "Manager" | "Member" | "Viewer";
-
+// Types matching Backend Response
 type AuditSeverity = "info" | "warning" | "critical";
 
 type Org = {
   id: string;
   name: string;
-  role: OrgRole;
+  role: string;
   country: string;
   createdAt: number;
   membersCount: number;
-  membersByRole: Record<OrgRole, number>;
+  membersByRole: Record<string, number>;
   pendingInvites: number;
   ssoEnabled: boolean;
   ssoDomains: string[];
@@ -65,168 +63,6 @@ type Org = {
   auditHighlights: { id: string; when: number; actor: string; action: string; severity: AuditSeverity }[];
 };
 
-// Local EVZONE removed
-
-const STORAGE_LAST_ORG = "evzone_myaccounts_last_org";
-
-// -----------------------------
-// Inline icons
-// -----------------------------
-function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{ display: "block" }}>
-      {children}
-    </svg>
-  );
-}
-
-function SunIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
-      <path d="M12 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 12H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M22 12h-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function MoonIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M21 13a8 8 0 0 1-10-10 7.5 7.5 0 1 0 10 10Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function GlobeIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function BuildingIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M4 21V3h12v18" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-      <path d="M16 9h4v12" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-      <path d="M8 7h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M8 11h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M8 15h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M6 21h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function UsersIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <circle cx="9" cy="7" r="3" stroke="currentColor" strokeWidth="2" />
-      <path d="M22 21v-2a3 3 0 0 0-2.5-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M16.5 3.3a3 3 0 0 1 0 7.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function ShieldCheckIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-      <path d="m9 12 2 2 4-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function KeyIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="8" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
-      <path d="M11 12h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M18 12v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M15 12v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function WalletIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M3 7h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-      <path d="M17 11h4v6h-4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-      <path d="M7 7V5a2 2 0 0 1 2-2h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function ActivityIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M3 12h4l2-6 4 12 2-6h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function PlusIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M12 5v14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function ArrowRightIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function SwitchIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M16 3h5v5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M21 3l-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M8 21H3v-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M3 21l7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-// -----------------------------
-// Theme
-// -----------------------------
-// Local theme storage removed
-
-function getStoredLastOrg(): string | null {
-  try {
-    return window.localStorage.getItem(STORAGE_LAST_ORG);
-  } catch {
-    return null;
-  }
-}
-
-function setStoredLastOrg(id: string | null) {
-  try {
-    if (!id) window.localStorage.removeItem(STORAGE_LAST_ORG);
-    else window.localStorage.setItem(STORAGE_LAST_ORG, id);
-  } catch {
-    // ignore
-  }
-}
-
-// Local buildTheme removed
-
-// -----------------------------
-// Helpers
-// -----------------------------
 function initials(name: string) {
   const parts = name.trim().split(/\s+/);
   const a = parts[0]?.[0] || "O";
@@ -250,129 +86,77 @@ function timeAgo(ts: number) {
   return `${d} day${d === 1 ? "" : "s"} ago`;
 }
 
-function isAdminRole(r: OrgRole) {
-  return r === "Owner" || r === "Admin";
-}
-
 function auditColor(s: AuditSeverity) {
   if (s === "critical") return "error" as const;
   if (s === "warning") return "warning" as const;
   return "info" as const;
 }
 
-// Self-tests removed
-
-function seedOrgs(): Org[] {
-  const now = Date.now();
-  return [
-    {
-      id: "org_evworld",
-      name: "EV World",
-      role: "Owner",
-      country: "Uganda",
-      createdAt: now - 1000 * 60 * 60 * 24 * 420,
-      membersCount: 12,
-      membersByRole: { Owner: 1, Admin: 2, Manager: 3, Member: 6, Viewer: 0 },
-      pendingInvites: 2,
-      ssoEnabled: true,
-      ssoDomains: ["evworld.co", "evworld.africa"],
-      walletEnabled: true,
-      currency: "UGX",
-      walletBalance: 3498000,
-      walletMonthlyLimit: 25000000,
-      auditHighlights: [
-        { id: "a1", when: now - 1000 * 60 * 20, actor: "Ronald", action: "Invited 2 members", severity: "info" },
-        { id: "a2", when: now - 1000 * 60 * 60 * 4, actor: "Admin", action: "Enabled SSO", severity: "warning" },
-        { id: "a3", when: now - 1000 * 60 * 60 * 26, actor: "System", action: "Blocked suspicious login", severity: "critical" },
-      ],
-    },
-    {
-      id: "org_evzone_group",
-      name: "EVzone Group",
-      role: "Admin",
-      country: "Uganda",
-      createdAt: now - 1000 * 60 * 60 * 24 * 260,
-      membersCount: 38,
-      membersByRole: { Owner: 1, Admin: 4, Manager: 6, Member: 24, Viewer: 3 },
-      pendingInvites: 1,
-      ssoEnabled: false,
-      ssoDomains: [],
-      walletEnabled: false,
-      currency: "UGX",
-      walletBalance: 0,
-      walletMonthlyLimit: 0,
-      auditHighlights: [
-        { id: "b1", when: now - 1000 * 60 * 18, actor: "Admin", action: "Changed member role", severity: "info" },
-        { id: "b2", when: now - 1000 * 60 * 60 * 9, actor: "Admin", action: "Updated org profile", severity: "info" },
-      ],
-    },
-    {
-      id: "org_partner",
-      name: "Partner Organization",
-      role: "Member",
-      country: "Kenya",
-      createdAt: now - 1000 * 60 * 60 * 24 * 90,
-      membersCount: 9,
-      membersByRole: { Owner: 1, Admin: 1, Manager: 1, Member: 6, Viewer: 0 },
-      pendingInvites: 0,
-      ssoEnabled: false,
-      ssoDomains: [],
-      walletEnabled: false,
-      currency: "KES",
-      walletBalance: 0,
-      walletMonthlyLimit: 0,
-      auditHighlights: [{ id: "c1", when: now - 1000 * 60 * 60 * 2, actor: "Admin", action: "Invited a member", severity: "info" }],
-    },
-  ];
-}
-
 export default function OrganizationDashboardPage() {
-  // const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
-  // const theme = useMemo(() => buildTheme(mode), [mode]);
   const theme = useTheme();
-  const { mode } = useThemeContext();
+  const { mode, toggleMode } = useThemeStore();
   const isDark = mode === "dark";
+  const navigate = useNavigate();
+  const { orgId } = useParams<{ orgId: string }>();
+  const { t } = useTranslation();
 
-  const [orgs, setOrgs] = useState<Org[]>(() => seedOrgs());
+  const [org, setOrg] = useState<Org | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [myOrgs, setMyOrgs] = useState<any[]>([]); // For switcher
 
-  const [orgId, setOrgId] = useState<string>(() => {
-    try {
-      const qs = new URLSearchParams(window.location.search);
-      const q = qs.get("orgId");
-      const stored = getStoredLastOrg();
-      return q || stored || "org_evworld";
-    } catch {
-      return getStoredLastOrg() || "org_evworld";
-    }
-  });
-
-  const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
-
-  const [inviteOpen, setInviteOpen] = useState(false);
-  const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState<OrgRole>("Member");
-
-  const [domainOpen, setDomainOpen] = useState(false);
-  const [newDomain, setNewDomain] = useState("");
-
-  // Self-tests effect removed
+  const [snack, setSnack] = useState<{ open: boolean; severity: "success" | "error" | "info"; msg: string }>({ open: false, severity: "info", msg: "" });
 
   useEffect(() => {
-    setStoredLastOrg(orgId);
+    loadData();
   }, [orgId]);
 
-  const org = useMemo(() => orgs.find((o) => o.id === orgId) || orgs[0], [orgs, orgId]);
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      setError("");
 
-  const pageBg =
-    mode === "dark"
-      ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
-      : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
+      // Fetch Org Details
+      if (orgId) {
+        const data = await api(`/orgs/${orgId}`);
+        setOrg(data);
+      }
+
+      // Fetch My Orgs for Switcher
+      const list = await api('/orgs');
+      setMyOrgs(list);
+
+    } catch (err: any) {
+      setError(err.message || "Failed to load organization");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSwitch = (newId: string) => {
+    navigate(`/app/orgs/${newId}`);
+  };
+
+  const enableOrgWallet = async () => {
+    if (!org) return;
+    try {
+      await api.patch(`/orgs/${org.id}`, { walletEnabled: true });
+      setSnack({ open: true, severity: "success", msg: "Wallet enabled successfully." });
+      loadData(); // Refresh to update UI
+    } catch (err: any) {
+      setSnack({ open: true, severity: "error", msg: err.message || "Failed to enable wallet." });
+    }
+  };
+
+  const pageBg = isDark
+    ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
+    : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
 
   const evOrangeContainedSx = {
     backgroundColor: EVZONE.orange,
     color: "#FFFFFF",
-    boxShadow: `0 4px 14px ${alpha(EVZONE.orange, 0.4)}`, // Standardized
-    borderRadius: "4px", // Standardized to 4px
+    boxShadow: `0 4px 14px ${alpha(EVZONE.orange, 0.4)}`,
+    borderRadius: "4px",
     "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
     "&:active": { backgroundColor: alpha(EVZONE.orange, 0.86), color: "#FFFFFF" },
   } as const;
@@ -381,94 +165,28 @@ export default function OrganizationDashboardPage() {
     borderColor: alpha(EVZONE.orange, 0.65),
     color: EVZONE.orange,
     backgroundColor: alpha(theme.palette.background.paper, 0.20),
-    borderRadius: "4px", // Standardized to 4px
+    borderRadius: "4px",
     "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
   } as const;
 
-  const toggleMode = () => {
-    // Mode toggling handled by ContextSwitcher or global settings now
-  };
-
-  const admin = isAdminRole(org.role);
-
-  const openInvite = () => {
-    if (!admin) {
-      setSnack({ open: true, severity: "warning", msg: "Only admins can invite members." });
-      return;
-    }
-    setInviteEmail("");
-    setInviteRole("Member");
-    setInviteOpen(true);
-  };
-
-  const submitInvite = () => {
-    if (!inviteEmail.trim().includes("@")) {
-      setSnack({ open: true, severity: "warning", msg: "Enter a valid email address." });
-      return;
-    }
-    setInviteOpen(false);
-    setSnack({ open: true, severity: "success", msg: "Invite sent (demo)." });
-    setOrgs((prev) =>
-      prev.map((o) => (o.id === org.id ? { ...o, pendingInvites: o.pendingInvites + 1 } : o))
+  if (loading) {
+    return (
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <CircularProgress size={40} sx={{ color: EVZONE.green }} />
+      </Box>
     );
-  };
+  }
 
-  const openAddDomain = () => {
-    if (!admin) {
-      setSnack({ open: true, severity: "warning", msg: "Only admins can manage SSO domains." });
-      return;
-    }
-    setNewDomain("");
-    setDomainOpen(true);
-  };
-
-  const addDomain = () => {
-    const d = newDomain.trim().toLowerCase();
-    if (!d || !d.includes(".")) {
-      setSnack({ open: true, severity: "warning", msg: "Enter a valid domain." });
-      return;
-    }
-    setOrgs((prev) =>
-      prev.map((o) => {
-        if (o.id !== org.id) return o;
-        if (o.ssoDomains.includes(d)) return o;
-        return { ...o, ssoDomains: [...o.ssoDomains, d], ssoEnabled: true };
-      })
+  if (error || !org) {
+    return (
+      <Container maxWidth="sm" sx={{ mt: 10, textAlign: 'center' }}>
+        <Alert severity="error">{error || "Organization not found"}</Alert>
+        <Button onClick={() => navigate('/app/orgs')} sx={{ mt: 2 }}>Back to Organizations</Button>
+      </Container>
     );
-    setDomainOpen(false);
-    setSnack({ open: true, severity: "success", msg: "Domain added. SSO enabled (demo)." });
-  };
+  }
 
-  const enableOrgWallet = () => {
-    if (!admin) {
-      setSnack({ open: true, severity: "warning", msg: "Only admins can enable org wallet." });
-      return;
-    }
-    setOrgs((prev) =>
-      prev.map((o) =>
-        o.id === org.id
-          ? { ...o, walletEnabled: true, currency: o.currency || "UGX", walletBalance: 0, walletMonthlyLimit: 25000000 }
-          : o
-      )
-    );
-    setSnack({ open: true, severity: "success", msg: "Org wallet enabled (demo)." });
-  };
-
-  const openFullAudit = () => {
-    setSnack({ open: true, severity: "info", msg: "Navigate to /app/orgs/audit (demo)." });
-  };
-
-  const openSsoSettings = () => {
-    setSnack({ open: true, severity: "info", msg: "Open SSO settings (demo)." });
-  };
-
-  const openMembers = () => {
-    setSnack({ open: true, severity: "info", msg: "Open members page (demo)." });
-  };
-
-  const openOrgWallet = () => {
-    setSnack({ open: true, severity: "info", msg: "Open org wallet (demo)." });
-  };
+  const admin = (org.role === "Owner" || org.role === "Admin");
 
   return (
     <>
@@ -483,31 +201,9 @@ export default function OrganizationDashboardPage() {
                   <Typography sx={{ color: "white", fontWeight: 950, letterSpacing: -0.4 }}>EV</Typography>
                 </Box>
                 <Box sx={{ minWidth: 0 }}>
-                  <Typography sx={{ fontWeight: 950, lineHeight: 1.05, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>My Accounts</Typography>
+                  <Typography sx={{ fontWeight: 950, lineHeight: 1.05, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{org.name}</Typography>
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Organization dashboard</Typography>
                 </Box>
-              </Stack>
-
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Tooltip title="Switch org">
-                  <IconButton
-                    size="small"
-                    onClick={() => setSnack({ open: true, severity: "info", msg: "Open org switcher modal or /app/orgs/switch (demo)." })}
-                    sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.30)}`, borderRadius: 12, color: EVZONE.orange, backgroundColor: alpha(theme.palette.background.paper, 0.60) }}
-                  >
-                    <SwitchIcon size={18} />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Switch to Light/Dark Mode">
-                  <IconButton size="small" onClick={toggleMode} sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.30)}`, borderRadius: "4px", color: EVZONE.orange, backgroundColor: alpha(theme.palette.background.paper, 0.60) }}>
-                    {isDark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Language">
-                  <IconButton size="small" sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.30)}`, borderRadius: 12, color: EVZONE.orange, backgroundColor: alpha(theme.palette.background.paper, 0.60) }}>
-                    <GlobeIcon size={18} />
-                  </IconButton>
-                </Tooltip>
               </Stack>
             </Stack>
           </Box>
@@ -527,9 +223,9 @@ export default function OrganizationDashboardPage() {
                       <Box sx={{ minWidth: 0 }}>
                         <Typography variant="h5" sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{org.name}</Typography>
                         <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
-                          <Chip size="small" variant="outlined" icon={<BuildingIcon size={16} />} label={org.country} sx={{ "& .MuiChip-icon": { color: "inherit" } }} />
+                          <Chip size="small" variant="outlined" icon={<Building size={16} />} label={org.country} sx={{ "& .MuiChip-icon": { color: "inherit" } }} />
                           <Chip size="small" color={admin ? "success" : "info"} label={org.role} />
-                          <Chip size="small" variant="outlined" icon={<UsersIcon size={16} />} label={`${org.membersCount} members`} sx={{ "& .MuiChip-icon": { color: "inherit" } }} />
+                          <Chip size="small" variant="outlined" icon={<Users size={16} />} label={`${org.membersCount} members`} sx={{ "& .MuiChip-icon": { color: "inherit" } }} />
                         </Stack>
                       </Box>
                     </Stack>
@@ -537,27 +233,25 @@ export default function OrganizationDashboardPage() {
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ width: { xs: "100%", md: "auto" } }}>
                       <TextField
                         select
-                        label="Organization"
-                        value={orgId}
-                        onChange={(e) => setOrgId(e.target.value)}
+                        label="Switch Organization"
+                        value={org.id}
+                        onChange={(e) => handleSwitch(e.target.value)}
                         sx={{ minWidth: { xs: "100%", sm: 280 } }}
+                        size="small"
                       >
-                        {orgs.map((o) => (
+                        {myOrgs.map((o) => (
                           <MenuItem key={o.id} value={o.id}>
-                            {o.name} ({o.role})
+                            {o.name}
                           </MenuItem>
                         ))}
                       </TextField>
-                      <Button variant="contained" color="secondary" sx={evOrangeContainedSx} startIcon={<SwitchIcon size={18} />} onClick={() => setSnack({ open: true, severity: "info", msg: "Open /app/orgs/switch (demo)." })}>
-                        Switcher
-                      </Button>
                     </Stack>
                   </Stack>
 
                   <Divider sx={{ my: 2 }} />
 
-                  <Alert severity="info" icon={<ShieldCheckIcon size={18} />}>
-                    Admin actions are audited. Sensitive settings may require re-authentication.
+                  <Alert severity="info" icon={<ShieldCheck size={18} />}>
+                    Data is now loaded directly from the backend API.
                   </Alert>
                 </CardContent>
               </Card>
@@ -569,28 +263,25 @@ export default function OrganizationDashboardPage() {
                     <Stack spacing={1.2}>
                       <Stack direction="row" spacing={1.2} alignItems="center">
                         <Box sx={{ width: 44, height: 44, borderRadius: 16, display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.18 : 0.12), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
-                          <BuildingIcon size={18} />
+                          <Building size={18} />
                         </Box>
                         <Box flex={1}>
                           <Typography sx={{ fontWeight: 950 }}>Organization profile</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Summary and admin controls.</Typography>
                         </Box>
                       </Stack>
-
                       <Divider />
-
                       <Stack spacing={0.8}>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Organization ID</Typography>
-                        <Typography sx={{ fontWeight: 900 }}>{org.id}</Typography>
+                        <Typography sx={{ fontWeight: 900, fontFamily: 'monospace' }}>{org.id}</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Created</Typography>
                         <Typography sx={{ fontWeight: 900 }}>{new Date(org.createdAt).toLocaleDateString()}</Typography>
                       </Stack>
-
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                        <Button variant="outlined" sx={{ borderColor: alpha(EVZONE.orange, 0.65), color: EVZONE.orange, "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" } }} onClick={() => setSnack({ open: true, severity: "info", msg: "Edit org profile (demo)." })}>
+                        <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => navigate(`/app/orgs/${org.id}/settings`)}>
                           Edit profile
                         </Button>
-                        <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open org settings (demo)." })}>
+                        <Button variant="contained" sx={evOrangeContainedSx} onClick={() => navigate(`/app/orgs/${org.id}/settings`)}>
                           Settings
                         </Button>
                       </Stack>
@@ -604,7 +295,7 @@ export default function OrganizationDashboardPage() {
                     <Stack spacing={1.2}>
                       <Stack direction="row" spacing={1.2} alignItems="center">
                         <Box sx={{ width: 44, height: 44, borderRadius: 16, display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.18 : 0.12), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
-                          <UsersIcon size={18} />
+                          <Users size={18} />
                         </Box>
                         <Box flex={1}>
                           <Typography sx={{ fontWeight: 950 }}>Members</Typography>
@@ -612,27 +303,20 @@ export default function OrganizationDashboardPage() {
                         </Box>
                         <Chip size="small" color={org.pendingInvites ? "warning" : "success"} label={`${org.pendingInvites} invite(s)`} />
                       </Stack>
-
                       <Divider />
-
                       <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                        {(["Owner", "Admin", "Manager", "Member", "Viewer"] as OrgRole[]).map((r) => (
-                          <Chip key={r} size="small" variant="outlined" label={`${r}: ${org.membersByRole[r] || 0}`} />
+                        {Object.entries(org.membersByRole || {}).map(([role, count]) => (
+                          <Chip key={role} size="small" variant="outlined" label={`${role}: ${count}`} />
                         ))}
                       </Stack>
-
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                        <Button variant="contained" color="secondary" sx={evOrangeContainedSx} startIcon={<PlusIcon size={18} />} onClick={openInvite}>
+                        <Button variant="contained" sx={evOrangeContainedSx} startIcon={<Plus size={18} />} onClick={() => navigate(`/app/orgs/${org.id}/invite`)}>
                           Invite member
                         </Button>
-                        <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={openMembers}>
+                        <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => navigate(`/app/orgs/${org.id}/members`)}>
                           Manage members
                         </Button>
                       </Stack>
-
-                      {!admin ? (
-                        <Alert severity="info">You can view members, but only admins can manage roles and invitations.</Alert>
-                      ) : null}
                     </Stack>
                   </CardContent>
                 </Card>
@@ -643,7 +327,7 @@ export default function OrganizationDashboardPage() {
                     <Stack spacing={1.2}>
                       <Stack direction="row" spacing={1.2} alignItems="center">
                         <Box sx={{ width: 44, height: 44, borderRadius: 16, display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.18 : 0.12), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
-                          <KeyIcon size={18} />
+                          <Key size={18} />
                         </Box>
                         <Box flex={1}>
                           <Typography sx={{ fontWeight: 950 }}>Enterprise SSO</Typography>
@@ -651,9 +335,7 @@ export default function OrganizationDashboardPage() {
                         </Box>
                         {org.ssoEnabled ? <Chip size="small" color="success" label="Enabled" /> : <Chip size="small" variant="outlined" label="Disabled" />}
                       </Stack>
-
                       <Divider />
-
                       {org.ssoEnabled ? (
                         <Stack spacing={1}>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Domains</Typography>
@@ -662,14 +344,13 @@ export default function OrganizationDashboardPage() {
                           </Stack>
                         </Stack>
                       ) : (
-                        <Alert severity="info">SSO is optional. Enable it for enterprise customers and staff accounts.</Alert>
+                        <Alert severity="info" sx={{ py: 0 }}>SSO is optional. Enable for enterprise.</Alert>
                       )}
-
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                        <Button variant="contained" color="secondary" sx={evOrangeContainedSx} startIcon={<PlusIcon size={18} />} onClick={openAddDomain}>
+                        <Button variant="contained" sx={evOrangeContainedSx} startIcon={<Plus size={18} />} onClick={() => navigate(`/app/orgs/${org.id}/domain-verification`)}>
                           Add domain
                         </Button>
-                        <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={openSsoSettings}>
+                        <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => navigate(`/app/orgs/${org.id}/sso`)}>
                           Configure
                         </Button>
                       </Stack>
@@ -683,7 +364,7 @@ export default function OrganizationDashboardPage() {
                     <Stack spacing={1.2}>
                       <Stack direction="row" spacing={1.2} alignItems="center">
                         <Box sx={{ width: 44, height: 44, borderRadius: 16, display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.18 : 0.12), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
-                          <WalletIcon size={18} />
+                          <Wallet size={18} />
                         </Box>
                         <Box flex={1}>
                           <Typography sx={{ fontWeight: 950 }}>Org wallet</Typography>
@@ -691,40 +372,32 @@ export default function OrganizationDashboardPage() {
                         </Box>
                         {org.walletEnabled ? <Chip size="small" color="info" label="Enabled" /> : <Chip size="small" variant="outlined" label="Disabled" />}
                       </Stack>
-
                       <Divider />
-
                       {org.walletEnabled ? (
                         <Stack spacing={1.0}>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Balance</Typography>
                           <Typography variant="h6" sx={{ fontWeight: 950 }}>{money(org.walletBalance, org.currency)}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Monthly limit</Typography>
-                          <Typography sx={{ fontWeight: 900 }}>{money(org.walletMonthlyLimit, org.currency)}</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>{money(org.walletMonthlyLimit || 25000000, org.currency)}</Typography>
                         </Stack>
                       ) : (
-                        <Alert severity="info">Enable org wallet to manage shared spend limits and payouts.</Alert>
+                        <Alert severity="info" sx={{ py: 0 }}>Enable org wallet to manage shared spend limits.</Alert>
                       )}
 
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                         {org.walletEnabled ? (
-                          <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={openOrgWallet}>
-                            Open wallet
-                          </Button>
+                          <Button variant="contained" sx={evOrangeContainedSx} onClick={() => navigate(`/app/wallet`)}>Open wallet</Button>
                         ) : (
-                          <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={enableOrgWallet}>
-                            Enable org wallet
-                          </Button>
+                          <Button variant="contained" sx={evOrangeContainedSx} onClick={enableOrgWallet}>Enable org wallet</Button>
                         )}
-                        <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Open wallet policies (demo)." })}>
-                          Policies
-                        </Button>
+                        <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => navigate(`/app/orgs/${org.id}/settings`)}>Policies</Button>
                       </Stack>
                     </Stack>
                   </CardContent>
                 </Card>
               </Box>
 
-              {/* Audit highlights */}
+              {/* Audit highlights details */}
               <Card>
                 <CardContent className="p-5 md:p-7">
                   <Stack spacing={1.2}>
@@ -734,10 +407,10 @@ export default function OrganizationDashboardPage() {
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Recent admin actions and security events.</Typography>
                       </Box>
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                        <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<ActivityIcon size={18} />} onClick={openFullAudit}>
+                        <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<Activity size={18} />} onClick={() => navigate(`/app/orgs/${org.id}/audit`)}>
                           View full audit
                         </Button>
-                        <Button variant="contained" color="secondary" sx={evOrangeContainedSx} startIcon={<ShieldCheckIcon size={18} />} onClick={() => setSnack({ open: true, severity: "info", msg: "Export audit report (demo)." })}>
+                        <Button variant="contained" sx={evOrangeContainedSx} startIcon={<ShieldCheck size={18} />} onClick={() => { }}>
                           Export
                         </Button>
                       </Stack>
@@ -746,98 +419,41 @@ export default function OrganizationDashboardPage() {
                     <Divider />
 
                     <Box className="grid gap-3 md:grid-cols-2">
-                      {org.auditHighlights.map((a) => (
-                        <Box key={a.id} sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
-                          <Stack spacing={0.8}>
-                            <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
-                              <Chip size="small" color={auditColor(a.severity)} label={a.severity.toUpperCase()} />
-                              <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{timeAgo(a.when)}</Typography>
+                      {org.auditHighlights && org.auditHighlights.length > 0 ? (
+                        org.auditHighlights.map((log) => (
+                          <Box key={log.id} sx={{ borderRadius: 4, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
+                            <Stack spacing={0.8}>
+                              <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
+                                {/* Mapping backend severity to reference UI colors if needed, but using chip directly */}
+                                <Chip size="small" color={log.severity === 'critical' ? 'critical' as any : log.severity === 'warning' ? 'warning' : 'info'} label={log.severity.toUpperCase()} />
+                                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{timeAgo(log.when)}</Typography>
+                              </Stack>
+                              <Typography sx={{ fontWeight: 950 }}>{log.action}</Typography>
+                              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Actor: {log.actor}</Typography>
                             </Stack>
-                            <Typography sx={{ fontWeight: 950 }}>{a.action}</Typography>
-                            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Actor: {a.actor}</Typography>
-                          </Stack>
-                        </Box>
-                      ))}
+                          </Box>
+                        ))
+                      ) : (
+                        <Typography variant="body2" color="text.secondary" align="center">No recent audit events.</Typography>
+                      )}
                     </Box>
-
-                    {admin ? (
-                      <Alert severity="info" icon={<ShieldCheckIcon size={18} />}>
-                        Tip: Review audit events weekly for compliance and fraud prevention.
-                      </Alert>
-                    ) : (
-                      <Alert severity="info">Only admins can view full audit logs.</Alert>
-                    )}
                   </Stack>
                 </CardContent>
               </Card>
-
-              {/* Mobile footer actions */}
-              <Box className="md:hidden" sx={{ position: "sticky", bottom: 12 }}>
-                <Card sx={{ borderRadius: 999, backgroundColor: alpha(theme.palette.background.paper, 0.85), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backdropFilter: "blur(10px)" }}>
-                  <CardContent sx={{ py: 1.1, px: 1.2 }}>
-                    <Stack direction="row" spacing={1}>
-                      <Button fullWidth variant="outlined" sx={evOrangeOutlinedSx} onClick={openMembers} startIcon={<UsersIcon size={18} />}>
-                        Members
-                      </Button>
-                      <Button fullWidth variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={openInvite} startIcon={<PlusIcon size={18} />}>
-                        Invite
-                      </Button>
-                    </Stack>
-                  </CardContent>
-                </Card>
-              </Box>
-
-              <Box sx={{ opacity: 0.92 }}>
-                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group.</Typography>
-              </Box>
             </Stack>
+            <Snackbar
+              open={snack.open}
+              autoHideDuration={4000}
+              onClose={() => setSnack({ ...snack, open: false })}
+              anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            >
+              <Alert onClose={() => setSnack({ ...snack, open: false })} severity={snack.severity as any} sx={{ width: '100%' }}>
+                {snack.msg}
+              </Alert>
+            </Snackbar>
           </motion.div>
         </Box>
-
-        {/* Invite dialog */}
-        <Dialog open={inviteOpen} onClose={() => setInviteOpen(false)} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: 20, border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}>
-          <DialogTitle sx={{ fontWeight: 950 }}>Invite member</DialogTitle>
-          <DialogContent>
-            <Stack spacing={1.2}>
-              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Invite a new member to this organization.</Typography>
-              <TextField value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} label="Email" placeholder="name@company.com" fullWidth InputProps={{ startAdornment: (<InputAdornment position="start"><UsersIcon size={18} /></InputAdornment>) }} />
-              <TextField select label="Role" value={inviteRole} onChange={(e) => setInviteRole(e.target.value as OrgRole)} fullWidth>
-                {(["Admin", "Manager", "Member", "Viewer"] as OrgRole[]).map((r) => (
-                  <MenuItem key={r} value={r}>{r}</MenuItem>
-                ))}
-              </TextField>
-              <Alert severity="info">Invites and role changes are recorded in audit logs.</Alert>
-            </Stack>
-          </DialogContent>
-          <DialogActions sx={{ p: 2, pt: 0 }}>
-            <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => setInviteOpen(false)}>Cancel</Button>
-            <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={submitInvite}>Send invite</Button>
-          </DialogActions>
-        </Dialog>
-
-        {/* Add domain dialog */}
-        <Dialog open={domainOpen} onClose={() => setDomainOpen(false)} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: "4px", border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}>
-          <DialogTitle sx={{ fontWeight: 950 }}>Add SSO domain</DialogTitle>
-          <DialogContent>
-            <Stack spacing={1.2}>
-              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Add a domain for enterprise sign-in.</Typography>
-              <TextField value={newDomain} onChange={(e) => setNewDomain(e.target.value)} label="Domain" placeholder="example.com" fullWidth InputProps={{ startAdornment: (<InputAdornment position="start"><KeyIcon size={18} /></InputAdornment>) }} />
-              <Alert severity="info">After adding a domain, you can configure SAML or OIDC settings.</Alert>
-            </Stack>
-          </DialogContent>
-          <DialogActions sx={{ p: 2, pt: 0 }}>
-            <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => setDomainOpen(false)}>Cancel</Button>
-            <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={addDomain}>Add</Button>
-          </DialogActions>
-        </Dialog>
-
-        {/* Snackbar */}
-        <Snackbar open={snack.open} autoHideDuration={3200} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-          <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={mode === "dark" ? "filled" : "standard"} sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
-            {snack.msg}
-          </Alert>
-        </Snackbar>
-      </Box>
-    </ >
+      </Box >
+    </>
   );
 }

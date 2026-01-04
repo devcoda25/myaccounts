@@ -461,3 +461,97 @@ export function PencilIcon({ size = 18, color }: IconProps) {
         </IconBase>
     );
 }
+
+export function SearchIcon({ size = 18, color }: IconProps) {
+    return (
+        <IconBase size={size} color={color}>
+            <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
+            <path d="M20 20l-3-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </IconBase>
+    );
+}
+
+export function UploadIcon({ size = 18, color }: IconProps) {
+    return (
+        <IconBase size={size} color={color}>
+            <path d="M12 16V4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M8 8l4-4 4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M4 20h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </IconBase>
+    );
+}
+
+export function LifeBuoyIcon({ size = 18, color }: IconProps) {
+    return (
+        <IconBase size={size} color={color}>
+            <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
+            <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
+            <path d="M6.6 6.6l2.1 2.1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M17.4 17.4l-2.1-2.1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M17.4 6.6l-2.1 2.1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path d="M6.6 17.4l2.1-2.1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </IconBase>
+    );
+}
+
+export function PlusIcon({ size = 18, color }: IconProps) {
+    return (
+        <IconBase size={size} color={color}>
+            <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </IconBase>
+    );
+}
+
+export function EditIcon({ size = 18, color }: IconProps) {
+    return (
+        <IconBase size={size} color={color}>
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </IconBase>
+    );
+}
+
+export function TrashIcon({ size = 18, color }: IconProps) {
+    return (
+        <IconBase size={size} color={color}>
+            <polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </IconBase>
+    );
+}
+
+export function CheckIcon({ size = 18, color }: IconProps) {
+    return (
+        <IconBase size={size} color={color}>
+            <polyline points="20 6 9 17 4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </IconBase>
+    );
+}
+
+export function StarIcon({ size = 18, color }: IconProps) {
+    return (
+        <IconBase size={size} color={color}>
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </IconBase>
+    );
+}
+
+export function AlertTriangleIcon({ size = 18, color }: IconProps) {
+    return (
+        <IconBase size={size} color={color}>
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </IconBase>
+    );
+}
+
+export function SaveIcon({ size = 18, color }: IconProps) {
+    return (
+        <IconBase size={size} color={color}>
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v13a2 2 0 0 1-2 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <polyline points="17 21 17 13 7 13 7 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <polyline points="7 3 7 8 15 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </IconBase>
+    );
+}

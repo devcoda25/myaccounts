@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography, Stack, Button, Dialog, DialogTitle, DialogContent, DialogActions, Divider, Alert, useTheme, alpha } from '@mui/material';
 import { Shield as ShieldIcon } from 'lucide-react';
-import { useThemeContext } from '../../../../../theme/ThemeContext';
+import { useThemeStore } from "../../../../../stores/themeStore";
 import { GuardianContext } from '../../types';
 import { getStyles } from '../../styles';
 
@@ -16,7 +16,7 @@ interface ContextSwitcherProps {
 
 export default function ContextSwitcher({ open, setOpen, contexts, activeContextId, setActiveContextId, setSnack }: ContextSwitcherProps) {
     const theme = useTheme();
-    const { mode } = useThemeContext();
+    const { mode } = useThemeStore();
     const { evOrangeContainedSx, evOrangeOutlinedSx, dialogPaperSx, EVZONE } = getStyles(theme, mode);
 
     return (
@@ -32,7 +32,7 @@ export default function ContextSwitcher({ open, setOpen, contexts, activeContext
                         {contexts.map((c) => {
                             const active = c.id === activeContextId;
                             return (
-                                <Box key={c.id} sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: active ? alpha(EVZONE.orange, 0.10) : alpha(theme.palette.background.paper, 0.45), p: 1.2 }}>
+                                <Box key={c.id} sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)} `, backgroundColor: active ? alpha(EVZONE.orange, 0.10) : alpha(theme.palette.background.paper, 0.45), p: 1.2 }}>
                                     <Stack direction="row" spacing={1.2} alignItems="center" justifyContent="space-between">
                                         <Box>
                                             <Typography sx={{ fontWeight: 950 }}>{c.label}</Typography>

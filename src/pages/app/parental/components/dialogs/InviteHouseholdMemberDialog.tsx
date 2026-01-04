@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Typography, Stack, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Divider, FormControlLabel, Switch, Alert, useTheme } from '@mui/material';
 import { Shield as ShieldIcon } from 'lucide-react';
-import { useThemeContext } from '../../../../../theme/ThemeContext';
+import { useThemeStore } from "../../../../../stores/themeStore";
 import { getStyles } from '../../styles';
 import { HouseholdRole, Channel } from '../../types';
 
@@ -14,7 +14,7 @@ interface InviteHouseholdMemberDialogProps {
 
 export default function InviteHouseholdMemberDialog({ open, setOpen, role, onSend }: InviteHouseholdMemberDialogProps) {
     const theme = useTheme();
-    const { mode } = useThemeContext();
+    const { mode } = useThemeStore();
     const { evOrangeContainedSx, evOrangeOutlinedSx, dialogPaperSx } = getStyles(theme, mode);
 
     const [inviteName, setInviteName] = useState("");

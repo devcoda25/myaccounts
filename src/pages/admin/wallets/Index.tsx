@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Pagination from "../../../components/common/Pagination";
 import {
     Box,
@@ -22,7 +22,9 @@ import {
     useTheme,
     Paper,
     Divider,
-    Alert
+    Alert,
+    CircularProgress,
+    Snackbar
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import {
@@ -36,9 +38,11 @@ import {
     Activity,
     CreditCard,
     DollarSign,
-    MoreHorizontal
+    MoreHorizontal,
+    RefreshCw
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { api } from "../../../utils/api";
 
 const EVZONE = { green: "#03cd8c", orange: "#f77f00", red: "#d32f2f" } as const;
 
@@ -56,16 +60,10 @@ interface WalletRow {
     riskScore: "Low" | "Medium" | "High";
 }
 
-// Mock Data
-function mkWallets(): WalletRow[] {
-    const now = Date.now();
-    return [
-        { id: "w_8823_x99", ownerName: "Ronald Isabirye", ownerEmail: "ronald@example.com", balance: 1250000, currency: "UGX", status: "Active", lastTx: now - 1000 * 60 * 5, riskScore: "Low" },
-        { id: "w_1102_a22", ownerName: "Mary I. Naiga", ownerEmail: "mary@example.com", balance: 45000, currency: "UGX", status: "Active", lastTx: now - 1000 * 60 * 60 * 2, riskScore: "Low" },
-        { id: "w_9912_b33", ownerName: "Mark Kasibante", ownerEmail: "mark@example.com", balance: 0, currency: "UGX", status: "Frozen", lastTx: now - 1000 * 60 * 60 * 24 * 5, riskScore: "High" },
-        { id: "w_7721_c44", ownerName: "EV Operator Ltd", ownerEmail: "finance@evop.com", balance: 15400.50, currency: "USD", status: "Active", lastTx: now - 1000 * 60 * 30, riskScore: "Medium" },
-        { id: "w_3321_d55", ownerName: "John Doe", ownerEmail: "john@example.com", balance: 200, currency: "UGX", status: "Suspended", lastTx: now - 1000 * 60 * 60 * 24 * 10, riskScore: "Medium" },
-    ];
+interface WalletStats {
+    totalUGX: number;
+    totalUSD: number;
+    frozenCount: number;
 }
 
 export default function WalletsList() {
@@ -75,27 +73,49 @@ export default function WalletsList() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [statusFilter, setStatusFilter] = useState<WalletStatus | "All">("All");
-    const [wallets, setWallets] = useState<WalletRow[]>(mkWallets);
 
-    const stats = useMemo(() => {
-        const totalUGX = wallets.filter(w => w.currency === 'UGX').reduce((acc, w) => acc + w.balance, 0);
-        const totalUSD = wallets.filter(w => w.currency === 'USD').reduce((acc, w) => acc + w.balance, 0);
-        const frozenCount = wallets.filter(w => w.status === 'Frozen').length;
-        return { totalUGX, totalUSD, frozenCount };
-    }, [wallets]);
+    const [wallets, setWallets] = useState<WalletRow[]>([]);
+    const [total, setTotal] = useState(0);
+    const [stats, setStats] = useState<WalletStats>({ totalUGX: 0, totalUSD: 0, frozenCount: 0 });
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [snack, setSnack] = useState({ open: false, msg: "" });
 
-    const filtered = useMemo(() => {
-        const s = q.trim().toLowerCase();
-        return wallets.filter(w => {
-            if (statusFilter !== "All" && w.status !== statusFilter) return false;
-            if (!s) return true;
-            return (
-                w.ownerName.toLowerCase().includes(s) ||
-                w.ownerEmail.toLowerCase().includes(s) ||
-                w.id.toLowerCase().includes(s)
-            );
-        });
-    }, [wallets, q, statusFilter]);
+    const fetchData = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const [walletData, statsData] = await Promise.all([
+                api(`/admin/wallets?skip=${page * rowsPerPage}&take=${rowsPerPage}&query=${q}&status=${statusFilter}`),
+                api('/admin/wallets/stats')
+            ]);
+            setWallets(walletData.wallets);
+            setTotal(walletData.total);
+            setStats(statsData);
+        } catch (err: any) {
+            setError(err.message || "Failed to fetch wallets");
+        } finally {
+            setLoading(false);
+        }
+    }, [page, rowsPerPage, q, statusFilter]);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+
+    const toggleWalletStatus = async (id: string, currentStatus: WalletStatus) => {
+        const action = currentStatus === 'Active' ? 'FREEZE' : 'UNFREEZE';
+        try {
+            await api(`/admin/wallets/${id}/status`, {
+                method: 'POST',
+                body: JSON.stringify({ action })
+            });
+            setSnack({ open: true, msg: `Wallet ${action.toLowerCase()}d successfully` });
+            fetchData();
+        } catch (err: any) {
+            setSnack({ open: true, msg: err.message || "Failed to update wallet status" });
+        }
+    };
 
     const statusColor = (s: WalletStatus) => {
         if (s === "Active") return EVZONE.green;
@@ -104,8 +124,9 @@ export default function WalletsList() {
     };
 
     const riskColor = (r: string) => {
-        if (r === "High") return EVZONE.red;
-        if (r === "Medium") return EVZONE.orange;
+        const score = r?.toLowerCase();
+        if (score === "high") return EVZONE.red;
+        if (score === "medium") return EVZONE.orange;
         return EVZONE.green;
     };
 
@@ -166,12 +187,24 @@ export default function WalletsList() {
     return (
         <Box>
             {/* Header */}
-            <Box sx={{ mb: 4 }}>
-                <Typography variant="h4" fontWeight={800} gutterBottom>Wallets Management</Typography>
-                <Typography variant="body1" color="text.secondary">
-                    View total liquidity, manage frozen accounts, and audit wallet balances.
-                </Typography>
+            <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <Box>
+                    <Typography variant="h4" fontWeight={800} gutterBottom>Wallets Management</Typography>
+                    <Typography variant="body1" color="text.secondary">
+                        View total liquidity, manage frozen accounts, and audit wallet balances.
+                    </Typography>
+                </Box>
+                <IconButton onClick={fetchData} disabled={loading} color="primary" sx={{ bgcolor: alpha(theme.palette.primary.main, 0.1) }}>
+                    <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
+                </IconButton>
             </Box>
+
+            {/* Error State */}
+            {error && (
+                <Alert severity="error" sx={{ mb: 4, borderRadius: '12px' }} onClose={() => setError(null)}>
+                    {error}
+                </Alert>
+            )}
 
             {/* Stats Overview */}
             <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -220,7 +253,10 @@ export default function WalletsList() {
                                 fullWidth
                                 placeholder="Search by name, email, or wallet ID..."
                                 value={q}
-                                onChange={(e) => setQ(e.target.value)}
+                                onChange={(e) => {
+                                    setQ(e.target.value);
+                                    setPage(0);
+                                }}
                                 InputProps={{
                                     startAdornment: <InputAdornment position="start"><SearchIcon size={18} /></InputAdornment>,
                                     sx: { borderRadius: '10px' }
@@ -234,7 +270,10 @@ export default function WalletsList() {
                                 fullWidth
                                 label="Status"
                                 value={statusFilter}
-                                onChange={(e) => setStatusFilter(e.target.value as any)}
+                                onChange={(e) => {
+                                    setStatusFilter(e.target.value as any);
+                                    setPage(0);
+                                }}
                                 size="small"
                                 InputProps={{ sx: { borderRadius: '10px' } }}
                             >
@@ -253,7 +292,18 @@ export default function WalletsList() {
                 </Box>
 
                 {/* Data Table */}
-                <TableContainer>
+                <TableContainer sx={{ minHeight: 400, position: 'relative' }}>
+                    {loading && (
+                        <Box sx={{
+                            position: 'absolute',
+                            top: 0, left: 0, right: 0, bottom: 0,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            bgcolor: alpha(theme.palette.background.paper, 0.4),
+                            zIndex: 1
+                        }}>
+                            <CircularProgress size={40} thickness={4} />
+                        </Box>
+                    )}
                     <Table>
                         <TableHead sx={{ bgcolor: alpha(theme.palette.background.default, 0.5) }}>
                             <TableRow>
@@ -266,50 +316,48 @@ export default function WalletsList() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filtered
-                                .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
-                                .map((w) => (
-                                    <TableRow key={w.id} hover>
-                                        <TableCell sx={{ fontFamily: 'monospace', color: 'text.secondary' }}>{w.id}</TableCell>
-                                        <TableCell>
-                                            <Stack>
-                                                <Typography variant="subtitle2" fontWeight={600}>{w.ownerName}</Typography>
-                                                <Typography variant="caption" color="text.secondary">{w.ownerEmail}</Typography>
-                                            </Stack>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Typography variant="subtitle2" fontWeight={700}>
-                                                {formatCurrency(w.balance, w.currency)}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell>
-                                            <StatusChip status={w.status} />
-                                        </TableCell>
-                                        <TableCell>
-                                            <ArrowUpRight size={16} color={riskColor(w.riskScore)} style={{ display: 'inline', marginRight: 4 }} />
-                                            <Typography variant="caption" fontWeight={600} color={riskColor(w.riskScore)}>
-                                                {w.riskScore}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell align="right">
-                                            <Stack direction="row" justifyContent="flex-end" spacing={1}>
-                                                <IconButton size="small" onClick={() => navigate(`/admin/transactions?wallet=${w.id}`)}>
-                                                    <Activity size={18} />
+                            {wallets.map((w) => (
+                                <TableRow key={w.id} hover>
+                                    <TableCell sx={{ fontFamily: 'monospace', color: 'text.secondary', fontSize: '0.8rem' }}>{w.id}</TableCell>
+                                    <TableCell>
+                                        <Stack>
+                                            <Typography variant="subtitle2" fontWeight={600}>{w.ownerName}</Typography>
+                                            <Typography variant="caption" color="text.secondary">{w.ownerEmail}</Typography>
+                                        </Stack>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography variant="subtitle2" fontWeight={700}>
+                                            {formatCurrency(w.balance, w.currency)}
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <StatusChip status={w.status} />
+                                    </TableCell>
+                                    <TableCell>
+                                        <ArrowUpRight size={16} color={riskColor(w.riskScore)} style={{ display: 'inline', marginRight: 4 }} />
+                                        <Typography variant="caption" fontWeight={600} color={riskColor(w.riskScore)}>
+                                            {w.riskScore}
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <Stack direction="row" justifyContent="flex-end" spacing={1}>
+                                            <IconButton size="small" onClick={() => navigate(`/admin/transactions?wallet=${w.id}`)}>
+                                                <Activity size={18} />
+                                            </IconButton>
+                                            {w.status === 'Active' ? (
+                                                <IconButton size="small" color="error" onClick={() => toggleWalletStatus(w.id, w.status)}>
+                                                    <LockIcon size={18} />
                                                 </IconButton>
-                                                {w.status === 'Active' ? (
-                                                    <IconButton size="small" color="error">
-                                                        <LockIcon size={18} />
-                                                    </IconButton>
-                                                ) : (
-                                                    <IconButton size="small" color="success">
-                                                        <UnlockIcon size={18} />
-                                                    </IconButton>
-                                                )}
-                                            </Stack>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            {filtered.length === 0 && (
+                                            ) : (
+                                                <IconButton size="small" color="success" onClick={() => toggleWalletStatus(w.id, w.status)}>
+                                                    <UnlockIcon size={18} />
+                                                </IconButton>
+                                            )}
+                                        </Stack>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                            {!loading && wallets.length === 0 && (
                                 <TableRow>
                                     <TableCell colSpan={6} align="center" sx={{ py: 8 }}>
                                         <Typography variant="body1" color="text.secondary">
@@ -325,7 +373,7 @@ export default function WalletsList() {
                 <Box sx={{ p: 2, borderTop: `1px solid ${theme.palette.divider}` }}>
                     <Pagination
                         page={page}
-                        count={filtered.length}
+                        count={total}
                         rowsPerPage={rowsPerPage}
                         onPageChange={setPage}
                         onRowsPerPageChange={(n) => {
@@ -335,6 +383,13 @@ export default function WalletsList() {
                     />
                 </Box>
             </Paper>
+
+            <Snackbar
+                open={snack.open}
+                autoHideDuration={4000}
+                onClose={() => setSnack({ ...snack, open: false })}
+                message={snack.msg}
+            />
         </Box>
     );
 }

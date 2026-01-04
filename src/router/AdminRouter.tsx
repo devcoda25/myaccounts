@@ -9,13 +9,14 @@ const UserDetail = React.lazy(() => import('../pages/admin/users/UserDetail'));
 const UserSessions = React.lazy(() => import('../pages/admin/users/UserSessions'));
 const WalletsList = React.lazy(() => import('../pages/admin/wallets/Index'));
 const TransactionsList = React.lazy(() => import('../pages/admin/transactions/Index'));
+const DisputesList = React.lazy(() => import('../pages/admin/disputes/Index'));
 const AuditLogs = React.lazy(() => import('../pages/admin/audit/Index'));
 const Administrators = React.lazy(() => import('../pages/admin/administrators/Index'));
 const AdminProfile = React.lazy(() => import('../pages/admin/profile/Index'));
 const KycQueue = React.lazy(() => import('../pages/admin/kyc/Index'));
 const OrgsList = React.lazy(() => import('../pages/admin/orgs/Index'));
 const OrgDetail = React.lazy(() => import('../pages/admin/orgs/OrgDetail'));
-const Status = React.lazy(() => import('../pages/status/Index'));
+const Status = React.lazy(() => import('../pages/app/status/Index'));
 
 export default function AdminRouter() {
     return (
@@ -28,6 +29,7 @@ export default function AdminRouter() {
                 <Route path="users/:userId/sessions" element={<UserSessions />} />
                 <Route path="wallets" element={<WalletsList />} />
                 <Route path="transactions" element={<TransactionsList />} />
+                <Route path="disputes" element={<DisputesList />} />
                 <Route path="audit" element={<AuditLogs />} />
                 <Route path="administrators" element={<Administrators />} />
                 <Route path="kyc" element={<KycQueue />} />

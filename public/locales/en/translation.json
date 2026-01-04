@@ -3,6 +3,7 @@
   "auth": {
     "terms": "Terms",
     "privacy": "Privacy",
+    "sign_out": "Sign out",
     "choose_account": {
       "title": "Choose an account",
       "subtitle": "Select a recent account on this device. Or sign in with another account.",
@@ -46,6 +47,7 @@
       "demo_login": "Demo login: {{email}} with password {{password}}",
       "form_title": "Sign in",
       "form_subtitle": "Use passkey, Google/Apple, or email/phone and password.",
+      "loading": "Loading...",
       "continue_google": "Continue with Google",
       "continue_apple": "Continue with Apple",
       "continue_passkey": "Continue with Passkey",

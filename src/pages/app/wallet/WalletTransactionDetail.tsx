@@ -14,6 +14,7 @@ import {
     Avatar
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
+import { useThemeStore } from "../../../stores/themeStore";
 import { motion } from 'framer-motion';
 import { ArrowLeft, CheckCircle2, Share2, AlertTriangle, Download, Clock, CreditCard } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -43,6 +44,7 @@ export default function WalletTransactionDetail() {
     const navigate = useNavigate();
     const { id } = useParams();
     const theme = useTheme();
+    const { mode } = useThemeStore();
 
     const containerVars = {
         hidden: { opacity: 0 },

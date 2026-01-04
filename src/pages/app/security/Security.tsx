@@ -24,8 +24,9 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
+import { api } from "../../../utils/api";
 
 /**
  * EVzone My Accounts - Security Overview
@@ -187,12 +188,8 @@ function timeAgo(ts: number) {
 
 export default function SecurityOverviewPage() {
   const theme = useTheme();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const isDark = mode === "dark";
-
-  const [role, setRole] = useState<RoleMode>("User");
-
-  const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
   const pageBg =
     mode === "dark"
@@ -214,36 +211,41 @@ export default function SecurityOverviewPage() {
     "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
   } as const;
 
-  // toggleMode removed as it is in AppHeader now
 
-  // Simulated status per role
-  const password = {
-    lastChangedDays: role === "Provider" ? 12 : 35,
-    strength: role === "Provider" ? 4 : 3, // 1..5
-    compromised: false,
-  };
+  // API Data State
+  const [data, setData] = useState<any>(null);
+  const [sessions, setSessions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
-  const mfa = {
-    enabled: role === "Provider" ? true : false,
-    methods: role === "Provider" ? ["Authenticator", "SMS", "WhatsApp"] : ["Email"],
-    recoveryCodesRemaining: role === "Provider" ? 8 : 0,
-  };
 
-  const passkeys = {
-    enabled: false,
-    count: 0,
-  };
+  useEffect(() => {
+    Promise.all([
+      api("/security/overview").catch(() => null),
+      api("/auth/sessions").catch(() => [])
+    ]).then(([overviewData, sessionsData]) => {
+      setData(overviewData);
+      setSessions(Array.isArray(sessionsData) ? sessionsData : []);
+      setLoading(false);
+    });
+  }, []);
 
-  const recovery = {
-    verifiedEmails: role === "Provider" ? 2 : 1,
-    verifiedPhones: role === "Provider" ? 2 : 1,
-  };
+  // Computed from API data or defaults
+  const password = data?.password || { lastChangedDays: 0, strength: 0, compromised: false };
+  const mfa = data?.mfa || { enabled: false, methods: [], recoveryCodesRemaining: 0 };
+  const passkeys = data?.passkeys || { enabled: false, count: 0 };
+  const recovery = data?.recovery || { verifiedEmails: 0, verifiedPhones: 0 };
 
-  const devices = [
-    { id: "d1", when: Date.now() - 1000 * 60 * 18, device: "Chrome on Windows", location: "Kampala, UG", status: "trusted" as const },
-    { id: "d2", when: Date.now() - 1000 * 60 * 60 * 7, device: "EVzone Android App", location: "Entebbe, UG", status: "trusted" as const },
-    { id: "d3", when: Date.now() - 1000 * 60 * 60 * 28, device: "Unknown device", location: "Nairobi, KE", status: "blocked" as const },
-  ];
+  // Map sessions to devices list (top 3)
+  const devices = useMemo(() => {
+    return sessions.slice(0, 3).map((s: any) => ({
+      id: s.id,
+      when: new Date(s.lastUsedAt).getTime(),
+      device: s.deviceInfo?.device || "Unknown Device",
+      location: s.deviceInfo?.location || "Unknown Location",
+      status: "trusted" as const
+    }));
+  }, [sessions]);
 
   const passwordStrengthLabel = password.strength <= 2 ? "Weak" : password.strength === 3 ? "Good" : password.strength === 4 ? "Strong" : "Very strong";
 
@@ -546,10 +548,10 @@ export default function SecurityOverviewPage() {
                   </List>
 
                   <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                    <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Sign out other devices (demo)." })}>
-                      Sign out other devices
+                    <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={() => navigate("/app/security/sessions")}>
+                      Manage sessions
                     </Button>
-                    <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => setSnack({ open: true, severity: "info", msg: "Export security report (demo)." })}>
+                    <Button variant="outlined" sx={evOrangeOutlinedSx} disabled>
                       Export report
                     </Button>
                   </Stack>

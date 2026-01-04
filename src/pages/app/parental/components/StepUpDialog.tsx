@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography, Stack, Button, Dialog, DialogTitle, DialogContent, DialogActions, useTheme } from '@mui/material';
 import { getStyles } from '../styles';
-import { useThemeContext } from '../../../../theme/ThemeContext';
+import { useThemeStore } from "../../../../stores/themeStore";
 
 interface StepUpDialogProps {
     open: boolean;
@@ -13,7 +13,7 @@ interface StepUpDialogProps {
 
 export default function StepUpDialog({ open, title, subtitle, onCancel, onVerified }: StepUpDialogProps) {
     const theme = useTheme();
-    const { mode } = useThemeContext();
+    const { mode } = useThemeStore();
     const { evOrangeContainedSx, evOrangeOutlinedSx, dialogPaperSx } = getStyles(theme, mode);
 
     return (

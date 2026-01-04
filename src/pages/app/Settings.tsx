@@ -28,8 +28,9 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { useThemeContext } from "../../theme/ThemeContext";
+import { useThemeStore } from "../../stores/themeStore";
 import { EVZONE } from "../../theme/evzone";
+import { api } from "../../utils/api";
 
 function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
     return (
@@ -51,7 +52,7 @@ function IconBase({ size = 18, children }: { size?: number; children: React.Reac
 export default function SettingsPage() {
     const navigate = useNavigate();
     const theme = useTheme();
-    const { mode, toggleMode } = useThemeContext();
+    const { mode, toggleMode } = useThemeStore();
     const isDark = mode === "dark";
 
     const pageBg =
@@ -113,7 +114,15 @@ export default function SettingsPage() {
                     label: "Appearance",
                     desc: isDark ? "Dark mode is on" : "Light mode is on",
                     icon: isDark ? <Moon size={20} /> : <Sun size={20} />,
-                    onClick: toggleMode,
+                    onClick: () => {
+                        toggleMode();
+                        // Sync theme preference
+                        const newMode = isDark ? "light" : "dark";
+                        api("/users/me/settings", {
+                            method: "PATCH",
+                            body: JSON.stringify({ theme: newMode })
+                        }).catch(console.error);
+                    },
                     action: (
                         <Box
                             sx={{

@@ -25,7 +25,7 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
 
 /**
@@ -223,11 +223,10 @@ function makeOrgId(name: string) {
 
 // Self-tests removed
 
-export default function OrgSwitcherPage() {
-  // const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
-  // const theme = useMemo(() => buildTheme(mode), [mode]);
+export default function SwitchOrgPage() {
+  const navigate = useNavigate();
   const theme = useTheme();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const isDark = mode === "dark";
 
   const [remember, setRemember] = useState<boolean>(() => getStoredRemember());

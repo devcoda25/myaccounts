@@ -25,8 +25,22 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
+import {
+  ChevronDownIcon,
+  GlobeIcon,
+  HelpCircleIcon,
+  KeyIcon,
+  LifeBuoyIcon,
+  MailIcon,
+  MoonIcon,
+  SearchIcon,
+  ShieldIcon,
+  SunIcon,
+  UploadIcon,
+  WalletIcon,
+} from "../../../utils/icons";
 
 /**
  * EVzone My Accounts - Help & Support Center
@@ -64,130 +78,7 @@ type FaqItem = {
 type Attachment = { id: string; name: string; size: number; type: string };
 
 
-// -----------------------------
-// Inline icons
-// -----------------------------
-function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{ display: "block" }}>
-      {children}
-    </svg>
-  );
-}
 
-function SunIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
-      <path d="M12 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 12H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M22 12h-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function MoonIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M21 13a8 8 0 0 1-10-10 7.5 7.5 0 1 0 10 10Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function GlobeIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function HelpCircleIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M9.5 9a2.5 2.5 0 1 1 3.2 2.4c-.9.3-1.2.8-1.2 1.6v.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 17h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function SearchIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
-      <path d="M20 20l-3-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function ChevronDownIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function MailIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <rect x="4" y="6" width="16" height="12" rx="2" stroke="currentColor" strokeWidth="2" />
-      <path d="M4 8l8 6 8-6" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function UploadIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M12 16V4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M8 8l4-4 4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M4 20h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function ShieldIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function WalletIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M3 7h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-      <path d="M17 11h4v6h-4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-      <path d="M7 7V5a2 2 0 0 1 2-2h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function KeyIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M7 14a5 5 0 1 1 3.6-8.5L22 5v4l-3 1v3l-3 1v3h-4l-1.4-1.4A5 5 0 0 1 7 14Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function LifeBuoyIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
-      <path d="M6.6 6.6l2.1 2.1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M17.4 17.4l-2.1-2.1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M17.4 6.6l-2.1 2.1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M6.6 17.4l2.1-2.1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
 
 // -----------------------------
 // Helpers
@@ -206,7 +97,7 @@ function mkId(prefix: string) {
 
 export default function SupportCenterPage() {
   const navigate = useNavigate();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const theme = useTheme();
 
   const [tab, setTab] = useState<0 | 1 | 2>(0);
@@ -314,10 +205,21 @@ export default function SupportCenterPage() {
       setSnack({ open: true, severity: "warning", msg: "Please include details (at least 10 characters)." });
       return;
     }
-    setSnack({ open: true, severity: "success", msg: "Support request submitted (demo)." });
-    setSubject("");
-    setMessage("");
-    setAttachments([]);
+
+    // Simulate API call
+    setSnack({ open: true, severity: "info", msg: "Submitting..." });
+
+    setTimeout(() => {
+      setSnack({ open: true, severity: "success", msg: "Support request submitted successfully. We will contact you shortly." });
+      setSubject("");
+      setMessage("");
+      setAttachments([]);
+
+      // Navigate to dashboard after short delay
+      setTimeout(() => {
+        navigate("/app");
+      }, 1500);
+    }, 1000);
   };
 
   const QuickLink = ({ icon, title, desc, route }: { icon: React.ReactNode; title: string; desc: string; route: string }) => (

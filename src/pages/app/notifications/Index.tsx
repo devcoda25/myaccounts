@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
 
 /**
@@ -184,7 +184,7 @@ function countEnabled(c: Channels) {
 }
 
 export default function NotificationPreferencesPage() {
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const theme = useTheme();
   const isDark = mode === "dark";
 

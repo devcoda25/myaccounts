@@ -23,7 +23,7 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 
 /**
  * EVzone My Accounts - Developer Documentation
@@ -141,7 +141,7 @@ const CodeBlock = ({ code, language }: { code: string; language: string }) => {
 // -----------------------------
 export default function DeveloperDocsPage() {
     const navigate = useNavigate();
-    const { mode } = useThemeContext();
+    const { mode } = useThemeStore();
     const theme = useTheme();
 
     const [activeSection, setActiveSection] = useState("Introduction");

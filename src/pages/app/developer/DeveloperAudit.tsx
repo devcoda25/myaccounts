@@ -20,7 +20,8 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
+import { api } from "../../../utils/api";
 
 /**
  * EVzone My Accounts - Developer Audit Log
@@ -128,55 +129,40 @@ function formatDateTime(ts: number) {
 // -----------------------------
 export default function DeveloperAuditPage() {
     const navigate = useNavigate();
-    const { mode } = useThemeContext();
+    const { mode } = useThemeStore();
     const theme = useTheme();
 
     const [search, setSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState("All");
 
-    const [events] = useState<AuditEvent[]>(() => {
-        const now = Date.now();
-        return [
-            {
-                id: "evt_01",
-                type: "api_key.created",
-                actor: "ronald@example.com",
-                target: "Server integration",
-                ip: "197.157.10.x",
-                status: "Success",
-                timestamp: now - 1000 * 60 * 45,
-                metadata: { scopes: ["profile.read", "wallet.read"] },
-            },
-            {
-                id: "evt_02",
-                type: "oauth_client.revoked",
-                actor: "ronald@example.com",
-                target: "Partner App Alpha",
-                ip: "197.157.10.x",
-                status: "Success",
-                timestamp: now - 1000 * 60 * 60 * 3,
-            },
-            {
-                id: "evt_03",
-                type: "api_key.auth_failed",
-                actor: "API_KEY (Unknown)",
-                target: "/v1/transactions",
-                ip: "41.210.155.y",
-                status: "Failed",
-                timestamp: now - 1000 * 60 * 60 * 12,
-                metadata: { reason: "Invalid signature" },
-            },
-            {
-                id: "evt_04",
-                type: "api_key.rotated",
-                actor: "ronald@example.com",
-                target: "Mobile App Key",
-                ip: "197.157.10.x",
-                status: "Success",
-                timestamp: now - 1000 * 60 * 60 * 24,
-            },
-        ];
-    });
+    const [events, setEvents] = useState<AuditEvent[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const load = async () => {
+            try {
+                setLoading(true);
+                const data = await api('/developer/audit-logs');
+                // Map backend audit logs to frontend AuditEvent
+                const mapped = data.map((l: any) => ({
+                    id: l.id,
+                    type: l.action,
+                    actor: l.actorName || 'System',
+                    target: l.details?.target || '-',
+                    ip: l.ipAddress || 'Unknown',
+                    status: (l.details?.status as any) || 'Success',
+                    timestamp: new Date(l.createdAt).getTime(),
+                    metadata: l.details
+                }));
+                setEvents(mapped);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        load();
+    }, []);
 
     const filteredEvents = useMemo(() => {
         return events.filter((e) => {

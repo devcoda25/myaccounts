@@ -25,7 +25,7 @@ import {
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { useTheme } from "@mui/material/styles";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 import { motion } from "framer-motion";
 
 /**
@@ -244,18 +244,18 @@ function mkId(prefix: string) {
   return `${prefix}_${Math.random().toString(16).slice(2, 8)}`;
 }
 
-function providerAccent(p: Provider) {
-  if (p === "MTN MoMo") return MTN.yellow;
-  if (p === "Airtel Money") return AIRTEL.red;
-  if (p === "Bank Account") return EVZONE.green;
-  return EVZONE.orange;
+import { getProviderIcon, getProviderColor } from "../../../assets/paymentIcons";
+
+// ... (keep existing imports)
+
+function providerAccent(p: Provider | string) {
+  return getProviderColor(p);
 }
 
-function iconForType(t: MethodType) {
-  if (t === "momo") return <PhoneIcon size={18} />;
-  if (t === "bank") return <BankIcon size={18} />;
-  return <CardIcon size={18} />;
+function iconForType(t: MethodType, p: Provider | string) {
+  return getProviderIcon(p, 24);
 }
+
 
 function buildMasked(type: MethodType, provider: Provider, raw: string) {
   const v = raw.trim();
@@ -296,21 +296,18 @@ function runSelfTestsOnce() {
   }
 }
 
+import { WalletService } from "../../../services/WalletService";
+
+// ... (keep tests)
+
 export default function PaymentMethodsPage() {
   const navigate = useNavigate();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const theme = useTheme();
   const isDark = mode === "dark";
 
-  const [methods, setMethods] = useState<PaymentMethod[]>(() => {
-    const now = Date.now();
-    return [
-      { id: "pm_mtn", type: "momo", provider: "MTN MoMo", label: "Personal MoMo", masked: "MTN MoMo ••• 709", verified: true, isDefault: true, addedAt: now - 1000 * 60 * 60 * 24 * 120 },
-      { id: "pm_airtel", type: "momo", provider: "Airtel Money", label: "Work line", masked: "Airtel Money ••• 173", verified: false, isDefault: false, addedAt: now - 1000 * 60 * 60 * 24 * 20 },
-      { id: "pm_visa", type: "card", provider: "Visa", label: "Visa card", masked: "Visa •••• 4242", verified: true, isDefault: false, addedAt: now - 1000 * 60 * 60 * 24 * 35 },
-      { id: "pm_bank", type: "bank", provider: "Bank Account", label: "Stanbic", masked: "Bank Account •••• 3311", verified: true, isDefault: false, addedAt: now - 1000 * 60 * 60 * 24 * 60 },
-    ];
-  });
+  const [methods, setMethods] = useState<PaymentMethod[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [addOpen, setAddOpen] = useState(false);
   const [removeOpen, setRemoveOpen] = useState(false);
@@ -329,10 +326,33 @@ export default function PaymentMethodsPage() {
     msg: "",
   });
 
+  const fetchMethods = async () => {
+    try {
+      setLoading(true);
+      const data = await WalletService.getMethods();
+      const mapped = data.map((d: any) => ({
+        id: d.id,
+        type: d.type as MethodType,
+        provider: d.provider as Provider,
+        label: d.details?.label || "Payment method",
+        masked: d.details?.masked || "••••",
+        verified: true, // Assuming verified for now
+        isDefault: d.isDefault,
+        addedAt: new Date(d.createdAt).getTime(),
+      }));
+      setMethods(mapped);
+    } catch (err) {
+      console.error(err);
+      setSnack({ open: true, severity: "error", msg: "Failed to load methods." });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (typeof window !== "undefined") runSelfTestsOnce();
+    fetchMethods();
   }, []);
-
 
   const pageBg =
     mode === "dark"
@@ -369,14 +389,13 @@ export default function PaymentMethodsPage() {
     setAddOpen(true);
   };
 
-  const addMethod = () => {
+  const addMethod = async () => {
     const raw = newRaw.trim();
     if (!raw) {
       setSnack({ open: true, severity: "warning", msg: "Enter method details." });
       return;
     }
 
-    const id = mkId("pm");
     const masked = buildMasked(newType, newProvider, raw);
 
     if (!masked) {
@@ -384,30 +403,32 @@ export default function PaymentMethodsPage() {
       return;
     }
 
-    setMethods((prev) => {
-      const next: PaymentMethod[] = prev.map((p) => (setAsDefault ? { ...p, isDefault: false } : p));
-      next.unshift({
-        id,
+    try {
+      await WalletService.addMethod({
         type: newType,
         provider: newProvider,
-        label: newLabel.trim() || "Payment method",
-        masked,
-        verified: newType === "card" ? true : false,
-        isDefault: setAsDefault,
-        addedAt: Date.now(),
+        details: {
+          label: newLabel.trim() || undefined,
+          masked: masked, // Store the masked version for display
+          raw: raw, // note: in production, verify if we should send raw
+        }
       });
-      // Ensure one default
-      if (!next.some((m) => m.isDefault)) next[0].isDefault = true;
-      return next;
-    });
-
-    setAddOpen(false);
-    setSnack({ open: true, severity: "success", msg: "Payment method added (demo)." });
+      setSnack({ open: true, severity: "success", msg: "Payment method added." });
+      setAddOpen(false);
+      fetchMethods();
+    } catch (err) {
+      setSnack({ open: true, severity: "error", msg: "Failed to add method." });
+    }
   };
 
-  const setDefault = (id: string) => {
-    setMethods((prev) => prev.map((m) => ({ ...m, isDefault: m.id === id })));
-    setSnack({ open: true, severity: "success", msg: "Default method updated." });
+  const setDefault = async (id: string) => {
+    try {
+      await WalletService.setDefaultMethod(id);
+      setSnack({ open: true, severity: "success", msg: "Default method updated." });
+      fetchMethods();
+    } catch (err) {
+      setSnack({ open: true, severity: "error", msg: "Failed to update default." });
+    }
   };
 
   const openRemove = (id: string) => {
@@ -415,19 +436,16 @@ export default function PaymentMethodsPage() {
     setRemoveOpen(true);
   };
 
-  const remove = () => {
+  const remove = async () => {
     if (!removeId) return;
-    setMethods((prev) => {
-      const toRemove = prev.find((m) => m.id === removeId);
-      const next = prev.filter((m) => m.id !== removeId);
-      if (!next.length) return prev; // keep at least one in demo
-      if (toRemove?.isDefault) {
-        next[0] = { ...next[0], isDefault: true };
-      }
-      return next;
-    });
-    setRemoveOpen(false);
-    setSnack({ open: true, severity: "success", msg: "Payment method removed (demo)." });
+    try {
+      await WalletService.removeMethod(removeId);
+      setSnack({ open: true, severity: "success", msg: "Payment method removed." });
+      setRemoveOpen(false);
+      fetchMethods();
+    } catch (err) {
+      setSnack({ open: true, severity: "error", msg: "Failed to remove method." });
+    }
   };
 
   const providerOptions = useMemo(() => {
@@ -468,7 +486,7 @@ export default function PaymentMethodsPage() {
                   border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
                 }}
               >
-                {iconForType(m.type)}
+                {iconForType(m.type, m.provider)}
               </Box>
               <Box flex={1}>
                 <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
@@ -570,12 +588,47 @@ export default function PaymentMethodsPage() {
               </Card>
 
               <Box className="grid gap-4 md:grid-cols-2">
-                {methods
-                  .slice()
-                  .sort((a, b) => (a.isDefault ? -1 : b.isDefault ? 1 : b.addedAt - a.addedAt))
-                  .map((m) => (
-                    <MethodCard key={m.id} m={m} />
-                  ))}
+                {!loading && methods.length === 0 ? (
+                  <Box className="col-span-1 md:col-span-2">
+                    <Card sx={{ borderRadius: 4, borderStyle: 'dashed', borderColor: alpha(theme.palette.text.primary, 0.2), backgroundColor: alpha(theme.palette.background.default, 0.4) }}>
+                      <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 6, gap: 2 }}>
+                        <Box
+                          sx={{
+                            width: 64,
+                            height: 64,
+                            borderRadius: '50%',
+                            backgroundColor: alpha(EVZONE.orange, 0.1),
+                            display: 'grid',
+                            placeItems: 'center',
+                            color: EVZONE.orange,
+                            mb: 1
+                          }}
+                        >
+                          <CardIcon size={32} />
+                        </Box>
+                        <Typography variant="h6" align="center">No payment methods yet</Typography>
+                        <Typography variant="body2" color="text.secondary" align="center" sx={{ maxWidth: 400 }}>
+                          Add a payment method to easily top up your wallet and pay for services across EVzone.
+                        </Typography>
+                        <Button
+                          variant="contained"
+                          sx={{ ...greenContained, mt: 1 }}
+                          startIcon={<PlusIcon />}
+                          onClick={() => navigate("/app/wallet/payment-methods/add")}
+                        >
+                          Add Payment Method
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </Box>
+                ) : (
+                  methods
+                    .slice()
+                    .sort((a, b) => (a.isDefault ? -1 : b.isDefault ? 1 : b.addedAt - a.addedAt))
+                    .map((m) => (
+                      <MethodCard key={m.id} m={m} />
+                    ))
+                )}
               </Box>
 
               {/* Mobile sticky actions */}

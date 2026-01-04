@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Card, CardContent, Typography, Stack, Divider, Button, Chip, Alert, Switch, FormControlLabel, useTheme, alpha } from '@mui/material';
-import { useThemeContext } from '../../../../../theme/ThemeContext';
+import { useThemeStore } from "../../../../../stores/themeStore";
 import { getStyles } from '../../styles';
 import { Bell as BellIcon, Shield as ShieldIcon, School as SchoolIcon, Globe as GlobeIcon, Clock as ClockIcon, Lock as LockIcon } from 'lucide-react';
 import { displayMoney, displayTimeAgo, approvalKindChip } from '../../utils';
@@ -35,7 +35,7 @@ function InfoRow({ label, value, icon }: { label: string; value: string; icon: R
 
 export default function OverviewTab({ approvals, selectedChild, updateChild, requestStepUp, setSnack, approveRequest }: OverviewTabProps) {
     const theme = useTheme();
-    const { mode } = useThemeContext();
+    const { mode } = useThemeStore();
     const { evOrangeContainedSx, evOrangeOutlinedSx, cardSx } = getStyles(theme, mode);
 
     return (

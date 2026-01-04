@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -7,36 +7,31 @@ import {
   Card,
   CardContent,
   Chip,
-  CssBaseline,
   Divider,
-  IconButton,
-  MenuItem,
   Snackbar,
   Stack,
   Step,
   StepLabel,
   Stepper,
-  TextField,
-  Tooltip,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { useTheme } from "@mui/material/styles";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 import { motion } from "framer-motion";
+import { api } from "../../../utils/api";
 
 /**
  * EVzone My Accounts - KYC Status
  * Route: /app/wallet/kyc/status
- *
- * Features:
- * - Pending / Approved / Rejected
- * - If rejected: reasons + resubmit CTA
  */
 
 type Severity = "info" | "warning" | "error" | "success";
 
-type KycStatus = "Pending" | "Approved" | "Rejected";
+// Backend: 'Pending' | 'Verified' | 'Rejected' | 'In Review'
+// Frontend UI handles: 'Pending' | 'Approved' | 'Rejected' | 'In Review'
+type KycStatus = "Pending" | "Approved" | "Rejected" | "In Review" | "Unverified";
 
 type KycTier = "Unverified" | "Basic" | "Full";
 
@@ -44,8 +39,6 @@ const EVZONE = {
   green: "#03cd8c",
   orange: "#f77f00",
 } as const;
-
-const THEME_KEY = "evzone_myaccounts_theme";
 
 // -----------------------------
 // Inline icons
@@ -55,35 +48,6 @@ function IconBase({ size = 18, children }: { size?: number; children: React.Reac
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{ display: "block" }}>
       {children}
     </svg>
-  );
-}
-
-function SunIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
-      <path d="M12 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 12H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M22 12h-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function MoonIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M21 13a8 8 0 0 1-10-10 7.5 7.5 0 1 0 10 10Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function GlobeIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
   );
 }
 
@@ -134,17 +98,6 @@ function XCircleIcon({ size = 18 }: { size?: number }) {
   );
 }
 
-function RefreshIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M20 6v6h-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M4 18v-6h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M20 12a8 8 0 0 0-14.7-4.7L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 12a8 8 0 0 0 14.7 4.7L20 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
 function ArrowRightIcon({ size = 18 }: { size?: number }) {
   return (
     <IconBase size={size}>
@@ -159,9 +112,9 @@ function ArrowRightIcon({ size = 18 }: { size?: number }) {
 // -----------------------------
 
 function statusChip(s: KycStatus) {
-  if (s === "Approved") return <Chip size="small" color="success" label="Approved" />;
+  if (s === "Approved") return <Chip size="small" color="success" label="Verified" />;
   if (s === "Rejected") return <Chip size="small" color="error" label="Rejected" />;
-  return <Chip size="small" color="warning" label="Pending" />;
+  return <Chip size="small" color="warning" label={s} />;
 }
 
 function tierChip(t: KycTier) {
@@ -170,34 +123,50 @@ function tierChip(t: KycTier) {
   return <Chip size="small" color="error" label="Unverified" />;
 }
 
-// --- lightweight self-tests ---
-function runSelfTestsOnce() {
-  try {
-    const w = window as any;
-    if (w.__EVZONE_KYC_STATUS_TESTS_RAN__) return;
-    w.__EVZONE_KYC_STATUS_TESTS_RAN__ = true;
-  } catch (e) {
-    // ignore
-  }
-}
-
 export default function KycStatusPage() {
   const navigate = useNavigate();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const theme = useTheme();
   const isDark = mode === "dark";
 
-  // Demo status selector
   const [status, setStatus] = useState<KycStatus>("Pending");
-
-  const tier: KycTier = status === "Approved" ? "Full" : status === "Pending" ? "Basic" : "Unverified";
+  const [tier, setTier] = useState<KycTier>("Unverified");
+  const [loading, setLoading] = useState(true);
+  const [submittedAt, setSubmittedAt] = useState<string | null>(null);
+  const [notes, setNotes] = useState<string | null>(null);
 
   const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
   useEffect(() => {
-    if (typeof window !== "undefined") runSelfTestsOnce();
+    fetchStatus();
   }, []);
 
+  const fetchStatus = async () => {
+    try {
+      setLoading(true);
+      const res = await api('/kyc/status');
+      if (res) {
+        // Map backend status to UI status
+        // Backend: 'Pending' | 'Verified' | 'Rejected' | 'In Review' | 'Unverified'
+        let uiStatus: KycStatus = "Pending";
+        if (res.status === "Verified") uiStatus = "Approved";
+        else if (res.status === "Rejected") uiStatus = "Rejected";
+        else if (res.status === "In Review") uiStatus = "In Review";
+        else if (res.status === "Pending") uiStatus = "Pending";
+        else uiStatus = "Unverified";
+
+        setStatus(uiStatus);
+        setTier(res.tier || "Unverified");
+        if (res.submittedAt) setSubmittedAt(res.submittedAt);
+        if (res.notes) setNotes(res.notes);
+      }
+    } catch (err) {
+      console.error("Failed to fetch KYC status", err);
+      // setSnack({ open: true, severity: "error", msg: "Failed to load status" });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const pageBg =
     mode === "dark"
@@ -226,28 +195,34 @@ export default function KycStatusPage() {
   } as const;
 
   const steps = ["Submitted", "Under review", "Decision"];
-  const activeStep = status === "Pending" ? 1 : status === "Approved" ? 2 : 2;
-
-  const rejectionReasons = [
-    "ID photo is blurry or cropped",
-    "Name does not match the ID document",
-    "Document appears expired or invalid",
-  ];
+  const activeStep = status === "Pending" ? 1 : status === "In Review" ? 1 : status === "Approved" ? 3 : status === "Rejected" ? 3 : 0;
 
   const mainBanner =
     status === "Approved" ? (
       <Alert severity="success" icon={<CheckCircleIcon size={18} />}>
         Your KYC is approved. Higher limits are enabled.
       </Alert>
-    ) : status === "Pending" ? (
+    ) : status === "Pending" || status === "In Review" ? (
       <Alert severity="warning" icon={<ClockIcon size={18} />}>
         Your KYC is being reviewed. This usually takes a short time.
       </Alert>
-    ) : (
+    ) : status === "Rejected" ? (
       <Alert severity="error" icon={<XCircleIcon size={18} />}>
         Your KYC was rejected. Review the reasons and resubmit.
       </Alert>
+    ) : (
+      <Alert severity="info" icon={<ShieldCheckIcon size={18} />}>
+        You have not submitted KYC yet.
+      </Alert>
     );
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: pageBg }}>
+        <CircularProgress sx={{ color: EVZONE.green }} />
+      </Box>
+    );
+  }
 
   return (
     <>
@@ -276,14 +251,7 @@ export default function KycStatusPage() {
                       </Box>
 
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                        <TextField select label="Demo status" value={status} onChange={(e) => setStatus(e.target.value as KycStatus)} size="small" sx={{ minWidth: 180 }}>
-                          <MenuItem value="Pending">Pending</MenuItem>
-                          <MenuItem value="Approved">Approved</MenuItem>
-                          <MenuItem value="Rejected">Rejected</MenuItem>
-                        </TextField>
-                        <Button variant="outlined" sx={orangeOutlined} startIcon={<RefreshIcon size={18} />} onClick={() => setSnack({ open: true, severity: "info", msg: "Refreshing status (demo)." })}>
-                          Refresh
-                        </Button>
+
                         <Button variant="contained" sx={greenContained} onClick={() => navigate("/app/wallet/limits")} endIcon={<ArrowRightIcon size={18} />}>
                           View limits
                         </Button>
@@ -294,13 +262,15 @@ export default function KycStatusPage() {
 
                     {mainBanner}
 
-                    <Stepper activeStep={activeStep} alternativeLabel>
-                      {steps.map((s) => (
-                        <Step key={s}>
-                          <StepLabel>{s}</StepLabel>
-                        </Step>
-                      ))}
-                    </Stepper>
+                    {status !== "Unverified" && (
+                      <Stepper activeStep={activeStep} alternativeLabel>
+                        {steps.map((s) => (
+                          <Step key={s}>
+                            <StepLabel>{s}</StepLabel>
+                          </Step>
+                        ))}
+                      </Stepper>
+                    )}
 
                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
                       Tip: Keep the app open during review. You can continue using EVzone services.
@@ -320,8 +290,8 @@ export default function KycStatusPage() {
 
                         <Row label="Current status" value={status} />
                         <Row label="Tier" value={tier} />
-                        <Row label="Submitted" value={new Date(Date.now() - 1000 * 60 * 60 * 6).toLocaleString()} />
-                        <Row label="Last updated" value={new Date(Date.now() - 1000 * 60 * 18).toLocaleString()} />
+                        <Row label="Submitted" value={submittedAt ? new Date(submittedAt).toLocaleString() : "N/A"} />
+                        <Row label="Last updated" value={new Date().toLocaleDateString()} />
 
                         <Alert severity="info" icon={<ShieldCheckIcon size={18} />}>
                           Your documents are encrypted at rest and access is restricted.
@@ -342,18 +312,28 @@ export default function KycStatusPage() {
                         {status === "Approved" ? (
                           <>
                             <Alert severity="success" icon={<CheckCircleIcon size={18} />}>
-                              You are verified. Enjoy higher limits and smoother withdrawals.
+                              You are verified{tier === "Basic" ? " (Basic)" : ""}. {tier === "Basic" ? "Upgrade for higher limits." : "Enjoy higher limits and smoother withdrawals."}
                             </Alert>
                             <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                               <Button variant="contained" sx={greenContained} onClick={() => navigate("/app/wallet")}>
                                 Go to wallet
                               </Button>
+                              {tier === "Basic" && (
+                                <Button variant="contained" sx={orangeContained} onClick={() => navigate("/app/wallet/kyc/upload?tier=full")} endIcon={<ArrowRightIcon size={18} />}>
+                                  Upgrade to limits
+                                </Button>
+                              )}
+                              {tier === "Full" && (
+                                <Button variant="outlined" disabled startIcon={<ShieldCheckIcon size={18} />}>
+                                  Status: Full Verified
+                                </Button>
+                              )}
                               <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Download verification letter (later)." })}>
                                 Download confirmation (later)
                               </Button>
                             </Stack>
                           </>
-                        ) : status === "Pending" ? (
+                        ) : status === "Pending" || status === "In Review" ? (
                           <>
                             <Alert severity="warning" icon={<ClockIcon size={18} />}>
                               Review in progress. If requested, respond with clearer photos.
@@ -362,29 +342,13 @@ export default function KycStatusPage() {
                               <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/app/support")}>
                                 Contact support
                               </Button>
-                              <Button variant="contained" sx={greenContained} onClick={() => navigate("/app/wallet/kyc/upload")}>
-                                Upload updated docs
-                              </Button>
                             </Stack>
                           </>
-                        ) : (
+                        ) : status === "Rejected" ? (
                           <>
                             <Alert severity="error" icon={<AlertTriangleIcon size={18} />}>
-                              Rejection reasons are shown below. Fix them and resubmit.
+                              {notes ? `Reason: ${notes}` : "Your KYC was rejected. Check requirements and resubmit."}
                             </Alert>
-
-                            <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.2 }}>
-                              <Typography sx={{ fontWeight: 950 }}>Reasons</Typography>
-                              <Divider sx={{ my: 1 }} />
-                              <Stack spacing={0.8}>
-                                {rejectionReasons.map((r) => (
-                                  <Stack key={r} direction="row" spacing={1} alignItems="flex-start">
-                                    <Box sx={{ mt: 0.4, width: 8, height: 8, borderRadius: 99, backgroundColor: EVZONE.orange }} />
-                                    <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>{r}</Typography>
-                                  </Stack>
-                                ))}
-                              </Stack>
-                            </Box>
 
                             <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                               <Button variant="contained" sx={orangeContained} onClick={() => navigate("/app/wallet/kyc/details")}>
@@ -395,44 +359,18 @@ export default function KycStatusPage() {
                               </Button>
                             </Stack>
                           </>
+                        ) : (
+                          // Unverified / Default
+                          <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                            <Button variant="contained" sx={greenContained} onClick={() => navigate("/app/wallet/kyc/upload")} endIcon={<ArrowRightIcon size={18} />}>
+                              Start verification
+                            </Button>
+                          </Stack>
                         )}
-
-                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                          Note: status values here are simulated for UI preview.
-                        </Typography>
                       </Stack>
                     </CardContent>
                   </Card>
                 </Box>
-              </Box>
-
-              {/* Mobile sticky */}
-              <Box className="md:hidden" sx={{ position: "sticky", bottom: 12 }}>
-                <Card sx={{ borderRadius: 999, backgroundColor: alpha(theme.palette.background.paper, 0.86), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backdropFilter: "blur(10px)" }}>
-                  <CardContent sx={{ py: 1.1, px: 1.2 }}>
-                    <Stack direction="row" spacing={1}>
-                      <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Contact support (demo)." })}>
-                        Support
-                      </Button>
-                      <Button
-                        fullWidth
-                        variant="contained"
-                        sx={greenContained}
-                        onClick={() =>
-                          navigate(
-                            status === "Approved"
-                              ? "/app/wallet"
-                              : status === "Rejected"
-                                ? "/app/wallet/kyc/upload"
-                                : "/app/wallet/kyc/status"
-                          )
-                        }
-                      >
-                        {status === "Approved" ? "Wallet" : status === "Rejected" ? "Resubmit" : "Refresh"}
-                      </Button>
-                    </Stack>
-                  </CardContent>
-                </Card>
               </Box>
 
               <Box sx={{ opacity: 0.92 }}>

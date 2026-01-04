@@ -52,38 +52,40 @@ const AppWalletPaymentMethodsAdd = lazy(() => import('../pages/app/wallet/Wallet
 const AppWalletTransactions = lazy(() => import('../pages/app/wallet/WalletTransactions'))
 const AppWalletTransactionsTxnId = lazy(() => import('../pages/app/wallet/WalletTransactionsTxnId'))
 const AppWalletWithdraw = lazy(() => import('../pages/app/wallet/WalletWithdraw'))
-const AuthAccountRecoveryHelp = lazy(() => import('../pages/auth/account-recovery-help/Index'))
-const AuthChooseAccount = lazy(() => import('../pages/auth/choose-account/Index'))
-const AuthConsent = lazy(() => import('../pages/auth/consent/Index'))
-const AuthContinue = lazy(() => import('../pages/auth/continue/Index'))
-const AuthError = lazy(() => import('../pages/auth/error/Index'))
-const AuthForgotPassword = lazy(() => import('../pages/auth/forgot-password/Index'))
-const AuthMfa = lazy(() => import('../pages/auth/mfa/Index'))
-const NotFound = React.lazy(() => import('../pages/errors/NotFound'));
+const AuthAccountRecoveryHelp = lazy(() => import('../pages/app/auth/account-recovery-help/Index'))
+const AuthChooseAccount = lazy(() => import('../pages/app/auth/choose-account/Index'))
+const AuthConsent = lazy(() => import('../pages/app/auth/consent/Index'))
+const AuthContinue = lazy(() => import('../pages/app/auth/continue/Index'))
+const AuthError = lazy(() => import('../pages/app/auth/error/Index'))
+const AuthForgotPassword = lazy(() => import('../pages/app/auth/forgot-password/Index'))
+const AuthMfa = lazy(() => import('../pages/app/auth/mfa/Index'))
+const NotFound = React.lazy(() => import('../pages/app/errors/NotFound'));
 const AdminRouter = React.lazy(() => import('./AdminRouter'));
 const AdminAuthRouter = lazy(() => import('./AdminAuthRouter'));
-const AuthPasskey = lazy(() => import('../pages/auth/passkey/Index'))
-const AuthReAuth = lazy(() => import('../pages/auth/re-auth/Index'))
-const AuthRecoveryCode = lazy(() => import('../pages/auth/recovery-code/Index'))
-const AuthResetPassword = lazy(() => import('../pages/auth/reset-password/Index'))
-const AuthSetPassword = lazy(() => import('../pages/auth/set-password/Index'))
-const AuthSignIn = lazy(() => import('../pages/auth/sign-in/Index'))
-const AuthSignInOtp = lazy(() => import('../pages/auth/sign-in/Otp'))
-const AuthSignUp = lazy(() => import('../pages/auth/sign-up/Index'))
-const AuthSignedOut = lazy(() => import('../pages/auth/signed-out/Index'))
-const AuthVerifyEmail = lazy(() => import('../pages/auth/verify-email/Index'))
-const AuthVerifyPhone = lazy(() => import('../pages/auth/verify-phone/Index'))
-const Errors403 = lazy(() => import('../pages/errors/Error403'))
-const Errors404 = lazy(() => import('../pages/errors/Error404'))
-const Errors429 = lazy(() => import('../pages/errors/Error429'))
-const Errors500 = lazy(() => import('../pages/errors/Error500'))
-const LegalCookies = lazy(() => import('../pages/legal/Cookies'))
-const LegalPrivacy = lazy(() => import('../pages/legal/Privacy'))
-const LegalTerms = lazy(() => import('../pages/legal/Terms'))
-const OrgInviteAccept = lazy(() => import('../pages/org-invite/Accept'))
-const Status = lazy(() => import('../pages/status/Index'))
-const StatusMaintenance = lazy(() => import('../pages/status/Maintenance'))
+const AuthPasskey = lazy(() => import('../pages/app/auth/passkey/Index'))
+const AuthReAuth = lazy(() => import('../pages/app/auth/re-auth/Index'))
+const AuthRecoveryCode = lazy(() => import('../pages/app/auth/recovery-code/Index'))
+const AuthResetPassword = lazy(() => import('../pages/app/auth/reset-password/Index'))
+const AuthSetPassword = lazy(() => import('../pages/app/auth/set-password/Index'))
+const AuthSignIn = lazy(() => import('../pages/app/auth/sign-in/Index'))
+const AuthSignInOtp = lazy(() => import('../pages/app/auth/sign-in/Otp'))
+const AuthSignUp = lazy(() => import('../pages/app/auth/sign-up/Index'))
+const AuthSignedOut = lazy(() => import('../pages/app/auth/signed-out/Index'))
+const AuthVerifyEmail = lazy(() => import('../pages/app/auth/verify-email/Index'))
+const AuthVerifyPhone = lazy(() => import('../pages/app/auth/verify-phone/Index'))
+const Errors403 = lazy(() => import('../pages/app/errors/Error403'))
+const Errors404 = lazy(() => import('../pages/app/errors/Error404'))
+const Errors429 = lazy(() => import('../pages/app/errors/Error429'))
+const Errors500 = lazy(() => import('../pages/app/errors/Error500'))
+const LegalCookies = lazy(() => import('../pages/app/legal/Cookies'))
+const LegalPrivacy = lazy(() => import('../pages/app/legal/Privacy'))
+const LegalTerms = lazy(() => import('../pages/app/legal/Terms'))
+const OrgInviteAccept = lazy(() => import('../pages/app/org-invite/Accept'))
+const Status = lazy(() => import('../pages/app/status/Index'))
+const StatusMaintenance = lazy(() => import('../pages/app/status/Maintenance'))
 import SidebarLayout from '../layouts/SidebarLayout'
+import ProtectedRoute from '../components/auth/ProtectedRoute'
+import AdminProtectedRoute from '../components/auth/AdminProtectedRoute'
 
 export default function AppRouter() {
   return (
@@ -94,62 +96,63 @@ export default function AppRouter() {
           <Route path="/auth" element={<Navigate to="/auth/sign-in" replace />} />
 
           {/* Authenticated App Routes with Sidebar */}
-          <Route element={<SidebarLayout />}>
-            <Route path="/app" element={<App />} />
-            <Route path="/app/apps" element={<AppApps />} />
-            {/* ... other app routes ... */}
-            <Route path="/app/apps/permissions" element={<AppAppsPermissions />} />
-            <Route path="/app/developer" element={<AppDeveloper />} />
-            <Route path="/app/developer/audit" element={<AppDeveloperAudit />} />
-            <Route path="/app/developer/docs" element={<AppDeveloperDocs />} />
-            <Route path="/app/notifications" element={<AppNotifications />} />
-            <Route path="/app/orgs" element={<AppOrgs />} />
-            <Route path="/app/orgs/:orgId" element={<AppOrgsOrgId />} />
-            <Route path="/app/orgs/:orgId/domain-verification" element={<AppOrgsOrgIdDomainVerification />} />
-            <Route path="/app/orgs/:orgId/invite" element={<AppOrgsOrgIdInvite />} />
-            <Route path="/app/orgs/:orgId/members" element={<AppOrgsOrgIdMembers />} />
-            <Route path="/app/orgs/:orgId/provisioning" element={<AppOrgsOrgIdProvisioning />} />
-            <Route path="/app/orgs/:orgId/roles-permissions" element={<AppOrgsOrgIdRolesPermissions />} />
-            <Route path="/app/orgs/:orgId/settings" element={<AppOrgsOrgIdSettings />} />
-            <Route path="/app/orgs/:orgId/sso" element={<AppOrgsOrgIdSso />} />
-            <Route path="/app/orgs/switch" element={<AppOrgsSwitch />} />
-            <Route path="/app/parental-controls" element={<AppParentalControls />} />
-            <Route path="/app/privacy/consents" element={<AppPrivacyConsents />} />
-            <Route path="/app/privacy/data-requests" element={<AppPrivacyDataRequests />} />
-            <Route path="/app/privacy/delete-account" element={<AppPrivacyDeleteAccount />} />
-            <Route path="/app/privacy/download" element={<AppPrivacyDownload />} />
-            <Route path="/app/profile" element={<AppProfile />} />
-            <Route path="/app/profile/contact" element={<AppProfileContact />} />
-            <Route path="/app/profile/linked-accounts" element={<AppProfileLinkedAccounts />} />
-            <Route path="/app/security" element={<AppSecurity />} />
-            <Route path="/app/security/2fa" element={<AppSecurity2fa />} />
-            <Route path="/app/security/2fa/setup" element={<AppSecurity2faSetup />} />
-            <Route path="/app/security/activity" element={<AppSecurityActivity />} />
-            <Route path="/app/security/change-password" element={<AppSecurityChangePassword />} />
-            <Route path="/app/security/passkeys" element={<AppSecurityPasskeys />} />
-            <Route path="/app/security/recovery-codes" element={<AppSecurityRecoveryCodes />} />
-            <Route path="/app/security/sessions" element={<AppSecuritySessions />} />
-            <Route path="/app/settings" element={<AppSettings />} />
-            <Route path="/app/support" element={<AppSupport />} />
-            <Route path="/app/support/security" element={<AppSupportSecurity />} />
-            <Route path="/app/wallet" element={<AppWallet />} />
-            <Route path="/app/wallet/add-funds" element={<AppWalletAddFunds />} />
-            <Route path="/app/wallet/disputes" element={<AppWalletDisputes />} />
-            <Route path="/app/wallet/kyc" element={<AppWalletKyc />} />
-            <Route path="/app/wallet/kyc/details" element={<AppWalletKycDetails />} />
-            <Route path="/app/wallet/kyc/status" element={<AppWalletKycStatus />} />
-            <Route path="/app/wallet/kyc/upload" element={<AppWalletKycUpload />} />
-            <Route path="/app/wallet/limits" element={<AppWalletLimits />} />
-            <Route path="/app/wallet/payment-methods" element={<AppWalletPaymentMethods />} />
-            <Route path="/app/wallet/payment-methods/add" element={<AppWalletPaymentMethodsAdd />} />
-            <Route path="/app/wallet/transactions" element={<AppWalletTransactions />} />
-            <Route path="/app/wallet/transactions/:txnId" element={<AppWalletTransactionsTxnId />} />
-            <Route path="/app/wallet/withdraw" element={<AppWalletWithdraw />} />
+          <Route element={<ProtectedRoute />}>
+            <Route element={<SidebarLayout />}>
+              <Route path="/app" element={<App />} />
+              <Route path="/app/apps" element={<AppApps />} />
+              <Route path="/app/apps/permissions" element={<AppAppsPermissions />} />
+              <Route path="/app/developer" element={<AppDeveloper />} />
+              <Route path="/app/developer/audit" element={<AppDeveloperAudit />} />
+              <Route path="/app/developer/docs" element={<AppDeveloperDocs />} />
+              <Route path="/app/notifications" element={<AppNotifications />} />
+              <Route path="/app/orgs" element={<AppOrgs />} />
+              <Route path="/app/orgs/:orgId" element={<AppOrgsOrgId />} />
+              <Route path="/app/orgs/:orgId/domain-verification" element={<AppOrgsOrgIdDomainVerification />} />
+              <Route path="/app/orgs/:orgId/invite" element={<AppOrgsOrgIdInvite />} />
+              <Route path="/app/orgs/:orgId/members" element={<AppOrgsOrgIdMembers />} />
+              <Route path="/app/orgs/:orgId/provisioning" element={<AppOrgsOrgIdProvisioning />} />
+              <Route path="/app/orgs/:orgId/roles-permissions" element={<AppOrgsOrgIdRolesPermissions />} />
+              <Route path="/app/orgs/:orgId/settings" element={<AppOrgsOrgIdSettings />} />
+              <Route path="/app/orgs/:orgId/sso" element={<AppOrgsOrgIdSso />} />
+              <Route path="/app/orgs/switch" element={<AppOrgsSwitch />} />
+              <Route path="/app/parental-controls" element={<AppParentalControls />} />
+              <Route path="/app/privacy/consents" element={<AppPrivacyConsents />} />
+              <Route path="/app/privacy/data-requests" element={<AppPrivacyDataRequests />} />
+              <Route path="/app/privacy/delete-account" element={<AppPrivacyDeleteAccount />} />
+              <Route path="/app/privacy/download" element={<AppPrivacyDownload />} />
+              <Route path="/app/profile" element={<AppProfile />} />
+              <Route path="/app/profile/contact" element={<AppProfileContact />} />
+              <Route path="/app/profile/linked-accounts" element={<AppProfileLinkedAccounts />} />
+              <Route path="/app/security" element={<AppSecurity />} />
+              <Route path="/app/security/2fa" element={<AppSecurity2fa />} />
+              <Route path="/app/security/2fa/setup" element={<AppSecurity2faSetup />} />
+              <Route path="/app/security/activity" element={<AppSecurityActivity />} />
+              <Route path="/app/security/change-password" element={<AppSecurityChangePassword />} />
+              <Route path="/app/security/passkeys" element={<AppSecurityPasskeys />} />
+              <Route path="/app/security/recovery-codes" element={<AppSecurityRecoveryCodes />} />
+              <Route path="/app/security/sessions" element={<AppSecuritySessions />} />
+              <Route path="/app/settings" element={<AppSettings />} />
+              <Route path="/app/support" element={<AppSupport />} />
+              <Route path="/app/support/security" element={<AppSupportSecurity />} />
+              <Route path="/app/wallet" element={<AppWallet />} />
+              <Route path="/app/wallet/add-funds" element={<AppWalletAddFunds />} />
+              <Route path="/app/wallet/disputes" element={<AppWalletDisputes />} />
+              <Route path="/app/wallet/kyc" element={<AppWalletKyc />} />
+              <Route path="/app/wallet/kyc/details" element={<AppWalletKycDetails />} />
+              <Route path="/app/wallet/kyc/status" element={<AppWalletKycStatus />} />
+              <Route path="/app/wallet/kyc/upload" element={<AppWalletKycUpload />} />
+              <Route path="/app/wallet/limits" element={<AppWalletLimits />} />
+              <Route path="/app/wallet/payment-methods" element={<AppWalletPaymentMethods />} />
+              <Route path="/app/wallet/payment-methods/add" element={<AppWalletPaymentMethodsAdd />} />
+              <Route path="/app/wallet/transactions" element={<AppWalletTransactions />} />
+              <Route path="/app/wallet/transactions/:txnId" element={<AppWalletTransactionsTxnId />} />
+              <Route path="/app/wallet/withdraw" element={<AppWalletWithdraw />} />
+            </Route>
           </Route> { /* End Sidebar Layout */}
 
           <Route path="/auth/account-recovery-help" element={<AuthAccountRecoveryHelp />} />
           <Route path="/auth/choose-account" element={<AuthChooseAccount />} />
-          <Route path="/auth/consent" element={<AuthConsent />} />
+          <Route path="/auth/consent" element={<ProtectedRoute><AuthConsent /></ProtectedRoute>} />
           <Route path="/auth/continue" element={<AuthContinue />} />
           <Route path="/auth/error" element={<AuthError />} />
           <Route path="/auth/forgot-password" element={<AuthForgotPassword />} />
@@ -176,7 +179,7 @@ export default function AppRouter() {
           <Route path="/org-invite/accept" element={<OrgInviteAccept />} />
           <Route path="/status" element={<Status />} />
           <Route path="/status/maintenance" element={<StatusMaintenance />} />
-          <Route path="/admin/*" element={<AdminRouter />} />
+          <Route path="/admin/*" element={<AdminProtectedRoute><AdminRouter /></AdminProtectedRoute>} />
           <Route path="*" element={<Errors404 />} />
         </Routes>
       </Suspense>

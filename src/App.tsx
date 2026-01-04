@@ -1,16 +1,21 @@
+import { useEffect } from 'react';
 import AppRouter from './router/AppRouter'
 import { AppThemeProvider } from './theme/AppThemeProvider'
 
-import { AdminAuthProvider } from './contexts/AdminAuthContext'
 import { BrowserRouter } from 'react-router-dom'
+import { useAuthStore } from './stores/authStore'
 
 export default function App() {
+  const { refreshUser } = useAuthStore();
+
+  useEffect(() => {
+    refreshUser();
+  }, []);
+
   return (
     <BrowserRouter>
       <AppThemeProvider>
-        <AdminAuthProvider>
-          <AppRouter />
-        </AdminAuthProvider>
+        <AppRouter />
       </AppThemeProvider>
     </BrowserRouter>
   )

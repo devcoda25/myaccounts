@@ -13,7 +13,18 @@ import {
     Typography,
     useTheme,
     Avatar,
-    Grid
+    Grid,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Switch,
+    List,
+    ListItem,
+    ListItemText,
+    ListItemIcon
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import {
@@ -32,6 +43,33 @@ type OrgPlan = "Free" | "Pro" | "Enterprise";
 
 const EVZONE = { green: "#03cd8c", orange: "#f77f00" } as const;
 
+interface OrgDetail {
+    id: string;
+    name: string;
+    domain: string;
+    owner: string;
+    ownerEmail: string;
+    status: OrgStatus;
+    plan: OrgPlan;
+    members: number;
+    createdAt: number;
+    billingEmail: string;
+    taxId: string;
+    memberList: Array<{
+        id: string;
+        name: string;
+        email: string;
+        role: string;
+        status: string;
+        joinedAt: number;
+        avatarUrl: string | null;
+    }>;
+    ssoEnabled: boolean;
+    ssoDomains: string[];
+}
+
+import { api } from "../../../utils/api";
+
 export default function AdminOrgDetailPage() {
     const { orgId } = useParams();
     const navigate = useNavigate();
@@ -39,21 +77,20 @@ export default function AdminOrgDetailPage() {
     const isDark = theme.palette.mode === 'dark';
 
     const [tab, setTab] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [org, setOrg] = useState<OrgDetail | null>(null);
 
-    // Mock data based on ID
-    const org = {
-        id: orgId,
-        name: "EV World Africa",
-        domain: "evworld.africa",
-        owner: "Ronald Isabirye",
-        ownerEmail: "ronald@evworld.africa",
-        status: "Active" as OrgStatus,
-        plan: "Enterprise" as OrgPlan,
-        members: 12,
-        createdAt: Date.now() - 1000 * 60 * 60 * 24 * 365,
-        billingEmail: "billing@evworld.africa",
-        taxId: "UG-123456789"
-    };
+    React.useEffect(() => {
+        if (!orgId) return;
+        setLoading(true);
+        api(`/admin/orgs/${orgId}`)
+            .then(data => setOrg(data))
+            .catch(err => console.error(err))
+            .finally(() => setLoading(false));
+    }, [orgId]);
+
+    if (loading) return <Box p={4}>Loading...</Box>;
+    if (!org) return <Box p={4}>Organization not found</Box>;
 
     const orangeOutlined = {
         borderColor: alpha(EVZONE.orange, 0.70),
@@ -149,23 +186,81 @@ export default function AdminOrgDetailPage() {
 
                 {tab === 1 && (
                     <Card sx={{ borderRadius: 4 }}>
-                        <CardContent>
-                            <Box sx={{ p: 4, textAlign: "center", color: theme.palette.text.secondary }}>
-                                <UsersIcon size={48} className="mx-auto mb-2 opacity-50" />
-                                <Typography>Members list will be displayed here.</Typography>
-                            </Box>
-                        </CardContent>
+                        <TableContainer>
+                            <Table>
+                                <TableHead>
+                                    <TableRow sx={{ backgroundColor: alpha(theme.palette.background.paper, 0.55) }}>
+                                        <TableCell sx={{ fontWeight: 950 }}>User</TableCell>
+                                        <TableCell sx={{ fontWeight: 950 }}>Role</TableCell>
+                                        <TableCell sx={{ fontWeight: 950 }}>Status</TableCell>
+                                        <TableCell sx={{ fontWeight: 950 }}>Joined</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {org.memberList.map((m) => (
+                                        <TableRow key={m.id} hover>
+                                            <TableCell>
+                                                <Stack direction="row" spacing={1.5} alignItems="center">
+                                                    <Avatar src={m.avatarUrl || undefined} sx={{ width: 32, height: 32 }}>{m.name[0]}</Avatar>
+                                                    <Box>
+                                                        <Typography variant="body2" sx={{ fontWeight: 600 }}>{m.name}</Typography>
+                                                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{m.email}</Typography>
+                                                    </Box>
+                                                </Stack>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Chip size="small" label={m.role} sx={{ height: 24, fontWeight: 700 }} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Chip
+                                                    size="small"
+                                                    label={m.status}
+                                                    color={m.status === 'Active' ? 'success' : 'default'}
+                                                    sx={{ height: 24, fontWeight: 700 }}
+                                                />
+                                            </TableCell>
+                                            <TableCell>{new Date(m.joinedAt).toLocaleDateString()}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                    {org.memberList.length === 0 && (
+                                        <TableRow>
+                                            <TableCell colSpan={4} align="center" sx={{ py: 4 }}>No members found.</TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
                     </Card>
                 )}
                 {tab === 2 && (
-                    <Card sx={{ borderRadius: 4 }}>
-                        <CardContent>
-                            <Box sx={{ p: 4, textAlign: "center", color: theme.palette.text.secondary }}>
-                                <OrgIcon size={48} className="mx-auto mb-2 opacity-50" />
-                                <Typography>Organization settings (SSO, Domains, etc) will be displayed here.</Typography>
-                            </Box>
-                        </CardContent>
-                    </Card>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} md={6}>
+                            <Card sx={{ borderRadius: 4, height: '100%' }}>
+                                <CardContent>
+                                    <Typography variant="h6" gutterBottom>Single Sign-On (SSO)</Typography>
+                                    <List>
+                                        <ListItem>
+                                            <ListItemIcon><ShieldIcon /></ListItemIcon>
+                                            <ListItemText
+                                                primary="SSO Enabled"
+                                                secondary={org.ssoEnabled ? "Active" : "Disabled"}
+                                            />
+                                            <Switch edge="end" checked={org.ssoEnabled} disabled />
+                                        </ListItem>
+                                    </List>
+                                    <Divider sx={{ my: 2 }} />
+                                    <Typography variant="subtitle2" gutterBottom>Authorized Domains</Typography>
+                                    <Stack direction="row" spacing={1} flexWrap="wrap">
+                                        {org.ssoDomains.length > 0 ? org.ssoDomains.map(d => (
+                                            <Chip key={d} label={d} variant="outlined" icon={<GlobeIcon size={14} />} />
+                                        )) : (
+                                            <Typography variant="body2" color="text.secondary">No domains configured.</Typography>
+                                        )}
+                                    </Stack>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    </Grid>
                 )}
             </Stack>
         </Box>

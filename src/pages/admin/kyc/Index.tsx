@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { api } from "../../../utils/api";
 import Pagination from "../../../components/common/Pagination";
 import {
     Box,
@@ -45,7 +46,7 @@ import {
 const EVZONE = { green: "#03cd8c", orange: "#f77f00", red: "#d32f2f" };
 
 type KycStatus = "Pending" | "Verified" | "Rejected" | "In Review";
-type DocType = "National ID" | "Passport" | "Driver's License";
+type DocType = "National ID" | "Passport" | "Driver's License" | "Proof of Address";
 
 interface KycRequest {
     id: string;
@@ -56,6 +57,7 @@ interface KycRequest {
     docType: DocType;
     status: KycStatus;
     riskScore: "Low" | "Medium" | "High";
+    documents?: Record<string, string>; // url map
 }
 
 // Mock Data
@@ -75,7 +77,24 @@ export default function KycQueue() {
     const [q, setQ] = useState("");
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [requests, setRequests] = useState<KycRequest[]>(mkRequests);
+    const [requests, setRequests] = useState<KycRequest[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchRequests = () => {
+        setLoading(true);
+        api('/admin/kyc?take=100') // Simplistic fetch for now
+            .then((res) => {
+                if (res && res.requests) {
+                    setRequests(res.requests);
+                }
+            })
+            .catch(err => console.error(err))
+            .finally(() => setLoading(false));
+    };
+
+    useEffect(() => {
+        fetchRequests();
+    }, []);
 
     // Review Modal State
     const [selectedRequest, setSelectedRequest] = useState<KycRequest | null>(null);
@@ -96,15 +115,25 @@ export default function KycQueue() {
 
     const handleApprove = () => {
         if (!selectedRequest) return;
-        setRequests(prev => prev.map(r => r.id === selectedRequest.id ? { ...r, status: "Verified" } : r));
-        setSelectedRequest(null);
+        api(`/admin/kyc/${selectedRequest.id}/review`, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'APPROVE' })
+        }).then(() => {
+            fetchRequests(); // Refresh list
+            setSelectedRequest(null);
+        }).catch(err => console.error(err));
     };
 
     const handleReject = () => {
         if (!selectedRequest) return;
-        setRequests(prev => prev.map(r => r.id === selectedRequest.id ? { ...r, status: "Rejected" } : r));
-        setSelectedRequest(null);
-        setRejectReason("");
+        api(`/admin/kyc/${selectedRequest.id}/review`, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'REJECT', reason: rejectReason })
+        }).then(() => {
+            fetchRequests(); // Refresh list
+            setSelectedRequest(null);
+            setRejectReason("");
+        }).catch(err => console.error(err));
     };
 
     const StatusChip = ({ status }: { status: KycStatus }) => {
@@ -236,14 +265,43 @@ export default function KycQueue() {
                         </DialogTitle>
                         <DialogContent sx={{ p: 0, display: 'flex', height: '100%' }}>
                             <Grid container sx={{ height: '100%' }}>
-                                {/* Document Viewer (Mock) */}
-                                <Grid item xs={12} md={7} sx={{ bgcolor: alpha('#000', 0.9), p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                                    <Paper sx={{ width: '100%', maxWidth: 500, height: 320, bgcolor: '#333', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
-                                        <Typography color="#aaa">Front of ID Document Preview</Typography>
-                                    </Paper>
-                                    <Paper sx={{ width: '100%', maxWidth: 500, height: 320, bgcolor: '#333', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <Typography color="#aaa">Back of ID Document Preview</Typography>
-                                    </Paper>
+                                {/* Document Viewer */}
+                                <Grid item xs={12} md={7} sx={{ bgcolor: alpha('#000', 0.9), p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflowY: 'auto' }}>
+                                    {selectedRequest.documents ? (
+                                        <Stack spacing={2} sx={{ width: '100%', alignItems: 'center' }}>
+                                            {[
+                                                { key: 'idFront', label: 'ID Front' },
+                                                { key: 'idBack', label: 'ID Back' },
+                                                { key: 'selfie', label: 'Selfie' },
+                                                { key: 'proofAddress', label: 'Proof of Address' }
+                                            ].map((doc) => {
+                                                const url = selectedRequest.documents?.[doc.key];
+                                                if (!url) return null;
+                                                // If URL is already absolute, use it. Otherwise, assume relative.
+                                                // If we have VITE_API_BASE_URL (and it's not just /api), prepending it might be safer if proxy is flaky.
+                                                // But /uploads proxy is standard. Let's try to trust the relative path first.
+                                                const src = url.startsWith('http') ? url : url;
+
+                                                return (
+                                                    <Paper key={doc.key} sx={{ width: '100%', maxWidth: 500, height: 320, bgcolor: '#333', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                                                        <img
+                                                            src={src}
+                                                            alt={doc.label}
+                                                            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                                            onError={(e) => {
+                                                                // Fallback if relative fails, maybe try appending base url explicitly?
+                                                                // For now just console log
+                                                                console.error('Image load failed:', src);
+                                                                (e.target as HTMLImageElement).style.display = 'none';
+                                                            }}
+                                                        />
+                                                    </Paper>
+                                                );
+                                            })}
+                                        </Stack>
+                                    ) : (
+                                        <Typography color="#aaa">No documents found.</Typography>
+                                    )}
                                 </Grid>
 
                                 {/* User Details & Actions */}
@@ -305,6 +363,6 @@ export default function KycQueue() {
                     </>
                 )}
             </Dialog>
-        </Box>
+        </Box >
     );
 }

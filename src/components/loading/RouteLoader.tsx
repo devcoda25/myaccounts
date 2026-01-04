@@ -1,11 +1,11 @@
 import React, { useMemo } from "react";
 import { Box } from "@mui/material";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../theme/ThemeContext";
+import { useThemeStore } from "../../stores/themeStore";
 import { EVZONE } from "../../theme/evzone";
 
 export default function RouteLoader() {
-    const { mode } = useThemeContext();
+    const { mode } = useThemeStore();
     const isDark = mode === "dark";
 
     // Use a solid background that matches the app theme

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Card, CardContent, Typography, Stack, Button, Chip, Avatar, Tabs, Tab, TextField, MenuItem, Divider, Switch, FormControlLabel, Slider, InputAdornment, Alert, useTheme, alpha } from '@mui/material';
-import { useThemeContext } from '../../../../theme/ThemeContext';
+import { useThemeStore } from "../../../../stores/themeStore";
 import { getStyles } from '../styles';
 import {
     Plus as PlusIcon, Link as LinkIcon, Users as UsersIcon, ArrowRight as ArrowRightIcon,
@@ -48,7 +48,7 @@ export default function FamilySupervision({
     removeMember, openInvite, applyTemplate
 }: FamilySupervisionProps) {
     const theme = useTheme();
-    const { mode } = useThemeContext();
+    const { mode } = useThemeStore();
     const { evOrangeContainedSx, evOrangeOutlinedSx, cardSx, EVZONE } = getStyles(theme, mode);
     const [tab, setTab] = useState(0);
 

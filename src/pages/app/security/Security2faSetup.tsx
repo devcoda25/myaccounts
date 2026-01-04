@@ -22,8 +22,9 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
+import { api } from "../../../utils/api";
 
 /**
  * EVzone My Accounts - Two-Factor Authentication Setup v2
@@ -379,16 +380,18 @@ function OtpInput({ value, onChange, autoFocus = false }: { value: string[]; onC
 export default function TwoFASetupPageV2() {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { mode, toggleMode } = useThemeContext();
+  const { mode } = useThemeStore();
   const isDark = mode === "dark";
 
   const [activeStep, setActiveStep] = useState(0);
   const [method, setMethod] = useState<TwoFAMethod>("authenticator");
 
   const [phone, setPhone] = useState("+256761677709");
+  const [loading, setLoading] = useState(false);
 
-  const [secret, setSecret] = useState<string>(() => randomBase32(16));
-  const [backupCodes, setBackupCodes] = useState<string[]>(() => generateRecoveryCodes(10));
+  const [secret, setSecret] = useState("");
+  const [qrCodeUrl, setQrCodeUrl] = useState("");
+  const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
   const [showBackup, setShowBackup] = useState(false);
 
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
@@ -404,12 +407,28 @@ export default function TwoFASetupPageV2() {
         setMethod(m as TwoFAMethod);
         setActiveStep(1);
         setOtp(["", "", "", "", "", ""]);
-        if (m === "authenticator") setSecret(randomBase32(16));
       }
     } catch {
       // ignore
     }
   }, []);
+
+  // Fetch setup params for Authenticator
+  useEffect(() => {
+    if (activeStep === 1 && method === "authenticator") {
+      setLoading(true);
+      api.post("/auth/mfa/setup/start")
+        .then((res: any) => {
+          setSecret(res.secret);
+          setQrCodeUrl(res.qrCodeUrl);
+          setLoading(false);
+        })
+        .catch((e) => {
+          console.error(e);
+          setLoading(false);
+        });
+    }
+  }, [activeStep, method]);
 
   const steps = ["Choose method", "Set up", "Verify", "Success"];
 
@@ -459,24 +478,56 @@ export default function TwoFASetupPageV2() {
 
   const expectedCode = method === "authenticator" ? "123456" : method === "sms" ? "222222" : "333333";
 
-  const sendCode = () => {
-    if (method === "sms") setSnack({ open: true, severity: "success", msg: `SMS code sent. Demo code: ${expectedCode}` });
-    else if (method === "whatsapp") setSnack({ open: true, severity: "success", msg: `WhatsApp code sent. Demo code: ${expectedCode}` });
-    else setSnack({ open: true, severity: "info", msg: "Open your authenticator app and enter the current code." });
+  const sendCode = async () => {
+    if (method === "authenticator") {
+      setSnack({ open: true, severity: "info", msg: "Open your authenticator app and enter the current code." });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await api.post("/auth/mfa/setup/sms/send", { phone });
+      setSnack({ open: true, severity: "success", msg: "Code sent successfully." });
+      setActiveStep(2); // Auto-advance to verification
+    } catch (err: any) {
+      console.error(err);
+      setSnack({ open: true, severity: "error", msg: err.message || "Failed to send code." });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const verify = () => {
+  const verify = async () => {
     const code = otp.join("");
     if (code.length < 6) return setSnack({ open: true, severity: "warning", msg: "Enter the 6-digit code." });
-    if (code !== expectedCode) return setSnack({ open: true, severity: "error", msg: "Incorrect code. Try again." });
-    setBackupCodes(generateRecoveryCodes(10));
-    setShowBackup(true);
-    setActiveStep(3);
-    setSnack({ open: true, severity: "success", msg: "2FA enabled successfully." });
+
+    setLoading(true);
+    try {
+      const payload: any = { token: code, method };
+      if (method === "authenticator") payload.secret = secret;
+      if (method === "sms" || method === "whatsapp") payload.phone = phone;
+
+      const res = await api.post("/auth/mfa/setup/verify", payload);
+      setLoading(false);
+
+      if (res.success) {
+        setRecoveryCodes(res.recoveryCodes || []);
+        setSnack({ open: true, severity: "success", msg: "2FA enabled successfully." });
+        setShowBackup(true);
+        setActiveStep(3);
+      } else {
+        setSnack({ open: true, severity: "error", msg: "Verification failed. Code invalid." });
+        setOtp(["", "", "", "", "", ""]);
+      }
+    } catch (err) {
+      setLoading(false);
+      setSnack({ open: true, severity: "error", msg: "Verification failed. Code invalid." });
+      setOtp(["", "", "", "", "", ""]);
+    }
   };
 
   const downloadCodesTxt = () => {
-    const content = backupCodes.join("\n");
+    const content = recoveryCodes.join("\n");
     const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -625,7 +676,7 @@ export default function TwoFASetupPageV2() {
                           <Stack spacing={1.2}>
                             <Typography sx={{ fontWeight: 950 }}>1) Scan the QR code</Typography>
                             <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Use Google Authenticator or any TOTP app.</Typography>
-                            <PseudoQr seed={`otpauth://totp/EVzone:${secret}?secret=${secret}&issuer=EVzone`} />
+                            {qrCodeUrl ? <img src={qrCodeUrl} alt="QR Code" style={{ borderRadius: "4px", width: 220, height: 220 }} /> : <PseudoQr seed={secret} />}
                           </Stack>
                         </Box>
                         <Box className="md:col-span-7">
@@ -648,7 +699,7 @@ export default function TwoFASetupPageV2() {
                               }}
                               helperText="Keep this key private."
                             />
-                            <Alert severity="info">Demo verification code: <b>123456</b></Alert>
+                            <Alert severity="info">Use your authenticator app to get the code.</Alert>
                             <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                               <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<ArrowLeftIcon size={18} />} onClick={() => setActiveStep(0)}>Back</Button>
                               <Button variant="contained" color="secondary" sx={evOrangeContainedSx} endIcon={<ArrowRightIcon size={18} />} onClick={() => setActiveStep(2)}>Verify code</Button>
@@ -668,11 +719,10 @@ export default function TwoFASetupPageV2() {
                           helperText={method === "sms" ? "A code will be sent by SMS." : "A code will be sent via WhatsApp."}
                         />
                         <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                          <Button variant="contained" color="secondary" sx={method === "whatsapp" ? waContainedSx : evOrangeContainedSx} onClick={sendCode}>Send code</Button>
+                          <Button variant="contained" color="secondary" sx={method === "whatsapp" ? waContainedSx : evOrangeContainedSx} onClick={sendCode}>Send & Verify</Button>
                           <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<ArrowLeftIcon size={18} />} onClick={() => setActiveStep(0)}>Back</Button>
-                          <Button variant="contained" color="secondary" sx={evOrangeContainedSx} endIcon={<ArrowRightIcon size={18} />} onClick={() => { sendCode(); setActiveStep(2); }}>Continue</Button>
                         </Stack>
-                        <Alert severity="info">Demo {method === "sms" ? "SMS" : "WhatsApp"} code: <b>{expectedCode}</b></Alert>
+                        <Alert severity="info">We'll send a code to <b>{phone}</b>.</Alert>
                       </Stack>
                     )}
                   </Stack>
@@ -694,7 +744,7 @@ export default function TwoFASetupPageV2() {
                       <Button variant="outlined" sx={method === "whatsapp" ? waOutlinedSx : evOrangeOutlinedSx} onClick={sendCode}>Resend</Button>
                       <Button variant="contained" color="secondary" sx={evOrangeContainedSx} endIcon={<ArrowRightIcon size={18} />} onClick={verify}>Verify</Button>
                     </Stack>
-                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Demo code: <b>{expectedCode}</b></Typography>
+                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Please enter the code you received.</Typography>
                   </Stack>
                 </CardContent>
               </Card>
@@ -714,15 +764,15 @@ export default function TwoFASetupPageV2() {
                     <Divider />
                     <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} alignItems={{ xs: "flex-start", sm: "center" }} justifyContent="space-between">
-                        <Typography sx={{ fontWeight: 950 }}>Backup codes</Typography>
+                        <Typography sx={{ fontWeight: 950 }}>Recovery codes</Typography>
                         <Stack direction="row" spacing={1}>
-                          <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<CopyIcon size={18} />} onClick={async () => { const ok = await copyToClipboard(backupCodes.join("\n")); setSnack({ open: true, severity: ok ? "success" : "warning", msg: ok ? "Copied codes." : "Copy failed." }); }}>Copy</Button>
+                          <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<CopyIcon size={18} />} onClick={async () => { const ok = await copyToClipboard(recoveryCodes.join("\n")); setSnack({ open: true, severity: ok ? "success" : "warning", msg: ok ? "Copied codes." : "Copy failed." }); }}>Copy</Button>
                           <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<DownloadIcon size={18} />} onClick={downloadCodesTxt}>Download</Button>
                         </Stack>
                       </Stack>
                       <Divider sx={{ my: 1.2 }} />
                       <Box className="grid gap-2 sm:grid-cols-2">
-                        {backupCodes.map((c) => (
+                        {recoveryCodes.map((c) => (
                           <Box key={c} sx={{ borderRadius: 14, border: `1px dashed ${alpha(theme.palette.text.primary, 0.18)}`, p: 1.1, backgroundColor: alpha(theme.palette.background.paper, 0.35) }}>
                             <Typography sx={{ fontWeight: 950, letterSpacing: 0.6 }}>{showBackup ? c : "••••-••••"}</Typography>
                           </Box>

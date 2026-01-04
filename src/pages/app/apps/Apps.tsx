@@ -23,7 +23,7 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
 
 /**
@@ -49,6 +49,7 @@ type AppTile = {
   tagline: string;
   status: AccessStatus;
   lastUsedAt?: number;
+  launchUrl?: string;
   shortcuts: { label: string; action: string }[];
 };
 
@@ -214,7 +215,7 @@ function appIcon(key: AppKey) {
 export default function ConnectedAppsPage() {
   const navigate = useNavigate();
   const theme = useTheme();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const isDark = mode === "dark";
 
   const [snack, setSnack] = useState<{ open: boolean; severity: "info" | "warning" | "error" | "success"; msg: string }>({ open: false, severity: "info", msg: "" });
@@ -224,99 +225,63 @@ export default function ConnectedAppsPage() {
   const [tab, setTab] = useState<0 | 1 | 2>(0);
   const [search, setSearch] = useState("");
 
-  const [apps, setApps] = useState<AppTile[]>(() => {
-    const now = Date.now();
-    return [
-      {
-        key: "charging",
-        name: "EVzone Charging",
-        tagline: "Find, book, and charge at stations.",
-        status: "Connected",
-        lastUsedAt: now - 1000 * 60 * 20,
-        shortcuts: [
-          { label: "Find stations", action: "Open Stations" },
-          { label: "Charging history", action: "History" },
-          { label: "Wallet usage", action: "Wallet usage" },
-        ],
-      },
-      {
-        key: "marketplace",
-        name: "EVzone Marketplace",
-        tagline: "EVs, parts, services, and more.",
-        status: "Connected",
-        lastUsedAt: now - 1000 * 60 * 60 * 6,
-        shortcuts: [
-          { label: "Orders", action: "Orders" },
-          { label: "Returns", action: "Returns" },
-          { label: "Saved items", action: "Saved" },
-        ],
-      },
-      {
-        key: "pay",
-        name: "EVzone Pay",
-        tagline: "Wallet, payments, utilities, and partners.",
-        status: "Connected",
-        lastUsedAt: now - 1000 * 60 * 12,
-        shortcuts: [
-          { label: "Add funds", action: "Add funds" },
-          { label: "Payment methods", action: "Payment methods" },
-          { label: "Statements", action: "Statements" },
-        ],
-      },
-      {
-        key: "school",
-        name: "EVzone School",
-        tagline: "Training and e-learning for EV skills.",
-        status: "Limited",
-        lastUsedAt: now - 1000 * 60 * 60 * 24 * 3,
-        shortcuts: [
-          { label: "My courses", action: "Courses" },
-          { label: "Labs", action: "Labs" },
-        ],
-      },
-      {
-        key: "agenthub",
-        name: "AgentHub",
-        tagline: "Agents, payouts, and partner operations.",
-        status: "Connected",
-        lastUsedAt: now - 1000 * 60 * 60 * 2,
-        shortcuts: [
-          { label: "Agent dashboard", action: "Dashboard" },
-          { label: "Payouts", action: "Payouts" },
-        ],
-      },
-      {
-        key: "mylivedealz",
-        name: "MyLiveDealz",
-        tagline: "Live commerce, promo adz, creators.",
-        status: "Disconnected",
-        lastUsedAt: undefined,
-        shortcuts: [{ label: "Explore", action: "Explore" }],
-      },
-      {
-        key: "logistics",
-        name: "EVzone Logistics",
-        tagline: "Deliveries, fleets, and tracking.",
-        status: "Limited",
-        lastUsedAt: now - 1000 * 60 * 60 * 24,
-        shortcuts: [
-          { label: "Track shipment", action: "Track" },
-          { label: "Routes", action: "Routes" },
-        ],
-      },
-      {
-        key: "creator",
-        name: "Creator Studio",
-        tagline: "Creators, streams, earnings.",
-        status: "Connected",
-        lastUsedAt: now - 1000 * 60 * 60 * 10,
-        shortcuts: [
-          { label: "Go Live", action: "Go Live" },
-          { label: "Earnings", action: "Earnings" },
-        ],
-      },
-    ];
-  });
+  const [apps, setApps] = useState<AppTile[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // In a real scenario, we use the shared axios instance
+    // import api from "../../../utils/api"; 
+    // For now assuming a fetch shim or importing api if available.
+    // Let's use standard fetch with token if we don't have the api instance imported.
+    // Actually we should use the `useApi` hook if it exists, or just `api`.
+    // Let's assume `api` utility is available at `src/utils/api.ts` or similar based on previous context
+    // But since I don't see imports, I'll attempt a direct fetch with a TODO or try to find api.
+    // Wait, the project structure for frontend usually has an api.ts.
+    // Let's assume standard fetch for now to be safe or check imports.
+    // The previous code didn't import `api`.
+    // I will try to use `fetch('/api/v1/apps')` (via proxy).
+
+    const fetchApps = async () => {
+      try {
+        setLoading(true);
+        // We'll trust the proxy
+        const res = await fetch("/api/apps", {
+          headers: {
+            // We rely on the browser cookie or header injection if handled by an auth provider wrapper.
+            // If we need the token, we might need a context.
+            // Given I don't see useAuth, I'll assume the cookie/proxy handles it or I'll just skip the token for now
+            // and let the backend (which I know uses cookies if present?)
+            // Actually backend OIDC uses cookies? No, it used Bearer in header usually.
+            // I'll check if there's a stored token.
+            'Authorization': `Bearer ${localStorage.getItem('access_token') || ''}`
+          }
+        });
+        if (!res.ok) throw new Error("Failed to load apps");
+        const data = await res.json();
+
+        // Transform backend data to frontend tile
+        const mapped: AppTile[] = data.map((d: any) => ({
+          key: d.key,
+          name: d.name,
+          tagline: "Integrated App", // Backend doesn't store tagline yet, use placeholder
+          status: d.status,
+          lastUsedAt: d.lastUsedAt,
+          launchUrl: d.launchUrl, // Store this!
+          shortcuts: [
+            { label: "Launch", action: "launch" }
+          ]
+        }));
+        setApps(mapped);
+      } catch (e) {
+        console.error(e);
+        // Fallback to mock for demo if fetch fails
+        // setApps(MOCK_APPS); 
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchApps();
+  }, []);
 
 
   const pageBg =
@@ -364,11 +329,24 @@ export default function ConnectedAppsPage() {
   }, [apps]);
 
   const openApp = (a: AppTile) => {
+    // If we have a launchUrl, we redirect the user to it
+    // This starts the OIDC flow: MyAccounts -> App (with code) -> App calls Token Endpoint
+    if (a.launchUrl) {
+      // In a real SPA, this might be window.location.href = a.launchUrl
+      // For demo purposes, let's open in new tab or simulate redirect
+      setSnack({ open: true, severity: "success", msg: `Redirecting to ${a.name}...` });
+
+      // Allow a small delay for snackbar for better UX
+      setTimeout(() => {
+        window.location.href = a.launchUrl!;
+      }, 800);
+      return;
+    }
+
     if (a.status === "Disconnected") {
       setSnack({ open: true, severity: "warning", msg: `${a.name} is not connected. Check permissions first.` });
       return;
     }
-    // Demo: external apps usually open in new tab
     setSnack({ open: true, severity: "success", msg: `Opening ${a.name}...` });
   };
 

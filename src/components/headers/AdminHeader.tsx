@@ -25,9 +25,9 @@ import {
     LogOut
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useThemeContext } from '../../theme/ThemeContext';
 import { EVZONE } from '../../theme/evzone';
-import { useAdminAuth } from '../../hooks/useAdminAuth';
+import { useAdminAuthStore } from '../../stores/adminAuthStore';
+import { useThemeStore } from '../../stores/themeStore';
 import NotificationsPopover from './NotificationsPopover';
 import LanguageSwitcher from '../common/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
@@ -40,8 +40,8 @@ interface AdminHeaderProps {
 export default function AdminHeader({ onDrawerToggle, showMobileToggle = false }: AdminHeaderProps) {
     const theme = useTheme();
     const navigate = useNavigate();
-    const { mode, toggleMode } = useThemeContext();
-    const { user, logout } = useAdminAuth();
+    const { mode, toggleMode } = useThemeStore();
+    const { user, logout } = useAdminAuthStore();
     const isDark = mode === 'dark';
 
     const notifRef = useRef<HTMLButtonElement>(null);
@@ -193,7 +193,10 @@ export default function AdminHeader({ onDrawerToggle, showMobileToggle = false }
                         aria-haspopup="true"
                         aria-expanded={openMenu ? 'true' : undefined}
                     >
-                        <Avatar sx={{ width: 32, height: 32, border: `2px solid ${alpha(theme.palette.primary.main, 0.2)}` }}>A</Avatar>
+                        <Avatar
+                            src={user?.avatarUrl || `https://ui-avatars.com/api/?name=${user?.firstName}+${user?.otherNames}&background=random`}
+                            sx={{ width: 32, height: 32, border: `2px solid ${alpha(theme.palette.primary.main, 0.2)}` }}
+                        />
                     </IconButton>
                     <Menu
                         disableScrollLock
@@ -230,13 +233,13 @@ export default function AdminHeader({ onDrawerToggle, showMobileToggle = false }
                     >
                         <Box sx={{ p: 2, pt: 1.5, pb: 1 }}>
                             <Typography variant="subtitle2" fontWeight={700} noWrap>
-                                {user?.name || "Admin User"}
+                                {user ? `${user.firstName} ${user.otherNames}` : 'Admin'}
                             </Typography>
                             <Typography variant="caption" color="text.secondary" display="block" noWrap>
                                 {user?.role || "Role"}
                             </Typography>
                             <Typography variant="caption" color="text.secondary" noWrap>
-                                {user?.email || "admin@evzone.com"}
+                                {user?.email || ""}
                             </Typography>
                         </Box>
                         <Divider />

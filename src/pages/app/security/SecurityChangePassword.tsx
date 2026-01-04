@@ -20,8 +20,9 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
+import { api } from "../../../utils/api";
 
 /**
  * EVzone My Accounts - Change Password
@@ -114,7 +115,7 @@ function reqs(pw: string) {
 export default function ChangePasswordPage() {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const isDark = mode === "dark";
 
   const [current, setCurrent] = useState("");
@@ -161,10 +162,6 @@ export default function ChangePasswordPage() {
       setSnack({ open: true, severity: "warning", msg: "Enter your current password." });
       return;
     }
-    if (current !== "EVzone123!") {
-      setSnack({ open: true, severity: "error", msg: "Current password is incorrect." });
-      return;
-    }
     if (!pw) {
       setSnack({ open: true, severity: "warning", msg: "Enter a new password." });
       return;
@@ -179,18 +176,28 @@ export default function ChangePasswordPage() {
     }
 
     setSaving(true);
-    await new Promise((r) => setTimeout(r, 700));
-    setSaving(false);
+    try {
+      await api.post("/auth/change-password", {
+        currentPassword: current,
+        newPassword: pw,
+        logoutOthers,
+      });
 
-    setCurrent("");
-    setPw("");
-    setConfirm("");
+      setCurrent("");
+      setPw("");
+      setConfirm("");
 
-    setSnack({
-      open: true,
-      severity: "success",
-      msg: logoutOthers ? "Password updated. Other devices signed out (demo)." : "Password updated (demo).",
-    });
+      setSnack({
+        open: true,
+        severity: "success",
+        msg: "Password updated successfully.",
+      });
+    } catch (err: any) {
+      console.error(err);
+      setSnack({ open: true, severity: "error", msg: "Failed to update password. Please check your current password." });
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (

@@ -19,15 +19,17 @@ import {
   LinearProgress,
   Snackbar,
   Stack,
-  Switch,
+  Switch, // Kept for layout compatibility if needed, but not used? Or remove it.
   TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
+import { startRegistration } from "@simplewebauthn/browser";
+import { api } from "../../../utils/api";
 
 /**
  * EVzone My Accounts - Passkeys Setup
@@ -130,9 +132,10 @@ function ArrowLeftIcon({ size = 18 }: { size?: number }) {
 // -----------------------------
 // Helpers
 // -----------------------------
-function timeAgo(ts?: number) {
+function timeAgo(ts?: number | string) {
   if (!ts) return "Never";
-  const diff = Date.now() - ts;
+  const date = typeof ts === "string" ? new Date(ts).getTime() : ts;
+  const diff = Date.now() - date;
   const min = Math.floor(diff / 60000);
   if (min < 1) return "Just now";
   if (min < 60) return `${min} min ago`;
@@ -142,16 +145,12 @@ function timeAgo(ts?: number) {
   return `${d} day${d === 1 ? "" : "s"} ago`;
 }
 
-function mkId(prefix: string) {
-  return `${prefix}_${Math.random().toString(16).slice(2, 10).toUpperCase()}`;
-}
-
 function transportLabel(t: Transport) {
   if (t === "internal") return "This device";
   if (t === "hybrid") return "Phone";
   if (t === "usb") return "USB";
   if (t === "nfc") return "NFC";
-  return "Bluetooth";
+  return t;
 }
 
 async function safePlatformAvailable(): Promise<boolean> {
@@ -167,59 +166,40 @@ async function safePlatformAvailable(): Promise<boolean> {
 export default function PasskeysPage() {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const isDark = mode === "dark";
 
   const [platformAvailable, setPlatformAvailable] = useState<boolean | null>(null);
   const [busy, setBusy] = useState(false);
-  const [syncEnabled, setSyncEnabled] = useState(true);
-
-  const [passkeys, setPasskeys] = useState<Passkey[]>(() => {
-    const now = Date.now();
-    return [
-      {
-        id: "PK_6A1C9F2B",
-        name: "Windows Hello (Work Laptop)",
-        createdAt: now - 1000 * 60 * 60 * 24 * 42,
-        lastUsedAt: now - 1000 * 60 * 60 * 6,
-        deviceLabel: "Chrome on Windows",
-        synced: false,
-        transports: ["internal"],
-        residentKey: true,
-      },
-      {
-        id: "PK_9B0D44AA",
-        name: "Phone passkey (Google Password Manager)",
-        createdAt: now - 1000 * 60 * 60 * 24 * 22,
-        lastUsedAt: now - 1000 * 60 * 60 * 30,
-        deviceLabel: "Android (Hybrid)",
-        synced: true,
-        transports: ["hybrid"],
-        residentKey: true,
-      },
-    ];
-  });
-
-  const devices = useMemo(() => {
-    const map = new Map<string, { label: string; count: number; lastUsedAt?: number }>();
-    passkeys.forEach((p) => {
-      const cur = map.get(p.deviceLabel) || { label: p.deviceLabel, count: 0, lastUsedAt: p.lastUsedAt };
-      cur.count += 1;
-      cur.lastUsedAt = Math.max(cur.lastUsedAt || 0, p.lastUsedAt || 0) || cur.lastUsedAt;
-      map.set(p.deviceLabel, cur);
-    });
-    return Array.from(map.values()).sort((a, b) => (b.lastUsedAt || 0) - (a.lastUsedAt || 0));
-  }, [passkeys]);
-
-  const [renameOpen, setRenameOpen] = useState(false);
+  const [passkeys, setPasskeys] = useState<Passkey[]>([]);
   const [removeOpen, setRemoveOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [newName, setNewName] = useState("");
-
   const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
+
+  const fetchPasskeys = async () => {
+    try {
+      const res = await api.get("/auth/passkeys");
+      if (Array.isArray(res)) {
+        const mapped: Passkey[] = res.map((p: any) => ({
+          id: p.id,
+          name: p.userAgent || "Unknown Device",
+          createdAt: new Date(p.createdAt).getTime(),
+          lastUsedAt: p.lastUsedAt ? new Date(p.lastUsedAt).getTime() : undefined,
+          deviceLabel: "Passkey",
+          synced: false,
+          transports: p.transports || [],
+          residentKey: true,
+        }));
+        setPasskeys(mapped);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   useEffect(() => {
     safePlatformAvailable().then((v) => setPlatformAvailable(v));
+    fetchPasskeys();
   }, []);
 
   const pageBg =
@@ -233,13 +213,6 @@ export default function PasskeysPage() {
     boxShadow: `0 18px 48px ${alpha(EVZONE.orange, mode === "dark" ? 0.28 : 0.18)}`,
     "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
     "&:active": { backgroundColor: alpha(EVZONE.orange, 0.86), color: "#FFFFFF" },
-  } as const;
-
-  const greenContained = {
-    backgroundColor: EVZONE.green,
-    color: "#FFFFFF",
-    boxShadow: `0 18px 48px ${alpha(EVZONE.green, mode === "dark" ? 0.24 : 0.16)}`,
-    "&:hover": { backgroundColor: alpha(EVZONE.green, 0.92), color: "#FFFFFF" },
   } as const;
 
   const orangeOutlined = {
@@ -257,42 +230,29 @@ export default function PasskeysPage() {
         setSnack({ open: true, severity: "warning", msg: "Passkeys are not supported in this environment." });
         return;
       }
+      // 1. Get options from backend
+      const options = await api.post("/auth/passkeys/register/start");
+      // 2. Browser interaction
+      const attResp = await startRegistration(options);
+      // 3. Finish
+      const verification = await api.post("/auth/passkeys/register/finish", attResp);
 
-      await new Promise((r) => setTimeout(r, 700));
-      const id = mkId("PK");
-      const pk: Passkey = {
-        id,
-        name: syncEnabled ? "New passkey (Synced)" : "New passkey (This device)",
-        createdAt: Date.now(),
-        lastUsedAt: Date.now(),
-        deviceLabel: syncEnabled ? "Hybrid (Phone)" : "This device",
-        synced: syncEnabled,
-        transports: syncEnabled ? ["hybrid"] : ["internal"],
-        residentKey: true,
-      };
-      setPasskeys((prev) => [pk, ...prev]);
-      setSnack({ open: true, severity: "success", msg: "Passkey created (demo)." });
+      if (verification.verified) {
+        setSnack({ open: true, severity: "success", msg: "Passkey created successfully." });
+        fetchPasskeys();
+      } else {
+        setSnack({ open: true, severity: "error", msg: "Verification failed." });
+      }
+    } catch (err: any) {
+      console.error(err);
+      if (err.name === "InvalidStateError") {
+        setSnack({ open: true, severity: "error", msg: "This authenticator is already registered." });
+      } else {
+        setSnack({ open: true, severity: "error", msg: "Failed to create passkey." });
+      }
     } finally {
       setBusy(false);
     }
-  };
-
-  const openRename = (id: string) => {
-    const pk = passkeys.find((p) => p.id === id);
-    setActiveId(id);
-    setNewName(pk?.name || "");
-    setRenameOpen(true);
-  };
-
-  const saveRename = () => {
-    if (!activeId) return;
-    if (newName.trim().length < 3) {
-      setSnack({ open: true, severity: "warning", msg: "Name is too short." });
-      return;
-    }
-    setPasskeys((prev) => prev.map((p) => (p.id === activeId ? { ...p, name: newName.trim() } : p)));
-    setRenameOpen(false);
-    setSnack({ open: true, severity: "success", msg: "Passkey renamed." });
   };
 
   const openRemove = (id: string) => {
@@ -300,11 +260,16 @@ export default function PasskeysPage() {
     setRemoveOpen(true);
   };
 
-  const confirmRemove = () => {
+  const confirmRemove = async () => {
     if (!activeId) return;
-    setPasskeys((prev) => prev.filter((p) => p.id !== activeId));
+    try {
+      await api.delete(`/auth/passkeys/${activeId}`);
+      setPasskeys((prev) => prev.filter((p) => p.id !== activeId));
+      setSnack({ open: true, severity: "success", msg: "Passkey removed." });
+    } catch (e) {
+      setSnack({ open: true, severity: "error", msg: "Failed to remove passkey." });
+    }
     setRemoveOpen(false);
-    setSnack({ open: true, severity: "success", msg: "Passkey removed." });
   };
 
   const capabilityChip =
@@ -319,7 +284,6 @@ export default function PasskeysPage() {
   return (
     <Box className="min-h-screen" sx={{ background: pageBg }}>
       <CssBaseline />
-
       <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
           <Stack spacing={2.2}>
@@ -352,23 +316,10 @@ export default function PasskeysPage() {
                       </Button>
                     </Stack>
                   </Stack>
-
                   <Divider />
-
-                  <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ xs: "stretch", md: "center" }} justifyContent="space-between">
-                    <Alert severity="info" icon={<FingerprintIcon size={18} />} sx={{ flex: 1, m: 0, borderRadius: "4px" }}>
-                      Tip: Keep at least one backup method (password + recovery codes) to avoid lockout.
-                    </Alert>
-
-                    <Box sx={{ display: "flex", gap: 1.2, alignItems: "center", justifyContent: { xs: "flex-start", md: "flex-end" } }}>
-                      <Stack spacing={0.2}>
-                        <Typography sx={{ fontWeight: 950 }}>Sync passkeys</Typography>
-                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Allow passkeys to be available on your phone ecosystem</Typography>
-                      </Stack>
-                      <Switch checked={syncEnabled} onChange={(e) => setSyncEnabled(e.target.checked)} />
-                    </Box>
-                  </Stack>
-
+                  <Alert severity="info" icon={<FingerprintIcon size={18} />} sx={{ borderRadius: "4px" }}>
+                    Tip: Keep at least one backup method (password + recovery codes) to avoid lockout.
+                  </Alert>
                   {busy ? (
                     <Box>
                       <LinearProgress />
@@ -380,14 +331,13 @@ export default function PasskeysPage() {
             </Card>
 
             <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
-              {/* Passkeys list */}
               <Box className="md:col-span-12">
                 <Card>
                   <CardContent className="p-5 md:p-7">
                     <Stack spacing={1.2}>
                       <Typography variant="h6">Your passkeys</Typography>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        You can rename passkeys to recognize devices. Removing a passkey stops it from signing in.
+                        Removing a passkey stops it from signing in.
                       </Typography>
                       <Divider />
 
@@ -402,14 +352,12 @@ export default function PasskeysPage() {
                                 <Box>
                                   <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
                                     <Typography sx={{ fontWeight: 950 }}>{p.name}</Typography>
-                                    {p.synced ? <Chip size="small" variant="outlined" icon={<CloudIcon size={16} />} label="Synced" sx={{ "& .MuiChip-icon": { color: "inherit" } }} /> : <Chip size="small" variant="outlined" label="This device" />}
+                                    {p.synced ? <Chip size="small" variant="outlined" icon={<CloudIcon size={16} />} label="Synced" sx={{ "& .MuiChip-icon": { color: "inherit" } }} /> : <Chip size="small" variant="outlined" label="Device key" />}
                                   </Stack>
                                   <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                                     {p.deviceLabel} • Created {timeAgo(p.createdAt)}
                                   </Typography>
                                   <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 0.8 }}>
-                                    <Chip size="small" variant="outlined" label={`Last used: ${timeAgo(p.lastUsedAt)}`} />
-                                    <Chip size="small" variant="outlined" label={`Resident key: ${p.residentKey ? "Yes" : "No"}`} />
                                     {p.transports.map((t) => (
                                       <Chip key={t} size="small" variant="outlined" label={transportLabel(t)} />
                                     ))}
@@ -418,9 +366,6 @@ export default function PasskeysPage() {
                               </Stack>
 
                               <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ width: { xs: "100%", sm: "auto" } }}>
-                                <Button variant="outlined" sx={orangeOutlined} startIcon={<EditIcon size={18} />} onClick={() => openRename(p.id)}>
-                                  Rename
-                                </Button>
                                 <Button variant="contained" sx={orangeContained} startIcon={<TrashIcon size={18} />} onClick={() => openRemove(p.id)}>
                                   Remove
                                 </Button>
@@ -428,7 +373,6 @@ export default function PasskeysPage() {
                             </Stack>
                           </Box>
                         ))}
-
                         {!passkeys.length ? <Alert severity="info" sx={{ borderRadius: "4px" }}>No passkeys yet. Create one to sign in faster.</Alert> : null}
                       </Stack>
                     </Stack>
@@ -443,31 +387,6 @@ export default function PasskeysPage() {
           </Stack>
         </motion.div>
       </Box>
-
-      {/* Rename dialog */}
-      <Dialog open={renameOpen} onClose={() => setRenameOpen(false)} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: "4px", border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}>
-        <DialogTitle sx={{ fontWeight: 950 }}>Rename passkey</DialogTitle>
-        <DialogContent>
-          <Stack spacing={1.2}>
-            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Use a name that helps you recognize the device.</Typography>
-            <TextField
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              label="Name"
-              placeholder="Example: Work laptop"
-              fullWidth
-              InputProps={{ startAdornment: (<InputAdornment position="start"><EditIcon size={18} /></InputAdornment>) }}
-            />
-            <Alert severity="info" icon={<FingerprintIcon size={18} />} sx={{ borderRadius: "4px" }}>
-              Renaming does not affect how the passkey works.
-            </Alert>
-          </Stack>
-        </DialogContent>
-        <DialogActions sx={{ p: 2, pt: 0 }}>
-          <Button variant="outlined" sx={orangeOutlined} onClick={() => setRenameOpen(false)}>Cancel</Button>
-          <Button variant="contained" sx={greenContained} onClick={saveRename}>Save</Button>
-        </DialogActions>
-      </Dialog>
 
       {/* Remove dialog */}
       <Dialog open={removeOpen} onClose={() => setRemoveOpen(false)} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: "4px", border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}>

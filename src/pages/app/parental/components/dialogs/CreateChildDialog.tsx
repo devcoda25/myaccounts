@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Typography, Stack, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Alert, useTheme } from '@mui/material';
 import { Shield as ShieldIcon } from 'lucide-react';
-import { useThemeContext } from '../../../../../theme/ThemeContext';
+import { useThemeStore } from "../../../../../stores/themeStore";
 import { getStyles } from '../../styles';
 
 interface CreateChildDialogProps {
@@ -12,7 +12,7 @@ interface CreateChildDialogProps {
 
 export default function CreateChildDialog({ open, setOpen, onSubmit }: CreateChildDialogProps) {
     const theme = useTheme();
-    const { mode } = useThemeContext();
+    const { mode } = useThemeStore();
     const { evOrangeContainedSx, evOrangeOutlinedSx, dialogPaperSx } = getStyles(theme, mode);
 
     const [newChildName, setNewChildName] = useState("");

@@ -22,10 +22,11 @@ import {
     LogOut as LogOutIcon,
     RefreshCw as RefreshIcon,
     FileText as FileTextIcon,
-    Building2 as BuildingIcon
+    Building2 as BuildingIcon,
+    Gavel as GavelIcon
 } from 'lucide-react';
 import AdminHeader from '../components/headers/AdminHeader';
-import { useAdminAuth } from '../hooks/useAdminAuth';
+import { useAdminAuthStore } from '../stores/adminAuthStore';
 
 const EVZONE = { green: "#03cd8c", orange: "#f77f00" } as const;
 const SIDEBAR_WIDTH = 260;
@@ -43,7 +44,8 @@ export default function AdminLayout() {
     // State for Bottom Navigation
     const [bottomNavValue, setBottomNavValue] = useState(0);
 
-    const { checkPermission, isAuthenticated, isLoading } = useAdminAuth();
+    const { checkPermission, user, isLoading, logout } = useAdminAuthStore();
+    const isAuthenticated = !!user;
 
     useEffect(() => {
         if (!isLoading && !isAuthenticated) {
@@ -62,6 +64,7 @@ export default function AdminLayout() {
         { label: "KYC Requests", icon: <FileTextIcon size={18} />, route: "/admin/kyc", permission: "view_kyc" },
         { label: "Wallets", icon: <RefreshIcon size={18} />, route: "/admin/wallets", permission: "view_wallets" },
         { label: "Transactions", icon: <ClipboardIcon size={18} />, route: "/admin/transactions", permission: "view_transactions" },
+        { label: "Disputes", icon: <GavelIcon size={18} />, route: "/admin/disputes", permission: "view_disputes" },
         { label: "Audit logs", icon: <ClipboardIcon size={18} />, route: "/admin/audit", permission: "view_audit_logs" },
         { label: "Administrators", icon: <ShieldIcon size={18} />, route: "/admin/administrators", permission: "manage_admins" }, // New
         { label: "System status", icon: <ShieldIcon size={18} />, route: "/admin/status", permission: "view_status" },
@@ -142,7 +145,7 @@ export default function AdminLayout() {
                             borderRadius: "10px",
                             py: 1.5
                         }}
-                        onClick={() => navigate('/admin/auth/login')}
+                        onClick={logout}
                     >
                         Sign out
                     </Button>

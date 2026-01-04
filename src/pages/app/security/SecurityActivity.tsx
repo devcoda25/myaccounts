@@ -23,8 +23,9 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
+import { api } from "../../../utils/api";
 
 /**
  * EVzone My Accounts - Login Activity
@@ -226,54 +227,13 @@ function statusChipProps(s: LoginStatus) {
 // --- lightweight self-tests ---
 export default function LoginActivityPage() {
   const theme = useTheme();
-  const { mode, toggleMode } = useThemeContext();
+  const { mode } = useThemeStore();
   const isDark = mode === "dark";
 
   const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
 
-  const [events, setEvents] = useState<LoginEvent[]>(() => [
-    {
-      id: "e1",
-      when: Date.now() - 1000 * 60 * 4,
-      device: "Chrome on Windows",
-      method: "Password",
-      location: "Kampala, Uganda",
-      ip: "197.157.12.44",
-      status: "success",
-      risk: [],
-    },
-    {
-      id: "e2",
-      when: Date.now() - 1000 * 60 * 40,
-      device: "EVzone Android App",
-      method: "WhatsApp",
-      location: "Entebbe, Uganda",
-      ip: "102.90.44.18",
-      status: "success",
-      risk: ["new_device"],
-    },
-    {
-      id: "e3",
-      when: Date.now() - 1000 * 60 * 60 * 4,
-      device: "Safari",
-      method: "Password",
-      location: "Nairobi, Kenya",
-      ip: "41.90.1.200",
-      status: "blocked",
-      risk: ["new_location", "suspicious"],
-    },
-    {
-      id: "e4",
-      when: Date.now() - 1000 * 60 * 60 * 20,
-      device: "Chrome on Mac",
-      method: "OTP",
-      location: "Dubai, UAE",
-      ip: "5.32.10.99",
-      status: "failure",
-      risk: ["impossible_travel"],
-    },
-  ]);
+  const [events, setEvents] = useState<LoginEvent[]>([]);
 
   const pageBg =
     mode === "dark"
@@ -309,6 +269,31 @@ export default function LoginActivityPage() {
   const [status, setStatus] = useState<string>("all");
   const [search, setSearch] = useState<string>("");
 
+  // Fetch from API
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api("/security/activity")
+      .then((logs: any[]) => {
+        const mapped: LoginEvent[] = logs.map((l) => ({
+          id: l.id,
+          when: new Date(l.createdAt).getTime(),
+          device: (l.details as any)?.device || "Unknown Device",
+          method: l.action as LoginMethod, // Backend action should map or be generic
+          location: (l.details as any)?.location || "Unknown Location",
+          ip: l.ip || "Unknown IP",
+          status: (l.severity === "error" || l.action.toLowerCase().includes("fail")) ? "failure" : "success",
+          risk: l.severity === "error" ? ["suspicious"] : [],
+        }));
+        setEvents(mapped);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setLoading(false);
+      });
+  }, []);
+
   const deviceOptions = useMemo(() => {
     const set = new Set(events.map((e) => e.device));
     return ["all", ...Array.from(set)];
@@ -333,11 +318,13 @@ export default function LoginActivityPage() {
   }, [events, from, to, device, status, search]);
 
   const stats = useMemo(() => {
-    const last24 = Date.now() - 1000 * 60 * 60 * 24;
-    const recent = events.filter((e) => e.when >= last24);
-    const failures = recent.filter((e) => e.status !== "success").length;
-    const suspicious = recent.filter((e) => e.risk.includes("suspicious") || e.risk.includes("impossible_travel")).length;
-    return { recentCount: recent.length, failures, suspicious };
+    const now = Date.now();
+    const last24 = events.filter((x) => now - x.when < 86400000);
+    return {
+      recentCount: last24.length,
+      failures: last24.filter((x) => x.status === "failure" || x.status === "blocked").length,
+      suspicious: last24.filter((x) => x.risk.length > 0).length,
+    };
   }, [events]);
 
   // Report dialog

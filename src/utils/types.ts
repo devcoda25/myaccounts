@@ -1,5 +1,15 @@
 // Common Types
 export type ThemeMode = "light" | "dark";
+
+export interface User {
+    id: string;
+    email: string;
+    firstName?: string;
+    otherNames?: string;
+    avatarUrl?: string;
+    role: string;
+}
+
 export type Severity = "info" | "warning" | "error" | "success";
 
 // Auth Types
@@ -30,3 +40,92 @@ export type Service = {
     health: Health;
     lastUpdatedAt: number;
 };
+
+// Wallet Types
+export interface Wallet {
+    id: string;
+    balance: number | string; // Decimal from Prisma comes as string or number
+    currency: string;
+}
+
+export type TxType = "Top up" | "Payment" | "Withdrawal" | "Refund" | "Fee";
+export type TxStatus = "completed" | "pending" | "failed";
+
+export interface Transaction {
+    id: string;
+    amount: number | string;
+    currency: string;
+    type: TxType;
+    status: TxStatus;
+    referenceId?: string;
+    providerRef?: string;
+    channel?: string;
+    counterparty?: string;
+    description?: string; // Mapped from 'note' or 'description'
+    createdAt: string; // ISO date
+}
+
+// Organization Types
+export interface Organization {
+    id: string;
+    name: string;
+    role: OrgRole;
+    membersCount: number;
+    country: string;
+    joinedAt: string;
+    ssoEnabled?: boolean;
+    walletEnabled?: boolean;
+}
+
+// Audit Types
+export interface AuditLog {
+    id: string;
+    action: string;
+    details: any;
+    user?: { email: string };
+    createdAt: string;
+    // UI specific (optional or mapped from details)
+    method?: string;
+    ip?: string;
+    route?: string;
+    status?: number;
+}
+
+// Profile Types
+export type ContactLabel = "Personal" | "Work" | "Other";
+export type ChangeType = "email" | "phone";
+export type VerifyChannel = "Email" | "SMS" | "WhatsApp";
+
+export interface EmailContact {
+    id: string;
+    label: ContactLabel;
+    email: string;
+    verified: boolean;
+    loginEnabled: boolean;
+    createdAt: number;
+    lastUsedAt?: number;
+}
+
+export interface PhoneContact {
+    id: string;
+    label: ContactLabel;
+    phone: string;
+    verified: boolean;
+    loginEnabled: boolean;
+    smsCapable: boolean;
+    whatsappCapable: boolean;
+    createdAt: number;
+    lastUsedAt?: number;
+}
+
+export interface Prefs {
+    security_email: string | null;
+    security_sms: string | null;
+    security_whatsapp: string | null;
+    reset_email: string | null;
+    reset_sms: string | null;
+    reset_whatsapp: string | null;
+    receipts_email: string | null;
+    mfa_sms: string | null;
+    mfa_whatsapp: string | null;
+}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import AuthHeader from "../../../components/headers/AuthHeader";
-import { useAdminAuth } from '../../../hooks/useAdminAuth';
+import { useAdminAuthStore } from '../../../stores/adminAuthStore';
 import { useTranslation } from "react-i18next";
 import {
     Alert,
@@ -58,7 +58,14 @@ export default function AdminLogin() {
     const theme = useTheme();
     const isDark = theme.palette.mode === "dark";
     const { t } = useTranslation();
-    const { login } = useAdminAuth();
+    const { login, user } = useAdminAuthStore();
+    const location = useLocation();
+
+    useEffect(() => {
+        if (user) {
+            navigate("/admin/dashboard");
+        }
+    }, [user, navigate]);
 
     const [identifier, setIdentifier] = useState("admin@evzone.com");
     const [password, setPassword] = useState("");
@@ -119,23 +126,21 @@ export default function AdminLogin() {
         }
 
         try {
-            const success = await login(id);
+            const success = await login(id, password);
             if (success) {
                 setSnack({ open: true, severity: "success", msg: `Admin signed in as ${maskIdentifier(id)}.` });
-                navigate("/admin/dashboard");
-            } else {
-                const next = attempts + 1;
-                setAttempts(next);
-
-                if (next >= 3) {
-                    setLockUntil(Date.now() + 30_000);
-                    setBanner({ severity: "error", msg: "Too many failed attempts. Locked for 30 seconds." });
-                } else {
-                    setBanner({ severity: "error", msg: "Invalid credentials. Try admin@evzone.com or staff@evzone.com" });
-                }
+                const from = (location.state as any)?.from || "/admin/dashboard";
+                navigate(from, { replace: true });
             }
-        } catch (err) {
-            setBanner({ severity: "error", msg: "Login failed due to system error." });
+        } catch (err: any) {
+            const msg = err.message || "Invalid credentials. Try admin@evzone.com or staff@evzone.com";
+            setBanner({ severity: "error", msg });
+
+            const next = attempts + 1;
+            setAttempts(next);
+            if (next >= 3) {
+                setLockUntil(Date.now() + 30_000);
+            }
         }
     };
 
@@ -211,6 +216,10 @@ export default function AdminLogin() {
                                     <Button fullWidth variant="contained" endIcon={<ArrowRightIcon size={18} />} onClick={submit} disabled={isLocked} sx={orangeContainedSx}>
                                         {isLocked ? `Try again in ${secondsLeft}s` : t('auth.sign_in.sign_in_btn')}
                                     </Button>
+
+                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                                        {t('auth.sign_in.demo_login', { email: 'admin@evzone.com', password: 'superadmin-secure-pw' })}
+                                    </Typography>
 
                                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
                                         By signing in, you agree to EVzone Terms and acknowledge the Privacy Policy.

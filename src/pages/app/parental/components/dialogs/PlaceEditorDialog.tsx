@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Stack, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Slider, Alert, useTheme } from '@mui/material';
 import { Shield as ShieldIcon } from 'lucide-react';
-import { useThemeContext } from '../../../../../theme/ThemeContext';
+import { useThemeStore } from "../../../../../stores/themeStore";
 import { getStyles } from '../../styles';
 import { Place } from '../../types';
 
@@ -15,7 +15,7 @@ interface PlaceEditorDialogProps {
 
 export default function PlaceEditorDialog({ open, setOpen, target, currentPlace, onSave }: PlaceEditorDialogProps) {
     const theme = useTheme();
-    const { mode } = useThemeContext();
+    const { mode } = useThemeStore();
     const { evOrangeContainedSx, evOrangeOutlinedSx, dialogPaperSx } = getStyles(theme, mode);
 
     const [address, setAddress] = useState("");

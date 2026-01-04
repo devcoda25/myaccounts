@@ -23,7 +23,9 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { api } from "../../../utils/api";
+import { getProviderIcon, getProviderColor } from "../../../assets/paymentIcons";
+
 
 /**
  * EVzone My Accounts - Add Funds
@@ -256,10 +258,15 @@ function runSelfTestsOnce() {
   }
 }
 
-export default function AddFundsPage() {
+import { useThemeStore } from "../../../stores/themeStore";
+
+// ...
+
+export default function WalletAddFunds() {
+
   const navigate = useNavigate();
   const theme = useTheme();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const isDark = mode === "dark";
 
   const currency = "UGX";
@@ -353,7 +360,7 @@ export default function AddFundsPage() {
                   color: theme.palette.text.primary,
                 }}
               >
-                {m === "card" ? <CardIcon size={18} /> : m === "bank_transfer" ? <BankIcon size={18} /> : <PhoneIcon size={18} />}
+                {getProviderIcon(m === 'card' ? 'visa' : m === 'bank_transfer' ? 'bank' : m, 24)}
               </Box>
               <Box>
                 <Typography sx={{ fontWeight: 950 }}>{methodLabel(m)}</Typography>
@@ -382,6 +389,9 @@ export default function AddFundsPage() {
 
   const back = () => setStep((s) => (s === 0 ? 0 : ((s - 1) as any)));
 
+
+  // ...
+
   const confirm = async () => {
     if (!canContinue) {
       setSnack({ open: true, severity: "warning", msg: "Enter an amount of at least UGX 1,000." });
@@ -391,17 +401,27 @@ export default function AddFundsPage() {
     setResult("review");
     setReceipt(null);
 
-    await new Promise((r) => setTimeout(r, 900));
+    try {
+      const res = await api('/wallets/me/add-funds', {
+        method: 'POST',
+        body: JSON.stringify({
+          amount: clampMoney(amount),
+          currency: "UGX",
+          method: method,
+          provider: method === 'card' ? 'stripe' : method // simple mapping
+        })
+      });
 
-    // Demo success rate: bank transfer = always success, others = 85%
-    const ok = method === "bank_transfer" ? true : Math.random() < 0.85;
-
-    const rid = `AF-${Math.random().toString(16).slice(2, 8).toUpperCase()}`;
-    const ref = `EVZ-${Math.random().toString(16).slice(2, 10).toUpperCase()}`;
-    setReceipt({ id: rid, reference: ref });
-
-    setResult(ok ? "success" : "failure");
-    setSnack({ open: true, severity: ok ? "success" : "error", msg: ok ? "Top up successful." : "Top up failed. Try again." });
+      // The API returns the transaction
+      const ref = res.referenceId || `EVZ-${Math.random().toString(16).slice(2, 10).toUpperCase()}`;
+      setReceipt({ id: res.id, reference: ref });
+      setResult("success");
+      setSnack({ open: true, severity: "success", msg: "Top up successful." });
+    } catch (err) {
+      console.error(err);
+      setResult("failure");
+      setSnack({ open: true, severity: "error", msg: "Top up failed. Try again." });
+    }
   };
 
   const reset = () => {
@@ -622,10 +642,10 @@ export default function AddFundsPage() {
                             <Typography variant="h6">Choose payment method</Typography>
 
                             <Box className="grid gap-3">
-                              <MethodCard m="mtn_momo" accent={MTN.yellow} />
-                              <MethodCard m="airtel_money" accent={AIRTEL.red} />
-                              <MethodCard m="card" accent={EVZONE.orange} />
-                              <MethodCard m="bank_transfer" accent={EVZONE.green} />
+                              <MethodCard m="mtn_momo" accent={getProviderColor("mtn")} />
+                              <MethodCard m="airtel_money" accent={getProviderColor("airtel")} />
+                              <MethodCard m="card" accent={getProviderColor("visa")} />
+                              <MethodCard m="bank_transfer" accent={getProviderColor("bank")} />
                             </Box>
 
                             <SummaryCard />

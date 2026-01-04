@@ -70,24 +70,41 @@ export default function AdminOrgsListPage() {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [statusFilter, setStatusFilter] = useState<OrgStatus | "All">("All");
 
-    const [rows, setRows] = useState<OrgRow[]>(() => [
-        { id: "org_1", name: "EV World Africa", domain: "evworld.africa", owner: "Ronald Isabirye", status: "Active", plan: "Enterprise", members: 12, createdAt: Date.now() - 1000 * 60 * 60 * 24 * 365 },
-        { id: "org_2", name: "Kampala Charging Solutions", domain: "kla-charge.com", owner: "John Doe", status: "Active", plan: "Pro", members: 5, createdAt: Date.now() - 1000 * 60 * 60 * 24 * 60 },
-        { id: "org_3", name: "Uganda Logistics", domain: "ug-logs.com", owner: "Sarah M.", status: "Suspended", plan: "Free", members: 2, createdAt: Date.now() - 1000 * 60 * 60 * 24 * 120 },
-        { id: "org_4", name: "Green Energy Ltd", domain: "green-energy.ug", owner: "Mike K.", status: "Pending", plan: "Free", members: 1, createdAt: Date.now() - 1000 * 60 * 60 * 24 * 2 },
-    ]);
+    const [loading, setLoading] = useState(false);
+    const [rows, setRows] = useState<OrgRow[]>([]);
+    const [total, setTotal] = useState(0);
 
-    const filtered = useMemo(() => {
-        const s = q.trim().toLowerCase();
-        return rows
-            .filter((r) => statusFilter === "All" || r.status === statusFilter)
-            .filter((r) =>
-                !s ||
-                r.name.toLowerCase().includes(s) ||
-                r.domain.toLowerCase().includes(s) ||
-                r.owner.toLowerCase().includes(s)
-            );
-    }, [rows, q, statusFilter]);
+    const [snack, setSnack] = useState<{ open: boolean; severity: "error" | "info"; msg: string }>({ open: false, severity: "info", msg: "" });
+
+    // API Call
+    const fetchOrgs = async () => {
+        setLoading(true);
+        try {
+            const skip = page * rowsPerPage;
+            // For now pass status filter too, though backend might just accept query
+            const res = await import("../../../utils/api").then(m => m.api(`/admin/orgs?skip=${skip}&take=${rowsPerPage}&query=${encodeURIComponent(q)}&status=${statusFilter}`));
+            if (res && Array.isArray(res.orgs)) {
+                setRows(res.orgs);
+                setTotal(res.total || 0);
+            }
+        } catch (err: any) {
+            console.error(err);
+            setSnack({ open: true, severity: "error", msg: "Failed to load organizations" });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchOrgs();
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [page, rowsPerPage, q, statusFilter]);
+
+    // Derived filtered not needed as we fetch from server, but if we wanted client side sorting on the page we could.
+    // However, since rows are already filtered by backend, we just use rows.
+    const filtered = rows;
 
     const orangeOutlined = {
         borderColor: alpha(EVZONE.orange, 0.70),

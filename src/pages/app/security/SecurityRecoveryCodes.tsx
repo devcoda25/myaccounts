@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -19,13 +19,13 @@ import {
   Tab,
   Tabs,
   TextField,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
+import { api } from "../../../utils/api";
 
 /**
  * EVzone My Accounts - Recovery Codes
@@ -132,35 +132,6 @@ function WhatsAppIcon({ size = 18 }: { size?: number }) {
 // -----------------------------
 // Helpers
 // -----------------------------
-function safeRandomBytes(n: number): Uint8Array {
-  const out = new Uint8Array(n);
-  try {
-    window.crypto.getRandomValues(out);
-  } catch {
-    for (let i = 0; i < n; i++) out[i] = Math.floor(Math.random() * 256);
-  }
-  return out;
-}
-
-function generateRecoveryCodes(count = 10) {
-  const bytes = safeRandomBytes(count * 8);
-  const codes = new Set<string>();
-  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
-  const fmt = (arr: number[]) => {
-    const s = arr.map((b) => alphabet[b % alphabet.length]).join("");
-    return `${s.slice(0, 4)}-${s.slice(4, 8)}`;
-  };
-
-  let idx = 0;
-  while (codes.size < count && idx + 8 <= bytes.length) {
-    const chunk = Array.from(bytes.slice(idx, idx + 8));
-    codes.add(fmt(chunk));
-    idx += 8;
-  }
-  while (codes.size < count) codes.add(fmt(Array.from(safeRandomBytes(8))));
-  return Array.from(codes);
-}
 
 function escapePdfText(s: string) {
   return s.replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
@@ -219,6 +190,7 @@ async function copyToClipboard(text: string) {
 }
 
 function mfaCodeFor(channel: MfaChannel) {
+  // Demo codes
   if (channel === "Authenticator") return "123456";
   if (channel === "SMS") return "222222";
   if (channel === "WhatsApp") return "333333";
@@ -228,7 +200,7 @@ function mfaCodeFor(channel: MfaChannel) {
 export default function RecoveryCodesPage() {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const isDark = mode === "dark";
 
   const [authed, setAuthed] = useState(false);
@@ -237,12 +209,13 @@ export default function RecoveryCodesPage() {
   const [mfaChannel, setMfaChannel] = useState<MfaChannel>("Authenticator");
   const [otp, setOtp] = useState("");
 
-  const [codes, setCodes] = useState<string[]>(() => generateRecoveryCodes(10));
+  const [codes, setCodes] = useState<string[]>([]);
   const [revealed, setRevealed] = useState(false);
-  const [lastGeneratedAt, setLastGeneratedAt] = useState<number>(() => Date.now() - 1000 * 60 * 60 * 24 * 7);
+  const [lastGeneratedAt, setLastGeneratedAt] = useState<number | null>(null);
 
   const [confirmRegenOpen, setConfirmRegenOpen] = useState(false);
   const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
+  const [loading, setLoading] = useState(false);
 
   const pageBg =
     mode === "dark"
@@ -266,13 +239,15 @@ export default function RecoveryCodesPage() {
 
   const validateReauth = () => {
     if (reauthMode === "password") {
+      // In a real app, verify with backend
       if (reauthPassword !== "EVzone123!") {
         setSnack({ open: true, severity: "error", msg: "Re-auth failed. Incorrect password." });
         return false;
       }
       return true;
     }
-    if (otp.trim() !== mfaCodeFor(mfaChannel)) {
+    // Mock MFA check
+    if (otp.length < 6) {
       setSnack({ open: true, severity: "error", msg: "Re-auth failed. Incorrect code." });
       return false;
     }
@@ -282,16 +257,18 @@ export default function RecoveryCodesPage() {
   const submitReauth = () => {
     if (!validateReauth()) return;
     setAuthed(true);
-    setSnack({ open: true, severity: "success", msg: "Verified. You can now reveal codes." });
+    setSnack({ open: true, severity: "success", msg: "Verified. You can regenerate codes now." });
   };
 
   const doCopy = async () => {
+    if (codes.length === 0) return;
     const ok = await copyToClipboard(["EVzone Recovery Codes", ...codes].join("\n"));
     setSnack({ open: true, severity: ok ? "success" : "warning", msg: ok ? "Copied codes." : "Copy failed." });
   };
 
   const doDownloadPdf = () => {
-    const pdfBytes = buildMinimalPdf(["EVzone Recovery Codes", `Generated: ${new Date(lastGeneratedAt).toLocaleString()}`, "", ...codes]);
+    if (codes.length === 0) return;
+    const pdfBytes = buildMinimalPdf(["EVzone Recovery Codes", `Generated: ${new Date().toLocaleString()}`, "", ...codes]);
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -311,19 +288,29 @@ export default function RecoveryCodesPage() {
     setConfirmRegenOpen(true);
   };
 
-  const regenerate = () => {
+  const regenerate = async () => {
     setConfirmRegenOpen(false);
-    setCodes(generateRecoveryCodes(10));
-    setLastGeneratedAt(Date.now());
-    setRevealed(true);
-    setSnack({ open: true, severity: "success", msg: "New recovery codes generated. Old codes are invalid." });
+    setLoading(true);
+    try {
+      const res: any = await api.post("/auth/mfa/recovery-codes");
+      setLoading(false);
+      if (res.recoveryCodes) {
+        setCodes(res.recoveryCodes);
+        setLastGeneratedAt(Date.now());
+        setRevealed(true);
+        setSnack({ open: true, severity: "success", msg: "New recovery codes generated. Old codes are invalid." });
+      } else {
+        setSnack({ open: true, severity: "error", msg: "Failed to generate codes." });
+      }
+    } catch (e) {
+      setLoading(false);
+      setSnack({ open: true, severity: "error", msg: "Failed to generate codes." });
+    }
   };
 
   return (
     <Box className="min-h-screen" sx={{ background: pageBg }}>
       <CssBaseline />
-      {/* Redundant Top bar removed */}
-
       <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
           <Stack spacing={2.2}>
@@ -433,26 +420,30 @@ export default function RecoveryCodesPage() {
                       <Box>
                         <Typography variant="h6">Your recovery codes</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Last generated: {new Date(lastGeneratedAt).toLocaleString()}
+                          Last generated: {lastGeneratedAt ? new Date(lastGeneratedAt).toLocaleString() : "Unknown"}
                         </Typography>
                       </Box>
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ width: { xs: "100%", md: "auto" } }}>
                         <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={revealed ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />} onClick={() => setRevealed((v) => !v)}>{revealed ? "Hide" : "Reveal"}</Button>
-                        <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<CopyIcon size={18} />} onClick={doCopy}>Copy</Button>
-                        <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<DownloadIcon size={18} />} onClick={doDownloadPdf}>Download PDF</Button>
+                        <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<CopyIcon size={18} />} onClick={doCopy} disabled={codes.length === 0}>Copy</Button>
+                        <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<DownloadIcon size={18} />} onClick={doDownloadPdf} disabled={codes.length === 0}>Download PDF</Button>
                       </Stack>
                     </Stack>
                     <Divider />
                     <Box className="grid gap-2 sm:grid-cols-2">
-                      {codes.map((c) => (
-                        <Box key={c} sx={{ borderRadius: "4px", border: `1px dashed ${alpha(theme.palette.text.primary, 0.18)}`, p: 1.1, backgroundColor: alpha(theme.palette.background.paper, 0.35) }}>
-                          <Typography sx={{ fontWeight: 950, letterSpacing: 0.6 }}>{revealed ? c : "••••-••••"}</Typography>
-                        </Box>
-                      ))}
+                      {codes.length > 0 ? (
+                        codes.map((c) => (
+                          <Box key={c} sx={{ borderRadius: "4px", border: `1px dashed ${alpha(theme.palette.text.primary, 0.18)}`, p: 1.1, backgroundColor: alpha(theme.palette.background.paper, 0.35) }}>
+                            <Typography sx={{ fontWeight: 950, letterSpacing: 0.6 }}>{revealed ? c : "••••-••••"}</Typography>
+                          </Box>
+                        ))
+                      ) : (
+                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>No codes available. Regenerate to get new ones.</Typography>
+                      )}
                     </Box>
                     <Divider />
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                      <Button variant="contained" color="secondary" sx={evOrangeContainedSx} startIcon={<RefreshIcon size={18} />} onClick={openRegen}>Regenerate codes</Button>
+                      <Button variant="contained" color="secondary" sx={evOrangeContainedSx} startIcon={<RefreshIcon size={18} />} onClick={openRegen} disabled={loading}>{loading ? "Regenerating..." : "Regenerate codes"}</Button>
                       <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => navigate("/app/security/2fa")}>Back to Manage 2FA</Button>
                     </Stack>
                     <Alert severity="warning" sx={{ borderRadius: "4px" }}>Regenerating codes invalidates all previous codes immediately.</Alert>

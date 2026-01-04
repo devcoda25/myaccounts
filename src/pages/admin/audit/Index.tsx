@@ -107,15 +107,19 @@ function riskTone(r: Risk) {
     return EVZONE.green;
 }
 
+import { api } from "../../../utils/api";
+
 export default function AuditLogs() {
     const theme = useTheme();
     const isDark = theme.palette.mode === 'dark';
     const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
-    const [rows] = useState<AuditEvent[]>(() => mkEvents());
+    const [rows, setRows] = useState<AuditEvent[]>([]);
     const [q, setQ] = useState("");
     const [outcome, setOutcome] = useState<Outcome | "All">("All");
     const [risk, setRisk] = useState<Risk | "All">("All");
     const [detail, setDetail] = useState<AuditEvent | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [total, setTotal] = useState(0);
 
     const orangeContained = {
         backgroundColor: EVZONE.orange,
@@ -133,20 +137,30 @@ export default function AuditLogs() {
         borderRadius: 3
     } as const;
 
-    const filtered = useMemo(() => {
-        const s = q.trim().toLowerCase();
-        return rows
-            .filter((r) => (outcome === "All" ? true : r.outcome === outcome))
-            .filter((r) => (risk === "All" ? true : r.risk === risk))
-            .filter((r) =>
-                !s
-                    ? true
-                    : [r.id, r.actor, r.role, r.action, r.target, r.ip, r.requestId]
-                        .join(" ")
-                        .toLowerCase()
-                        .includes(s)
-            );
-    }, [rows, q, outcome, risk]);
+    React.useEffect(() => {
+        const load = async () => {
+            try {
+                setLoading(true);
+                const params: any = { take: 100 };
+                if (q) params.query = q;
+                if (outcome !== "All") params.outcome = outcome;
+                if (risk !== "All") params.risk = risk;
+
+                const res = await api('/admin/audit-logs', { params });
+                setRows(res.logs || []);
+                setTotal(res.total || 0);
+            } catch (err) {
+                console.error(err);
+                setSnack({ open: true, severity: "error", msg: "Failed to load audit logs." });
+            } finally {
+                setLoading(false);
+            }
+        };
+        const timeout = setTimeout(load, 250); // Debounce
+        return () => clearTimeout(timeout);
+    }, [q, outcome, risk]);
+
+    const filtered = rows;
 
     const riskChip = (r: Risk) => {
         const tone = riskTone(r);

@@ -8,9 +8,7 @@ import {
   Card,
   CardContent,
   Chip,
-  CssBaseline,
   Divider,
-  IconButton,
   InputAdornment,
   MenuItem,
   Snackbar,
@@ -22,99 +20,29 @@ import {
   TableHead,
   TableRow,
   TextField,
-  Tooltip,
   Typography,
 } from "@mui/material";
-import { alpha } from "@mui/material/styles";
-import { useTheme } from "@mui/material/styles";
-import { useThemeContext } from "../../../theme/ThemeContext";
+import { alpha, useTheme } from "@mui/material/styles";
+import { useThemeStore } from "../../../stores/themeStore";
 import { motion } from "framer-motion";
-
-/**
- * EVzone My Accounts - Transaction History
- * Route: /app/wallet/transactions
- *
- * Features:
- * • Filter (date range, type, status)
- * • Search by reference
- * • Export CSV (optional)
- * • Mobile: transaction cards instead of table
- */
-
+import { api } from "../../../utils/api";
+import { Transaction, TxType, TxStatus } from "../../../utils/types";
 
 type Severity = "info" | "warning" | "error" | "success";
-
-type TxStatus = "completed" | "pending" | "failed";
-
-type TxType = "Top up" | "Payment" | "Withdrawal" | "Refund" | "Fee";
-
-type Tx = {
-  id: string;
-  reference: string;
-  providerRef?: string;
-  type: TxType;
-  status: TxStatus;
-  amount: number; // + inflow, - outflow
-  currency: string;
-  counterparty: string;
-  channel: "Wallet" | "Charging" | "Marketplace" | "School" | "AgentHub" | "Other";
-  createdAt: number;
-  updatedAt: number;
-};
 
 const EVZONE = {
   green: "#03cd8c",
   orange: "#f77f00",
 } as const;
 
-const THEME_KEY = "evzone_myaccounts_theme";
-
 // -----------------------------
-// Inline icons (CDN-safe)
+// Icons
 // -----------------------------
 function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      focusable="false"
-      style={{ display: "block" }}
-    >
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: "block" }}>
       {children}
     </svg>
-  );
-}
-
-function SunIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
-      <path d="M12 2v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 20v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M4 12H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M22 12h-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
-  );
-}
-
-function MoonIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <path d="M21 13a8 8 0 0 1-10-10 7.5 7.5 0 1 0 10 10Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-    </IconBase>
-  );
-}
-
-function GlobeIcon({ size = 18 }: { size?: number }) {
-  return (
-    <IconBase size={size}>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M3 12h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </IconBase>
   );
 }
 
@@ -196,10 +124,6 @@ function ReceiptIcon({ size = 18 }: { size?: number }) {
 }
 
 // -----------------------------
-// Theme
-// -----------------------------
-
-// -----------------------------
 // Helpers
 // -----------------------------
 function money(amount: number, currency: string) {
@@ -243,11 +167,11 @@ function dateToTsEnd(v: string) {
   return Number.isFinite(ts) ? ts : Infinity;
 }
 
-function exportCsv(rows: Tx[]) {
-  const header = ["id", "reference", "providerRef", "type", "status", "amount", "currency", "counterparty", "channel", "createdAt", "updatedAt"];
+function exportCsv(rows: Transaction[]) {
+  const header = ["id", "reference", "providerRef", "type", "status", "amount", "currency", "counterparty", "channel", "createdAt"];
   const data = rows.map((r) => [
     r.id,
-    r.reference,
+    r.referenceId || "",
     r.providerRef || "",
     r.type,
     r.status,
@@ -255,8 +179,7 @@ function exportCsv(rows: Tx[]) {
     r.currency,
     r.counterparty,
     r.channel,
-    new Date(r.createdAt).toISOString(),
-    new Date(r.updatedAt).toISOString(),
+    r.createdAt,
   ]);
 
   const csv = [header, ...data]
@@ -274,30 +197,9 @@ function exportCsv(rows: Tx[]) {
   URL.revokeObjectURL(url);
 }
 
-// --- lightweight self-tests ---
-function runSelfTestsOnce() {
-  try {
-    const w = window as any;
-    if (w.__EVZONE_TX_HISTORY_TESTS_RAN__) return;
-    w.__EVZONE_TX_HISTORY_TESTS_RAN__ = true;
-
-    const assert = (name: string, cond: boolean) => {
-      if (!cond) throw new Error(`Test failed: ${name}`);
-    };
-
-    assert("dateToTsStart", Number.isFinite(dateToTsStart("2025-01-01")));
-    assert("dateToTsEnd", Number.isFinite(dateToTsEnd("2025-01-01")));
-    assert("money sign", money(-1200, "UGX").startsWith("-"));
-    assert("typeIcon returns", !!typeIcon("Fee"));
-
-  } catch (e) {
-    // ignore
-  }
-}
-
 export default function TransactionHistoryPage() {
   const navigate = useNavigate();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const theme = useTheme();
   const isDark = mode === "dark";
 
@@ -309,22 +211,23 @@ export default function TransactionHistoryPage() {
   const [status, setStatus] = useState<"all" | TxStatus>("all");
   const [search, setSearch] = useState("");
 
-  const [txs] = useState<Tx[]>(() => {
-    const now = Date.now();
-    return [
-      { id: "tx_001", reference: "EVZ-9F2A3B", providerRef: "MTN-883771", type: "Top up", status: "completed", amount: 500000, currency: "UGX", counterparty: "MTN MoMo", channel: "Wallet", createdAt: now - 1000 * 60 * 14, updatedAt: now - 1000 * 60 * 12 },
-      { id: "tx_002", reference: "EVZ-1C0D2E", providerRef: "CP-CHG-1021", type: "Payment", status: "completed", amount: -120000, currency: "UGX", counterparty: "EVzone Charging", channel: "Charging", createdAt: now - 1000 * 60 * 60, updatedAt: now - 1000 * 60 * 58 },
-      { id: "tx_003", reference: "EVZ-MLD-193", providerRef: "ORD-77821", type: "Payment", status: "completed", amount: -45000, currency: "UGX", counterparty: "Marketplace", channel: "Marketplace", createdAt: now - 1000 * 60 * 60 * 6, updatedAt: now - 1000 * 60 * 60 * 6 + 1000 * 30 },
-      { id: "tx_004", reference: "EVZ-WD-A1B2", providerRef: "BANK-TRX-3311", type: "Withdrawal", status: "pending", amount: -800000, currency: "UGX", counterparty: "Bank transfer", channel: "Wallet", createdAt: now - 1000 * 60 * 60 * 20, updatedAt: now - 1000 * 60 * 60 * 2 },
-      { id: "tx_005", reference: "EVZ-RF-33K", providerRef: "ORD-REF-009", type: "Refund", status: "completed", amount: 30000, currency: "UGX", counterparty: "Marketplace", channel: "Marketplace", createdAt: now - 1000 * 60 * 60 * 24 * 3, updatedAt: now - 1000 * 60 * 60 * 24 * 3 + 1000 * 45 },
-      { id: "tx_006", reference: "EVZ-FEE-120", providerRef: "FEE-1001", type: "Fee", status: "completed", amount: -2500, currency: "UGX", counterparty: "Payment fee", channel: "Wallet", createdAt: now - 1000 * 60 * 60 * 24 * 8, updatedAt: now - 1000 * 60 * 60 * 24 * 8 + 1000 * 12 },
-      { id: "tx_007", reference: "EVZ-USD-77A", providerRef: "VISA-01A9", type: "Top up", status: "failed", amount: 20, currency: "USD", counterparty: "Card payment", channel: "Wallet", createdAt: now - 1000 * 60 * 60 * 26, updatedAt: now - 1000 * 60 * 60 * 26 + 1000 * 40 },
-      { id: "tx_008", reference: "EVZ-KES-9K1", providerRef: "MPESA-9922", type: "Top up", status: "completed", amount: 1500, currency: "KES", counterparty: "M-PESA", channel: "Wallet", createdAt: now - 1000 * 60 * 60 * 42, updatedAt: now - 1000 * 60 * 60 * 42 + 1000 * 80 },
-    ];
-  });
+  const [txs, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (typeof window !== "undefined") runSelfTestsOnce();
+    const fetchHistory = async () => {
+      try {
+        setLoading(true);
+        const response = await api('/wallets/me/transactions?take=50');
+        setTransactions(response.data || []);
+      } catch (err) {
+        console.error("Failed to load history", err);
+        setSnack({ open: true, severity: "error", msg: "Failed to load transactions." });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchHistory();
   }, []);
 
   const filtered = useMemo(() => {
@@ -333,11 +236,14 @@ export default function TransactionHistoryPage() {
     const end = dateToTsEnd(to);
 
     return txs
-      .filter((t) => t.createdAt >= start && t.createdAt <= end)
+      .filter((t) => {
+        const ts = new Date(t.createdAt).getTime();
+        return ts >= start && ts <= end;
+      })
       .filter((t) => (type === "all" ? true : t.type === type))
       .filter((t) => (status === "all" ? true : t.status === status))
-      .filter((t) => (!q ? true : [t.reference, t.providerRef || "", t.id].some((x) => x.toLowerCase().includes(q))))
-      .sort((a, b) => b.createdAt - a.createdAt);
+      .filter((t) => (!q ? true : [t.referenceId || "", t.providerRef || "", t.id].some((x) => x.toLowerCase().includes(q))))
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }, [txs, from, to, type, status, search]);
 
   const stats = useMemo(() => {
@@ -346,7 +252,6 @@ export default function TransactionHistoryPage() {
     const failed = filtered.filter((t) => t.status === "failed").length;
     return { total: filtered.length, completed, pending, failed };
   }, [filtered]);
-
 
   const pageBg =
     mode === "dark"
@@ -374,9 +279,6 @@ export default function TransactionHistoryPage() {
   return (
     <>
       <Box className="min-h-screen" sx={{ background: pageBg }}>
-
-
-        {/* Body */}
         <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
             <Stack spacing={2.2}>
@@ -529,9 +431,9 @@ export default function TransactionHistoryPage() {
                                 </Stack>
                               </TableCell>
                               <TableCell>
-                                <Typography sx={{ fontWeight: 950 }}>{t.reference}</Typography>
+                                <Typography sx={{ fontWeight: 950 }}>{t.referenceId || "N/A"}</Typography>
                                 <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                                  {t.providerRef ? `Provider: ${t.providerRef}` : ""}
+                                  {t.providerRef ? `Prov: ${t.providerRef}` : ""}
                                 </Typography>
                               </TableCell>
                               <TableCell>
@@ -539,11 +441,11 @@ export default function TransactionHistoryPage() {
                                 <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{t.channel}</Typography>
                               </TableCell>
                               <TableCell>
-                                <Typography sx={{ fontWeight: 950, color: t.amount < 0 ? theme.palette.text.primary : EVZONE.green }}>{money(t.amount, t.currency)}</Typography>
+                                <Typography sx={{ fontWeight: 950, color: Number(t.amount) < 0 ? theme.palette.text.primary : EVZONE.green }}>{money(Number(t.amount), t.currency)}</Typography>
                               </TableCell>
                               <TableCell>{statusChip(t.status)}</TableCell>
                               <TableCell>
-                                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>{timeAgo(t.createdAt)}</Typography>
+                                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>{timeAgo(new Date(t.createdAt).getTime())}</Typography>
                               </TableCell>
                               <TableCell sx={{ textAlign: "right" }}>
                                 <Button
@@ -563,10 +465,6 @@ export default function TransactionHistoryPage() {
                         </TableBody>
                       </Table>
                     </TableContainer>
-
-                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      Tip: Click a row to open transaction details.
-                    </Typography>
                   </Stack>
                 </CardContent>
               </Card>
@@ -589,16 +487,16 @@ export default function TransactionHistoryPage() {
                         </Stack>
 
                         <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                          <Chip size="small" variant="outlined" label={t.reference} />
+                          <Chip size="small" variant="outlined" label={t.referenceId || "N/A"} />
                           {t.providerRef ? <Chip size="small" variant="outlined" label={`Prov: ${t.providerRef}`} /> : null}
                           <Chip size="small" variant="outlined" label={t.channel} />
-                          <Chip size="small" variant="outlined" label={timeAgo(t.createdAt)} />
+                          <Chip size="small" variant="outlined" label={timeAgo(new Date(t.createdAt).getTime())} />
                         </Stack>
 
                         <Divider />
 
                         <Stack direction="row" alignItems="center" justifyContent="space-between">
-                          <Typography sx={{ fontWeight: 950, color: t.amount < 0 ? theme.palette.text.primary : EVZONE.green }}>{money(t.amount, t.currency)}</Typography>
+                          <Typography sx={{ fontWeight: 950, color: Number(t.amount) < 0 ? theme.palette.text.primary : EVZONE.green }}>{money(Number(t.amount), t.currency)}</Typography>
                           <Button size="small" variant="text" sx={{ color: EVZONE.orange, fontWeight: 900 }} endIcon={<ArrowRightIcon size={18} />}>
                             Open
                           </Button>

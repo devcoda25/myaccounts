@@ -20,7 +20,8 @@ import {
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import { useThemeContext } from "../../../theme/ThemeContext";
+
+
 import { EVZONE } from "../../../theme/evzone";
 
 /**
@@ -230,39 +231,63 @@ function runSelfTestsOnce() {
   }
 }
 
+import { useThemeStore } from "../../../stores/themeStore";
+
+import { api } from "../../../utils/api";
+import { Wallet, Transaction } from "../../../utils/types";
+
+// ... (keep icons)
+
 export default function WalletPage() {
   const navigate = useNavigate();
   const theme = useTheme();
-  const { mode } = useThemeContext();
+  const { mode } = useThemeStore();
   const isDark = mode === "dark";
 
   const [tab, setTab] = useState<0 | 1>(0);
 
-  // Demo wallet state
-  const currency = "UGX";
-  const [balance] = useState<number>(1250000);
-  const [available] = useState<number>(1135000);
+  // Real Data State
+  const [wallet, setWallet] = useState<Wallet | null>(null);
+  const [stats, setStats] = useState({ inflow: 0, outflow: 0 });
+  const [txs, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [kycTier] = useState<KycTier>("Basic");
-  const [dailyLimit] = useState<number>(kycTier === "Full" ? 20000000 : kycTier === "Basic" ? 5000000 : 1000000);
-  const [monthlyLimit] = useState<number>(kycTier === "Full" ? 200000000 : kycTier === "Basic" ? 50000000 : 10000000);
+  const [kycTier, setKycTier] = useState<KycTier>("Unverified");
 
-  const [txs] = useState<WalletTx[]>(() => {
-    const now = Date.now();
-    return [
-      { id: "tx_001", when: now - 1000 * 60 * 12, type: "Top up", amount: 500000, currency, status: "completed", counterparty: "MTN MoMo", note: "Top up" },
-      { id: "tx_002", when: now - 1000 * 60 * 55, type: "Payment", amount: -120000, currency, status: "completed", counterparty: "EVzone Charging", note: "Charge session" },
-      { id: "tx_003", when: now - 1000 * 60 * 60 * 6, type: "Payment", amount: -45000, currency, status: "completed", counterparty: "Marketplace", note: "Order #MLD-193" },
-      { id: "tx_004", when: now - 1000 * 60 * 60 * 21, type: "Withdrawal", amount: -800000, currency, status: "pending", counterparty: "Bank transfer", note: "Settlement" },
-      { id: "tx_005", when: now - 1000 * 60 * 60 * 24 * 8, type: "Refund", amount: 30000, currency, status: "completed", counterparty: "Marketplace", note: "Refund" },
-    ];
-  });
-
-  const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
+  const fetchWalletData = async () => {
+    try {
+      setLoading(true);
+      const [w, s, t, k] = await Promise.all([
+        api('/wallets/me').catch(() => null),
+        api('/wallets/me/stats?days=7').catch(() => ({ inflow: 0, outflow: 0 })),
+        api('/wallets/me/transactions?take=5').catch(() => []),
+        api('/kyc/status').catch(() => null)
+      ]);
+      setWallet(w);
+      setStats(s || { inflow: 0, outflow: 0 });
+      // API returns { data: [], total: 0 }, so we need to extract .data
+      setTransactions(t?.data || []);
+      if (k?.tier) setKycTier(k.tier);
+    } catch (err) {
+      console.error("Failed to load wallet data", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (typeof window !== "undefined") runSelfTestsOnce();
+    fetchWalletData();
   }, []);
+
+  const balance = wallet ? Number(wallet.balance) : 0;
+  const currency = wallet?.currency || "UGX";
+  const available = balance; // For MVP available = balance
+
+  // Computed Limits (Mock driven by KYC tier for now)
+  const dailyLimit = kycTier === "Full" ? 20000000 : kycTier === "Basic" ? 5000000 : 1000000;
+  const monthlyLimit = kycTier === "Full" ? 200000000 : kycTier === "Basic" ? 50000000 : 10000000;
+
+  const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
   // toggleMode removed
 
@@ -330,18 +355,7 @@ export default function WalletPage() {
       </Alert>
     );
 
-  const recent = txs
-    .slice()
-    .sort((a, b) => b.when - a.when)
-    .slice(0, 8);
 
-  const summary = useMemo(() => {
-    const since = Date.now() - 1000 * 60 * 60 * 24 * 7;
-    const week = txs.filter((t) => t.when >= since);
-    const inflow = week.filter((t) => t.amount > 0).reduce((a, t) => a + t.amount, 0);
-    const outflow = week.filter((t) => t.amount < 0).reduce((a, t) => a + Math.abs(t.amount), 0);
-    return { inflow, outflow };
-  }, [txs]);
 
   return (
     <Box className="min-h-screen" sx={{ background: pageBg }}>
@@ -395,11 +409,11 @@ export default function WalletPage() {
                       <Box className="grid gap-3 sm:grid-cols-2">
                         <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>7-day inflow</Typography>
-                          <Typography sx={{ fontWeight: 950 }}>{money(summary.inflow, currency)}</Typography>
+                          <Typography sx={{ fontWeight: 950 }}>{money(stats?.inflow || 0, currency)}</Typography>
                         </Box>
                         <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>7-day outflow</Typography>
-                          <Typography sx={{ fontWeight: 950 }}>{money(-summary.outflow, currency)}</Typography>
+                          <Typography sx={{ fontWeight: 950 }}>{money(stats?.outflow || 0, currency)}</Typography>
                         </Box>
                       </Box>
 
@@ -439,9 +453,15 @@ export default function WalletPage() {
                       <Divider />
 
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                        <Button variant="contained" sx={orangeContained} onClick={() => navigate("/app/wallet/kyc")}>
-                          Upgrade KYC
-                        </Button>
+                        {kycTier === "Full" ? (
+                          <Button variant="outlined" disabled startIcon={<ShieldCheckIcon size={18} />}>
+                            Full Verified
+                          </Button>
+                        ) : (
+                          <Button variant="contained" sx={orangeContained} onClick={() => navigate("/app/wallet/kyc")}>
+                            Upgrade KYC
+                          </Button>
+                        )}
                         <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/app/wallet/limits")}>
                           Limits policy
                         </Button>
@@ -483,7 +503,7 @@ export default function WalletPage() {
                   </Tabs>
 
                   <Stack spacing={1.2}>
-                    {recent
+                    {txs
                       .filter((t) => (tab === 1 ? t.status === "pending" : true))
                       .map((t) => (
                         <Box key={t.id} sx={{ borderRadius: 20, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.2 }}>
@@ -495,14 +515,14 @@ export default function WalletPage() {
                               <Box>
                                 <Typography sx={{ fontWeight: 950 }}>{t.type}</Typography>
                                 <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                                  {t.counterparty || "EVzone"} • {timeAgo(t.when)}
+                                  {t.counterparty || "EVzone"} • {timeAgo(new Date(t.createdAt).getTime())}
                                 </Typography>
-                                {t.note ? <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{t.note}</Typography> : null}
+                                {t.description ? <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{t.description}</Typography> : null}
                               </Box>
                             </Stack>
 
                             <Stack direction={{ xs: "row", sm: "column" }} spacing={1} alignItems={{ xs: "center", sm: "flex-end" }} justifyContent="space-between" sx={{ width: { xs: "100%", sm: "auto" } }}>
-                              <Typography sx={{ fontWeight: 950 }}>{money(t.amount, t.currency)}</Typography>
+                              <Typography sx={{ fontWeight: 950 }}>{money(Number(t.amount), t.currency)}</Typography>
                               {txStatusChip(t.status)}
                             </Stack>
                           </Stack>
