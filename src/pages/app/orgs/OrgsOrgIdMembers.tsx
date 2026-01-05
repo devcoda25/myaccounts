@@ -34,21 +34,11 @@ import { motion } from "framer-motion";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
-import { api } from "../../../utils/api";
+import { OrganizationService, OrgMemberDto, OrgRole } from "../../../services/OrganizationService";
+import { formatUserId, formatOrgId } from "../../../utils/format";
+import { Severity } from "../../../utils/types";
 
-type Severity = "info" | "warning" | "error" | "success";
-type OrgRole = "Owner" | "Admin" | "Manager" | "Member" | "Viewer";
-type MemberStatus = "Active" | "Pending" | "Suspended";
-
-type Member = {
-  id: string;
-  name: string;
-  email: string;
-  role: OrgRole;
-  status: MemberStatus;
-  joinedAt: number;
-  avatarUrl?: string;
-};
+type Member = OrgMemberDto;
 
 // ... Icons ...
 function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
@@ -111,9 +101,9 @@ function timeAgo(ts: number) {
   return `${d} day${d === 1 ? "" : "s"} ago`;
 }
 
-function statusChip(status: MemberStatus) {
-  if (status === "Active") return { label: "Active", color: "success" as const };
-  if (status === "Suspended") return { label: "Suspended", color: "error" as const };
+function statusChip(status: Member["status"]) {
+  if (status === "ACTIVE") return { label: "Active", color: "success" as const };
+  if (status === "SUSPENDED") return { label: "Suspended", color: "error" as const };
   return { label: "Pending", color: "warning" as const };
 }
 
@@ -146,7 +136,7 @@ export default function OrgMembersPage() {
 
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<"all" | OrgRole>("all");
-  const [statusFilter, setStatusFilter] = useState<"all" | MemberStatus>("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | Member["status"]>("all");
 
   const [editOpen, setEditOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
@@ -168,8 +158,8 @@ export default function OrgMembersPage() {
       setError("");
 
       const [orgData, membersData] = await Promise.all([
-        api(`/orgs/${orgId}`),
-        api(`/orgs/${orgId}/members`)
+        OrganizationService.getOrg(orgId),
+        OrganizationService.getMembers(orgId)
       ]);
 
       setOrgName(orgData.name);
@@ -208,7 +198,7 @@ export default function OrgMembersPage() {
   const saveRole = async () => {
     if (!editId || !orgId) return;
     try {
-      await api.patch(`/orgs/${orgId}/members/${editId}`, { role: editRole });
+      await OrganizationService.updateMember(orgId, editId, { role: editRole });
       setSnack({ open: true, severity: "success", msg: "Role updated successfully." });
       loadData();
       setEditOpen(false);
@@ -230,7 +220,7 @@ export default function OrgMembersPage() {
   const confirmRemove = async () => {
     if (!removeId || !orgId) return;
     try {
-      await api.delete(`/orgs/${orgId}/members/${removeId}`);
+      await OrganizationService.removeMember(orgId, removeId);
       setSnack({ open: true, severity: "success", msg: "Member removed successfully." });
       loadData();
       setRemoveOpen(false);
@@ -244,7 +234,7 @@ export default function OrgMembersPage() {
   const goRoles = () => navigate(`/app/orgs/${orgId}/settings`); // Roles in settings for now
 
   const membersCount = members.length;
-  const pendingCount = members.filter((m) => m.status === "Pending").length;
+  const pendingCount = members.filter((m) => m.status === "PENDING").length;
 
   const pageBg =
     mode === "dark"
@@ -289,9 +279,9 @@ export default function OrgMembersPage() {
                   <Typography sx={{ color: "white", fontWeight: 950, letterSpacing: -0.4 }}>EV</Typography>
                 </Box>
                 <Box sx={{ minWidth: 0 }}>
-                  <Typography sx={{ fontWeight: 950, lineHeight: 1.05 }}>My Accounts</Typography>
+                  <Typography sx={{ fontWeight: 950, lineHeight: 1.05 }}>{orgName}</Typography>
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    {orgName} members
+                    Members • {formatOrgId(orgId || "")}
                   </Typography>
                 </Box>
               </Stack>
@@ -373,7 +363,7 @@ export default function OrgMembersPage() {
                     </TextField>
                     <TextField select label="Status" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as any)} fullWidth>
                       <MenuItem value="all">All statuses</MenuItem>
-                      {(["Active", "Pending", "Suspended"] as MemberStatus[]).map((s) => (
+                      {(["ACTIVE", "PENDING", "SUSPENDED"] as Member["status"][]).map((s) => (
                         <MenuItem key={s} value={s}>
                           {s}
                         </MenuItem>
@@ -427,7 +417,7 @@ export default function OrgMembersPage() {
                                   </Avatar>
                                   <Box>
                                     <Typography sx={{ fontWeight: 950 }}>{m.name}</Typography>
-                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{m.id}</Typography>
+                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary, fontFamily: 'monospace' }}>{formatUserId(m.id)}</Typography>
                                   </Box>
                                 </Stack>
                               </TableCell>

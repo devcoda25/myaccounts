@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { formatOrgId } from "../../../utils/format";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../../../components/common/Pagination";
 import {
@@ -20,7 +21,9 @@ import {
     TextField,
     Typography,
     useTheme,
-    IconButton
+    IconButton,
+    Snackbar,
+    Alert
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import {
@@ -29,8 +32,10 @@ import {
     MoreVertical as MoreIcon,
     ShieldBan as BanIcon,
     CheckCircle as CheckIcon,
-    Eye as EyeIcon
+    Eye as EyeIcon,
+    Download as DownloadIcon
 } from "lucide-react";
+import { exportToCsv } from "../../../utils/export";
 
 type OrgStatus = "Active" | "Suspended" | "Pending";
 type OrgPlan = "Free" | "Pro" | "Enterprise";
@@ -102,6 +107,21 @@ export default function AdminOrgsListPage() {
         return () => clearTimeout(timer);
     }, [page, rowsPerPage, q, statusFilter]);
 
+    const handleExport = () => {
+        if (!rows.length) return;
+        exportToCsv(rows, `organizations-${Date.now()}.csv`, {
+            id: 'Organization ID',
+            name: 'Name',
+            domain: 'Domain',
+            owner: 'Owner Email',
+            status: 'Status',
+            plan: 'Plan',
+            members: 'Member Count',
+            createdAt: 'Created At'
+        });
+        setSnack({ open: true, severity: "info", msg: "Organizations exported successfully" });
+    };
+
     // Derived filtered not needed as we fetch from server, but if we wanted client side sorting on the page we could.
     // However, since rows are already filtered by backend, we just use rows.
     const filtered = rows;
@@ -137,7 +157,9 @@ export default function AdminOrgsListPage() {
                                         Manage usage, billing, and access for organizations.
                                     </Typography>
                                 </Box>
-                                {/* Future: Export or specific actions */}
+                                <Button variant="outlined" sx={orangeOutlined} startIcon={<DownloadIcon size={18} />} onClick={handleExport}>
+                                    Export CSV
+                                </Button>
                             </Stack>
 
                             <Divider />
@@ -182,7 +204,7 @@ export default function AdminOrgsListPage() {
                                         <TableCell>
                                             <Stack>
                                                 <Typography sx={{ fontWeight: 900 }}>{r.name}</Typography>
-                                                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{r.domain}</Typography>
+                                                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{formatOrgId(r.id)} • {r.domain}</Typography>
                                             </Stack>
                                         </TableCell>
                                         <TableCell>{r.owner}</TableCell>
@@ -225,6 +247,12 @@ export default function AdminOrgsListPage() {
                     </CardContent>
                 </Card>
             </Stack>
+
+            <Snackbar open={snack.open} autoHideDuration={4000} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+                <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} sx={{ borderRadius: 16 }}>
+                    {snack.msg}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 }

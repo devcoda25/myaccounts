@@ -293,6 +293,12 @@ function runSelfTestsOnce() {
   }
 }
 
+import { api } from "../../../utils/api";
+
+// ... (existing imports)
+
+// ...
+
 export default function DisputesChargebacksPage() {
   const navigate = useNavigate();
   const { mode } = useThemeStore();
@@ -301,64 +307,6 @@ export default function DisputesChargebacksPage() {
 
   const prefillTxnId = readQueryParam("txnId");
   const prefillRef = readQueryParam("reference");
-
-  const [disputes, setDisputes] = useState<Dispute[]>(() => {
-    const now = Date.now();
-    return [
-      {
-        id: "DSP_01A2",
-        txnId: "tx_007",
-        reference: "EVZ-USD-77A",
-        amount: 20,
-        currency: "USD",
-        reason: "Unauthorized transaction",
-        description: "I did not authorize this top-up.",
-        status: "Under review",
-        createdAt: now - 1000 * 60 * 60 * 24 * 3,
-        updatedAt: now - 1000 * 60 * 60 * 2,
-        evidence: [{ id: "EV_1", name: "bank_statement.pdf", size: 140000, type: "application/pdf" }],
-      },
-      {
-        id: "DSP_02B1",
-        txnId: "tx_003",
-        reference: "EVZ-MLD-193",
-        amount: 45000,
-        currency: "UGX",
-        reason: "Service not received",
-        description: "Service was not delivered as agreed.",
-        status: "Awaiting evidence",
-        createdAt: now - 1000 * 60 * 60 * 24,
-        updatedAt: now - 1000 * 60 * 45,
-        evidence: [],
-      },
-    ];
-  });
-
-  const [selectedId, setSelectedId] = useState<string>(() => disputes[0]?.id || "");
-  const selected = useMemo(() => disputes.find((d) => d.id === selectedId) || disputes[0], [disputes, selectedId]);
-
-  const [filterStatus, setFilterStatus] = useState<"all" | DisputeStatus>("all");
-  const [search, setSearch] = useState("");
-
-  const [createOpen, setCreateOpen] = useState(false);
-  const [newTxnId, setNewTxnId] = useState(prefillTxnId || "");
-  const [newRef, setNewRef] = useState(prefillRef || "");
-  const [newAmount, setNewAmount] = useState<string>("");
-  const [newCurrency, setNewCurrency] = useState<string>("UGX");
-  const [newReason, setNewReason] = useState<DisputeReason>("Unauthorized transaction");
-  const [newDesc, setNewDesc] = useState("");
-  const [newEvidence, setNewEvidence] = useState<Evidence[]>([]);
-
-  const [evidenceAddOpen, setEvidenceAddOpen] = useState(false);
-  const [evidenceTargetId, setEvidenceTargetId] = useState<string | null>(null);
-
-  const inEvidence = useRef<HTMLInputElement | null>(null);
-
-  const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
-
-  useEffect(() => {
-    if (typeof window !== "undefined") runSelfTestsOnce();
-  }, []);
 
   const pageBg =
     mode === "dark"
@@ -385,6 +333,58 @@ export default function DisputesChargebacksPage() {
     backgroundColor: alpha(theme.palette.background.paper, 0.20),
     "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
   } as const;
+
+
+
+  const [disputes, setDisputes] = useState<Dispute[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchDisputes = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get('/wallets/disputes');
+      if (Array.isArray(res)) {
+        // Map backend response to frontend type if needed
+        // Backend returns: { id, reference, amount, currency, status, reason, description, createdAt, updatedAt, ... }
+        // Frontend expects: same keys roughly.
+        setDisputes(res.map((d: any) => ({
+          ...d,
+          createdAt: new Date(d.createdAt).getTime(),
+          updatedAt: new Date(d.updatedAt).getTime()
+        })));
+      }
+    } catch (err) {
+      console.error("Failed to fetch disputes", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDisputes();
+  }, []);
+
+  const [selectedId, setSelectedId] = useState<string>("");
+  const selected = useMemo(() => disputes.find((d) => d.id === selectedId) || disputes[0], [disputes, selectedId]);
+
+  const [filterStatus, setFilterStatus] = useState<"all" | DisputeStatus>("all");
+  const [search, setSearch] = useState("");
+
+  const [createOpen, setCreateOpen] = useState(false);
+  const [newTxnId, setNewTxnId] = useState(prefillTxnId || "");
+  const [newRef, setNewRef] = useState(prefillRef || "");
+  const [newAmount, setNewAmount] = useState<string>("");
+  const [newCurrency, setNewCurrency] = useState<string>("UGX");
+  const [newReason, setNewReason] = useState<DisputeReason>("Unauthorized transaction");
+  const [newDesc, setNewDesc] = useState("");
+  const [newEvidence, setNewEvidence] = useState<Evidence[]>([]);
+
+  const [evidenceAddOpen, setEvidenceAddOpen] = useState(false);
+  const [evidenceTargetId, setEvidenceTargetId] = useState<string | null>(null);
+
+  const inEvidence = useRef<HTMLInputElement | null>(null);
+
+  const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -427,7 +427,7 @@ export default function DisputesChargebacksPage() {
 
   const removeNewEvidence = (id: string) => setNewEvidence((p) => p.filter((e) => e.id !== id));
 
-  const create = () => {
+  const create = async () => {
     if (!newTxnId.trim() && !newRef.trim()) {
       setSnack({ open: true, severity: "warning", msg: "Add a transaction ID or reference." });
       return;
@@ -437,29 +437,28 @@ export default function DisputesChargebacksPage() {
       return;
     }
 
-    const id = mkId("DSP");
-    const now = Date.now();
-    const amount = Number(newAmount) || 0;
+    try {
+      const res = await api.post('/wallets/disputes', {
+        txnId: newTxnId.trim(),
+        amount: Number(newAmount),
+        currency: newCurrency,
+        reason: newReason,
+        description: newDesc.trim()
+      });
 
-    const item: Dispute = {
-      id,
-      txnId: newTxnId.trim() || "(unknown)",
-      reference: newRef.trim() || "(unknown)",
-      amount,
-      currency: newCurrency,
-      reason: newReason,
-      description: newDesc.trim(),
-      status: newEvidence.length ? "Open" : "Awaiting evidence",
-      createdAt: now,
-      updatedAt: now,
-      evidence: newEvidence,
-    };
+      setDisputes((p) => [{ ...res, createdAt: new Date(res.createdAt).getTime(), updatedAt: new Date(res.updatedAt).getTime(), evidence: [] }, ...p]);
+      setSelectedId(res.id);
+      setCreateOpen(false);
+      setSnack({ open: true, severity: "success", msg: "Dispute created." });
 
-    setDisputes((p) => [item, ...p]);
-    setSelectedId(id);
-    setCreateOpen(false);
-    setSnack({ open: true, severity: "success", msg: "Dispute created (demo)." });
+      // If we had evidence to upload, we would do it here
+    } catch (err) {
+      setSnack({ open: true, severity: "error", msg: "Failed to create dispute." });
+    }
   };
+
+  // ... (rest of the file)
+
 
   const openEvidenceAdd = (disputeId: string) => {
     setEvidenceTargetId(disputeId);

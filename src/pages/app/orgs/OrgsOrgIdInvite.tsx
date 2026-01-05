@@ -28,10 +28,11 @@ import { motion } from "framer-motion";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
+import { OrganizationService, OrgRole } from "../../../services/OrganizationService";
+import { formatOrgId } from "../../../utils/format";
 import { api } from "../../../utils/api";
 
 type Severity = "info" | "warning" | "error" | "success";
-type OrgRole = "Owner" | "Admin" | "Manager" | "Member" | "Viewer";
 
 type Invite = {
   id: string;
@@ -168,8 +169,8 @@ export default function InviteMembersPage() {
       setLoading(true);
       setError("");
       const [orgData, invitesData] = await Promise.all([
-        api(`/orgs/${orgId}`),
-        api(`/orgs/${orgId}/invites`)
+        OrganizationService.getOrg(orgId),
+        api.get(`/orgs/${orgId}/invites`) // Invites might not be in OrganizationService yet, let's keep it or add to service
       ]);
       setOrgName(orgData.name);
       setInvites(invitesData);
@@ -304,8 +305,8 @@ export default function InviteMembersPage() {
                   <Typography sx={{ color: "white", fontWeight: 950, letterSpacing: -0.4 }}>EV</Typography>
                 </Box>
                 <Box>
-                  <Typography sx={{ fontWeight: 950, lineHeight: 1.05 }}>My Accounts</Typography>
-                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{orgName} invites</Typography>
+                  <Typography sx={{ fontWeight: 950, lineHeight: 1.05 }}>{orgName}</Typography>
+                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Invite members • {formatOrgId(orgId || "")}</Typography>
                 </Box>
               </Stack>
               <Stack direction="row" spacing={1} alignItems="center">

@@ -12,6 +12,7 @@ const TransactionsList = React.lazy(() => import('../pages/admin/transactions/In
 const DisputesList = React.lazy(() => import('../pages/admin/disputes/Index'));
 const AuditLogs = React.lazy(() => import('../pages/admin/audit/Index'));
 const Administrators = React.lazy(() => import('../pages/admin/administrators/Index'));
+const AdminApps = React.lazy(() => import('../pages/admin/apps/Index'));
 const AdminProfile = React.lazy(() => import('../pages/admin/profile/Index'));
 const KycQueue = React.lazy(() => import('../pages/admin/kyc/Index'));
 const OrgsList = React.lazy(() => import('../pages/admin/orgs/Index'));
@@ -32,6 +33,7 @@ export default function AdminRouter() {
                 <Route path="disputes" element={<DisputesList />} />
                 <Route path="audit" element={<AuditLogs />} />
                 <Route path="administrators" element={<Administrators />} />
+                <Route path="apps" element={<AdminApps />} />
                 <Route path="kyc" element={<KycQueue />} />
                 <Route path="orgs" element={<OrgsList />} />
                 <Route path="orgs/:orgId" element={<OrgDetail />} />

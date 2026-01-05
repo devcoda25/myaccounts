@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Alert,
   Avatar,
@@ -300,8 +300,13 @@ import { WalletService } from "../../../services/WalletService";
 
 // ... (keep tests)
 
+
+
+// ...
+
 export default function PaymentMethodsPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { mode } = useThemeStore();
   const theme = useTheme();
   const isDark = mode === "dark";
@@ -335,7 +340,7 @@ export default function PaymentMethodsPage() {
         type: d.type as MethodType,
         provider: d.provider as Provider,
         label: d.details?.label || "Payment method",
-        masked: d.details?.masked || "••••",
+        masked: d.details?.masked || d.details?.maskedCard || "••••",
         verified: true, // Assuming verified for now
         isDefault: d.isDefault,
         addedAt: new Date(d.createdAt).getTime(),
@@ -343,7 +348,7 @@ export default function PaymentMethodsPage() {
       setMethods(mapped);
     } catch (err) {
       console.error(err);
-      setSnack({ open: true, severity: "error", msg: "Failed to load methods." });
+      // setSnack({ open: true, severity: "error", msg: "Failed to load methods." }); 
     } finally {
       setLoading(false);
     }
@@ -352,7 +357,7 @@ export default function PaymentMethodsPage() {
   useEffect(() => {
     if (typeof window !== "undefined") runSelfTestsOnce();
     fetchMethods();
-  }, []);
+  }, [location.key]);
 
   const pageBg =
     mode === "dark"

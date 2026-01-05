@@ -23,7 +23,7 @@ import { alpha } from "@mui/material/styles";
 import { useTheme } from "@mui/material/styles";
 import { useThemeStore } from "../../../stores/themeStore";
 import { motion } from "framer-motion";
-import { getProviderIcon, MtnMomoLogo, AirtelMoneyLogo, VisaLogo, MastercardLogo, PayPalLogo, AfricellLogo, GooglePayLogo, ApplePayLogo, BankTransferLogo, AdyenLogo, AlipayLogo, DPOGroupLogo, FlutterwaveLogo, JumiaPayLogo, PayoneerLogo, PaystackLogo, PaytotaLogo, PesapalLogo, SquareLogo, StripeLogo, UnionPayLogo, WeChatPayLogo, WorldpayLogo } from "../../../assets/paymentIcons";
+import { getProviderIcon, MtnMomoLogo, AirtelMoneyLogo, VisaLogo, MastercardLogo, PayPalLogo, AfricellLogo, GooglePayLogo, ApplePayLogo, AlipayLogo, JumiaPayLogo, PayoneerLogo, UnionPayLogo, WeChatPayLogo } from "../../../assets/paymentIcons";
 
 // Sub-components
 import MobileMoneyForm from "./add-method-components/MobileMoneyForm";
@@ -32,6 +32,7 @@ import DigitalWalletForm from "./add-method-components/DigitalWalletForm";
 import BankTransferForm from "./add-method-components/BankTransferForm";
 import { ArrowLeftIcon, CheckCircleIcon, KeypadIcon, LockIcon, PhoneIcon, PlusIcon, ShieldCheckIcon, XCircleIcon } from "./add-method-components/Icons";
 import { WalletService } from "../../../services/WalletService";
+import { useAuthStore } from "../../../stores/authStore";
 
 /**
  * EVzone My Accounts - Add Payment Method
@@ -60,6 +61,7 @@ export default function AddPaymentMethodPage() {
   const navigate = useNavigate();
   const { mode } = useThemeStore();
   const theme = useTheme();
+  const { requestPhoneVerification, verifyPhone } = useAuthStore();
 
   // Flow
   const steps = ["Method", "Details", "Verify", "Done"] as const;
@@ -113,6 +115,14 @@ export default function AddPaymentMethodPage() {
     const t = window.setInterval(() => setCooldown((c) => Math.max(0, c - 1)), 1000);
     return () => window.clearInterval(t);
   }, [cooldown]);
+
+  // Auto-send OTP when entering step 2 (Verification)
+  useEffect(() => {
+    if (step === 2 && methodType === "momo" && cooldown === 0) {
+      sendCode();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, methodType]);
 
   const pageBg =
     mode === "dark"
@@ -254,10 +264,22 @@ export default function AddPaymentMethodPage() {
     setStep((s) => Math.max(0, s - 1));
   };
 
-  const sendCode = () => {
+  const sendCode = async () => {
     if (cooldown > 0) return;
+
+    if (methodType === "momo") {
+      try {
+        await requestPhoneVerification(momoPhone, 'sms_code');
+        setCooldown(30);
+        setSnack({ open: true, severity: "success", msg: "OTP sent to your phone." });
+      } catch (e: any) {
+        setSnack({ open: true, severity: "error", msg: e.message || "Failed to send OTP." });
+      }
+      return;
+    }
+
     setCooldown(30);
-    setSnack({ open: true, severity: "info", msg: methodType === "momo" ? "OTP sent (demo)." : "3DS challenge code sent (demo)." });
+    setSnack({ open: true, severity: "info", msg: "3DS challenge code sent (demo)." });
   };
 
   const confirmVerify = async () => {
@@ -280,7 +302,24 @@ export default function AddPaymentMethodPage() {
     setResult("verifying");
     await new Promise((r) => setTimeout(r, 900));
 
-    const demoCode = methodType === "momo" ? "222222" : "123456";
+    if (methodType === "momo") {
+      setResult("verifying");
+      try {
+        // Verify using API
+        // We use direct API call to avoid refreshing user if not needed, but store helper is fine
+        await verifyPhone(momoPhone, verifyCode);
+        await submitMethod();
+      } catch (e: any) {
+        setResult("failed");
+        setSnack({ open: true, severity: "error", msg: "Invalid OTP code." });
+      }
+      return;
+    }
+
+    setResult("verifying");
+    await new Promise((r) => setTimeout(r, 900));
+
+    const demoCode = "123456";
     const ok = verifyCode.trim() === demoCode || Math.random() > 0.15; // Allow some randomness for demo if not exact code
 
     if (ok) {
@@ -348,15 +387,15 @@ export default function AddPaymentMethodPage() {
           <Typography variant="h6">Verification</Typography>
           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
             {methodType === "momo"
-              ? "We sent an OTP to your phone (demo)."
+              ? "We sent an OTP to your phone."
               : methodType === "card"
                 ? "Your bank may require a 3DS verification (demo)."
                 : "Verify your details."}
           </Typography>
 
-          {methodType !== "wallet" && methodType !== "bank" && (
+          {methodType !== "wallet" && methodType !== "bank" && methodType !== "momo" && (
             <Alert severity="info" icon={<LockIcon size={18} />}>
-              Demo code: <b>{methodType === "momo" ? "222222" : "123456"}</b>
+              Demo code: <b>123456</b>
             </Alert>
           )}
 
@@ -518,26 +557,6 @@ export default function AddPaymentMethodPage() {
                               { id: "wechat", label: "WeChat Pay", icon: <WeChatPayLogo size={32} />, type: "wallet" },
                               { id: "payoneer", label: "Payoneer", icon: <PayoneerLogo size={32} />, type: "wallet" },
                               { id: "jumia", label: "JumiaPay", icon: <JumiaPayLogo size={32} />, type: "wallet" },
-                            ]
-                          },
-                          {
-                            title: "Payment Gateways",
-                            items: [
-                              { id: "stripe", label: "Stripe", icon: <StripeLogo size={32} />, type: "wallet" },
-                              { id: "adyen", label: "Adyen", icon: <AdyenLogo size={32} />, type: "wallet" },
-                              { id: "flutterwave", label: "Flutterwave", icon: <FlutterwaveLogo size={32} />, type: "wallet" },
-                              { id: "paystack", label: "Paystack", icon: <PaystackLogo size={32} />, type: "wallet" },
-                              { id: "square", label: "Square", icon: <SquareLogo size={32} />, type: "wallet" },
-                              { id: "dpo", label: "DPO Group", icon: <DPOGroupLogo size={32} />, type: "wallet" },
-                              { id: "pesapal", label: "Pesapal", icon: <PesapalLogo size={32} />, type: "wallet" },
-                              { id: "paytota", label: "Paytota", icon: <PaytotaLogo size={32} />, type: "wallet" },
-                              { id: "worldpay", label: "Worldpay", icon: <WorldpayLogo size={32} />, type: "wallet" },
-                            ]
-                          },
-                          {
-                            title: "Bank",
-                            items: [
-                              { id: "bank", label: "Bank Transfer", icon: <BankTransferLogo size={32} />, type: "bank" },
                             ]
                           }
                         ].map((category) => (

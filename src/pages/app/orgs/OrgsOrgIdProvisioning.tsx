@@ -34,6 +34,8 @@ import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
+import { OrganizationService } from "../../../services/OrganizationService";
+import { formatOrgId } from "../../../utils/format";
 
 /**
  * EVzone My Accounts - Org Provisioning (SCIM)
@@ -248,6 +250,12 @@ export default function OrgProvisioningScimPage() {
 
   const orgId = useMemo(() => parseOrgId(), []);
 
+  const [orgName, setOrgName] = useState("");
+
+  useEffect(() => {
+    OrganizationService.getOrg(orgId).then(data => setOrgName(data.name)).catch(() => { });
+  }, [orgId]);
+
   const [enabled, setEnabled] = useState(true);
   const [provider, setProvider] = useState<Provider>("Okta");
   const [status, setStatus] = useState<ConnectionStatus>("Connected");
@@ -374,8 +382,8 @@ export default function OrgProvisioningScimPage() {
                   <Typography sx={{ color: "#fff", fontWeight: 950, letterSpacing: -0.4 }}>EV</Typography>
                 </Box>
                 <Box>
-                  <Typography sx={{ fontWeight: 950, lineHeight: 1.05 }}>Organizations</Typography>
-                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>SCIM provisioning</Typography>
+                  <Typography sx={{ fontWeight: 950, lineHeight: 1.05 }}>{orgName}</Typography>
+                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Provisioning • {formatOrgId(orgId || "")}</Typography>
                 </Box>
               </Stack>
 

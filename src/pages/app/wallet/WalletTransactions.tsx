@@ -27,6 +27,7 @@ import { useThemeStore } from "../../../stores/themeStore";
 import { motion } from "framer-motion";
 import { api } from "../../../utils/api";
 import { Transaction, TxType, TxStatus } from "../../../utils/types";
+import { formatTransactionId } from "../../../utils/format";
 
 type Severity = "info" | "warning" | "error" | "success";
 
@@ -242,7 +243,7 @@ export default function TransactionHistoryPage() {
       })
       .filter((t) => (type === "all" ? true : t.type === type))
       .filter((t) => (status === "all" ? true : t.status === status))
-      .filter((t) => (!q ? true : [t.referenceId || "", t.providerRef || "", t.id].some((x) => x.toLowerCase().includes(q))))
+      .filter((t) => (!q ? true : [t.referenceId || "", t.providerRef || "", formatTransactionId(t.id)].some((x) => x.toLowerCase().includes(q))))
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }, [txs, from, to, type, status, search]);
 

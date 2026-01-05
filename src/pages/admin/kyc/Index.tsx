@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { formatUserId } from '../../../utils/format';
 import { api } from "../../../utils/api";
 import Pagination from "../../../components/common/Pagination";
 import {
@@ -42,6 +43,8 @@ import {
     Fingerprint,
     Shield
 } from 'lucide-react';
+import { exportToCsv } from "../../../utils/export";
+import { Snackbar } from "@mui/material";
 
 const EVZONE = { green: "#03cd8c", orange: "#f77f00", red: "#d32f2f" };
 
@@ -60,16 +63,7 @@ interface KycRequest {
     documents?: Record<string, string>; // url map
 }
 
-// Mock Data
-function mkRequests(): KycRequest[] {
-    const now = Date.now();
-    return [
-        { id: "KYC-1001", userId: "u_101", userName: "Sarah K.", email: "sarah@example.com", submittedAt: now - 3600000 * 2, docType: "National ID", status: "Pending", riskScore: "Low" },
-        { id: "KYC-1002", userId: "u_102", userName: "John Doe", email: "john@example.com", submittedAt: now - 3600000 * 5, docType: "Passport", status: "In Review", riskScore: "Medium" },
-        { id: "KYC-1003", userId: "u_103", userName: "Mike Ross", email: "mike@example.com", submittedAt: now - 3600000 * 24, docType: "Driver's License", status: "Verified", riskScore: "Low" },
-        { id: "KYC-1004", userId: "u_104", userName: "Jane Doe", email: "jane@example.com", submittedAt: now - 3600000 * 48, docType: "National ID", status: "Rejected", riskScore: "High" },
-    ];
-}
+
 
 export default function KycQueue() {
     const theme = useTheme();
@@ -79,6 +73,7 @@ export default function KycQueue() {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [requests, setRequests] = useState<KycRequest[]>([]);
     const [loading, setLoading] = useState(true);
+    const [snack, setSnack] = useState({ open: false, msg: "" });
 
     const fetchRequests = () => {
         setLoading(true);
@@ -95,6 +90,21 @@ export default function KycQueue() {
     useEffect(() => {
         fetchRequests();
     }, []);
+
+    const handleExport = () => {
+        if (!requests.length) return;
+        exportToCsv(requests, `kyc-requests-${Date.now()}.csv`, {
+            id: 'KYC ID',
+            userId: 'User ID',
+            userName: 'Name',
+            email: 'Email',
+            submittedAt: 'Submitted At',
+            docType: 'Document Type',
+            status: 'Status',
+            riskScore: 'Risk Score'
+        });
+        setSnack({ open: true, msg: "KYC requests exported successfully" });
+    };
 
     // Review Modal State
     const [selectedRequest, setSelectedRequest] = useState<KycRequest | null>(null);
@@ -147,11 +157,21 @@ export default function KycQueue() {
 
     return (
         <Box>
-            <Box sx={{ mb: 4 }}>
-                <Typography variant="h4" fontWeight={800} gutterBottom>KYC Requests</Typography>
-                <Typography variant="body1" color="text.secondary">
-                    Review and verify user identity documents.
-                </Typography>
+            <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <Box>
+                    <Typography variant="h4" fontWeight={800} gutterBottom>KYC Requests</Typography>
+                    <Typography variant="body1" color="text.secondary">
+                        Review and verify user identity documents.
+                    </Typography>
+                </Box>
+                <Button
+                    variant="outlined"
+                    startIcon={<DownloadIcon size={18} />}
+                    sx={{ borderRadius: '10px', height: 40, borderColor: theme.palette.divider, color: 'text.primary' }}
+                    onClick={handleExport}
+                >
+                    Export CSV
+                </Button>
             </Box>
 
             <Paper sx={{ borderRadius: '16px', overflow: 'hidden', border: `1px solid ${theme.palette.divider}`, bgcolor: alpha(theme.palette.background.paper, 0.6), backdropFilter: 'blur(20px)' }}>
@@ -195,7 +215,7 @@ export default function KycQueue() {
                                                 <Avatar sx={{ width: 32, height: 32 }}>{r.userName.charAt(0)}</Avatar>
                                                 <Box>
                                                     <Typography variant="subtitle2" fontWeight={600}>{r.userName}</Typography>
-                                                    <Typography variant="caption" color="text.secondary">{r.email}</Typography>
+                                                    <Typography variant="caption" color="text.secondary">{formatUserId(r.userId)} • {r.email}</Typography>
                                                 </Box>
                                             </Stack>
                                         </TableCell>
@@ -312,8 +332,8 @@ export default function KycQueue() {
                                         </Alert>
 
                                         <Box>
-                                            <Typography variant="subtitle2" color="text.secondary" gutterBottom>Full Name</Typography>
-                                            <Typography variant="body1" fontWeight={600}>{selectedRequest.userName}</Typography>
+                                            <Typography variant="subtitle2" color="text.secondary" gutterBottom>Full Name & ID</Typography>
+                                            <Typography variant="body1" fontWeight={600}>{selectedRequest.userName} ({formatUserId(selectedRequest.userId)})</Typography>
                                         </Box>
                                         <Box>
                                             <Typography variant="subtitle2" color="text.secondary" gutterBottom>Document Type</Typography>
@@ -363,6 +383,13 @@ export default function KycQueue() {
                     </>
                 )}
             </Dialog>
+
+            <Snackbar
+                open={snack.open}
+                autoHideDuration={4000}
+                onClose={() => setSnack({ ...snack, open: false })}
+                message={snack.msg}
+            />
         </Box >
     );
 }

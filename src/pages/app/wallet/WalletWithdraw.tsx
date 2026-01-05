@@ -255,12 +255,16 @@ function money(amount: number, currency = "UGX") {
   return `${currency} ${v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
 }
 
+import { useAuthStore } from "../../../stores/authStore";
+
+/*
 function mfaCodeFor(channel: MfaChannel) {
   if (channel === "Authenticator") return "654321";
   if (channel === "SMS") return "222222";
   if (channel === "WhatsApp") return "333333";
   return "111111";
 }
+*/
 
 function feeFor(destType: DestType, amount: number) {
   const a = clampMoney(amount);
@@ -284,7 +288,7 @@ function runSelfTestsOnce() {
       if (!cond) throw new Error(`Test failed: ${name}`);
     };
 
-    assert("mfa", mfaCodeFor("WhatsApp") === "333333");
+    // assert("mfa", mfaCodeFor("WhatsApp") === "333333");
     assert("fee", feeFor("momo", 100000) >= 500);
 
   } catch (e) {
@@ -298,6 +302,7 @@ export default function WithdrawFundsPage() {
   const navigate = useNavigate();
   const theme = useTheme();
   const { mode } = useThemeStore();
+  const { user, requestPhoneVerification, verifyPhone } = useAuthStore();
   const isDark = mode === "dark";
 
   const currency = "UGX";
@@ -306,6 +311,7 @@ export default function WithdrawFundsPage() {
 
   // Real KYC tier and limits
   const [kycTier, setKycTier] = useState<"Unverified" | "Basic" | "Full">("Unverified");
+  const [dailyLimit, setDailyLimit] = useState(1000000);
   const [loadingConfig, setLoadingConfig] = useState(true);
 
   // Fetch data
@@ -314,10 +320,11 @@ export default function WithdrawFundsPage() {
 
     const fetchData = async () => {
       try {
-        const [walletRes, kycRes, methodsRes] = await Promise.all([
+        const [walletRes, kycRes, methodsRes, limitsRes] = await Promise.all([
           api.get('/wallets/me').catch(e => { console.warn("Wallet fetch failed", e); return null; }),
           api.get('/kyc/status').catch(e => { console.warn("KYC fetch failed", e); return { tier: "Unverified" }; }),
-          api.get('/wallets/me/methods').catch(e => { console.warn("Methods fetch failed", e); return []; })
+          api.get('/wallets/me/methods').catch(e => { console.warn("Methods fetch failed", e); return []; }),
+          api.get('/wallets/me/limits').catch(e => { console.warn("Limits fetch failed", e); return { dailyLimit: 1000000 }; })
         ]);
 
         if (walletRes) {
@@ -329,6 +336,10 @@ export default function WithdrawFundsPage() {
           setKycTier(kycRes.tier);
         }
 
+        if (limitsRes && limitsRes.dailyLimit) {
+          setDailyLimit(limitsRes.dailyLimit);
+        }
+
         if (Array.isArray(methodsRes)) {
           const mapped: Dest[] = methodsRes.map((m: any) => ({
             id: m.id,
@@ -338,26 +349,23 @@ export default function WithdrawFundsPage() {
             verified: true, // Assume saved methods are verified for now
             default: m.isDefault
           }));
+          setDestinations(mapped);
 
           if (mapped.length > 0) {
-            setDestinations(mapped);
-            // Pre-select default
             const def = mapped.find(d => d.default);
             setDestId(def ? def.id : mapped[0].id);
           } else {
             setDestinations([]);
           }
         }
-
+      } catch (err) {
+        console.error(err);
       } finally {
         setLoadingConfig(false);
       }
     };
-
     fetchData();
   }, []);
-
-  const dailyLimit = kycTier === "Full" ? 20000000 : kycTier === "Basic" ? 5000000 : 1000000;
 
   // Initial state empty, populated by API
   const [destinations, setDestinations] = useState<Dest[]>([]);
@@ -377,6 +385,13 @@ export default function WithdrawFundsPage() {
   const [reauthPassword, setReauthPassword] = useState("");
   const [mfaChannel, setMfaChannel] = useState<MfaChannel>("Authenticator");
   const [otp, setOtp] = useState("");
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setInterval(() => setCooldown((c) => Math.max(0, c - 1)), 1000);
+    return () => clearInterval(t);
+  }, [cooldown]);
 
   const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
@@ -445,23 +460,42 @@ export default function WithdrawFundsPage() {
 
   const closeReauth = () => setReauthOpen(false);
 
-  const validateReauth = () => {
-    if (reauthMode === "password") {
-      if (reauthPassword !== "EVzone123!") {
-        setSnack({ open: true, severity: "error", msg: "Re-auth failed. Incorrect password." });
-        return false;
-      }
-      return true;
+  const sendCode = async () => {
+    if (cooldown > 0) return;
+    if (!user?.phoneNumber) {
+      setSnack({ open: true, severity: "warning", msg: "No phone number linked to account." });
+      return;
     }
-    if (otp.trim() !== mfaCodeFor(mfaChannel)) {
-      setSnack({ open: true, severity: "error", msg: "Re-auth failed. Incorrect code." });
-      return false;
+    try {
+      const method = mfaChannel === "WhatsApp" ? "whatsapp_code" : "sms_code";
+      await requestPhoneVerification(user.phoneNumber, method);
+      setCooldown(30);
+      setSnack({ open: true, severity: "success", msg: `Code sent via ${mfaChannel}.` });
+    } catch (err: any) {
+      setSnack({ open: true, severity: "error", msg: err.message || "Failed to send code" });
     }
-    return true;
   };
 
   const submit = async () => {
-    if (!selectedDest || !validateReauth()) return;
+    if (!selectedDest) return;
+
+    if (reauthMode === "password") {
+      if (reauthPassword !== "EVzone123!") {
+        setSnack({ open: true, severity: "error", msg: "Re-auth failed. Incorrect password." });
+        return;
+      }
+    } else {
+      if (!user?.phoneNumber) {
+        setSnack({ open: true, severity: "error", msg: "No phone number linked." });
+        return;
+      }
+      try {
+        await verifyPhone(user.phoneNumber, otp);
+      } catch (e) {
+        setSnack({ open: true, severity: "error", msg: "Invalid OTP code." });
+        return;
+      }
+    }
 
     setReauthOpen(false);
     setState("processing");
@@ -897,8 +931,17 @@ export default function WithdrawFundsPage() {
                   label="6-digit code"
                   placeholder="123456"
                   fullWidth
-                  InputProps={{ startAdornment: (<InputAdornment position="start"><KeypadIcon size={18} /></InputAdornment>) }}
-                  helperText={`Demo code for ${mfaChannel}: ${mfaCodeFor(mfaChannel)}`}
+                  InputProps={{
+                    startAdornment: (<InputAdornment position="start"><KeypadIcon size={18} /></InputAdornment>),
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <Button size="small" onClick={sendCode} disabled={cooldown > 0}>
+                          {cooldown > 0 ? `${cooldown}s` : "Send"}
+                        </Button>
+                      </InputAdornment>
+                    )
+                  }}
+                  helperText={user?.phoneNumber ? `Code sent to ${user.phoneNumber}` : "Add phone number in settings."}
                 />
               </>
             )}

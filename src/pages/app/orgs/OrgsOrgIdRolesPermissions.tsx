@@ -21,7 +21,9 @@ import {
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { useThemeStore } from "../../../stores/themeStore";
-import { EVZONE } from "../../../theme/evzone";
+import { useNavigate, useParams } from "react-router-dom";
+import { OrganizationService, OrgRole } from "../../../services/OrganizationService";
+import { formatOrgId } from "../../../utils/format";
 
 /**
  * EVzone My Accounts - Org Roles & Permissions
@@ -39,8 +41,6 @@ import { EVZONE } from "../../../theme/evzone";
 type ThemeMode = "light" | "dark";
 
 type Severity = "info" | "warning" | "error" | "success";
-
-type OrgRole = "Owner" | "Admin" | "Manager" | "Member" | "Viewer" | "Support";
 
 type PermissionKey =
   | "members.view"
@@ -211,11 +211,14 @@ export default function OrgRolesPermissionsPage() {
   const { mode } = useThemeStore();
   const isDark = mode === "dark";
 
-  // Demo: my org role
-  const [myRole, setMyRole] = useState<OrgRole>("Admin");
+  const { orgId } = useParams<{ orgId: string }>();
+  const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(true);
+  const [myRole, setMyRole] = useState<OrgRole>("Member");
   const canEdit = isAdminRole(myRole);
 
-  const [orgName] = useState("EV World");
+  const [orgName, setOrgName] = useState("");
 
   const permissions: Permission[] = useMemo(
     () => [
@@ -312,6 +315,36 @@ export default function OrgRolesPermissionsPage() {
     requireMfaForAdmins: true,
   });
 
+  const loadData = async () => {
+    if (!orgId) return;
+    try {
+      setLoading(true);
+      const [orgData, permData] = await Promise.all([
+        OrganizationService.getOrg(orgId),
+        OrganizationService.getPermissions(orgId)
+      ]);
+
+      setOrgName(orgData.name);
+      setMyRole(orgData.role);
+
+      if (permData.grants && Object.keys(permData.grants).length > 0) {
+        setGrants(permData.grants);
+      }
+      if (permData.policy) {
+        setPolicy(permData.policy);
+      }
+
+    } catch (err) {
+      setSnack({ open: true, severity: "error", msg: "Failed to load permissions." });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, [orgId]);
+
   const [saving, setSaving] = useState(false);
   const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
@@ -363,14 +396,19 @@ export default function OrgRolesPermissionsPage() {
   };
 
   const saveAll = async () => {
-    if (!canEdit) {
+    if (!canEdit || !orgId) {
       setSnack({ open: true, severity: "warning", msg: "Only admins can edit roles and permissions." });
       return;
     }
-    setSaving(true);
-    await new Promise((r) => setTimeout(r, 650));
-    setSaving(false);
-    setSnack({ open: true, severity: "success", msg: "Roles and permissions saved (demo)." });
+    try {
+      setSaving(true);
+      await OrganizationService.updatePermissions(orgId, { grants, policy });
+      setSnack({ open: true, severity: "success", msg: "Roles and permissions saved successfully." });
+    } catch (err: any) {
+      setSnack({ open: true, severity: "error", msg: err.message || "Failed to save permissions." });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const grouped = useMemo(() => groupByCategory(permissions), [permissions]);
@@ -390,8 +428,10 @@ export default function OrgRolesPermissionsPage() {
                   <Typography sx={{ color: "white", fontWeight: 950, letterSpacing: -0.4 }}>EV</Typography>
                 </Box>
                 <Box sx={{ minWidth: 0 }}>
-                  <Typography sx={{ fontWeight: 950, lineHeight: 1.05 }}>My Accounts</Typography>
-                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Roles and permissions</Typography>
+                  <Typography sx={{ fontWeight: 950, lineHeight: 1.05 }}>{orgName}</Typography>
+                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                    Roles and permissions • {formatOrgId(orgId || "")}
+                  </Typography>
                 </Box>
               </Stack>
 

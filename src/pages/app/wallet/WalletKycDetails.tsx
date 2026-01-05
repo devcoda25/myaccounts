@@ -194,24 +194,16 @@ function ArrowLeftIcon({ size = 18 }: { size?: number }) {
 // -----------------------------
 // Draft storage
 // -----------------------------
+// -----------------------------
+// Draft storage
+// -----------------------------
 function loadDraft(): Partial<KycDraft> | null {
-  try {
-    const raw = window.localStorage.getItem(KYC_DRAFT_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as Partial<KycDraft>;
-    if (!parsed || typeof parsed !== "object") return null;
-    return parsed;
-  } catch {
-    return null;
-  }
+  // PII Security: LocalStorage persistence disabled.
+  return null;
 }
 
 function saveDraft(d: KycDraft) {
-  try {
-    window.localStorage.setItem(KYC_DRAFT_KEY, JSON.stringify(d));
-  } catch {
-    // ignore
-  }
+  // PII Security: LocalStorage persistence disabled.
 }
 
 // -----------------------------

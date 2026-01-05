@@ -25,6 +25,7 @@ import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { api } from "../../../utils/api";
 import { getProviderIcon, getProviderColor } from "../../../assets/paymentIcons";
+import { WalletService } from "../../../services/WalletService";
 
 
 /**
@@ -42,7 +43,7 @@ type ThemeMode = "light" | "dark";
 
 type Severity = "info" | "warning" | "error" | "success";
 
-type PayMethod = "mtn_momo" | "airtel_money" | "card" | "bank_transfer";
+type PayMethod = string;
 
 type ResultStatus = "idle" | "review" | "success" | "failure";
 
@@ -212,7 +213,7 @@ function money(amount: number, currency = "UGX") {
 function feeFor(method: PayMethod, amount: number) {
   // Demo fees (adjust later in backend)
   const a = clampMoney(amount);
-  if (method === "bank_transfer") return 0;
+  if (method === "bank_transfer" || method === "bank") return 0;
   if (method === "card") return Math.round(a * 0.035) + 500; // 3.5% + 500
   // MoMo: 1.5%
   return Math.round(a * 0.015);
@@ -283,9 +284,32 @@ export default function WalletAddFunds() {
     msg: "",
   });
 
+  const [methods, setMethods] = useState<any[]>([]);
+  const [loadingMethods, setLoadingMethods] = useState(false);
+  const [selectedMethodId, setSelectedMethodId] = useState<string>("");
+
   useEffect(() => {
     if (typeof window !== "undefined") runSelfTestsOnce();
+    loadMethods();
   }, []);
+
+  const loadMethods = async () => {
+    setLoadingMethods(true);
+    try {
+      const data = await WalletService.getMethods();
+      setMethods(data);
+      // Auto-select default or first
+      const def = data.find((m: any) => m.isDefault) || data[0];
+      if (def) {
+        setSelectedMethodId(def.id);
+        setMethod(def.type as any); // Sync purely for fee calc compatibility for now
+      }
+    } catch (err) {
+      console.warn("Failed to load methods", err);
+    } finally {
+      setLoadingMethods(false);
+    }
+  };
 
   // toggleMode removed
 
@@ -317,22 +341,60 @@ export default function WalletAddFunds() {
     "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
   } as const;
 
-  const fee = feeFor(method, amount);
+  // const fee = feeFor(method, amount); // Local REMOVED
+  const [fee, setFee] = useState(0);
   const total = clampMoney(amount) + fee;
+
+  useEffect(() => {
+    const fetchFee = async () => {
+      if (amount < 500) {
+        setFee(0);
+        return;
+      }
+      try {
+        const res = await api.get(`/wallets/fees?amount=${amount}&type=deposit&method=${method}`);
+        if (res && typeof res.fee === 'number') {
+          setFee(res.fee);
+        }
+      } catch (e) {
+        console.warn("Fee fetch failed", e);
+      }
+    };
+
+    const t = setTimeout(fetchFee, 400); // 400ms debounce
+    return () => clearTimeout(t);
+  }, [amount, method]);
+
+  // const total = clampMoney(amount) + fee; // Updated above
 
   const quickChips = [10000, 20000, 50000, 100000, 200000];
 
   const canContinue = clampMoney(amount) >= 1000;
 
-  const MethodCard = ({ m, accent }: { m: PayMethod; accent: string }) => {
-    const selected = method === m;
+  const MethodCard = ({ item, selected, onSelect }: { item: any; selected: boolean; onSelect: () => void }) => {
+    // Helper to get color/icon based on provider string
+    const provLower = (item.provider || "").toLowerCase();
+    const typeLower = (item.type || "").toLowerCase();
+
+    let accent = theme.palette.text.primary;
+    if (provLower.includes("mtn")) accent = getProviderColor("mtn");
+    else if (provLower.includes("airtel")) accent = getProviderColor("airtel");
+    else if (provLower.includes("visa") || typeLower === "card") accent = getProviderColor("visa");
+    else if (typeLower === "bank") accent = getProviderColor("bank");
+
+    const iconKey = provLower.includes("mtn") ? "mtn_momo"
+      : provLower.includes("airtel") ? "airtel_money"
+        : typeLower === "card" ? "visa"
+          : typeLower === "bank" ? "bank"
+            : "wallet";
+
     return (
       <Box
         role="button"
         tabIndex={0}
-        onClick={() => setMethod(m)}
+        onClick={onSelect}
         onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") setMethod(m);
+          if (e.key === "Enter" || e.key === " ") onSelect();
         }}
         sx={{
           borderRadius: 20,
@@ -360,19 +422,19 @@ export default function WalletAddFunds() {
                   color: theme.palette.text.primary,
                 }}
               >
-                {getProviderIcon(m === 'card' ? 'visa' : m === 'bank_transfer' ? 'bank' : m, 24)}
+                {getProviderIcon(iconKey, 24)}
               </Box>
               <Box>
-                <Typography sx={{ fontWeight: 950 }}>{methodLabel(m)}</Typography>
-                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>{methodHint(m)}</Typography>
+                <Typography sx={{ fontWeight: 950 }}>{item.details?.masked || item.provider}</Typography>
+                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>{item.details?.label || item.type}</Typography>
               </Box>
             </Stack>
-            {selected ? <Chip size="small" color="success" label="Selected" /> : <Chip size="small" variant="outlined" label="Select" />}
+            {selected ? <Chip size="small" color="success" label="Selected" /> : null}
           </Stack>
 
           <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-            <Chip size="small" variant="outlined" label={`Fee: ${money(feeFor(m, amount), currency)}`} />
-            {m === "bank_transfer" ? <Chip size="small" color="success" label="No fee (demo)" /> : null}
+            {/* Calculate fee based on type if selected, else show general info */}
+            <Chip size="small" variant="outlined" label={`Fee: ${money(feeFor(item.type, amount), currency)}`} />
           </Stack>
         </Stack>
       </Box>
@@ -642,10 +704,30 @@ export default function WalletAddFunds() {
                             <Typography variant="h6">Choose payment method</Typography>
 
                             <Box className="grid gap-3">
-                              <MethodCard m="mtn_momo" accent={getProviderColor("mtn")} />
-                              <MethodCard m="airtel_money" accent={getProviderColor("airtel")} />
-                              <MethodCard m="card" accent={getProviderColor("visa")} />
-                              <MethodCard m="bank_transfer" accent={getProviderColor("bank")} />
+                              {methods.map((m) => (
+                                <MethodCard
+                                  key={m.id}
+                                  item={m}
+                                  selected={selectedMethodId === m.id}
+                                  onSelect={() => {
+                                    setSelectedMethodId(m.id);
+                                    setMethod(m.type);
+                                  }}
+                                />
+                              ))}
+
+                              {methods.length === 0 && !loadingMethods && (
+                                <Alert severity="info">No payment methods found. Please add one below.</Alert>
+                              )}
+
+                              <Button
+                                variant="outlined"
+                                sx={{ ...orangeOutlined, borderStyle: 'dashed', py: 1.5 }}
+                                startIcon={<PlusIcon size={18} />}
+                                onClick={() => navigate("/app/wallet/payment-methods/add")}
+                              >
+                                Add new method
+                              </Button>
                             </Box>
 
                             <SummaryCard />

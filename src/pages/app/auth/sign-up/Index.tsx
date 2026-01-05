@@ -297,11 +297,13 @@ export default function SignUpPageV3() {
     }
 
     try {
+      const selectedCountry = COUNTRIES.find(c => c.dial === countryCode);
       const response = await register({
         firstName,
         otherNames,
         email,
         phoneNumber: phone ? `${countryCode}${phone}` : undefined,
+        country: selectedCountry?.code,
         password,
         inviteCode,
         acceptTerms

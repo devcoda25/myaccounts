@@ -43,6 +43,8 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { api } from "../../../utils/api";
+import { formatWalletId } from "../../../utils/format";
+import { exportToCsv } from "../../../utils/export";
 
 const EVZONE = { green: "#03cd8c", orange: "#f77f00", red: "#d32f2f" } as const;
 
@@ -115,6 +117,21 @@ export default function WalletsList() {
         } catch (err: any) {
             setSnack({ open: true, msg: err.message || "Failed to update wallet status" });
         }
+    };
+
+    const handleExport = () => {
+        if (!wallets.length) return;
+        exportToCsv(wallets, `wallets-${Date.now()}.csv`, {
+            id: 'Wallet ID',
+            ownerName: 'Owner Name',
+            ownerEmail: 'Owner Email',
+            balance: 'Balance',
+            currency: 'Currency',
+            status: 'Status',
+            lastTx: 'Last Transaction',
+            riskScore: 'Risk Score'
+        });
+        setSnack({ open: true, msg: "Wallets exported successfully" });
     };
 
     const statusColor = (s: WalletStatus) => {
@@ -284,7 +301,7 @@ export default function WalletsList() {
                             </TextField>
                         </Grid>
                         <Grid item xs={6} md={3}>
-                            <Button variant="outlined" startIcon={<Activity size={18} />} fullWidth sx={{ borderRadius: '10px', height: 40, borderColor: theme.palette.divider, color: 'text.primary' }}>
+                            <Button variant="outlined" startIcon={<Activity size={18} />} fullWidth sx={{ borderRadius: '10px', height: 40, borderColor: theme.palette.divider, color: 'text.primary' }} onClick={handleExport}>
                                 Export CSV
                             </Button>
                         </Grid>
@@ -318,7 +335,7 @@ export default function WalletsList() {
                         <TableBody>
                             {wallets.map((w) => (
                                 <TableRow key={w.id} hover>
-                                    <TableCell sx={{ fontFamily: 'monospace', color: 'text.secondary', fontSize: '0.8rem' }}>{w.id}</TableCell>
+                                    <TableCell sx={{ fontFamily: 'monospace', color: 'text.secondary', fontSize: '0.8rem' }}>{formatWalletId(w.id)}</TableCell>
                                     <TableCell>
                                         <Stack>
                                             <Typography variant="subtitle2" fontWeight={600}>{w.ownerName}</Typography>

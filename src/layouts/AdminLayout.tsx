@@ -65,6 +65,7 @@ export default function AdminLayout() {
         { label: "Wallets", icon: <RefreshIcon size={18} />, route: "/admin/wallets", permission: "view_wallets" },
         { label: "Transactions", icon: <ClipboardIcon size={18} />, route: "/admin/transactions", permission: "view_transactions" },
         { label: "Disputes", icon: <GavelIcon size={18} />, route: "/admin/disputes", permission: "view_disputes" },
+        { label: "Apps", icon: <LayoutIcon size={18} />, route: "/admin/apps", permission: "manage_apps" },
         { label: "Audit logs", icon: <ClipboardIcon size={18} />, route: "/admin/audit", permission: "view_audit_logs" },
         { label: "Administrators", icon: <ShieldIcon size={18} />, route: "/admin/administrators", permission: "manage_admins" }, // New
         { label: "System status", icon: <ShieldIcon size={18} />, route: "/admin/status", permission: "view_status" },

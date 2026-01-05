@@ -90,7 +90,7 @@ export default function AdminDashboard() {
                     api('/admin/audit-logs?take=5').catch(() => null)
                 ]);
                 setStats(s || { usersCount: 0, orgsCount: 0, sessionsCount: 0, balance: 0 });
-                setLogs(Array.isArray(l) ? l : []);
+                setLogs(l?.logs || []);
             } catch (err) {
                 console.error(err);
                 setSnack({ open: true, severity: "error", msg: "Failed to load dashboard data." });

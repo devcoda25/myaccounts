@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { api } from "../../../utils/api";
+import { formatUserId } from "../../../utils/format";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../../../components/common/Pagination";
 import {
@@ -49,8 +50,10 @@ import {
     MessageSquare as SmsIcon,
     Mail as MailIcon,
     Phone as WhatsAppIcon,
-    Trash as TrashIcon
+    Trash as TrashIcon,
+    Download as DownloadIcon
 } from "lucide-react";
+import { exportToCsv } from "../../../utils/export";
 
 // Types
 type ThemeMode = "light" | "dark";
@@ -219,6 +222,23 @@ export default function AdminUsersList() {
         }, 300); // Debounce search
         return () => clearTimeout(timer);
     }, [page, rowsPerPage, q, typeFilter, statusFilter]);
+
+    const handleExport = () => {
+        if (!rows.length) return;
+        exportToCsv(rows, `users-${Date.now()}.csv`, {
+            id: 'User ID',
+            name: 'Full Name',
+            email: 'Email',
+            phone: 'Phone',
+            type: 'Account Type',
+            status: 'Status',
+            kyc: 'KYC Tier',
+            walletBalance: 'Balance',
+            currency: 'Currency',
+            risk: 'Risk Score'
+        });
+        setSnack({ open: true, severity: "success", msg: "User directory exported successfully" });
+    };
 
     // Action dialog
     const [actionOpen, setActionOpen] = useState(false);
@@ -466,6 +486,9 @@ export default function AdminUsersList() {
                                         </Typography>
                                     </Box>
                                     <Stack direction="row" spacing={1.2}>
+                                        <Button variant="outlined" sx={orangeOutlined} startIcon={<DownloadIcon size={18} />} onClick={handleExport}>
+                                            Export CSV
+                                        </Button>
                                         <Button variant="contained" sx={greenContained} startIcon={<UsersIcon size={18} />} onClick={() => setCreateOpen(true)}>
                                             Create user
                                         </Button>
@@ -584,7 +607,7 @@ export default function AdminUsersList() {
                 <DialogContent>
                     <Stack spacing={1.2} sx={{ mt: 1 }}>
                         <Alert severity={pending ? actionSeverity(pending.kind) : "info"} icon={<ShieldIcon size={18} />} sx={{ borderRadius: 3 }}>
-                            {pendingUser ? `${actionTitle(pending!.kind)} for ${pendingUser.name} (${pendingUser.id}).` : ""}
+                            {pendingUser ? `${actionTitle(pending!.kind)} for ${pendingUser.name} (${formatUserId(pendingUser.id)}).` : ""}
                         </Alert>
 
                         <Tabs

@@ -34,6 +34,7 @@ import {
     Download as DownloadIcon,
     Eye as EyeIcon,
 } from "lucide-react";
+import { formatTransactionId } from "../../../utils/format";
 
 // Types
 type Severity = "success" | "info" | "warning" | "error";
@@ -108,6 +109,7 @@ function riskTone(r: Risk) {
 }
 
 import { api } from "../../../utils/api";
+import { exportToCsv } from "../../../utils/export";
 
 export default function AuditLogs() {
     const theme = useTheme();
@@ -160,6 +162,23 @@ export default function AuditLogs() {
         return () => clearTimeout(timeout);
     }, [q, outcome, risk]);
 
+    const handleExport = () => {
+        if (!rows.length) return;
+        exportToCsv(rows, `audit-logs-${Date.now()}.csv`, {
+            id: 'Event ID',
+            at: 'Timestamp',
+            actor: 'Actor',
+            role: 'Role',
+            action: 'Action',
+            target: 'Target',
+            ip: 'IP Address',
+            outcome: 'Outcome',
+            risk: 'Risk',
+            requestId: 'Request ID'
+        });
+        setSnack({ open: true, severity: "success", msg: "Audit logs exported successfully." });
+    };
+
     const filtered = rows;
 
     const riskChip = (r: Risk) => {
@@ -187,7 +206,7 @@ export default function AuditLogs() {
                                         Tamper-aware records of admin and security actions.
                                     </Typography>
                                 </Box>
-                                <Button variant="outlined" sx={orangeOutlined} startIcon={<DownloadIcon size={18} />} onClick={() => setSnack({ open: true, severity: "success", msg: "CSV export started" })}>
+                                <Button variant="outlined" sx={orangeOutlined} startIcon={<DownloadIcon size={18} />} onClick={handleExport}>
                                     Export CSV
                                 </Button>
                             </Stack>
@@ -271,12 +290,12 @@ export default function AuditLogs() {
                     {detail ? (
                         <Stack spacing={1.2}>
                             <Alert severity="info" icon={<EyeIcon size={18} />} sx={{ borderRadius: 3 }}>
-                                Event ID: <b>{detail.id}</b>
+                                Event ID: <b>{formatTransactionId(detail.id)}</b>
                             </Alert>
 
                             <Box className="grid gap-3 md:grid-cols-12">
                                 <Box className="md:col-span-6"><Info label="Time" value={new Date(detail.at).toLocaleString()} /></Box>
-                                <Box className="md:col-span-6"><Info label="Request ID" value={detail.requestId} /></Box>
+                                <Box className="md:col-span-6"><Info label="Request ID" value={formatTransactionId(detail.requestId)} /></Box>
                                 <Box className="md:col-span-6"><Info label="Actor" value={`${detail.actor} (${detail.role})`} /></Box>
                                 <Box className="md:col-span-6"><Info label="IP" value={detail.ip} /></Box>
                                 <Box className="md:col-span-6"><Info label="Action" value={detail.action} /></Box>
@@ -293,7 +312,7 @@ export default function AuditLogs() {
                             <Box sx={{ borderRadius: 4, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.2 }}>
                                 <Typography sx={{ fontWeight: 950 }}>Metadata</Typography>
                                 <Divider sx={{ my: 1 }} />
-                                <pre style={{ margin: 0, whiteSpace: "pre-wrap", fontSize: 12, color: String(theme.palette.text.primary) }}>
+                                <pre style={{ margin: 0, whiteSpace: "pre-wrap", fontSize: 12, color: theme.palette.text.primary }}>
                                     {JSON.stringify(detail.meta, null, 2)}
                                 </pre>
                             </Box>

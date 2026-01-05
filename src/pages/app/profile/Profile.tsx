@@ -135,6 +135,7 @@ export default function PersonalProfilePage() {
                     saving={saving}
                     onSave={onSave}
                     countries={countries}
+                    userId={user?.id}
                   />
                   <ContactSettings />
                 </Stack>

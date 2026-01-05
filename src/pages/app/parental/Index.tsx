@@ -432,7 +432,7 @@ export default function ParentalControls() {
         enabled: true,
       },
     } as any;
-    updateChild(id, patch, { kind: "Geofence Updated", summary: `Updated ${type} location: ${place.address}`, severity: "info" });
+    updateChild(id, patch, { kind: "Safety Updated", summary: `Updated ${type} location: ${place.address}`, severity: "info" });
     setPlaceOpen(false);
   };
 
@@ -576,7 +576,9 @@ export default function ParentalControls() {
         setOpen={setPlaceOpen}
         target={placeTarget}
         currentPlace={selectedChild?.geofences.home || selectedChild?.geofences.school}
-        onSave={savePlace}
+        onSave={(p) => {
+          if (selectedChild) savePlace(selectedChild.id, placeTarget, p);
+        }}
       />
 
       {/* Step-up */}

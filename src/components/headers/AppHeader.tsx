@@ -24,7 +24,8 @@ import {
     User as UserIcon,
     Settings,
     LogOut,
-    Globe
+    Globe,
+    Shield
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { EVZONE } from '../../theme/evzone';
@@ -33,6 +34,7 @@ import LanguageSwitcher from '../common/LanguageSwitcher';
 import { useThemeStore } from '../../stores/themeStore';
 import { useAuthStore } from '../../stores/authStore';
 import { useTranslation } from 'react-i18next';
+import { formatUserId } from '../../utils/format';
 
 interface AppHeaderProps {
     onDrawerToggle?: () => void;
@@ -242,11 +244,25 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
                             <Typography variant="subtitle2" fontWeight={700} noWrap>
                                 {user ? `${user.firstName} ${user.otherNames}` : 'Guest'}
                             </Typography>
-                            <Typography variant="caption" color="text.secondary" noWrap>
+                            <Typography variant="caption" color="text.secondary" noWrap display="block">
                                 {user?.email || ''}
                             </Typography>
+                            {user?.id && (
+                                <Typography variant="caption" sx={{ color: EVZONE.orange, fontWeight: 700, fontFamily: 'monospace' }}>
+                                    ID: {formatUserId(user.id)}
+                                </Typography>
+                            )}
                         </Box>
                         <Divider />
+                        {user && (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') && (
+                            <>
+                                <MenuItem onClick={() => { navigate('/admin'); handleMenuClose(); }} sx={{ py: 1.5, color: EVZONE.orange, fontWeight: 600 }}>
+                                    <ListItemIcon><Shield size={18} color={EVZONE.orange} /></ListItemIcon>
+                                    {t('header.admin_dashboard')}
+                                </MenuItem>
+                                <Divider />
+                            </>
+                        )}
                         <MenuItem onClick={handleProfileClick} sx={{ py: 1.5 }}>
                             <ListItemIcon><UserIcon size={18} /></ListItemIcon>
                             {t('header.profile')}

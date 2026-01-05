@@ -46,6 +46,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { api } from "../../../utils/api";
+import { formatTransactionId } from "../../../utils/format";
 
 const EVZONE = { green: "#03cd8c", orange: "#f77f00", red: "#d32f2f", blue: "#2196f3" } as const;
 
@@ -65,7 +66,7 @@ interface DisputeRow {
 
 export default function AdminDisputesList() {
     const theme = useTheme();
-    const navigate = useNavigate();
+    // const navigate = useNavigate(); // Unused
     const [q, setQ] = useState("");
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -243,7 +244,7 @@ export default function AdminDisputesList() {
                                 const status = statusConfig(d.status);
                                 return (
                                     <TableRow key={d.id} hover>
-                                        <TableCell sx={{ fontFamily: 'monospace', fontWeight: 600, fontSize: '0.8rem' }}>{d.id}</TableCell>
+                                        <TableCell sx={{ fontFamily: 'monospace', fontWeight: 600, fontSize: '0.8rem' }}>{formatTransactionId(d.id)}</TableCell>
                                         <TableCell>
                                             <Stack>
                                                 <Typography variant="subtitle2" fontWeight={600}>{d.wallet?.user?.firstName} {d.wallet?.user?.otherNames}</Typography>
@@ -260,7 +261,7 @@ export default function AdminDisputesList() {
                                         </TableCell>
                                         <TableCell>
                                             <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>{d.reference}</Typography>
-                                            {d.txnId && <Typography variant="caption" color="text.secondary">Tx: {d.txnId}</Typography>}
+                                            {d.txnId && <Typography variant="caption" color="text.secondary">Tx: {formatTransactionId(d.txnId)}</Typography>}
                                         </TableCell>
                                         <TableCell>
                                             <Chip
@@ -338,7 +339,7 @@ export default function AdminDisputesList() {
                             <Box sx={{ p: 2, bgcolor: alpha(theme.palette.background.default, 0.5), borderRadius: 2 }}>
                                 <Stack direction="row" justifyContent="space-between">
                                     <Typography variant="caption" color="text.secondary">Dispute ID</Typography>
-                                    <Typography variant="body2" fontWeight={600}>{selectedDispute.id}</Typography>
+                                    <Typography variant="body2" fontWeight={600}>{formatTransactionId(selectedDispute.id)}</Typography>
                                 </Stack>
                                 <Stack direction="row" justifyContent="space-between" sx={{ mt: 1 }}>
                                     <Typography variant="caption" color="text.secondary">Amount</Typography>

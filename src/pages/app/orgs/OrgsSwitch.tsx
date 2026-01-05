@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -27,6 +28,8 @@ import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
+import { OrganizationService, OrganizationDto, OrgType } from "../../../services/OrganizationService";
+import { formatOrgId } from "../../../utils/format";
 
 /**
  * EVzone My Accounts - Organization Switcher
@@ -39,22 +42,7 @@ import { EVZONE } from "../../../theme/evzone";
  * - Remember last selection
  */
 
-type ThemeMode = "light" | "dark";
-
 type Severity = "info" | "warning" | "error" | "success";
-
-type OrgRole = "Owner" | "Admin" | "Manager" | "Member" | "Viewer";
-
-type Org = {
-  id: string;
-  name: string;
-  role: OrgRole;
-  membersCount: number;
-  country: string;
-  ssoEnabled: boolean;
-};
-
-type OrgType = "Company" | "School" | "Fleet" | "Government" | "Other";
 
 // Local EVZONE removed
 
@@ -231,16 +219,32 @@ export default function SwitchOrgPage() {
 
   const [remember, setRemember] = useState<boolean>(() => getStoredRemember());
 
-  const [orgs, setOrgs] = useState<Org[]>(() => [
-    { id: "org_evworld", name: "EV World", role: "Owner", membersCount: 12, country: "Uganda", ssoEnabled: true },
-    { id: "org_evzone_group", name: "EVzone Group", role: "Admin", membersCount: 38, country: "Uganda", ssoEnabled: false },
-    { id: "org_partner", name: "Partner Organization", role: "Member", membersCount: 9, country: "Kenya", ssoEnabled: false },
-  ]);
+  const [orgs, setOrgs] = useState<OrganizationDto[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [selected, setSelected] = useState<string>(() => {
     const stored = getStoredLastOrg();
-    return stored || "org_evworld";
+    return stored || "";
   });
+
+  const loadOrgs = async () => {
+    try {
+      setLoading(true);
+      const data = await OrganizationService.listMyOrgs();
+      setOrgs(data);
+      if (data.length > 0 && !selected) {
+        setSelected(data[0].id);
+      }
+    } catch (err) {
+      setSnack({ open: true, severity: "error", msg: "Failed to load organizations." });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadOrgs();
+  }, []);
 
   const [createOpen, setCreateOpen] = useState(false);
   const [joinOpen, setJoinOpen] = useState(false);
@@ -290,60 +294,59 @@ export default function SwitchOrgPage() {
 
   const currentOrg = useMemo(() => orgs.find((o) => o.id === selected) || orgs[0], [orgs, selected]);
 
-  const createOrg = () => {
+  const createOrg = async () => {
     const name = createName.trim();
     if (!name) {
       setSnack({ open: true, severity: "warning", msg: "Enter an organization name." });
       return;
     }
-    const id = makeOrgId(name);
-    const newOrg: Org = {
-      id,
-      name,
-      role: "Owner",
-      membersCount: 1,
-      country: createCountry,
-      ssoEnabled: createSso,
-    };
-    setOrgs((prev) => [newOrg, ...prev]);
-    setSelected(id);
-    setCreateOpen(false);
-    setCreateName("");
-    setCreateType("Company");
-    setCreateCountry("Uganda");
-    setCreateSso(false);
-    setSnack({ open: true, severity: "success", msg: `Organization created: ${name}` });
+    try {
+      setLoading(true);
+      const newOrg = await OrganizationService.createOrg({ name, country: createCountry });
+      setOrgs((prev) => [newOrg, ...prev]);
+      setSelected(newOrg.id);
+      setCreateOpen(false);
+      setCreateName("");
+      setCreateType("Company");
+      setCreateCountry("Uganda");
+      setCreateSso(false);
+      setSnack({ open: true, severity: "success", msg: `Organization created: ${name}` });
+    } catch (err) {
+      setSnack({ open: true, severity: "error", msg: "Failed to create organization." });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const joinOrg = () => {
-    const code = inviteCode.trim().toUpperCase();
-    if (code.length < 6) {
-      setSnack({ open: true, severity: "warning", msg: "Enter a valid invite code." });
+  const joinOrg = async () => {
+    const id = inviteCode.trim(); // Assume for now it's the ID or use a dedicated join code endpoint if later developed
+    if (!id) {
+      setSnack({ open: true, severity: "warning", msg: "Enter a valid organization ID/invite code." });
       return;
     }
 
-    const joined: Org = {
-      id: `org_join_${code.toLowerCase()}`,
-      name: `Joined Org (${code.slice(0, 4)})`,
-      role: "Member",
-      membersCount: 5,
-      country: "Uganda",
-      ssoEnabled: false,
-    };
-
-    setOrgs((prev) => {
-      if (prev.some((o) => o.id === joined.id)) return prev;
-      return [joined, ...prev];
-    });
-    setSelected(joined.id);
-    setJoinOpen(false);
-    setInviteCode("");
-    setSnack({ open: true, severity: "success", msg: "Joined organization successfully." });
+    try {
+      setLoading(true);
+      const joined = await OrganizationService.joinOrg(id);
+      setOrgs((prev) => {
+        if (prev.some((o) => o.id === joined.id)) return prev;
+        return [joined, ...prev];
+      });
+      setSelected(joined.id);
+      setJoinOpen(false);
+      setInviteCode("");
+      setSnack({ open: true, severity: "success", msg: "Joined organization successfully." });
+    } catch (err) {
+      setSnack({ open: true, severity: "error", msg: "Failed to join organization. Check the code." });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const continueToOrg = () => {
     const org = orgs.find((o) => o.id === selected);
-    setSnack({ open: true, severity: "success", msg: `Switched to ${org?.name || "organization"}. (Demo)` });
+    setSnack({ open: true, severity: "success", msg: `Switched to ${org?.name || "organization"}.` });
+    setTimeout(() => navigate("/app"), 500);
   };
 
   return (
@@ -493,7 +496,7 @@ export default function SwitchOrgPage() {
                                   <Chip size="small" variant="outlined" label={o.role} />
                                 </Stack>
                                 <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                                  {o.country} • {o.membersCount} member(s)
+                                  {formatOrgId(o.id)} • {o.country} • {o.membersCount} member(s)
                                 </Typography>
                               </Box>
                               <Box>

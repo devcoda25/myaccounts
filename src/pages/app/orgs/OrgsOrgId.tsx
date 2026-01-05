@@ -25,7 +25,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from "react-i18next";
 import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
-import { api } from "../../../utils/api";
+import { OrganizationService, OrgRole } from "../../../services/OrganizationService";
 import {
   Building,
   Users,
@@ -41,6 +41,7 @@ import {
   Moon,
   LayoutGrid
 } from 'lucide-react';
+import { formatOrgId } from "../../../utils/format";
 
 // Types matching Backend Response
 type AuditSeverity = "info" | "warning" | "critical";
@@ -118,12 +119,12 @@ export default function OrganizationDashboardPage() {
 
       // Fetch Org Details
       if (orgId) {
-        const data = await api(`/orgs/${orgId}`);
+        const data = await OrganizationService.getOrg(orgId);
         setOrg(data);
       }
 
       // Fetch My Orgs for Switcher
-      const list = await api('/orgs');
+      const list = await OrganizationService.listMyOrgs();
       setMyOrgs(list);
 
     } catch (err: any) {
@@ -140,11 +141,11 @@ export default function OrganizationDashboardPage() {
   const enableOrgWallet = async () => {
     if (!org) return;
     try {
-      await api.patch(`/orgs/${org.id}`, { walletEnabled: true });
-      setSnack({ open: true, severity: "success", msg: "Wallet enabled successfully." });
+      await OrganizationService.createWallet(org.id, org.currency || 'USD');
+      setSnack({ open: true, severity: "success", msg: "Organization wallet created successfully." });
       loadData(); // Refresh to update UI
     } catch (err: any) {
-      setSnack({ open: true, severity: "error", msg: err.message || "Failed to enable wallet." });
+      setSnack({ open: true, severity: "error", msg: err.message || "Failed to create wallet." });
     }
   };
 
@@ -273,7 +274,7 @@ export default function OrganizationDashboardPage() {
                       <Divider />
                       <Stack spacing={0.8}>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Organization ID</Typography>
-                        <Typography sx={{ fontWeight: 900, fontFamily: 'monospace' }}>{org.id}</Typography>
+                        <Typography sx={{ fontWeight: 900, fontFamily: 'monospace' }}>{formatOrgId(org.id)}</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Created</Typography>
                         <Typography sx={{ fontWeight: 900 }}>{new Date(org.createdAt).toLocaleDateString()}</Typography>
                       </Stack>

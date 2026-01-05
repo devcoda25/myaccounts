@@ -8,6 +8,8 @@ export interface User {
     otherNames?: string;
     avatarUrl?: string;
     role: string;
+    phoneNumber?: string;
+    phoneVerified?: boolean;
 }
 
 export type Severity = "info" | "warning" | "error" | "success";

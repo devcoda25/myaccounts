@@ -26,10 +26,11 @@ import { motion } from "framer-motion";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
+import { OrganizationService, OrgRole } from "../../../services/OrganizationService";
+import { formatOrgId } from "../../../utils/format";
 import { api } from "../../../utils/api";
 
 type Severity = "info" | "warning" | "error" | "success";
-type OrgRole = "Owner" | "Admin" | "Manager" | "Member" | "Viewer";
 type DefaultInviteRole = Exclude<OrgRole, "Owner">;
 
 function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
@@ -122,7 +123,7 @@ export default function OrgSettingsPage() {
     if (!orgId) return;
     try {
       setLoading(true);
-      const data = await api(`/orgs/${orgId}`);
+      const data = await OrganizationService.getOrg(orgId);
       setMyRole(data.role || "Viewer");
       setName(data.name || "");
       setCountry(data.country || "");
@@ -220,7 +221,7 @@ export default function OrgSettingsPage() {
         payload.defaultRolePolicy = {};
       }
 
-      await api.patch(`/orgs/${orgId}`, payload);
+      await OrganizationService.updateSettings(orgId, payload);
       setSnack({ open: true, severity: "success", msg: "Settings saved." });
 
     } catch (err: any) {
@@ -275,9 +276,9 @@ export default function OrgSettingsPage() {
                   <Typography sx={{ color: "white", fontWeight: 950, letterSpacing: -0.4 }}>EV</Typography>
                 </Box>
                 <Box sx={{ minWidth: 0 }}>
-                  <Typography sx={{ fontWeight: 950, lineHeight: 1.05, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>My Accounts</Typography>
+                  <Typography sx={{ fontWeight: 950, lineHeight: 1.05, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{name}</Typography>
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    {orgId} • Settings
+                    Settings • {formatOrgId(orgId || "")}
                   </Typography>
                 </Box>
               </Stack>
@@ -314,7 +315,7 @@ export default function OrgSettingsPage() {
                       <Box>
                         <Typography variant="h5">Organization settings</Typography>
                         <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap sx={{ mt: 1 }}>
-                          <Chip icon={<BuildingIcon size={16} />} label={orgId} size="small" variant="outlined" sx={{ "& .MuiChip-icon": { color: "inherit" } }} />
+                          <Chip icon={<BuildingIcon size={16} />} label={formatOrgId(orgId || "")} size="small" variant="outlined" sx={{ "& .MuiChip-icon": { color: "inherit" } }} />
                           <Chip size="small" label={`Role: ${myRole}`} color={isAdmin ? "success" : "info"} />
                           {!isAdmin ? <Chip size="small" color="warning" label="Read-only" /> : null}
                         </Stack>

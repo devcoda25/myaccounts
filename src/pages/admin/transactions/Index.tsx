@@ -40,6 +40,8 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { api } from "../../../utils/api";
+import { formatTransactionId } from "../../../utils/format";
+import { exportToCsv } from "../../../utils/export";
 
 const EVZONE = { green: "#03cd8c", orange: "#f77f00", red: "#d32f2f", blue: "#2196f3" } as const;
 
@@ -91,6 +93,30 @@ export default function TransactionsList() {
         fetchData();
     }, [fetchData]);
 
+    const handleExport = () => {
+        if (!txs.length) return;
+        // Flatten user object for CSV
+        const exportData = txs.map(tx => ({
+            ...tx,
+            userName: tx.user.name,
+            userEmail: tx.user.email,
+            date: new Date(tx.date).toLocaleString()
+        }));
+
+        exportToCsv(exportData, `transactions-${Date.now()}.csv`, {
+            id: 'Transaction ID',
+            userName: 'User Name',
+            userEmail: 'User Email',
+            type: 'Type',
+            amount: 'Amount',
+            currency: 'Currency',
+            status: 'Status',
+            date: 'Date',
+            description: 'Description'
+        });
+        setSnack({ open: true, msg: "Transactions exported successfully" });
+    };
+
     const statusConfig = (s: TxStatus) => {
         if (s === "Success") return { color: EVZONE.green, icon: <CheckCircle size={14} /> };
         if (s === "Failed") return { color: EVZONE.red, icon: <XCircle size={14} /> };
@@ -131,7 +157,7 @@ export default function TransactionsList() {
                         color: theme.palette.background.paper,
                         borderRadius: '10px',
                         px: 3
-                    }}>
+                    }} onClick={handleExport}>
                         Export Report
                     </Button>
                 </Stack>
@@ -245,7 +271,7 @@ export default function TransactionsList() {
                                 const type = typeConfig(t.type);
                                 return (
                                     <TableRow key={t.id} hover>
-                                        <TableCell sx={{ fontFamily: 'monospace', fontWeight: 600, fontSize: '0.8rem' }}>{t.id}</TableCell>
+                                        <TableCell sx={{ fontFamily: 'monospace', fontWeight: 600, fontSize: '0.8rem' }}>{formatTransactionId(t.id)}</TableCell>
                                         <TableCell>
                                             <Stack direction="row" spacing={1.5} alignItems="center">
                                                 <Avatar sx={{ width: 32, height: 32, fontSize: '0.8rem' }}>

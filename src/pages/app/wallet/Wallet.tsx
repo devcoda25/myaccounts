@@ -235,6 +235,7 @@ import { useThemeStore } from "../../../stores/themeStore";
 
 import { api } from "../../../utils/api";
 import { Wallet, Transaction } from "../../../utils/types";
+import { formatTransactionId, formatWalletId } from "../../../utils/format";
 
 // ... (keep icons)
 
@@ -250,6 +251,7 @@ export default function WalletPage() {
   const [wallet, setWallet] = useState<Wallet | null>(null);
   const [stats, setStats] = useState({ inflow: 0, outflow: 0 });
   const [txs, setTransactions] = useState<Transaction[]>([]);
+  const [limits, setLimits] = useState<{ dailyLimit: number; monthlyLimit: number }>({ dailyLimit: 0, monthlyLimit: 0 });
   const [loading, setLoading] = useState(true);
 
   const [kycTier, setKycTier] = useState<KycTier>("Unverified");
@@ -257,17 +259,19 @@ export default function WalletPage() {
   const fetchWalletData = async () => {
     try {
       setLoading(true);
-      const [w, s, t, k] = await Promise.all([
+      const [w, s, t, k, l] = await Promise.all([
         api('/wallets/me').catch(() => null),
         api('/wallets/me/stats?days=7').catch(() => ({ inflow: 0, outflow: 0 })),
         api('/wallets/me/transactions?take=5').catch(() => []),
-        api('/kyc/status').catch(() => null)
+        api('/kyc/status').catch(() => null),
+        api('/wallets/me/limits').catch(() => ({ dailyLimit: 1000000, monthlyLimit: 10000000 }))
       ]);
       setWallet(w);
       setStats(s || { inflow: 0, outflow: 0 });
       // API returns { data: [], total: 0 }, so we need to extract .data
       setTransactions(t?.data || []);
       if (k?.tier) setKycTier(k.tier);
+      if (l) setLimits(l);
     } catch (err) {
       console.error("Failed to load wallet data", err);
     } finally {
@@ -283,9 +287,8 @@ export default function WalletPage() {
   const currency = wallet?.currency || "UGX";
   const available = balance; // For MVP available = balance
 
-  // Computed Limits (Mock driven by KYC tier for now)
-  const dailyLimit = kycTier === "Full" ? 20000000 : kycTier === "Basic" ? 5000000 : 1000000;
-  const monthlyLimit = kycTier === "Full" ? 200000000 : kycTier === "Basic" ? 50000000 : 10000000;
+  // Computed Limits (Fetched from API)
+  const { dailyLimit, monthlyLimit } = limits;
 
   const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
@@ -381,7 +384,9 @@ export default function WalletPage() {
                           </Box>
                           <Box>
                             <Typography sx={{ fontWeight: 950 }}>Wallet balance</Typography>
-                            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Primary currency: {currency}</Typography>
+                            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                              {currency} • {wallet?.id ? formatWalletId(wallet.id) : ""}
+                            </Typography>
                           </Box>
                         </Stack>
 
@@ -516,6 +521,9 @@ export default function WalletPage() {
                                 <Typography sx={{ fontWeight: 950 }}>{t.type}</Typography>
                                 <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                                   {t.counterparty || "EVzone"} • {timeAgo(new Date(t.createdAt).getTime())}
+                                </Typography>
+                                <Typography variant="caption" sx={{ color: theme.palette.text.secondary, fontFamily: 'monospace' }}>
+                                  ID: {formatTransactionId(t.id)}
                                 </Typography>
                                 {t.description ? <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{t.description}</Typography> : null}
                               </Box>

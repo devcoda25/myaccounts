@@ -30,6 +30,7 @@ import { motion } from "framer-motion";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
+import { formatOrgId } from "../../../utils/format";
 import { api } from "../../../utils/api";
 
 type Severity = "info" | "warning" | "error" | "success";
@@ -304,8 +305,8 @@ export default function DomainVerificationPage() {
                   <Typography sx={{ color: "white", fontWeight: 950, letterSpacing: -0.4 }}>EV</Typography>
                 </Box>
                 <Box>
-                  <Typography sx={{ fontWeight: 950, lineHeight: 1.05 }}>My Accounts</Typography>
-                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{orgName} • Domain verification</Typography>
+                  <Typography sx={{ fontWeight: 950, lineHeight: 1.05 }}>{orgName}</Typography>
+                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Domain verification • {formatOrgId(orgId || "")}</Typography>
                 </Box>
               </Stack>
 

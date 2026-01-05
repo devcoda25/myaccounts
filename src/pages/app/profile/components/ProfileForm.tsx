@@ -17,6 +17,7 @@ import { motion } from "framer-motion";
 import { EVZONE } from "../../../../theme/evzone";
 import { useThemeStore } from "../../../../stores/themeStore";
 import { SaveIcon, UserIcon } from "../../../../utils/icons";
+import { formatUserId } from "../../../../utils/format";
 
 interface ProfileFormProps {
     fullName: string;
@@ -30,6 +31,7 @@ interface ProfileFormProps {
     saving: boolean;
     onSave: () => void;
     countries: string[];
+    userId?: string;
 }
 
 // ...
@@ -45,7 +47,8 @@ export const ProfileForm = ({
     onAvatarChange,
     saving,
     onSave,
-    countries
+    countries,
+    userId
 }: ProfileFormProps) => {
     const theme = useTheme();
     const { mode } = useThemeStore();
@@ -167,6 +170,14 @@ export const ProfileForm = ({
                                         onChange={(e) => setFullName(e.target.value)}
                                         placeholder="e.g. John Doe"
                                         helperText="First and Last names"
+                                    />
+                                    <TextField
+                                        label="User ID"
+                                        variant="outlined"
+                                        fullWidth
+                                        value={userId ? formatUserId(userId) : ""}
+                                        disabled
+                                        helperText="Your unique identifier"
                                     />
                                     <Box className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                         <TextField

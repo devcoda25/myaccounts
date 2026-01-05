@@ -32,6 +32,7 @@ import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
+import { api } from "../../../utils/api";
 
 /**
  * EVzone My Accounts - Report a Security Issue
@@ -269,7 +270,7 @@ export default function ReportSecurityIssuePage() {
 
   const selected = events.find((e) => e.id === selectedEvent) || events[0];
 
-  const submitSuspicious = () => {
+  const submitSuspicious = async () => {
     if (locked) {
       setSnack({ open: true, severity: "warning", msg: "Account is locked. Contact support to proceed." });
       return;
@@ -278,11 +279,22 @@ export default function ReportSecurityIssuePage() {
       setSnack({ open: true, severity: "warning", msg: "Please provide details (at least 10 characters)." });
       return;
     }
-    setSnack({ open: true, severity: "success", msg: "Report submitted (demo). Our team will review it." });
-    setSusDetails("");
+
+    try {
+      await api.post('/security/reports', {
+        type: 'suspicious_login',
+        eventId: selectedEvent,
+        reason: susReason,
+        details: susDetails
+      });
+      setSnack({ open: true, severity: "success", msg: "Report submitted. Our team will review it." });
+      setSusDetails("");
+    } catch (e) {
+      setSnack({ open: true, severity: "error", msg: "Failed to submit report." });
+    }
   };
 
-  const submitCompromised = () => {
+  const submitCompromised = async () => {
     if (locked) {
       setSnack({ open: true, severity: "warning", msg: "Account is locked. Contact support to proceed." });
       return;
@@ -291,14 +303,38 @@ export default function ReportSecurityIssuePage() {
       setSnack({ open: true, severity: "warning", msg: "Please provide details (at least 10 characters)." });
       return;
     }
-    setSnack({ open: true, severity: "success", msg: "Compromise report submitted (demo)." });
-    setCompDetails("");
+
+    try {
+      await api.post('/security/reports', {
+        type: 'compromised_account',
+        reason: compReason,
+        contactEmail: compEmail,
+        details: compDetails,
+        actionsTaken: {
+          changedPassword: actionPwd,
+          enabled2fa: action2fa,
+          reviewedSessions: actionSessions
+        }
+      });
+      setSnack({ open: true, severity: "success", msg: "Compromise report submitted." });
+      setCompDetails("");
+    } catch (e) {
+      setSnack({ open: true, severity: "error", msg: "Failed to submit report." });
+    }
   };
 
-  const lockNow = () => {
-    setLocked(true);
-    setLockDialog(false);
-    setSnack({ open: true, severity: "success", msg: "Account locked (demo)." });
+  const lockNow = async () => {
+    try {
+      await api.post('/security/lock', {});
+      setLocked(true);
+      setLockDialog(false);
+      setSnack({ open: true, severity: "success", msg: "Account locked and sessions revoked." });
+
+      // Optionally redirect to login or force logout handling
+      // setTimeout(() => window.location.href = '/login', 2000);
+    } catch (e) {
+      setSnack({ open: true, severity: "error", msg: "Failed to lock account." });
+    }
   };
 
   const steps = ["Submit", "Review", "Action", "Resolved"];

@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatUserId } from '../../../utils/format';
 import { Box, Typography, Button, Paper, Stack } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft as ArrowLeftIcon } from 'lucide-react';
@@ -23,7 +24,7 @@ export default function UserSessions() {
                     User Sessions
                 </Typography>
                 <Typography color="text.secondary">
-                    Manage active sessions for user ID: {userId}
+                    Manage active sessions for user ID: {formatUserId(userId || '')}
                 </Typography>
             </Box>
 

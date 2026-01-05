@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../../../utils/api";
+import { formatUserId } from "../../../utils/format";
 import {
     Alert,
     Avatar,
@@ -61,6 +62,7 @@ type UserRecord = {
     name: string;
     email?: string;
     phone?: string;
+    country?: string;
     type: AccountType;
     status: UserStatus;
     kyc: KycTier;
@@ -168,24 +170,27 @@ export default function AdminUserDetail() {
                 // Map backend user to UserRecord
                 const rec: UserRecord = {
                     id: u.id,
-                    name: `${u.firstName} ${u.otherNames}`,
+                    name: `${u.firstName || ''} ${u.otherNames || ''}`.trim() || 'No Name',
                     email: u.email,
-                    phone: u.phoneNumber,
+                    phone: u.phoneNumber || u.contacts?.find((c: any) => c.type === 'PHONE' && c.isPrimary)?.value || u.contacts?.find((c: any) => c.type === 'PHONE')?.value,
+                    country: u.country,
                     type: u.role === 'SUPER_ADMIN' ? 'Org Admin' : u.role === 'ADMIN' ? 'Agent' : 'User',
-                    status: u.emailVerified ? 'Active' : 'Disabled',
+                    status: (u.emailVerified || u.phoneVerified) ? 'Active' : 'Disabled',
                     kyc: u.kyc?.status === 'Verified' ? 'Full' : u.kyc?.status === 'Pending' ? 'Basic' : 'Unverified',
                     walletBalance: 0,
                     currency: 'USD',
-                    risk: 'Low',
+                    risk: u.kyc?.riskScore || 'Low',
                     mfaEnabled: u.twoFactorEnabled,
                     passkeys: 0,
                     createdAt: new Date(u.createdAt).getTime(),
-                    lastLoginAt: undefined,
-                    lastPasswordChangeAt: undefined,
-                    linkedGoogle: false, // Check providers?
-                    linkedApple: false,
-                    orgs: [],
-                    notes: ''
+                    lastLoginAt: u.sessions && u.sessions[0] ? new Date(u.sessions[0].createdAt).getTime() : undefined,
+                    lastPasswordChangeAt: u.auditLogs?.find((l: any) => l.action === 'password_change')?.createdAt
+                        ? new Date(u.auditLogs.find((l: any) => l.action === 'password_change').createdAt).getTime()
+                        : undefined,
+                    linkedGoogle: u.credentials?.some((c: any) => c.providerType === 'google'),
+                    linkedApple: u.credentials?.some((c: any) => c.providerType === 'apple'),
+                    orgs: u.memberships?.map((m: any) => ({ id: m.organization.id, name: m.organization.name, role: m.role })) || [],
+                    notes: u.kyc?.notes || ''
                 };
                 setUser(rec);
             })
@@ -327,7 +332,7 @@ export default function AdminUserDetail() {
                                     <Box>
                                         <Typography variant="h5">{user.name}</Typography>
                                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                                            {user.id} • {user.type}
+                                            {formatUserId(user.id)} • {user.type}
                                         </Typography>
                                         <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 1 }}>
                                             <StatusChip s={user.status} />
@@ -376,6 +381,7 @@ export default function AdminUserDetail() {
 
                                     <InfoRow label="Email" value={user.email || "-"} icon={<MailIcon size={18} />} />
                                     <InfoRow label="Phone" value={user.phone || "-"} icon={<SmsIcon size={18} />} />
+                                    <InfoRow label="Country" value={user.country || "-"} icon={<GlobeIcon size={18} />} />
                                     <InfoRow label="Created" value={new Date(user.createdAt).toLocaleString()} icon={<ClipboardIcon size={18} />} />
                                     <InfoRow label="Last login" value={timeAgo(user.lastLoginAt)} icon={<ClipboardIcon size={18} />} />
                                     <InfoRow label="Last password change" value={timeAgo(user.lastPasswordChangeAt)} icon={<KeyIcon size={18} />} />
