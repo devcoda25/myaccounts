@@ -38,8 +38,7 @@ const EVZONE = {
   orange: "#f77f00",
 } as const;
 
-import { useTranslation, Trans } from "react-i18next";
-import LanguageSwitcher from "../../../../components/common/LanguageSwitcher";
+
 import {
   IconBase,
   SunIcon,
@@ -121,7 +120,6 @@ function normalizeCode(s: string) {
 }
 
 export default function RecoveryCodeEntryPage() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
@@ -171,18 +169,18 @@ export default function RecoveryCodeEntryPage() {
     setBanner(null);
     const v = normalizeCode(code);
     if (!v) {
-      setBanner({ severity: "warning", msg: t('auth.recovery_code.validation_empty') });
+      setBanner({ severity: "warning", msg: "Please enter a recovery code." });
       return;
     }
 
     // Demo accepted code
     if (v !== "EVZ-REC-1A2B3C") {
-      setBanner({ severity: "error", msg: t('auth.recovery_code.validation_invalid') });
+      setBanner({ severity: "error", msg: "Invalid recovery code." });
       return;
     }
 
     setStep("success");
-    setSnack({ open: true, severity: "success", msg: t('auth.recovery_code.success_verified') });
+    setSnack({ open: true, severity: "success", msg: "Recovery code verified." });
   };
 
   const regenerate = () => {
@@ -219,10 +217,10 @@ export default function RecoveryCodeEntryPage() {
                 </Box>
                 <Box>
                   <Typography variant="subtitle1" sx={{ lineHeight: 1.1 }}>
-                    {t('app_name')}
+                    EVzone
                   </Typography>
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    {t('auth.recovery_code.subtitle')}
+                    Recovery Code
                   </Typography>
                 </Box>
               </Stack>
@@ -237,7 +235,7 @@ export default function RecoveryCodeEntryPage() {
                     {isDark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
                   </IconButton>
                 </Tooltip>
-                <LanguageSwitcher />
+
                 <Tooltip title="Help">
                   <IconButton
                     size="small"
@@ -260,34 +258,34 @@ export default function RecoveryCodeEntryPage() {
               <Card>
                 <CardContent className="p-5 md:p-6">
                   <Stack spacing={1.2}>
-                    <Typography variant="h6">{t('auth.recovery_code.title')}</Typography>
+                    <Typography variant="h6">Use a Recovery Code</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      {t('auth.recovery_code.desc')}
+                      Enter one of your single-use recovery codes.
                     </Typography>
 
                     <Divider sx={{ my: 1 }} />
 
                     <Stack spacing={0.8}>
-                      <Typography sx={{ fontWeight: 900 }}>{t('auth.recovery_code.where_find_title')}</Typography>
+                      <Typography sx={{ fontWeight: 900 }}>Where to find codes?</Typography>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        • {t('auth.recovery_code.where_find_1')}
+                        • Saved during 2FA setup
                       </Typography>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        • {t('auth.recovery_code.where_find_2')}
+                        • Password manager
                       </Typography>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        • {t('auth.recovery_code.where_find_3')}
+                        • Downloaded .txt file
                       </Typography>
                     </Stack>
 
                     <Divider sx={{ my: 1 }} />
 
                     <Alert severity="warning">
-                      {t('auth.recovery_code.alert_single_use')}
+                      Each code can only be used once.
                     </Alert>
 
                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      <Trans i18nKey="auth.recovery_code.demo_code_hint" />
+                      Demo: Use <b>EVZ-REC-1A2B3C</b>
                     </Typography>
                   </Stack>
                 </CardContent>
@@ -304,11 +302,11 @@ export default function RecoveryCodeEntryPage() {
                         <Box sx={{ color: EVZONE.green }}>
                           <CheckCircleIcon size={22} />
                         </Box>
-                        <Typography variant="h6">{t('auth.recovery_code.success_title')}</Typography>
+                        <Typography variant="h6">Access Restored</Typography>
                       </Stack>
 
                       <Alert severity="warning">
-                        {t('auth.recovery_code.alert_regenerate')}
+                        You should regenerate your recovery codes immediately.
                       </Alert>
 
                       <Box
@@ -320,16 +318,16 @@ export default function RecoveryCodeEntryPage() {
                         }}
                       >
                         <Stack spacing={1.2}>
-                          <Typography sx={{ fontWeight: 900 }}>{t('auth.recovery_code.next_steps_title')}</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>Next Steps</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            {t('auth.recovery_code.next_steps_desc')}
+                            Go to Security settings to improved your account safety.
                           </Typography>
                           <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                             <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={regenerate}>
-                              {t('auth.recovery_code.btn_regenerate')}
+                              Regenerate Codes
                             </Button>
                             <Button variant="outlined" sx={orangeOutlinedSx} onClick={continueNext} endIcon={<ArrowRightIcon size={18} />}>
-                              {t('auth.recovery_code.btn_continue')}
+                              Continue to Dashboard
                             </Button>
                           </Stack>
                         </Stack>
@@ -338,9 +336,9 @@ export default function RecoveryCodeEntryPage() {
                   ) : (
                     <Stack spacing={2.0}>
                       <Stack spacing={0.6}>
-                        <Typography variant="h6">{t('auth.recovery_code.enter_code_title')}</Typography>
+                        <Typography variant="h6">Enter Code</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          {t('auth.recovery_code.enter_code_desc')}
+                          Type the code exactly as it appears.
                         </Typography>
                       </Stack>
 
@@ -349,8 +347,8 @@ export default function RecoveryCodeEntryPage() {
                       <TextField
                         value={code}
                         onChange={(e) => setCode(e.target.value)}
-                        label={t('auth.recovery_code.label_code')}
-                        placeholder={t('auth.recovery_code.placeholder_code')}
+                        label="Recovery Code"
+                        placeholder="e.g. EVZ-REC-1A2B3C"
                         fullWidth
                         InputProps={{
                           startAdornment: (
@@ -359,7 +357,7 @@ export default function RecoveryCodeEntryPage() {
                             </InputAdornment>
                           ),
                         }}
-                        helperText={t('auth.recovery_code.helper_code')}
+                        helperText="Format: XXXXX-XXXXX"
                       />
 
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
@@ -370,7 +368,7 @@ export default function RecoveryCodeEntryPage() {
                           onClick={verify}
                           endIcon={<ArrowRightIcon size={18} />}
                         >
-                          {t('auth.recovery_code.btn_verify')}
+                          Verify Code
                         </Button>
                         <Button
                           variant="outlined"
@@ -378,12 +376,12 @@ export default function RecoveryCodeEntryPage() {
                           onClick={() => navigate("/auth/mfa")}
                           startIcon={<ArrowLeftIcon size={18} />}
                         >
-                          {t('auth.recovery_code.btn_back_mfa')}
+                          Back to MFA
                         </Button>
                       </Stack>
 
                       <Button variant="text" sx={orangeTextSx} onClick={() => navigate("/auth/account-recovery-help")}>
-                        {t('auth.recovery_code.link_cant_access')}
+                        I don't have my recovery codes
                       </Button>
                     </Stack>
                   )}
@@ -395,14 +393,14 @@ export default function RecoveryCodeEntryPage() {
           {/* Footer */}
           <Box className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
             <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-              © {new Date().getFullYear()} {t('app_name')}.
+              © {new Date().getFullYear()} EVzone.
             </Typography>
             <Stack direction="row" spacing={1.2} alignItems="center">
               <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
-                {t('auth.terms')}
+                Terms
               </Button>
               <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
-                {t('auth.privacy')}
+                Privacy
               </Button>
             </Stack>
           </Box>

@@ -51,8 +51,7 @@ const EVZONE = {
 // -----------------------------
 // Inline icons (CDN-safe)
 // -----------------------------
-import { useTranslation, Trans } from "react-i18next";
-import LanguageSwitcher from "../../../../components/common/LanguageSwitcher";
+
 import {
   IconBase,
   SunIcon,
@@ -209,27 +208,26 @@ function OtpInput({
   );
 }
 
-function getActionLabel(action: string | null, t: any) {
+function getActionLabel(action: string | null) {
   switch ((action || "").toLowerCase()) {
     case "withdraw":
     case "withdrawal":
-      return t('auth.re_auth.action_withdraw');
+      return "Withdraw Funds";
     case "change_email":
     case "email":
-      return t('auth.re_auth.action_change_email');
+      return "Change Email";
     case "change_password":
     case "password":
-      return t('auth.re_auth.action_change_password');
+      return "Change Password";
     case "disable_mfa":
     case "mfa":
-      return t('auth.re_auth.action_disable_mfa');
+      return "Disable MFA";
     default:
-      return t('auth.re_auth.action_default');
+      return "Security Check";
   }
 }
 
 export default function ReAuthPromptPage() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
@@ -250,7 +248,7 @@ export default function ReAuthPromptPage() {
   const [snack, setSnack] = useState<{ open: boolean; severity: "success" | "info" | "warning" | "error"; msg: string }>({ open: false, severity: "info", msg: "" });
 
   const qs = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
-  const actionLabel = getActionLabel(qs.get("action"), t);
+  const actionLabel = getActionLabel(qs.get("action"));
 
   const pageBg =
     mode === "dark"
@@ -309,7 +307,7 @@ export default function ReAuthPromptPage() {
     if (mfaMethod === "totp") return;
     setCodeSent(true);
     setCooldown(30);
-    setSnack({ open: true, severity: "success", msg: mfaMethod === "sms" ? t('auth.re_auth.msg_sms_sent') : t('auth.re_auth.msg_email_sent') });
+    setSnack({ open: true, severity: "success", msg: mfaMethod === "sms" ? "SMS code sent." : "Email code sent." });
   };
 
   const expectedCode = mfaMethod === "totp" ? "654321" : mfaMethod === "sms" ? "222222" : "111111";
@@ -319,36 +317,36 @@ export default function ReAuthPromptPage() {
 
     if (promptMode === "password") {
       if (!password) {
-        setBanner({ severity: "warning", msg: t('auth.re_auth.validation_password_empty') });
+        setBanner({ severity: "warning", msg: "Please enter your password." });
         return;
       }
       if (password !== "EVzone123!") {
-        setBanner({ severity: "error", msg: t('auth.re_auth.validation_password_incorrect') });
+        setBanner({ severity: "error", msg: "Incorrect password." });
         return;
       }
       setStep("success");
-      setSnack({ open: true, severity: "success", msg: t('auth.re_auth.success_confirmed') });
+      setSnack({ open: true, severity: "success", msg: "Identity confirmed." });
       return;
     }
 
     if ((mfaMethod === "sms" || mfaMethod === "email") && !codeSent) {
-      setBanner({ severity: "warning", msg: t('auth.re_auth.validation_send_first') });
+      setBanner({ severity: "warning", msg: "Please send the code first." });
       return;
     }
 
     const code = otp.join("");
     if (code.length < 6) {
-      setBanner({ severity: "warning", msg: t('auth.re_auth.validation_code_empty') });
+      setBanner({ severity: "warning", msg: "Please enter the code." });
       return;
     }
 
     if (code !== expectedCode) {
-      setBanner({ severity: "error", msg: t('auth.re_auth.validation_code_incorrect') });
+      setBanner({ severity: "error", msg: "Incorrect code." });
       return;
     }
 
     setStep("success");
-    setSnack({ open: true, severity: "success", msg: t('auth.re_auth.success_confirmed') });
+    setSnack({ open: true, severity: "success", msg: "Identity confirmed." });
   };
 
   const continueNext = () => {
@@ -385,10 +383,10 @@ export default function ReAuthPromptPage() {
                 </Box>
                 <Box>
                   <Typography variant="subtitle1" sx={{ lineHeight: 1.1 }}>
-                    {t('app_name')}
+                    EVzone
                   </Typography>
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    {t('auth.re_auth.subtitle')}
+                    Verify It's You
                   </Typography>
                 </Box>
               </Stack>
@@ -404,7 +402,7 @@ export default function ReAuthPromptPage() {
                   </IconButton>
                 </Tooltip>
 
-                <LanguageSwitcher />
+
 
                 <Tooltip title="Help">
                   <IconButton
@@ -428,9 +426,9 @@ export default function ReAuthPromptPage() {
               <Card>
                 <CardContent className="p-5 md:p-6">
                   <Stack spacing={1.2}>
-                    <Typography variant="h6">{t('auth.re_auth.subtitle_security_title')}</Typography>
+                    <Typography variant="h6">Security Check</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      <Trans i18nKey="auth.re_auth.subtitle_security_desc" values={{ action: actionLabel }} components={{ b: <b /> }} />
+                      This specific action (<b>{actionLabel}</b>) requires re-authentication.
                     </Typography>
 
                     <Divider sx={{ my: 1 }} />
@@ -441,9 +439,9 @@ export default function ReAuthPromptPage() {
                           <ShieldCheckIcon size={18} />
                         </Box>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>{t('auth.re_auth.feature_fraud_title')}</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>Fraud Protection</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            {t('auth.re_auth.feature_fraud_desc')}
+                            Prevents unauthorized access.
                           </Typography>
                         </Box>
                       </Stack>
@@ -452,9 +450,9 @@ export default function ReAuthPromptPage() {
                           <LockIcon size={18} />
                         </Box>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>{t('auth.re_auth.feature_short_lived_title')}</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>Short Lived</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            {t('auth.re_auth.feature_short_lived_desc')}
+                            Session valid for 5 minutes.
                           </Typography>
                         </Box>
                       </Stack>
@@ -463,7 +461,7 @@ export default function ReAuthPromptPage() {
                     <Divider sx={{ my: 1 }} />
 
                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      <Trans i18nKey="auth.re_auth.demo_hint" />
+                      Demo: Use password <b>EVzone123!</b> or any OTP.
                     </Typography>
                   </Stack>
                 </CardContent>
@@ -480,21 +478,21 @@ export default function ReAuthPromptPage() {
                         <Box sx={{ color: EVZONE.green }}>
                           <CheckCircleIcon size={22} />
                         </Box>
-                        <Typography variant="h6">{t('auth.re_auth.title_confirmed')}</Typography>
+                        <Typography variant="h6">Confirmed</Typography>
                       </Stack>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        {t('auth.re_auth.desc_confirmed')}
+                        You can now proceed with your action.
                       </Typography>
                       <Button variant="contained" color="secondary" endIcon={<ArrowRightIcon size={18} />} sx={orangeContainedSx} onClick={continueNext}>
-                        {t('auth.re_auth.btn_continue_confirmed')}
+                        Continue
                       </Button>
                     </Stack>
                   ) : (
                     <Stack spacing={2.0}>
                       <Stack spacing={0.6}>
-                        <Typography variant="h6">{t('auth.re_auth.title_confirm_identity')}</Typography>
+                        <Typography variant="h6">Confirm Identity</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          {t('auth.re_auth.desc_confirm_identity')}
+                          Choose a method to verify.
                         </Typography>
                       </Stack>
 
@@ -513,8 +511,8 @@ export default function ReAuthPromptPage() {
                           "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 },
                         }}
                       >
-                        <Tab icon={<LockIcon size={16} />} iconPosition="start" label={t('auth.re_auth.tab_password')} />
-                        <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label={t('auth.re_auth.tab_mfa_code')} />
+                        <Tab icon={<LockIcon size={16} />} iconPosition="start" label="Password" />
+                        <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label="MFA Code" />
                       </Tabs>
 
                       {promptMode === "password" ? (
@@ -522,7 +520,7 @@ export default function ReAuthPromptPage() {
                           <TextField
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            label={t('auth.re_auth.tab_password')}
+                            label="Password"
                             type={showPw ? "text" : "password"}
                             fullWidth
                             InputProps={{
@@ -543,10 +541,10 @@ export default function ReAuthPromptPage() {
 
                           <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                             <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={confirm} endIcon={<ArrowRightIcon size={18} />}>
-                              {t('auth.re_auth.btn_confirm')}
+                              Confirm
                             </Button>
                             <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => navigate("/auth/forgot-password")}>
-                              {t('auth.re_auth.btn_forgot_password')}
+                              Forgot Password?
                             </Button>
                           </Stack>
                         </Stack>
@@ -565,15 +563,15 @@ export default function ReAuthPromptPage() {
                               "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 },
                             }}
                           >
-                            <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label={t('auth.re_auth.tab_auth')} />
-                            <Tab icon={<SmsIcon size={16} />} iconPosition="start" label={t('auth.re_auth.tab_sms')} />
-                            <Tab icon={<MailIcon size={16} />} iconPosition="start" label={t('auth.re_auth.tab_email')} />
+                            <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label="Auth App" />
+                            <Tab icon={<SmsIcon size={16} />} iconPosition="start" label="SMS" />
+                            <Tab icon={<MailIcon size={16} />} iconPosition="start" label="Email" />
                           </Tabs>
 
                           {(mfaMethod === "sms" || mfaMethod === "email") ? (
                             <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                               <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={sendCode} disabled={cooldown > 0 && codeSent}>
-                                {codeSent ? t('auth.re_auth.btn_code_sent') : t('auth.re_auth.btn_send_code')}
+                                {codeSent ? "Code Sent" : "Send Code"}
                               </Button>
                               <Button
                                 variant="outlined"
@@ -583,7 +581,7 @@ export default function ReAuthPromptPage() {
                                 }}
                                 disabled={!codeSent || cooldown > 0}
                               >
-                                {cooldown > 0 ? t('auth.re_auth.btn_resend_timer', { seconds: cooldown }) : t('auth.re_auth.btn_resend')}
+                                {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend"}
                               </Button>
                             </Stack>
                           ) : null}
@@ -592,10 +590,10 @@ export default function ReAuthPromptPage() {
 
                           <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                             <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={confirm} endIcon={<ArrowRightIcon size={18} />}>
-                              {t('auth.re_auth.btn_confirm')}
+                              Confirm
                             </Button>
                             <Button variant="outlined" sx={orangeOutlinedSx} onClick={useRecovery}>
-                              {t('auth.re_auth.btn_use_recovery')}
+                              Use Recovery Code
                             </Button>
                           </Stack>
                         </Stack>
@@ -604,7 +602,7 @@ export default function ReAuthPromptPage() {
                       <Divider />
 
                       <Button variant="text" sx={orangeTextSx} onClick={() => navigate(-1)}>
-                        {t('auth.re_auth.btn_cancel')}
+                        Cancel
                       </Button>
                     </Stack>
                   )}
@@ -620,10 +618,10 @@ export default function ReAuthPromptPage() {
             </Typography>
             <Stack direction="row" spacing={1.2} alignItems="center">
               <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
-                {t('auth.terms')}
+                Terms
               </Button>
               <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
-                {t('auth.privacy')}
+                Privacy
               </Button>
             </Stack>
           </Box>

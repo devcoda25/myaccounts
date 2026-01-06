@@ -10,6 +10,9 @@ export interface User {
     role: string;
     phoneNumber?: string;
     phoneVerified?: boolean;
+    preferences?: {
+        locale?: string;
+    };
 }
 
 export type Severity = "info" | "warning" | "error" | "success";

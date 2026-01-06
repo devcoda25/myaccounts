@@ -41,8 +41,8 @@ const THEME_KEY = "evzone_myaccounts_theme";
 // -----------------------------
 // Inline icons (CDN-safe)
 // -----------------------------
-import { useTranslation, Trans } from "react-i18next";
-import LanguageSwitcher from "../../../../components/common/LanguageSwitcher";
+// -----------------------------
+
 import AuthHeader from "../../../../components/headers/AuthHeader";
 import { EVZONE as EVZONE_THEME } from "../../../../theme/evzone";
 import {
@@ -176,7 +176,6 @@ function runSelfTestsOnce() {
 }
 
 export default function PasskeySignInPage() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
@@ -231,7 +230,7 @@ export default function PasskeySignInPage() {
     setBusy(true);
     try {
       if (!supportsPasskeys()) {
-        setSnack({ open: true, severity: "warning", msg: t('auth.passkey.validation_no_support') });
+        setSnack({ open: true, severity: "warning", msg: "Passkeys are not supported on this device." });
         return;
       }
       const res = await tryWebAuthnGet();
@@ -246,14 +245,14 @@ export default function PasskeySignInPage() {
 
   const doPassword = () => {
     if (!identifier.trim()) {
-      setSnack({ open: true, severity: "warning", msg: t('auth.passkey.validation_enter_identifier') });
+      setSnack({ open: true, severity: "warning", msg: "Please enter your email or phone." });
       return;
     }
     if (password !== "EVzone123!") {
-      setSnack({ open: true, severity: "error", msg: t('auth.passkey.validation_invalid_credentials') });
+      setSnack({ open: true, severity: "error", msg: "Invalid credentials." });
       return;
     }
-    setSnack({ open: true, severity: "success", msg: t('auth.passkey.success_signed_in') });
+    setSnack({ open: true, severity: "success", msg: "Signed in successfully." });
     navigate("/app");
   };
 
@@ -271,8 +270,8 @@ export default function PasskeySignInPage() {
                   <Typography sx={{ color: "white", fontWeight: 950, letterSpacing: -0.4 }}>EV</Typography>
                 </Box>
                 <Box>
-                  <Typography sx={{ fontWeight: 950, lineHeight: 1.05 }}>{t('app_name')}</Typography>
-                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{t('auth.passkey.subtitle')}</Typography>
+                  <Typography sx={{ fontWeight: 950, lineHeight: 1.05 }}>EVzone</Typography>
+                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Secure Sign In</Typography>
                 </Box>
               </Stack>
 
@@ -282,7 +281,7 @@ export default function PasskeySignInPage() {
                     {isDark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
                   </IconButton>
                 </Tooltip>
-                <LanguageSwitcher />
+
 
                 <Tooltip title="Help">
                   <IconButton size="small" onClick={() => navigate("/auth/account-recovery-help")} sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.30)}`, borderRadius: 12, color: EVZONE.orange, backgroundColor: alpha(theme.palette.background.paper, 0.60) }}>
@@ -303,18 +302,18 @@ export default function PasskeySignInPage() {
                   <Stack spacing={1.2}>
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} alignItems={{ xs: "flex-start", sm: "center" }} justifyContent="space-between">
                       <Box>
-                        <Typography variant="h4">{t('auth.passkey.title')}</Typography>
+                        <Typography variant="h4">Sign in with Passkey</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          {t('auth.passkey.desc')}
+                          Use your device's biometric sensor or security key.
                         </Typography>
                         <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 1 }}>
-                          <Chip size="small" variant="outlined" label={supportsPasskeys() ? t('auth.passkey.tag_supported') : t('auth.passkey.tag_limited')} />
-                          <Chip size="small" variant="outlined" label={t('auth.passkey.tag_webauthn')} />
+                          <Chip size="small" variant="outlined" label={supportsPasskeys() ? "Supported" : "Limited Support"} />
+                          <Chip size="small" variant="outlined" label="WebAuthn" />
                         </Stack>
                       </Box>
 
                       <Button variant="outlined" sx={orangeOutlined} startIcon={<ArrowLeftIcon size={18} />} onClick={() => navigate("/auth/sign-in")}>
-                        {t('auth.passkey.btn_back')}
+                        Back
                       </Button>
                     </Stack>
 
@@ -323,33 +322,33 @@ export default function PasskeySignInPage() {
                     <TextField
                       value={identifier}
                       onChange={(e) => setIdentifier(e.target.value)}
-                      label={t('auth.passkey.input_identifier')}
+                      label="Email or Phone"
                       fullWidth
-                      placeholder={t('auth.passkey.input_identifier_placeholder')}
+                      placeholder="e.g. user@example.com"
                       InputProps={{ startAdornment: (<InputAdornment position="start"><KeyIcon size={18} /></InputAdornment>) }}
                     />
 
                     <Alert severity="info" icon={<FingerprintIcon size={18} />}>
-                      {t('auth.passkey.alert_phishing')}
+                      Always verify you are on evzone.com before signing in.
                     </Alert>
 
                     {busy ? (
                       <Box>
                         <LinearProgress />
-                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{t('auth.passkey.status_waiting')}</Typography>
+                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Waiting for security key or biometric...</Typography>
                       </Box>
                     ) : null}
 
                     {view === "passkey" ? (
                       <Stack spacing={1.2}>
                         <Button variant="contained" sx={orangeContained} startIcon={<FingerprintIcon size={18} />} onClick={doPasskey} disabled={busy}>
-                          {t('auth.passkey.btn_continue_passkey')}
+                          Continue with Passkey
                         </Button>
                         <Button variant="outlined" sx={orangeOutlined} startIcon={<LockIcon size={18} />} onClick={() => setView("password")} disabled={busy}>
-                          {t('auth.passkey.btn_use_password')}
+                          Use Password
                         </Button>
                         <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                          {t('auth.passkey.hint_no_passkey')}
+                          Don't have a passkey? Use password or OTP.
                         </Typography>
                       </Stack>
                     ) : (
@@ -357,18 +356,18 @@ export default function PasskeySignInPage() {
                         <TextField
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          label={t('auth.passkey.input_password')}
+                          label="Password"
                           type="password"
                           fullWidth
                           InputProps={{ startAdornment: (<InputAdornment position="start"><LockIcon size={18} /></InputAdornment>) }}
-                          helperText={t('auth.passkey.helper_password_demo')}
+                          helperText="Demo: 'EVzone123!'"
                         />
                         <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                           <Button variant="contained" sx={greenContained} onClick={doPassword}>
-                            {t('auth.passkey.btn_sign_in')}
+                            Sign In
                           </Button>
                           <Button variant="outlined" sx={orangeOutlined} onClick={() => setView("passkey")}>
-                            {t('auth.passkey.btn_back_passkey')}
+                            Back to Passkey
                           </Button>
                         </Stack>
                       </Stack>
@@ -378,15 +377,15 @@ export default function PasskeySignInPage() {
 
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                       <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/auth/forgot-password")}>
-                        {t('auth.passkey.btn_forgot_password')}
+                        Forgot Password
                       </Button>
                       <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/auth/sign-in/otp")}>
-                        {t('auth.passkey.btn_use_otp')}
+                        Use One-Time Code
                       </Button>
                     </Stack>
 
                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      {t('auth.passkey.footer_terms')}
+                      By continuing you agree to our Terms and Privacy Policy.
                     </Typography>
                   </Stack>
                 </CardContent>
@@ -398,10 +397,10 @@ export default function PasskeySignInPage() {
                   <CardContent sx={{ py: 1.1, px: 1.2 }}>
                     <Stack direction="row" spacing={1}>
                       <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => setView(view === "passkey" ? "password" : "passkey")}>
-                        {view === "passkey" ? t('auth.passkey.toggle_password') : t('auth.passkey.toggle_passkey')}
+                        {view === "passkey" ? "Use Password" : "Use Passkey"}
                       </Button>
                       <Button fullWidth variant="contained" sx={orangeContained} onClick={view === "passkey" ? doPasskey : doPassword} disabled={busy}>
-                        {t('auth.passkey.btn_continue')}
+                        Continue
                       </Button>
                     </Stack>
                   </CardContent>

@@ -1,11 +1,9 @@
-import React from 'react';
 import { Box, Stack, Typography, IconButton, Tooltip, alpha, useTheme } from '@mui/material';
 import { Sun as SunIcon, Moon as MoonIcon, HelpCircle as HelpIcon } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { useThemeStore } from '../../stores/themeStore';
 import { EVZONE } from '../../theme/evzone';
-import LanguageSwitcher from '../common/LanguageSwitcher';
+
 
 interface AuthHeaderProps {
     title?: string;
@@ -17,7 +15,6 @@ export default function AuthHeader({ title = "EVzone", subtitle, showHelp = true
     const theme = useTheme();
     const navigate = useNavigate();
     const location = useLocation();
-    const { t } = useTranslation();
     const { mode, toggleMode } = useThemeStore();
     const isDark = mode === 'dark';
 
@@ -68,10 +65,10 @@ export default function AuthHeader({ title = "EVzone", subtitle, showHelp = true
                             </IconButton>
                         </Tooltip>
 
-                        <LanguageSwitcher />
+
 
                         {showHelp && (
-                            <Tooltip title={t('header.help')}>
+                            <Tooltip title="Help & Support">
                                 <IconButton
                                     size="small"
                                     onClick={() => {

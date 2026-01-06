@@ -21,7 +21,6 @@ import {
   useTheme
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
-import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { useAuthStore } from "../../../../stores/authStore";
 import { useSocialLogin } from "../../../../hooks/useSocialLogin";
@@ -135,7 +134,6 @@ function runSelfTestsOnce() {
 }
 
 export default function SignInPage() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
@@ -273,7 +271,7 @@ export default function SignInPage() {
     }
 
     if (isLocked) {
-      setBanner({ severity: "error", msg: t('auth.sign_in.try_again_in', { seconds: secondsLeft }) });
+      setBanner({ severity: "error", msg: `Locked. Retry in ${secondsLeft}s` });
       return;
     }
 
@@ -326,19 +324,19 @@ export default function SignInPage() {
 
   const passkeyChip =
     passkeySupported === null ? (
-      <Chip size="small" variant="outlined" label={t('auth.sign_in.checking_passkey')} />
+      <Chip size="small" variant="outlined" label="Checking..." />
     ) : passkeySupported ? (
-      <Chip size="small" color="success" label={t('auth.sign_in.passkeys_supported')} />
+      <Chip size="small" color="success" label="Available" />
     ) : (
-      <Chip size="small" color="warning" label={t('auth.sign_in.passkeys_unavailable')} />
+      <Chip size="small" color="warning" label="Unavailable" />
     );
 
   return (
     <Box className="min-h-screen" sx={{ background: pageBg }}>
       {/* Unified Auth Header */}
       <AuthHeader
-        title={t('app_name')}
-        subtitle={t('auth.sign_in.subtitle')}
+        title="EVzone Accounts"
+        subtitle="Manage your diverse EVzone portfolio"
       />
 
       {/* Body */}
@@ -349,22 +347,22 @@ export default function SignInPage() {
             <Card>
               <CardContent className="p-5 md:p-6">
                 <Stack spacing={1.2}>
-                  <Typography variant="h6">{t('auth.sign_in.one_account_title')}</Typography>
+                  <Typography variant="h6">One account for everything EVzone</Typography>
                   <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                    {t('auth.sign_in.one_account_desc')}
+                    Seamlessly access Charging, Marketplace, and Pay with a single secure identity.
                   </Typography>
 
                   <Divider sx={{ my: 1 }} />
 
                   <Stack spacing={1.1}>
-                    <FeatureRow icon={<ShieldCheckIcon size={18} />} title={t('auth.sign_in.secure_sessions')} desc={t('auth.sign_in.secure_sessions_desc')} bg={EVZONE.green} />
-                    <FeatureRow icon={<FingerprintIcon size={18} />} title={t('auth.sign_in.passkeys')} desc={t('auth.sign_in.passkeys_desc')} bg={EVZONE.green} />
-                    <FeatureRow icon={<LockIcon size={18} />} title={t('auth.sign_in.privacy_first')} desc={t('auth.sign_in.privacy_first_desc')} bg={EVZONE.green} />
+                    <FeatureRow icon={<ShieldCheckIcon size={18} />} title="Secure Sessions" desc="Bank-grade security monitoring 24/7." bg={EVZONE.green} />
+                    <FeatureRow icon={<FingerprintIcon size={18} />} title="Passkeys & Biometrics" desc="Sign in with TouchID or FaceID." bg={EVZONE.green} />
+                    <FeatureRow icon={<LockIcon size={18} />} title="Privacy First" desc="We maximize your data privacy." bg={EVZONE.green} />
                   </Stack>
 
                   <Divider sx={{ my: 1 }} />
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    {t('auth.sign_in.demo_login', { email: 'ronald@evzone.com', password: 'EVzone123!' })}
+                    Pre-filled for demo: ronald@evzone.com
                   </Typography>
                 </Stack>
               </CardContent>
@@ -377,9 +375,9 @@ export default function SignInPage() {
               <CardContent className="p-5 md:p-7">
                 <Stack spacing={2.0}>
                   <Stack spacing={0.6}>
-                    <Typography variant="h6">{t('auth.sign_in.form_title')}</Typography>
+                    <Typography variant="h6">Sign In</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      {t('auth.sign_in.form_subtitle')}
+                      to continue to EVzone Portal
                     </Typography>
                   </Stack>
 
@@ -396,7 +394,7 @@ export default function SignInPage() {
                         disabled={isGoogleLoading}
                         sx={{ ...googleBtnSx, borderRadius: 14, textTransform: "none", fontWeight: 800 }}
                       >
-                        {isGoogleLoading ? t('auth.sign_in.loading') : t('auth.sign_in.continue_google')}
+                        {isGoogleLoading ? "Loading..." : "Continue with Google"}
                       </Button>
                       <Button
                         fullWidth
@@ -406,7 +404,7 @@ export default function SignInPage() {
                         disabled={isAppleLoading}
                         sx={{ ...appleBtnSx, borderRadius: 14, textTransform: "none", fontWeight: 800 }}
                       >
-                        {isAppleLoading ? t('auth.sign_in.loading') : t('auth.sign_in.continue_apple')}
+                        {isAppleLoading ? "Loading..." : "Continue with Apple"}
                       </Button>
                     </Stack>
 
@@ -419,24 +417,24 @@ export default function SignInPage() {
                       disabled={passkeySupported === false || passkeyBusy}
                       sx={orangeOutlinedSx}
                     >
-                      {passkeyBusy ? t('auth.sign_in.waiting_passkey') : t('auth.sign_in.continue_passkey')}
+                      {passkeyBusy ? "Waiting..." : "Passkey"}
                     </Button>
 
                     <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
                       {passkeyChip}
-                      <Chip size="small" variant="outlined" label={t('auth.sign_in.setup_passkeys_later')} />
+                      <Chip size="small" variant="outlined" label="Setup later inside" />
                     </Stack>
 
                     {passkeyBusy ? (
                       <Box>
                         <LinearProgress />
                         <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                          {t('auth.sign_in.otp_fallback')}
+                          Switching to password...
                         </Typography>
                       </Box>
                     ) : null}
 
-                    <Divider>{t('auth.sign_in.or')}</Divider>
+                    <Divider>or</Divider>
                   </Stack>
 
                   {banner ? <Alert severity={banner.severity}>{banner.msg}</Alert> : null}
@@ -445,8 +443,8 @@ export default function SignInPage() {
                     <TextField
                       value={identifier}
                       onChange={(e) => setIdentifier(e.target.value)}
-                      label={t('auth.sign_in.email_phone_label')}
-                      placeholder={t('auth.sign_in.email_phone_placeholder')}
+                      label="Email or Phone"
+                      placeholder="name@example.com"
                       fullWidth
                       InputProps={{
                         startAdornment: (
@@ -464,7 +462,7 @@ export default function SignInPage() {
                     <TextField
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      label={t('auth.sign_in.password_label')}
+                      label="Password"
                       type={showPassword ? "text" : "password"}
                       fullWidth
                       InputProps={{
@@ -497,10 +495,10 @@ export default function SignInPage() {
                             sx={{ color: alpha(EVZONE.orange, 0.7), "&.Mui-checked": { color: EVZONE.orange } }}
                           />
                         }
-                        label={<Typography variant="body2">{t('auth.sign_in.remember_device')}</Typography>}
+                        label={<Typography variant="body2">Remember me</Typography>}
                       />
                       <Button variant="text" sx={orangeTextSx} onClick={() => navigate("/auth/forgot-password")}>
-                        {t('auth.sign_in.forgot_password')}
+                        Forgot?
                       </Button>
                     </Stack>
 
@@ -513,10 +511,10 @@ export default function SignInPage() {
                         disabled={isLocked}
                         sx={orangeContainedSx}
                       >
-                        {isLocked ? t('auth.sign_in.try_again_in', { seconds: secondsLeft }) : t('auth.sign_in.sign_in_btn')}
+                        {isLocked ? `Locked. Retry in ${secondsLeft}s` : "Sign In"}
                       </Button>
                       <Button fullWidth variant="outlined" onClick={() => navigate("/auth/sign-up")} sx={orangeOutlinedSx}>
-                        {t('auth.sign_in.create_account')}
+                        Create account
                       </Button>
                     </Stack>
 
@@ -524,9 +522,9 @@ export default function SignInPage() {
                     <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
                       <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ xs: "flex-start", sm: "center" }} justifyContent="space-between" spacing={1}>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>{t('auth.sign_in.use_otp_title')}</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>Use One-Time Code</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            {t('auth.sign_in.use_otp_desc')}
+                            No password? Use a magic code.
                           </Typography>
                         </Box>
                         <Switch checked={useOtpInstead} onChange={(e) => setUseOtpInstead(e.target.checked)} />
@@ -534,14 +532,14 @@ export default function SignInPage() {
                       {useOtpInstead ? (
                         <Box sx={{ mt: 1.2 }}>
                           <Button fullWidth variant="contained" onClick={() => setSnack({ open: true, severity: "info", msg: "OTP sign-in coming soon." })} sx={orangeContainedSx}>
-                            {t('auth.sign_in.continue_otp')}
+                            Send Code
                           </Button>
                         </Box>
                       ) : null}
                     </Box>
 
                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      {t('auth.sign_in.terms_agreement')}
+                      By continuing, you agree to EVzone's Terms & Privacy.
                     </Typography>
                   </Stack>
                 </Stack>
@@ -557,10 +555,10 @@ export default function SignInPage() {
           </Typography>
           <Stack direction="row" spacing={1.2} alignItems="center">
             <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
-              {t('auth.terms')}
+              Terms
             </Button>
             <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
-              {t('auth.privacy')}
+              Privacy
             </Button>
           </Stack>
         </Box>

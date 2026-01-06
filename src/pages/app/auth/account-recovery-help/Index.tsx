@@ -38,7 +38,7 @@ import {
   ArrowRightIcon,
   WhatsAppIcon,
 } from "../../../../utils/icons";
-import { useTranslation } from "react-i18next";
+
 import { EVZONE } from "../../../../theme/evzone";
 
 const WHATSAPP = { green: "#25D366" } as const;
@@ -52,7 +52,6 @@ type HelpItem = {
 };
 
 export default function AccountRecoveryHelpPage() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
@@ -90,31 +89,31 @@ export default function AccountRecoveryHelpPage() {
   const items: HelpItem[] = [
     {
       key: "no_email",
-      title: t('auth.account_recovery.help_no_email_title'),
-      bullets: t('auth.account_recovery.help_no_email_bullets', { returnObjects: true }) as string[],
-      primaryCta: { label: t('auth.account_recovery.help_no_email_cta1'), action: "go_forgot" },
-      secondaryCta: { label: t('auth.account_recovery.help_no_email_cta2'), action: "support" },
+      title: "I didn't receive the email",
+      bullets: ["Check your spam folder.", "Wait 5 minutes.", "Try resending."],
+      primaryCta: { label: "Go to Forgot Password", action: "go_forgot" },
+      secondaryCta: { label: "Contact Support", action: "support" },
     },
     {
       key: "phone_changed",
-      title: t('auth.account_recovery.help_phone_changed_title'),
-      bullets: t('auth.account_recovery.help_phone_changed_bullets', { returnObjects: true }) as string[],
-      primaryCta: { label: t('auth.account_recovery.help_phone_changed_cta1'), action: "go_forgot" },
-      secondaryCta: { label: t('auth.account_recovery.help_phone_changed_cta2'), action: "support" },
+      title: "I changed my phone number",
+      bullets: ["Use your recovery code.", "Contact support to update your number."],
+      primaryCta: { label: "Go to Forgot Password", action: "go_forgot" },
+      secondaryCta: { label: "Contact Support", action: "support" },
     },
     {
       key: "lost_mfa",
-      title: t('auth.account_recovery.help_lost_mfa_title'),
-      bullets: t('auth.account_recovery.help_lost_mfa_bullets', { returnObjects: true }) as string[],
-      primaryCta: { label: t('auth.account_recovery.help_lost_mfa_cta1'), action: "go_recovery" },
-      secondaryCta: { label: t('auth.account_recovery.help_lost_mfa_cta2'), action: "support" },
+      title: "I lost my MFA device",
+      bullets: ["Use a recovery code if you have one.", "Contact support to reset MFA."],
+      primaryCta: { label: "Use Recovery Code", action: "go_recovery" },
+      secondaryCta: { label: "Contact Support", action: "support" },
     },
     {
       key: "locked_out",
-      title: t('auth.account_recovery.help_locked_out_title'),
-      bullets: t('auth.account_recovery.help_locked_out_bullets', { returnObjects: true }) as string[],
-      primaryCta: { label: t('auth.account_recovery.help_locked_out_cta1'), action: "go_signin" },
-      secondaryCta: { label: t('auth.account_recovery.help_locked_out_cta2'), action: "support" },
+      title: "My account is locked",
+      bullets: ["Wait 30 minutes and try again.", "If permanent, contact support."],
+      primaryCta: { label: "Go to Sign In", action: "go_signin" },
+      secondaryCta: { label: "Contact Support", action: "support" },
     },
   ];
 
@@ -140,7 +139,7 @@ export default function AccountRecoveryHelpPage() {
   return (
     <Box className="min-h-screen" sx={{ background: pageBg }}>
       {/* Unified Auth Header */}
-      <AuthHeader title={t('app_name')} subtitle={t('auth.account_recovery.subtitle')} />
+      <AuthHeader title="EVzone" subtitle="Account Recovery Help" />
 
       {/* Body */}
       <Box className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">
@@ -150,33 +149,33 @@ export default function AccountRecoveryHelpPage() {
             <Card>
               <CardContent className="p-5 md:p-6">
                 <Stack spacing={1.2}>
-                  <Typography variant="h6">{t('auth.account_recovery.section_quick_actions')}</Typography>
+                  <Typography variant="h6">Quick Actions</Typography>
                   <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                    {t('auth.account_recovery.section_quick_actions_desc')}
+                    Common ways to get back into your account.
                   </Typography>
 
                   <Divider sx={{ my: 1 }} />
 
                   <Stack spacing={1.2}>
                     <Button variant="contained" color="secondary" sx={orangeContainedSx} endIcon={<ArrowRightIcon size={18} />} onClick={() => runAction("go_forgot")}>
-                      {t('auth.account_recovery.btn_reset_password')}
+                      Reset Password
                     </Button>
                     <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => runAction("go_recovery")}>
-                      {t('auth.account_recovery.btn_use_recovery_code')}
+                      Use Recovery Code
                     </Button>
                     <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => runAction("go_signin")}>
-                      {t('auth.account_recovery.btn_go_signin')}
+                      Go to Sign In
                     </Button>
                   </Stack>
 
                   <Divider sx={{ my: 1 }} />
 
                   <Alert severity="info">
-                    {t('auth.account_recovery.alert_compromised')}
+                    If you think your account was compromised, contact support immediately.
                   </Alert>
 
                   <Button variant="text" sx={orangeTextSx} onClick={() => setSupportOpen(true)}>
-                    {t('auth.account_recovery.btn_contact_support')}
+                    Contact Support
                   </Button>
                 </Stack>
               </CardContent>
@@ -189,9 +188,9 @@ export default function AccountRecoveryHelpPage() {
               <CardContent className="p-5 md:p-7">
                 <Stack spacing={1.4}>
                   <Stack spacing={0.6}>
-                    <Typography variant="h6">{t('auth.account_recovery.section_troubleshooting')}</Typography>
+                    <Typography variant="h6">Troubleshooting</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      {t('auth.account_recovery.section_troubleshooting_desc')}
+                      Select an issue to see solutions.
                     </Typography>
                   </Stack>
 
@@ -266,7 +265,7 @@ export default function AccountRecoveryHelpPage() {
                   <Divider />
 
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    {t('auth.account_recovery.footer_troubleshooting')}
+                    Still stuck? Contact our support team below.
                   </Typography>
                 </Stack>
               </CardContent>
@@ -276,38 +275,38 @@ export default function AccountRecoveryHelpPage() {
 
         {/* Footer */}
         <Box className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
-          <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} {t('app_name')}.</Typography>
+          <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone.</Typography>
           <Stack direction="row" spacing={1.2} alignItems="center">
-            <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>{t('auth.terms')}</Button>
-            <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>{t('auth.privacy')}</Button>
+            <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>Terms</Button>
+            <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>Privacy</Button>
           </Stack>
         </Box>
       </Box>
 
       {/* Support dialog */}
       <Dialog open={supportOpen} onClose={() => setSupportOpen(false)} PaperProps={{ sx: { borderRadius: 6, border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}>
-        <DialogTitle sx={{ fontWeight: 950 }}>{t('auth.account_recovery.dialog_support_title')}</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 950 }}>Contact Support</DialogTitle>
         <DialogContent>
           <Stack spacing={1.2}>
             <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-              {t('auth.account_recovery.dialog_support_desc')}
+              We are here to help. Reach out to us via:
             </Typography>
             <Box sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.55), p: 1.2 }}>
               <Stack spacing={0.8}>
-                <Typography sx={{ fontWeight: 900 }}>{t('auth.account_recovery.dialog_support_channels')}</Typography>
+                <Typography sx={{ fontWeight: 900 }}>Support Channels</Typography>
                 <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                  • {t('auth.account_recovery.dialog_support_email')}
+                  • Email: support@evzone.com
                 </Typography>
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Box sx={{ color: WHATSAPP.green }}>
                     <WhatsAppIcon size={18} />
                   </Box>
                   <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                    {t('auth.account_recovery.dialog_support_whatsapp')}
+                    WhatsApp: +1 555 0123
                   </Typography>
                 </Stack>
                 <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                  • {t('auth.account_recovery.dialog_support_phone')}
+                  • Phone: +1 800 123 4567
                 </Typography>
               </Stack>
             </Box>
@@ -315,10 +314,10 @@ export default function AccountRecoveryHelpPage() {
         </DialogContent>
         <DialogActions sx={{ p: 2, pt: 0 }}>
           <Button variant="outlined" sx={{ borderColor: alpha(EVZONE.orange, 0.65), color: EVZONE.orange, "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" } }} onClick={() => setSupportOpen(false)}>
-            {t('auth.account_recovery.dialog_btn_close')}
+            Close
           </Button>
-          <Button variant="contained" color="secondary" sx={{ backgroundColor: EVZONE.orange, color: "#FFFFFF", "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92) } }} onClick={() => { setSupportOpen(false); setSnack({ open: true, severity: "success", msg: t('auth.account_recovery.success_support_submitted') }); }}>
-            {t('auth.account_recovery.dialog_btn_submit')}
+          <Button variant="contained" color="secondary" sx={{ backgroundColor: EVZONE.orange, color: "#FFFFFF", "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92) } }} onClick={() => { setSupportOpen(false); setSnack({ open: true, severity: "success", msg: "Support request submitted." }); }}>
+            Request Help
           </Button>
         </DialogActions>
       </Dialog>

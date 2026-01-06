@@ -3,10 +3,10 @@ import { formatUserId } from '../../../utils/format';
 import { Box, Typography, Button, Paper, Stack } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft as ArrowLeftIcon } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+
 
 export default function UserSessions() {
-    const { t } = useTranslation();
+
     const navigate = useNavigate();
     const { userId } = useParams();
 

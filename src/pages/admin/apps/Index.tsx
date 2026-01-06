@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     Box,
     Button,
@@ -8,6 +9,7 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
+    DialogContentText,
     DialogTitle,
     Divider,
     IconButton,
@@ -32,6 +34,7 @@ import {
     Copy as CopyIcon,
     Layout as AppIcon,
     ExternalLink as LinkIcon,
+    RefreshCw as RefreshIcon,
 } from "lucide-react";
 import { api } from "../../../utils/api";
 import { motion } from "framer-motion";
@@ -45,11 +48,13 @@ interface OAuthApp {
     isFirstParty: boolean;
     isPublic: boolean;
     createdAt: string;
+    website?: string;
 }
 
 export default function AdminApps() {
     const theme = useTheme();
     const isDark = theme.palette.mode === 'dark';
+    const navigate = useNavigate();
 
     const [apps, setApps] = useState<OAuthApp[]>([]);
     const [loading, setLoading] = useState(true);
@@ -62,16 +67,22 @@ export default function AdminApps() {
         clientId: "",
         type: "confidential" as "confidential" | "public",
         redirectUris: "",
+        website: "",
         isFirstParty: false,
     });
 
     const [secretModalOpen, setSecretModalOpen] = useState(false);
     const [createdApp, setCreatedApp] = useState<{ clientId: string; clientSecret?: string } | null>(null);
 
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [appToDelete, setAppToDelete] = useState<string | null>(null);
+
+    const [regenerateConfirmOpen, setRegenerateConfirmOpen] = useState(false);
+
     const fetchApps = async () => {
         setLoading(true);
         try {
-            const res = await api('/admin/apps');
+            const res = await api<{ apps: OAuthApp[] }>('/admin/apps');
             setApps(res.apps);
         } catch (err) {
             setSnack({ open: true, msg: "Failed to load apps", severity: "error" });
@@ -92,6 +103,7 @@ export default function AdminApps() {
                 clientId: app.clientId,
                 type: app.isPublic ? "public" : "confidential",
                 redirectUris: app.redirectUris.join(", "),
+                website: app.website || "",
                 isFirstParty: app.isFirstParty,
             });
         } else {
@@ -101,6 +113,7 @@ export default function AdminApps() {
                 clientId: "",
                 type: "confidential",
                 redirectUris: "",
+                website: "",
                 isFirstParty: false,
             });
         }
@@ -121,7 +134,7 @@ export default function AdminApps() {
                 });
                 setSnack({ open: true, msg: "App updated successfully", severity: "success" });
             } else {
-                const res = await api('/admin/apps', {
+                const res = await api<{ clientId: string; clientSecret?: string }>('/admin/apps', {
                     method: 'POST',
                     body: JSON.stringify(payload)
                 });
@@ -138,14 +151,36 @@ export default function AdminApps() {
         }
     };
 
-    const handleDelete = async (clientId: string) => {
-        if (!window.confirm("Are you sure you want to delete this app? This will revoke access for all users.")) return;
+    const handleRegenerateSecret = async () => {
+        if (!editingApp) return;
         try {
-            await api(`/admin/apps/${clientId}`, { method: 'DELETE' });
+            const res = await api<{ clientSecret: string }>(`/admin/apps/${editingApp.clientId}/rotate-secret`, { method: 'POST' });
+            setCreatedApp({ clientId: editingApp.clientId, clientSecret: res.clientSecret });
+            setRegenerateConfirmOpen(false);
+            setModalOpen(false); // Close edit modal
+            setSecretModalOpen(true); // Show new secret
+            setSnack({ open: true, msg: "Secret regenerated successfully", severity: "success" });
+        } catch (err: any) {
+            setSnack({ open: true, msg: "Failed to regenerate secret", severity: "error" });
+        }
+    };
+
+    const handleDeleteClick = (clientId: string) => {
+        setAppToDelete(clientId);
+        setDeleteConfirmOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!appToDelete) return;
+        try {
+            await api(`/admin/apps/${appToDelete}`, { method: 'DELETE' });
             setSnack({ open: true, msg: "App deleted", severity: "success" });
             fetchApps();
         } catch (err) {
             setSnack({ open: true, msg: "Failed to delete app", severity: "error" });
+        } finally {
+            setDeleteConfirmOpen(false);
+            setAppToDelete(null);
         }
     };
 
@@ -193,7 +228,7 @@ export default function AdminApps() {
                                         </Box>
                                         <Stack direction="row" spacing={0.5}>
                                             <IconButton size="small" onClick={() => handleOpenModal(app)}><EditIcon size={16} /></IconButton>
-                                            <IconButton size="small" color="error" onClick={() => handleDelete(app.clientId)}><TrashIcon size={16} /></IconButton>
+                                            <IconButton size="small" color="error" onClick={() => handleDeleteClick(app.clientId)}><TrashIcon size={16} /></IconButton>
                                         </Stack>
                                     </Box>
 
@@ -214,7 +249,15 @@ export default function AdminApps() {
                                     <Divider />
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <Typography variant="caption" sx={{ color: 'text.secondary' }}>Created {new Date(app.createdAt).toLocaleDateString()}</Typography>
-                                        <Button size="small" variant="text" sx={{ color: EVZONE.orange, fontWeight: 700 }} startIcon={<LinkIcon size={14} />}>View Details</Button>
+                                        <Button
+                                            size="small"
+                                            variant="text"
+                                            sx={{ color: EVZONE.orange, fontWeight: 700 }}
+                                            startIcon={<LinkIcon size={14} />}
+                                            onClick={() => navigate(`/admin/apps/${app.clientId}`)}
+                                        >
+                                            View Details
+                                        </Button>
                                     </Box>
                                 </Stack>
                             </CardContent>
@@ -240,12 +283,23 @@ export default function AdminApps() {
                             </>
                         )}
 
+                        <TextField label="App Website / Domain" fullWidth value={formData.website} onChange={e => setFormData({ ...formData, website: e.target.value })} placeholder="https://myapp.com" />
                         <TextField label="Redirect URIs (comma separated)" fullWidth multiline rows={2} value={formData.redirectUris} onChange={e => setFormData({ ...formData, redirectUris: e.target.value })} placeholder="https://app.com/callback, http://localhost:3000/auth" />
 
                         <FormControlLabel control={<Switch checked={formData.isFirstParty} onChange={e => setFormData({ ...formData, isFirstParty: e.target.checked })} color="success" />} label="First Party App (Skips user consent screen)" />
 
                         {!editingApp && formData.type === 'confidential' && (
                             <Alert severity="info" sx={{ borderRadius: 3 }}>A client secret will be generated and shown only once after creation.</Alert>
+                        )}
+
+                        {editingApp && formData.type === 'confidential' && (
+                            <Box sx={{ p: 2, borderRadius: 3, bgcolor: alpha(EVZONE.orange, 0.1), border: `1px solid ${alpha(EVZONE.orange, 0.2)}` }}>
+                                <Typography variant="subtitle2" sx={{ fontWeight: 700, color: EVZONE.orange, mb: 1 }}>Client Secret</Typography>
+                                <Typography variant="body2" sx={{ mb: 1.5, color: 'text.secondary' }}>The client secret is hidden for security. If lost or compromised, you can generate a new one.</Typography>
+                                <Button size="small" variant="outlined" color="warning" startIcon={<RefreshIcon size={14} />} onClick={() => setRegenerateConfirmOpen(true)}>
+                                    Regenerate Secret
+                                </Button>
+                            </Box>
                         )}
                     </Stack>
                 </DialogContent>
@@ -285,6 +339,36 @@ export default function AdminApps() {
                 </DialogContent>
                 <DialogActions sx={{ p: 3 }}>
                     <Button variant="contained" fullWidth sx={orangeContained} onClick={() => setSecretModalOpen(false)}>I have saved the credentials</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Delete Confirmation Modal */}
+            <Dialog open={deleteConfirmOpen} onClose={() => setDeleteConfirmOpen(false)} fullWidth maxWidth="xs" PaperProps={{ sx: { borderRadius: 5 } }}>
+                <DialogTitle sx={{ fontWeight: 800 }}>Delete App?</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to delete this app? This will revoke access for all users immediately. This action cannot be undone.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions sx={{ p: 3 }}>
+                    <Button onClick={() => setDeleteConfirmOpen(false)} sx={{ color: 'text.secondary' }}>Cancel</Button>
+                    <Button variant="contained" color="error" onClick={confirmDelete} sx={{ borderRadius: 3, fontWeight: 700 }}>Delete App</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Regenerate Confirmation Modal */}
+            <Dialog open={regenerateConfirmOpen} onClose={() => setRegenerateConfirmOpen(false)} fullWidth maxWidth="xs" PaperProps={{ sx: { borderRadius: 5 } }}>
+                <DialogTitle sx={{ fontWeight: 800 }}>Regenerate Secret?</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to regenerate the Client Secret?
+                        <br /><br />
+                        <strong style={{ color: '#ef4444' }}>This will immediately invalidate the old secret.</strong> Any applications processing logins with the old secret will break until updated.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions sx={{ p: 3 }}>
+                    <Button onClick={() => setRegenerateConfirmOpen(false)} sx={{ color: 'text.secondary' }}>Cancel</Button>
+                    <Button variant="contained" color="warning" onClick={handleRegenerateSecret} sx={{ borderRadius: 3, fontWeight: 700 }}>Yes, Regenerate</Button>
                 </DialogActions>
             </Dialog>
 

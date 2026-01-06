@@ -22,7 +22,6 @@ import {
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { useNavigate, useParams } from 'react-router-dom';
-import { useTranslation } from "react-i18next";
 import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
 import { OrganizationService, OrgRole } from "../../../services/OrganizationService";
@@ -99,8 +98,6 @@ export default function OrganizationDashboardPage() {
   const isDark = mode === "dark";
   const navigate = useNavigate();
   const { orgId } = useParams<{ orgId: string }>();
-  const { t } = useTranslation();
-
   const [org, setOrg] = useState<Org | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

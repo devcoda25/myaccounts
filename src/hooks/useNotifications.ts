@@ -18,7 +18,7 @@ export function useNotifications() {
 
     const fetchNotifications = useCallback(async () => {
         try {
-            const { data } = await api.get('/notifications');
+            const data = await api.get<Notification[]>('/notifications');
             setNotifications(data);
         } catch (error) {
             console.error('Failed to fetch notifications', error);

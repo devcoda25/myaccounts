@@ -1,4 +1,5 @@
 import React from "react";
+
 import {
     Box,
     Card,
@@ -150,12 +151,7 @@ export default function SettingsPage() {
                         </Box>
                     ),
                 },
-                {
-                    label: "Language",
-                    desc: "English (US)",
-                    icon: <Globe size={20} />,
-                    onClick: () => { }, // Demo only
-                },
+
             ],
         },
         {
@@ -254,7 +250,7 @@ export default function SettingsPage() {
                                                                     </Typography>
                                                                 }
                                                             />
-                                                            {item.action || (
+                                                            {(item as any).action || (
                                                                 <ChevronRight size={18} color={theme.palette.text.disabled} />
                                                             )}
                                                         </ListItemButton>

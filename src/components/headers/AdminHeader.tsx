@@ -29,8 +29,7 @@ import { EVZONE } from '../../theme/evzone';
 import { useAdminAuthStore } from '../../stores/adminAuthStore';
 import { useThemeStore } from '../../stores/themeStore';
 import NotificationsPopover from './NotificationsPopover';
-import LanguageSwitcher from '../common/LanguageSwitcher';
-import { useTranslation } from 'react-i18next';
+
 
 interface AdminHeaderProps {
     onDrawerToggle?: () => void;
@@ -64,7 +63,7 @@ export default function AdminHeader({ onDrawerToggle, showMobileToggle = false }
         handleMenuClose();
     };
 
-    const { t } = useTranslation();
+
 
     return (
         <Box sx={{
@@ -112,7 +111,7 @@ export default function AdminHeader({ onDrawerToggle, showMobileToggle = false }
                         <SearchIcon size={18} />
                     </Box>
                     <InputBase
-                        placeholder={t('header.search')}
+                        placeholder="Search"
                         sx={{ width: '100%', fontSize: '0.9rem', fontWeight: 500 }}
                     />
                     <Box sx={{
@@ -139,10 +138,10 @@ export default function AdminHeader({ onDrawerToggle, showMobileToggle = false }
                     </IconButton>
                 </Tooltip>
 
-                <LanguageSwitcher />
+
 
                 <Box>
-                    <Tooltip title={t('header.notifications')}>
+                    <Tooltip title="Notifications">
                         <IconButton ref={notifRef} onClick={handleNotifClick}>
                             <Bell size={20} />
                         </IconButton>
@@ -245,16 +244,16 @@ export default function AdminHeader({ onDrawerToggle, showMobileToggle = false }
                         <Divider />
                         <MenuItem onClick={handleProfileClick} sx={{ py: 1.5 }}>
                             <ListItemIcon><User size={18} /></ListItemIcon>
-                            {t('header.profile')}
+                            Profile
                         </MenuItem>
                         <MenuItem onClick={() => { navigate('/admin/settings'); handleMenuClose(); }} sx={{ py: 1.5 }}>
                             <ListItemIcon><Settings size={18} /></ListItemIcon>
-                            {t('header.settings')}
+                            Settings
                         </MenuItem>
                         <Divider />
                         <MenuItem onClick={() => { handleMenuClose(); logout(); }} sx={{ py: 1.5, color: 'error.main' }}>
                             <ListItemIcon><LogOut size={18} color={theme.palette.error.main} /></ListItemIcon>
-                            {t('auth.sign_out')}
+                            Sign Out
                         </MenuItem>
                     </Menu>
                 </Box>

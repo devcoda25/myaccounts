@@ -30,10 +30,8 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import { EVZONE } from '../../theme/evzone';
 import NotificationsPopover from './NotificationsPopover';
-import LanguageSwitcher from '../common/LanguageSwitcher';
 import { useThemeStore } from '../../stores/themeStore';
 import { useAuthStore } from '../../stores/authStore';
-import { useTranslation } from 'react-i18next';
 import { formatUserId } from '../../utils/format';
 
 interface AppHeaderProps {
@@ -71,7 +69,7 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
         handleMenuClose();
     };
 
-    const { t } = useTranslation();
+
 
 
     return (
@@ -120,7 +118,7 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
                         <SearchIcon size={18} />
                     </Box>
                     <InputBase
-                        placeholder={t('header.search')}
+                        placeholder="Search"
                         sx={{ width: '100%', fontSize: '0.9rem', fontWeight: 500 }}
                     />
                     <Box sx={{
@@ -147,10 +145,10 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
                     </IconButton>
                 </Tooltip>
 
-                <LanguageSwitcher />
+
 
                 <Box>
-                    <Tooltip title={t('header.notifications')}>
+                    <Tooltip title="Notifications">
                         <IconButton ref={notifRef} onClick={handleNotifClick}>
                             <Bell size={20} />
                         </IconButton>
@@ -258,23 +256,23 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
                             <>
                                 <MenuItem onClick={() => { navigate('/admin'); handleMenuClose(); }} sx={{ py: 1.5, color: EVZONE.orange, fontWeight: 600 }}>
                                     <ListItemIcon><Shield size={18} color={EVZONE.orange} /></ListItemIcon>
-                                    {t('header.admin_dashboard')}
+                                    Admin Dashboard
                                 </MenuItem>
                                 <Divider />
                             </>
                         )}
                         <MenuItem onClick={handleProfileClick} sx={{ py: 1.5 }}>
                             <ListItemIcon><UserIcon size={18} /></ListItemIcon>
-                            {t('header.profile')}
+                            Profile
                         </MenuItem>
                         <MenuItem onClick={() => { navigate('/app/settings'); handleMenuClose(); }} sx={{ py: 1.5 }}>
                             <ListItemIcon><Settings size={18} /></ListItemIcon>
-                            {t('header.settings')}
+                            Settings
                         </MenuItem>
                         <Divider />
                         <MenuItem onClick={logout} sx={{ py: 1.5, color: 'error.main' }}>
                             <ListItemIcon><LogOut size={18} color={theme.palette.error.main} /></ListItemIcon>
-                            {t('auth.sign_out')}
+                            Sign Out
                         </MenuItem>
                     </Menu>
                 </Box>

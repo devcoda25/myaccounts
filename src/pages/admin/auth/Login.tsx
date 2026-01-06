@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import AuthHeader from "../../../components/headers/AuthHeader";
 import { useAdminAuthStore } from '../../../stores/adminAuthStore';
-import { useTranslation } from "react-i18next";
+
 import {
     Alert,
     Box,
@@ -57,7 +57,7 @@ export default function AdminLogin() {
     const navigate = useNavigate();
     const theme = useTheme();
     const isDark = theme.palette.mode === "dark";
-    const { t } = useTranslation();
+
     const { login, user } = useAdminAuthStore();
     const location = useLocation();
 
@@ -159,7 +159,7 @@ export default function AdminLogin() {
                         <CardContent className="p-5 md:p-8">
                             <Stack spacing={2.4}>
                                 <Stack spacing={0.6}>
-                                    <Typography variant="h4" sx={{ color: isDark ? "text.primary" : "#000000" }}>{t('auth.sign_in.title')}</Typography>
+                                    <Typography variant="h4" sx={{ color: isDark ? "text.primary" : "#000000" }}>Sign In</Typography>
                                     <Typography variant="body2" sx={{ color: isDark ? theme.palette.text.secondary : "#000000" }}>
                                         Enter your admin credentials to continue.
                                     </Typography>
@@ -172,7 +172,7 @@ export default function AdminLogin() {
                                         value={identifier}
                                         onChange={(e) => setIdentifier(e.target.value)}
                                         label="Email or phone"
-                                        placeholder={t('auth.email_placeholder')}
+                                        placeholder="Enter your email"
                                         fullWidth
                                         InputProps={{
                                             startAdornment: (
@@ -184,7 +184,7 @@ export default function AdminLogin() {
                                     <TextField
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        label={t('auth.password_placeholder')}
+                                        label="Password"
                                         type={showPassword ? "text" : "password"}
                                         fullWidth
                                         InputProps={{
@@ -209,16 +209,16 @@ export default function AdminLogin() {
                                             label={<Typography variant="body2">Remember this device</Typography>}
                                         />
                                         <Button variant="text" sx={orangeTextSx} onClick={() => navigate("/admin/auth/forgot-password")}>
-                                            {t('auth.sign_in.forgot_password')}
+                                            Forgot Password?
                                         </Button>
                                     </Stack>
 
                                     <Button fullWidth variant="contained" endIcon={<ArrowRightIcon size={18} />} onClick={submit} disabled={isLocked} sx={orangeContainedSx}>
-                                        {isLocked ? `Try again in ${secondsLeft}s` : t('auth.sign_in.sign_in_btn')}
+                                        {isLocked ? `Try again in ${secondsLeft}s` : "Sign In"}
                                     </Button>
 
                                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                                        {t('auth.sign_in.demo_login', { email: 'admin@evzone.com', password: 'superadmin-secure-pw' })}
+                                        Demo: admin@evzone.com / superadmin-secure-pw
                                     </Typography>
 
                                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>

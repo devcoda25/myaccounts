@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import AuthHeader from "../../../components/headers/AuthHeader";
-import { useTranslation } from "react-i18next";
+
 import {
     Box,
     Button,
@@ -20,7 +20,7 @@ export default function AdminForgotPassword() {
     const navigate = useNavigate();
     const theme = useTheme();
     const isDark = theme.palette.mode === "dark";
-    const { t } = useTranslation();
+
 
     const pageBg =
         isDark

@@ -29,7 +29,6 @@ import {
   Typography,
 } from "@mui/material";
 import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
-import { useTranslation } from "react-i18next";
 import AuthHeader from "../../../../components/headers/AuthHeader";
 
 import { ThemeMode } from "../../../../utils/types";
@@ -197,7 +196,6 @@ function readClientFromQuery(): OidcClientMeta {
 }
 
 export default function AccountChooserV4() {
-  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
@@ -357,10 +355,10 @@ export default function AccountChooserV4() {
                 </Box>
                 <Box>
                   <Typography variant="subtitle1" sx={{ lineHeight: 1.1 }}>
-                    {t('app_name')}
+                    EVzone
                   </Typography>
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    {t('auth.choose_account.continue_subtitle')}
+                    Choose an account to continue securely.
                   </Typography>
                 </Box>
               </Stack>
@@ -380,24 +378,8 @@ export default function AccountChooserV4() {
                     {isDark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
                   </IconButton>
                 </Tooltip>
-                <Tooltip title={t('header.language')}>
-                  <IconButton
-                    size="small"
-                    onClick={() => {
-                      const newLang = i18n.language === 'en' ? 'fr' : 'en';
-                      i18n.changeLanguage(newLang);
-                    }}
-                    sx={{
-                      border: `1px solid ${alpha(EVZONE.orange, 0.35)}`,
-                      borderRadius: 12,
-                      backgroundColor: alpha(theme.palette.background.paper, 0.6),
-                      color: EVZONE.orange,
-                    }}
-                  >
-                    <GlobeIcon size={18} />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title={t('header.help')}>
+
+                <Tooltip title="Help">
                   <IconButton
                     size="small"
                     sx={{
@@ -442,10 +424,10 @@ export default function AccountChooserV4() {
                         </Box>
                         <Box>
                           <Typography variant="h6" sx={{ lineHeight: 1.15 }}>
-                            {t('auth.choose_account.continue_to', { name: client.name })}
+                            Continue to {client.name}
                           </Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            {t('auth.choose_account.continue_subtitle')}
+                            Choose an account to continue securely.
                           </Typography>
                         </Box>
                       </Stack>
@@ -453,7 +435,7 @@ export default function AccountChooserV4() {
                       <Stack direction="row" spacing={1} alignItems="center">
                         <Chip
                           icon={<ShieldCheckIcon size={16} />}
-                          label={t('auth.choose_account.sso_ready')}
+                          label="SSO Ready"
                           variant="outlined"
                           sx={{
                             borderColor: alpha(EVZONE.green, 0.35),
@@ -464,7 +446,7 @@ export default function AccountChooserV4() {
                         />
                         <Chip
                           icon={<WalletIcon size={16} />}
-                          label={t('auth.choose_account.wallet')}
+                          label="Wallet"
                           variant="outlined"
                           sx={{
                             borderColor: alpha(EVZONE.green, 0.35),
@@ -479,9 +461,9 @@ export default function AccountChooserV4() {
                     <Divider />
 
                     <Stack spacing={1.0}>
-                      <Typography variant="subtitle1">{t('auth.choose_account.title')}</Typography>
+                      <Typography variant="subtitle1">Choose Account</Typography>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        {t('auth.choose_account.subtitle')}
+                        Select an account to sign in with.
                       </Typography>
                     </Stack>
 
@@ -497,9 +479,9 @@ export default function AccountChooserV4() {
                           }}
                         >
                           <Stack spacing={1.3}>
-                            <Typography variant="h6">{t('auth.choose_account.no_sessions')}</Typography>
+                            <Typography variant="h6">No active sessions</Typography>
                             <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                              {t('auth.choose_account.no_sessions_desc')}
+                              You don't have any saved sessions on this device.
                             </Typography>
                             <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ pt: 1 }}>
                               <Button
@@ -664,7 +646,7 @@ export default function AccountChooserV4() {
                             onClick={handleContinue}
                             sx={orangeContainedSx}
                           >
-                            {t('auth.choose_account.continue')}
+                            Continue
                           </Button>
 
                           <Button
@@ -674,7 +656,7 @@ export default function AccountChooserV4() {
                             startIcon={<UserPlusIcon size={18} />}
                             sx={orangeOutlinedSx}
                           >
-                            {t('auth.choose_account.use_another')}
+                            Use another account
                           </Button>
                         </Stack>
 
@@ -688,7 +670,7 @@ export default function AccountChooserV4() {
                           }}
                         >
                           <Typography variant="subtitle2" sx={{ fontWeight: 880, mb: 0.7 }}>
-                            {t('auth.choose_account.requested_access')}
+                            Requested Access
                           </Typography>
                           <Stack spacing={1}>
                             {client.requestedScopes.slice(0, 3).map((s) => (

@@ -19,8 +19,6 @@ import {
   Typography,
 } from "@mui/material";
 import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
-import { useTranslation, Trans } from "react-i18next";
-import LanguageSwitcher from "../../../../components/common/LanguageSwitcher";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -208,7 +206,6 @@ function runSelfTestsOnce() {
 }
 
 export default function SetPasswordPage() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
@@ -267,7 +264,7 @@ export default function SetPasswordPage() {
 
   const s = strengthScore(pw);
   const label =
-    s <= 1 ? t('auth.set_password.strength_weak') : s === 2 ? t('auth.set_password.strength_fair') : s === 3 ? t('auth.set_password.strength_good') : s === 4 ? t('auth.set_password.strength_strong') : t('auth.set_password.strength_very_strong');
+    s <= 1 ? "Weak" : s === 2 ? "Fair" : s === 3 ? "Good" : s === 4 ? "Strong" : "Very Strong";
   const r = reqs(pw);
   const canContinue = s >= 3 && pw === confirm;
 
@@ -275,22 +272,22 @@ export default function SetPasswordPage() {
     setBanner(null);
 
     if (!pw) {
-      setBanner({ severity: "warning", msg: t('auth.set_password.validation_create_pw') });
+      setBanner({ severity: "warning", msg: "Please create a password." });
       return;
     }
     if (s < 3) {
-      setBanner({ severity: "warning", msg: t('auth.set_password.validation_strengthen') });
+      setBanner({ severity: "warning", msg: "Please strengthen your password." });
       return;
     }
     if (pw !== confirm) {
-      setBanner({ severity: "warning", msg: t('auth.set_password.validation_mismatch') });
+      setBanner({ severity: "warning", msg: "Passwords do not match." });
       return;
     }
 
     setSnack({
       open: true,
       severity: "success",
-      msg: t('auth.set_password.success_set'),
+      msg: "Password set successfully.",
     });
     setTimeout(() => {
       navigate("/app");
@@ -322,10 +319,10 @@ export default function SetPasswordPage() {
                 </Box>
                 <Box>
                   <Typography variant="subtitle1" sx={{ lineHeight: 1.1 }}>
-                    {t('app_name')}
+                    EVzone
                   </Typography>
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    {t('auth.set_password.app_subtitle')}
+                    Set Password
                   </Typography>
                 </Box>
               </Stack>
@@ -346,7 +343,7 @@ export default function SetPasswordPage() {
                   </IconButton>
                 </Tooltip>
 
-                <LanguageSwitcher />
+
 
                 <Tooltip title="Help">
                   <IconButton
@@ -380,9 +377,9 @@ export default function SetPasswordPage() {
               <Card>
                 <CardContent className="p-5 md:p-6">
                   <Stack spacing={1.2}>
-                    <Typography variant="h6">{t('auth.set_password.create_strong_title')}</Typography>
+                    <Typography variant="h6">Create Strong Password</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      {t('auth.set_password.create_strong_desc')}
+                      Protect your account with a strong password.
                     </Typography>
 
                     <Divider sx={{ my: 1 }} />
@@ -403,9 +400,9 @@ export default function SetPasswordPage() {
                           <KeyIcon size={18} />
                         </Box>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>{t('auth.set_password.requirements_title')}</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>Requirements</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            {t('auth.set_password.requirements_desc')}
+                            Meet all security requirements.
                           </Typography>
                         </Box>
                       </Stack>
@@ -425,9 +422,9 @@ export default function SetPasswordPage() {
                           <ShieldCheckIcon size={18} />
                         </Box>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>{t('auth.set_password.next_2fa_title')}</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>Next: 2FA</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            {t('auth.set_password.next_2fa_desc')}
+                            You can set up 2FA after this.
                           </Typography>
                         </Box>
                       </Stack>
@@ -449,18 +446,18 @@ export default function SetPasswordPage() {
                             <Box sx={{ color: EVZONE.green, display: "grid", placeItems: "center" }}>
                               <FingerprintIcon size={18} />
                             </Box>
-                            <Typography sx={{ fontWeight: 900 }}>{t('auth.set_password.passkey_teaser_title')}</Typography>
+                            <Typography sx={{ fontWeight: 900 }}>Passkeys Available</Typography>
                           </Stack>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            {t('auth.set_password.passkey_teaser_desc')}
+                            You can also set up a passkey on your device.
                           </Typography>
                           <Button variant="text" sx={orangeTextSx} onClick={() => setTeaserPasskey(false)}>
-                            {t('auth.set_password.dismiss')}
+                            Dismiss
                           </Button>
                         </Stack>
                       </Box>
                     ) : (
-                      <Alert severity="info">{t('auth.set_password.passkey_info')}</Alert>
+                      <Alert severity="info">Passkeys are a secure alternative to passwords.</Alert>
                     )}
 
                     <Divider sx={{ my: 1 }} />
@@ -471,7 +468,7 @@ export default function SetPasswordPage() {
                       sx={orangeOutlinedSx}
                       onClick={() => navigate(-1)}
                     >
-                      {t('auth.set_password.back')}
+                      Back
                     </Button>
                   </Stack>
                 </CardContent>
@@ -489,9 +486,9 @@ export default function SetPasswordPage() {
                 <CardContent className="p-5 md:p-7">
                   <Stack spacing={2.0}>
                     <Stack spacing={0.6}>
-                      <Typography variant="h6">{t('auth.set_password.title')}</Typography>
+                      <Typography variant="h6">Set Password</Typography>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        {t('auth.set_password.subtitle')}
+                        Enter your new password below.
                       </Typography>
                     </Stack>
 
@@ -501,7 +498,7 @@ export default function SetPasswordPage() {
                       <TextField
                         value={pw}
                         onChange={(e) => setPw(e.target.value)}
-                        label={t('auth.set_password.password_label')}
+                        label="Password"
                         type={showPw ? "text" : "password"}
                         fullWidth
                         InputProps={{
@@ -528,7 +525,7 @@ export default function SetPasswordPage() {
                       <TextField
                         value={confirm}
                         onChange={(e) => setConfirm(e.target.value)}
-                        label={t('auth.set_password.confirm_password_label')}
+                        label="Confirm Password"
                         type={showConfirm ? "text" : "password"}
                         fullWidth
                         InputProps={{
@@ -579,7 +576,7 @@ export default function SetPasswordPage() {
                           </Typography>
                         </Stack>
                         <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                          {t('auth.set_password.strength_tip')}
+                          Use a mix of different characters.
                         </Typography>
                       </Stack>
 
@@ -592,14 +589,14 @@ export default function SetPasswordPage() {
                           p: 1.4,
                         }}
                       >
-                        <Typography sx={{ fontWeight: 900, mb: 1 }}>{t('auth.set_password.requirements_header')}</Typography>
+                        <Typography sx={{ fontWeight: 900, mb: 1 }}>Password Requirements</Typography>
                         <Stack spacing={0.7}>
                           {[
-                            { ok: r.len, text: t('auth.set_password.req_len') },
-                            { ok: r.upper, text: t('auth.set_password.req_upper') },
-                            { ok: r.lower, text: t('auth.set_password.req_lower') },
-                            { ok: r.num, text: t('auth.set_password.req_num') },
-                            { ok: r.sym, text: t('auth.set_password.req_sym') },
+                            { ok: r.len, text: "At least 8 characters" },
+                            { ok: r.upper, text: "One uppercase letter" },
+                            { ok: r.lower, text: "One lowercase letter" },
+                            { ok: r.num, text: "One number" },
+                            { ok: r.sym, text: "One special character" },
                           ].map((item, idx) => (
                             <Stack key={idx} direction="row" spacing={1} alignItems="center">
                               <CheckCircleIcon size={18} color={!item.ok ? alpha(theme.palette.text.primary, 0.35) : undefined} />
@@ -626,7 +623,7 @@ export default function SetPasswordPage() {
                                 fontWeight: pw && pw === confirm ? 900 : 700,
                               }}
                             >
-                              {t('auth.set_password.req_match')}
+                              Passwords match
                             </Typography>
                           </Stack>
                         </Stack>
@@ -641,7 +638,7 @@ export default function SetPasswordPage() {
                             sx={{ color: alpha(EVZONE.orange, 0.7), "&.Mui-checked": { color: EVZONE.orange } }}
                           />
                         }
-                        label={<Typography variant="body2">{t('auth.set_password.show_passkey_teaser')}</Typography>}
+                        label={<Typography variant="body2">Show passkey info</Typography>}
                       />
 
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
@@ -654,7 +651,7 @@ export default function SetPasswordPage() {
                           disabled={!canContinue}
                           fullWidth
                         >
-                          {t('auth.set_password.btn_continue')}
+                          Continue
                         </Button>
                         <Button
                           variant="outlined"
@@ -663,12 +660,12 @@ export default function SetPasswordPage() {
                           onClick={() => navigate(-1)}
                           fullWidth
                         >
-                          {t('auth.set_password.back')}
+                          Back
                         </Button>
                       </Stack>
 
                       <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                        {t('auth.set_password.next_steps_footer')}
+                        You will be redirected to the dashboard.
                       </Typography>
                     </Stack>
                   </Stack>
@@ -680,14 +677,14 @@ export default function SetPasswordPage() {
           {/* Footer */}
           <Box className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
             <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-              © {new Date().getFullYear()} {t('app_name')}.
+              © {new Date().getFullYear()} EVzone.
             </Typography>
             <Stack direction="row" spacing={1.2} alignItems="center">
               <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
-                {t('auth.terms')}
+                Terms
               </Button>
               <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
-                {t('auth.privacy')}
+                Privacy
               </Button>
             </Stack>
           </Box>

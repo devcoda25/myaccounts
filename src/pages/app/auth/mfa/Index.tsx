@@ -58,8 +58,7 @@ const EVZONE = {
 // -----------------------------
 // Inline icon set (CDN-safe)
 // -----------------------------
-import { useTranslation, Trans } from "react-i18next";
-import LanguageSwitcher from "../../../../components/common/LanguageSwitcher";
+
 import {
   IconBase,
   SunIcon,
@@ -212,7 +211,6 @@ function OtpInput({
 }
 
 export default function MfaChallengePage() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
@@ -304,10 +302,10 @@ export default function MfaChallengePage() {
 
     const msg =
       method === "sms"
-        ? t('auth.mfa.msg_sms_sent')
+        ? "SMS code sent."
         : method === "whatsapp"
-          ? t('auth.mfa.msg_whatsapp_sent')
-          : t('auth.mfa.msg_email_sent');
+          ? "WhatsApp code sent."
+          : "Email code sent.";
 
     setSnack({ open: true, severity: "success", msg });
   };
@@ -325,18 +323,18 @@ export default function MfaChallengePage() {
     setBanner(null);
 
     if (isLocked) {
-      setBanner({ severity: "error", msg: t('auth.mfa.validation_too_many_attempts_timer', { seconds: secondsLeft }) });
+      setBanner({ severity: "error", msg: `Too many attempts. Try again in ${secondsLeft}s.` });
       return;
     }
 
     if ((method === "sms" || method === "whatsapp" || method === "email") && !codeSent) {
-      setBanner({ severity: "warning", msg: t('auth.mfa.validation_send_first') });
+      setBanner({ severity: "warning", msg: "Please send the code first." });
       return;
     }
 
     const code = otp.join("");
     if (code.length < 6) {
-      setBanner({ severity: "warning", msg: t('auth.mfa.validation_incomplete') });
+      setBanner({ severity: "warning", msg: "Please enter the full code." });
       return;
     }
 
@@ -345,10 +343,10 @@ export default function MfaChallengePage() {
       setAttempts(nextAttempts);
       if (nextAttempts >= 5) {
         setLockedUntil(Date.now() + 30_000);
-        setBanner({ severity: "error", msg: t('auth.mfa.validation_locked') });
+        setBanner({ severity: "error", msg: "Too many attempts. Locked for 30s." });
         return;
       }
-      setBanner({ severity: "error", msg: t('auth.mfa.validation_incorrect') });
+      setBanner({ severity: "error", msg: "Incorrect code." });
       return;
     }
 
@@ -364,7 +362,7 @@ export default function MfaChallengePage() {
     }
 
     setStep("success");
-    setSnack({ open: true, severity: "success", msg: t('auth.mfa.success_complete') });
+    setSnack({ open: true, severity: "success", msg: "MFA verification complete." });
   };
 
   const continueNext = () => {
@@ -386,12 +384,12 @@ export default function MfaChallengePage() {
 
   const methodHelp =
     method === "totp"
-      ? t('auth.mfa.help_totp')
+      ? "Open your authenticator app and enter the 6-digit code."
       : method === "sms"
-        ? t('auth.mfa.help_sms')
+        ? "We sent a 6-digit code to your phone number ending in **88."
         : method === "whatsapp"
-          ? t('auth.mfa.help_whatsapp')
-          : t('auth.mfa.help_email');
+          ? "We sent a code to your WhatsApp."
+          : "We sent a code to your email address.";
 
   return (
     <ThemeProvider theme={theme}>
@@ -418,10 +416,10 @@ export default function MfaChallengePage() {
                 </Box>
                 <Box>
                   <Typography variant="subtitle1" sx={{ lineHeight: 1.1 }}>
-                    {t('app_name')}
+                    EVzone
                   </Typography>
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    {t('auth.mfa.subtitle')}
+                    2-Step Verification
                   </Typography>
                 </Box>
               </Stack>
@@ -442,7 +440,7 @@ export default function MfaChallengePage() {
                   </IconButton>
                 </Tooltip>
 
-                <LanguageSwitcher />
+
 
                 <Tooltip title="Help">
                   <IconButton
@@ -476,9 +474,9 @@ export default function MfaChallengePage() {
               <Card>
                 <CardContent className="p-5 md:p-6">
                   <Stack spacing={1.2}>
-                    <Typography variant="h6">{t('auth.mfa.challenge_title')}</Typography>
+                    <Typography variant="h6">Security Challenge</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      {t('auth.mfa.challenge_desc')}
+                      Your account is protected with 2FA.
                     </Typography>
 
                     <Divider sx={{ my: 1 }} />
@@ -499,9 +497,9 @@ export default function MfaChallengePage() {
                           <ShieldCheckIcon size={18} />
                         </Box>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>{t('auth.mfa.feature_protection_title')}</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>Account Protection</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            {t('auth.mfa.feature_protection_desc')}
+                            Keeps bad actors out.
                           </Typography>
                         </Box>
                       </Stack>
@@ -521,9 +519,9 @@ export default function MfaChallengePage() {
                           <KeypadIcon size={18} />
                         </Box>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>{t('auth.mfa.feature_options_title')}</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>Multiple Options</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            {t('auth.mfa.feature_options_desc')}
+                            Use Auth App, SMS, or Email.
                           </Typography>
                         </Box>
                       </Stack>
@@ -542,10 +540,10 @@ export default function MfaChallengePage() {
                       label={
                         <Box>
                           <Typography variant="body2" sx={{ fontWeight: 900 }}>
-                            {t('auth.mfa.checkbox_trust')}
+                            Trust this device
                           </Typography>
                           <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                            {t('auth.mfa.checkbox_trust_desc')}
+                            Don't ask for codes for 30 days.
                           </Typography>
                         </Box>
                       }
@@ -555,15 +553,15 @@ export default function MfaChallengePage() {
 
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                       <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => setMethodDialog(true)}>
-                        {t('auth.mfa.btn_try_another')}
+                        Try another method
                       </Button>
                       <Button variant="outlined" sx={orangeOutlinedSx} onClick={openRecovery}>
-                        {t('auth.mfa.btn_use_recovery')}
+                        Use recovery code
                       </Button>
                     </Stack>
 
                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      <Trans i18nKey="auth.mfa.demo_codes_hint" />
+                      Demo: Totp(<b>654321</b>), Sms(<b>222222</b>), Wa(<b>333333</b>), Email(<b>111111</b>)
                     </Typography>
                   </Stack>
                 </CardContent>
@@ -585,10 +583,10 @@ export default function MfaChallengePage() {
                         <Box sx={{ color: EVZONE.green }}>
                           <CheckCircleIcon size={22} />
                         </Box>
-                        <Typography variant="h6">{t('auth.mfa.success_title')}</Typography>
+                        <Typography variant="h6">Success!</Typography>
                       </Stack>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        {t('auth.mfa.success_desc')}
+                        You have successfully verified your identity.
                       </Typography>
                       <Button
                         variant="contained"
@@ -597,15 +595,15 @@ export default function MfaChallengePage() {
                         sx={orangeContainedSx}
                         onClick={continueNext}
                       >
-                        {t('auth.mfa.btn_continue')}
+                        Continue
                       </Button>
                     </Stack>
                   ) : (
                     <Stack spacing={2.0}>
                       <Stack spacing={0.6}>
-                        <Typography variant="h6">{t('auth.mfa.enter_code_title')}</Typography>
+                        <Typography variant="h6">Enter Code</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          {t('auth.mfa.enter_code_desc')}
+                          Enter the 6-digit verification code.
                         </Typography>
                       </Stack>
 
@@ -626,10 +624,10 @@ export default function MfaChallengePage() {
                           "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 },
                         }}
                       >
-                        <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label={t('auth.mfa.tab_authenticator')} />
-                        <Tab icon={<SmsIcon size={16} />} iconPosition="start" label={t('auth.mfa.tab_sms')} />
-                        <Tab icon={<WhatsAppIcon size={16} />} iconPosition="start" label={t('auth.mfa.tab_whatsapp')} />
-                        <Tab icon={<MailIcon size={16} />} iconPosition="start" label={t('auth.mfa.tab_email')} />
+                        <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label="Auth App" />
+                        <Tab icon={<SmsIcon size={16} />} iconPosition="start" label="SMS" />
+                        <Tab icon={<WhatsAppIcon size={16} />} iconPosition="start" label="WhatsApp" />
+                        <Tab icon={<MailIcon size={16} />} iconPosition="start" label="Email" />
                       </Tabs>
 
                       <Box
@@ -716,7 +714,7 @@ export default function MfaChallengePage() {
                 sx={orangeTextSx}
                 onClick={() => window.open("/legal/terms", "_blank")}
               >
-                {t('auth.terms')}
+                Terms
               </Button>
               <Button
                 size="small"
@@ -724,7 +722,7 @@ export default function MfaChallengePage() {
                 sx={orangeTextSx}
                 onClick={() => window.open("/legal/privacy", "_blank")}
               >
-                {t('auth.privacy')}
+                Privacy
               </Button>
             </Stack>
           </Box>

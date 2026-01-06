@@ -21,7 +21,6 @@ import {
   useTheme
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
-import { useTranslation, Trans } from "react-i18next";
 import { motion } from "framer-motion";
 import AuthHeader from "../../../../components/headers/AuthHeader";
 import { EVZONE } from "../../../../theme/evzone";
@@ -162,7 +161,6 @@ function OtpInput({
 }
 
 export default function ResetPasswordPageV2() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
@@ -274,18 +272,18 @@ export default function ResetPasswordPageV2() {
   const verifyToken = () => {
     setBanner(null);
     if (!token.trim()) {
-      setBanner({ severity: "warning", msg: t('auth.reset_password.validation_token_empty') });
+      setBanner({ severity: "warning", msg: "Please enter the reset token." });
       return;
     }
     if (!tokenOk(token)) {
       setBanner({
         severity: "error",
-        msg: t('auth.reset_password.validation_token_invalid'),
+        msg: "Invalid token.",
       });
       return;
     }
     setStep("set");
-    setSnack({ open: true, severity: "success", msg: t('auth.reset_password.success_token_verified') });
+    setSnack({ open: true, severity: "success", msg: "Token verified." });
   };
 
   const expectedOtp = otpChannel === "whatsapp" ? "555555" : "444444"; // SMS+Email share a demo code
@@ -294,22 +292,22 @@ export default function ResetPasswordPageV2() {
     setBanner(null);
 
     if (!identifier.trim()) {
-      setBanner({ severity: "warning", msg: t('auth.reset_password.validation_email_phone_empty') });
+      setBanner({ severity: "warning", msg: "Please enter your email or phone." });
       return;
     }
 
     if (idType === "unknown") {
-      setBanner({ severity: "warning", msg: t('auth.reset_password.validation_email_phone_invalid') });
+      setBanner({ severity: "warning", msg: "Invalid email or phone." });
       return;
     }
 
     if (otpChannel === "email" && idType !== "email") {
-      setBanner({ severity: "warning", msg: t('auth.reset_password.validation_email_only') });
+      setBanner({ severity: "warning", msg: "Please enter a valid email." });
       return;
     }
 
     if ((otpChannel === "sms" || otpChannel === "whatsapp") && idType !== "phone") {
-      setBanner({ severity: "warning", msg: t('auth.reset_password.validation_phone_only') });
+      setBanner({ severity: "warning", msg: "Please enter a valid phone number." });
       return;
     }
 
@@ -318,10 +316,10 @@ export default function ResetPasswordPageV2() {
 
     const msg =
       otpChannel === "email"
-        ? t('auth.reset_password.otp_sent_email')
+        ? "Code sent to your email."
         : otpChannel === "sms"
-          ? t('auth.reset_password.otp_sent_sms')
-          : t('auth.reset_password.otp_sent_whatsapp');
+          ? "Code sent via SMS."
+          : "Code sent via WhatsApp.";
 
     setSnack({ open: true, severity: "success", msg });
   };
@@ -330,28 +328,28 @@ export default function ResetPasswordPageV2() {
     setBanner(null);
 
     if (!codeSent) {
-      setBanner({ severity: "warning", msg: t('auth.reset_password.validation_send_otp_first') });
+      setBanner({ severity: "warning", msg: "Please send the code first." });
       return;
     }
 
     const code = otp.join("");
     if (code.length < 6) {
-      setBanner({ severity: "warning", msg: t('auth.reset_password.validation_otp_length') });
+      setBanner({ severity: "warning", msg: "Please enter a 6-digit code." });
       return;
     }
 
     if (code !== expectedOtp) {
-      setBanner({ severity: "error", msg: t('auth.reset_password.validation_otp_invalid') });
+      setBanner({ severity: "error", msg: "Invalid code." });
       return;
     }
 
     setStep("set");
-    setSnack({ open: true, severity: "success", msg: t('auth.reset_password.success_otp_verified') });
+    setSnack({ open: true, severity: "success", msg: "Code verified." });
   };
 
   // Password setting step
   const s = strengthScore(pw);
-  const label = s <= 1 ? t('auth.reset_password.strength_weak') : s === 2 ? t('auth.reset_password.strength_fair') : s === 3 ? t('auth.reset_password.strength_good') : s === 4 ? t('auth.reset_password.strength_strong') : t('auth.reset_password.strength_very_strong');
+  const label = s <= 1 ? "Weak" : s === 2 ? "Fair" : s === 3 ? "Good" : s === 4 ? "Strong" : "Very Strong";
   const r = reqs(pw);
   const canReset = s >= 3 && pw === confirm;
 
@@ -359,15 +357,15 @@ export default function ResetPasswordPageV2() {
     setBanner(null);
 
     if (!pw) {
-      setBanner({ severity: "warning", msg: t('auth.reset_password.validation_pw_empty') });
+      setBanner({ severity: "warning", msg: "Please enter a password." });
       return;
     }
     if (s < 3) {
-      setBanner({ severity: "warning", msg: t('auth.reset_password.validation_pw_strength') });
+      setBanner({ severity: "warning", msg: "Password must be stronger." });
       return;
     }
     if (pw !== confirm) {
-      setBanner({ severity: "warning", msg: t('auth.reset_password.validation_pw_mismatch') });
+      setBanner({ severity: "warning", msg: "Passwords do not match." });
       return;
     }
 
@@ -375,7 +373,7 @@ export default function ResetPasswordPageV2() {
     setSnack({
       open: true,
       severity: "success",
-      msg: signOutAll ? t('auth.reset_password.success_reset_signout') : t('auth.reset_password.success_reset'),
+      msg: signOutAll ? "Password reset. You have been signed out of all devices." : "Password reset successfully.",
     });
   };
 
@@ -454,7 +452,7 @@ export default function ResetPasswordPageV2() {
   return (
     <Box className="min-h-screen" sx={{ background: pageBg }}>
       {/* Unified Auth Header */}
-      <AuthHeader title={t('app_name')} subtitle={t('auth.reset_password.title')} />
+      <AuthHeader title="EVzone" subtitle="Reset Password" />
 
       {/* Body */}
       <Box className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">
@@ -469,13 +467,13 @@ export default function ResetPasswordPageV2() {
             <Card>
               <CardContent className="p-5 md:p-6">
                 <Stack spacing={1.2}>
-                  <Typography variant="h6">{t('auth.reset_password.create_new_password')}</Typography>
+                  <Typography variant="h6">Create New Password</Typography>
                   <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                    {t('auth.reset_password.create_new_password_desc')}
+                    Enter a new password for your account.
                   </Typography>
                   <Divider sx={{ my: 1 }} />
                   <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                    <Trans i18nKey="auth.reset_password.demo_token_info" components={{ b: <b /> }} />
+                    Use <b>EVZ-RESET-TOKEN</b> for demo.
                   </Typography>
                   <Divider sx={{ my: 1 }} />
                   <Button
@@ -485,7 +483,7 @@ export default function ResetPasswordPageV2() {
                       setSnack({ open: true, severity: "info", msg: "Back to /auth/forgot-password" })
                     }
                   >
-                    {t('auth.reset_password.back_to_forgot')}
+                    Back to Forgot Password
                   </Button>
                 </Stack>
               </CardContent>
@@ -503,9 +501,9 @@ export default function ResetPasswordPageV2() {
               <CardContent className="p-5 md:p-7">
                 <Stack spacing={2.0}>
                   <Stack spacing={0.6}>
-                    <Typography variant="h6">{t('auth.reset_password.title')}</Typography>
+                    <Typography variant="h6">Reset Password</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      {t('auth.reset_password.subtitle')}
+                      Enter your details to reset your password.
                     </Typography>
                   </Stack>
 
@@ -524,8 +522,8 @@ export default function ResetPasswordPageV2() {
                       "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 },
                     }}
                   >
-                    <Tab icon={<KeyIcon size={16} />} iconPosition="start" label={t('auth.reset_password.tab_token')} />
-                    <Tab icon={<TimerIcon size={16} />} iconPosition="start" label={t('auth.reset_password.tab_otp')} />
+                    <Tab icon={<KeyIcon size={16} />} iconPosition="start" label="Token" />
+                    <Tab icon={<TimerIcon size={16} />} iconPosition="start" label="Code" />
                   </Tabs>
 
                   {step === "verify" ? (
@@ -534,8 +532,8 @@ export default function ResetPasswordPageV2() {
                         <TextField
                           value={token}
                           onChange={(e) => setToken(e.target.value)}
-                          label={t('auth.reset_password.token_label')}
-                          placeholder={t('auth.reset_password.token_placeholder')}
+                          label="Reset Token"
+                          placeholder="Enter token"
                           fullWidth
                           InputProps={{
                             startAdornment: (
@@ -544,7 +542,7 @@ export default function ResetPasswordPageV2() {
                               </InputAdornment>
                             ),
                           }}
-                          helperText={t('auth.reset_password.token_helper')}
+                          helperText="Check your email for the token."
                         />
                         <Button
                           variant="contained"
@@ -553,7 +551,7 @@ export default function ResetPasswordPageV2() {
                           onClick={verifyToken}
                           endIcon={<ArrowRightIcon size={18} />}
                         >
-                          {t('auth.reset_password.verify_token_btn')}
+                          Verify Token
                         </Button>
                       </Stack>
                     ) : (
@@ -561,8 +559,8 @@ export default function ResetPasswordPageV2() {
                         <TextField
                           value={identifier}
                           onChange={(e) => setIdentifier(e.target.value)}
-                          label={t('auth.reset_password.email_phone_label')}
-                          placeholder={t('auth.reset_password.email_phone_placeholder')}
+                          label="Email or Phone"
+                          placeholder="Enter email or phone"
                           fullWidth
                           InputProps={{
                             startAdornment: (
@@ -571,33 +569,33 @@ export default function ResetPasswordPageV2() {
                               </InputAdornment>
                             ),
                           }}
-                          helperText={idType === "unknown" ? t('auth.reset_password.email_phone_helper') : ""}
+                          helperText={idType === "unknown" ? "We will determine the method based on your input." : ""}
                         />
 
                         {/* Delivery method selection */}
                         <Box>
-                          <Typography sx={{ fontWeight: 900, mb: 1 }}>{t('auth.reset_password.delivery_method')}</Typography>
+                          <Typography sx={{ fontWeight: 900, mb: 1 }}>Delivery Method</Typography>
                           <Box className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                             <ChannelCard
                               value="email"
-                              title={t('auth.reset_password.channel_email')}
-                              subtitle={t('auth.reset_password.channel_email_desc')}
+                              title="Email"
+                              subtitle="Send to email"
                               icon={<MailIcon size={18} />}
                               enabled={idType === "email"}
                               accent="orange"
                             />
                             <ChannelCard
                               value="sms"
-                              title={t('auth.reset_password.channel_sms')}
-                              subtitle={t('auth.reset_password.channel_sms_desc')}
+                              title="SMS"
+                              subtitle="Send via SMS"
                               icon={<PhoneIcon size={18} />}
                               enabled={idType === "phone"}
                               accent="orange"
                             />
                             <ChannelCard
                               value="whatsapp"
-                              title={t('auth.reset_password.channel_whatsapp')}
-                              subtitle={t('auth.reset_password.channel_whatsapp_desc')}
+                              title="WhatsApp"
+                              subtitle="Send via WhatsApp"
                               icon={<WhatsAppIcon size={18} />}
                               enabled={idType === "phone"}
                               accent="whatsapp"
@@ -605,7 +603,7 @@ export default function ResetPasswordPageV2() {
                           </Box>
                           {idType === "email" ? (
                             <Typography variant="caption" sx={{ color: theme.palette.text.secondary, mt: 1, display: "block" }}>
-                              {t('auth.reset_password.phone_channels_hint')}
+                              Phone channels are disabled for email users.
                             </Typography>
                           ) : null}
                         </Box>
@@ -618,7 +616,7 @@ export default function ResetPasswordPageV2() {
                             onClick={sendOtp}
                             disabled={cooldown > 0 && codeSent}
                           >
-                            {codeSent ? t('auth.reset_password.otp_sent') : t('auth.reset_password.send_otp')}
+                            {codeSent ? "Code Sent" : "Send Code"}
                           </Button>
                           <Button
                             variant="outlined"
@@ -627,7 +625,7 @@ export default function ResetPasswordPageV2() {
                             disabled={!codeSent || cooldown > 0}
                             startIcon={<TimerIcon size={18} />}
                           >
-                            {cooldown > 0 ? t('auth.reset_password.resend_in', { seconds: cooldown }) : t('auth.reset_password.resend')}
+                            {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend Code"}
                           </Button>
                         </Stack>
 
@@ -640,7 +638,7 @@ export default function ResetPasswordPageV2() {
                           onClick={verifyOtp}
                           endIcon={<ArrowRightIcon size={18} />}
                         >
-                          {t('auth.reset_password.verify_otp_btn')}
+                          Verify Code
                         </Button>
                       </Stack>
                     )
@@ -649,7 +647,7 @@ export default function ResetPasswordPageV2() {
                       <TextField
                         value={pw}
                         onChange={(e) => setPw(e.target.value)}
-                        label={t('auth.reset_password.new_password_label')}
+                        label="New Password"
                         type={showPw ? "text" : "password"}
                         fullWidth
                         InputProps={{
@@ -675,7 +673,7 @@ export default function ResetPasswordPageV2() {
                       <TextField
                         value={confirm}
                         onChange={(e) => setConfirm(e.target.value)}
-                        label={t('auth.reset_password.confirm_password_label')}
+                        label="Confirm Password"
                         type={showConfirm ? "text" : "password"}
                         fullWidth
                         InputProps={{
@@ -737,14 +735,14 @@ export default function ResetPasswordPageV2() {
                           p: 1.2,
                         }}
                       >
-                        <Typography sx={{ fontWeight: 900, mb: 0.8 }}>{t('auth.reset_password.requirements_title')}</Typography>
+                        <Typography sx={{ fontWeight: 900, mb: 0.8 }}>Requirements</Typography>
                         <Stack spacing={0.5}>
                           {[
-                            { ok: r.len, text: t('auth.reset_password.req_length') },
-                            { ok: r.upper, text: t('auth.reset_password.req_upper') },
-                            { ok: r.lower, text: t('auth.reset_password.req_lower') },
-                            { ok: r.num, text: t('auth.reset_password.req_number') },
-                            { ok: r.sym, text: t('auth.reset_password.req_symbol') },
+                            { ok: r.len, text: "At least 8 characters" },
+                            { ok: r.upper, text: "One uppercase letter" },
+                            { ok: r.lower, text: "One lowercase letter" },
+                            { ok: r.num, text: "One number" },
+                            { ok: r.sym, text: "One special character" },
                           ].map((it, idx) => (
                             <Typography
                               key={idx}
@@ -765,7 +763,7 @@ export default function ResetPasswordPageV2() {
                               fontWeight: pw && pw === confirm ? 900 : 700,
                             }}
                           >
-                            • {t('auth.reset_password.req_match')}
+                            • Passwords match
                           </Typography>
                         </Stack>
                       </Box>
@@ -781,7 +779,7 @@ export default function ResetPasswordPageV2() {
                             }}
                           />
                         }
-                        label={<Typography variant="body2">{t('auth.reset_password.sign_out_all')}</Typography>}
+                        label={<Typography variant="body2">Sign out of all other devices</Typography>}
                       />
 
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
@@ -793,11 +791,11 @@ export default function ResetPasswordPageV2() {
                           disabled={!canReset}
                           endIcon={<ArrowRightIcon size={18} />}
                         >
-                          {t('auth.reset_password.reset_password_btn')}
+                          Reset Password
                         </Button>
                         <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => setStep("verify")}
                         >
-                          {t('auth.reset_password.back')}
+                          Back
                         </Button>
                       </Stack>
                     </Stack>
@@ -807,10 +805,10 @@ export default function ResetPasswordPageV2() {
                         <Box sx={{ color: EVZONE.green }}>
                           <CheckCircleIcon size={22} />
                         </Box>
-                        <Typography variant="h6">{t('auth.reset_password.password_updated')}</Typography>
+                        <Typography variant="h6">Password Updated</Typography>
                       </Stack>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        {t('auth.reset_password.password_updated_desc')}
+                        Your password has been changed successfully.
                       </Typography>
                       <Button
                         variant="contained"
@@ -819,7 +817,7 @@ export default function ResetPasswordPageV2() {
                         onClick={goSignIn}
                         endIcon={<ArrowRightIcon size={18} />}
                       >
-                        {t('auth.reset_password.go_to_signin')}
+                        Go to Sign In
                       </Button>
                     </Stack>
                   )}
@@ -833,7 +831,7 @@ export default function ResetPasswordPageV2() {
                       setSnack({ open: true, severity: "info", msg: "Navigate to /auth/account-recovery-help" })
                     }
                   >
-                    {t('auth.reset_password.account_recovery_help')}
+                    Account Recovery Help
                   </Button>
                 </Stack>
               </CardContent>
@@ -856,7 +854,7 @@ export default function ResetPasswordPageV2() {
               sx={orangeTextSx}
               onClick={() => window.open("/legal/terms", "_blank")}
             >
-              {t('auth.terms')}
+              Terms
             </Button>
             <Button
               size="small"
@@ -864,7 +862,7 @@ export default function ResetPasswordPageV2() {
               sx={orangeTextSx}
               onClick={() => window.open("/legal/privacy", "_blank")}
             >
-              {t('auth.privacy')}
+              Privacy
             </Button>
           </Stack>
         </Box>
