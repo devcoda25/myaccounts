@@ -1,5 +1,5 @@
 import { api } from '../utils/api';
-import { IPaymentMethod, IPaymentMethodDetails } from '../utils/types';
+import { IPaymentMethod, IPaymentMethodDetails } from "@/types";
 
 export type { IPaymentMethod as PaymentMethodDto }; // Alias for backward compat during transition if needed, but better to just export plain
 

@@ -1,5 +1,5 @@
 import { api } from '../utils/api';
-import { OrgRole, IOrganization, IOrgSettingsPayload } from '../utils/types';
+import { OrgRole, IOrganization, IOrgSettingsPayload } from "@/types";
 
 export type { OrgRole }; // Re-export if needed by consumers, or they should import from types.
 // We can alias IOrganization to OrganizationDto for compatibility

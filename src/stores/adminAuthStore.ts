@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { IUser } from '../utils/types';
+import { IUser } from "@/types";
 import { api } from '../utils/api';
 
 interface AdminAuthState {

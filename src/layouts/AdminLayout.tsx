@@ -25,7 +25,7 @@ import {
     Building2 as BuildingIcon,
     Gavel as GavelIcon
 } from 'lucide-react';
-import AdminHeader from '../components/headers/AdminHeader';
+import AdminHeader from "@/components/layout/AdminHeader";
 import { useAdminAuthStore } from '../stores/adminAuthStore';
 
 const EVZONE = { green: "#03cd8c", orange: "#f77f00" } as const;

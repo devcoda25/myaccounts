@@ -31,7 +31,7 @@ import {
     LogOut
 } from 'lucide-react';
 import { alpha } from '@mui/material/styles';
-import AppHeader from '../components/headers/AppHeader';
+import AppHeader from "@/components/layout/AppHeader";
 import { useAuthStore } from '../stores/authStore';
 
 const DRAWER_WIDTH = 280;
