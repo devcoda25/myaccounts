@@ -64,7 +64,7 @@ export const OrganizationService = {
         return api.patch(`/orgs/${orgId}`, data);
     },
 
-    getPermissions: async (orgId: string) => {
+    getPermissions: async (orgId: string): Promise<{ grants: any; policy: any }> => {
         return api.get(`/orgs/${orgId}/permissions`);
     },
 

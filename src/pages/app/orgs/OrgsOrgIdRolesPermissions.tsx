@@ -24,6 +24,7 @@ import { useThemeStore } from "../../../stores/themeStore";
 import { useNavigate, useParams } from "react-router-dom";
 import { OrganizationService, OrgRole } from "../../../services/OrganizationService";
 import { formatOrgId } from "../../../utils/format";
+import { EVZONE } from "../../../theme/evzone";
 
 /**
  * EVzone My Accounts - Org Roles & Permissions
