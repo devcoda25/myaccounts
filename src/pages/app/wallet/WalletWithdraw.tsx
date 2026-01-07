@@ -28,7 +28,7 @@ import {
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { api } from "../../../utils/api";
-import { PaymentMethodDto } from "../../../services/WalletService";
+import { IPaymentMethod } from "../../../utils/types";
 import { getProviderIcon, getProviderColor } from "../../../assets/paymentIcons";
 
 
@@ -324,7 +324,7 @@ export default function WithdrawFundsPage() {
         const [walletRes, kycRes, methodsRes, limitsRes] = await Promise.all([
           api.get<{ balance: number }>('/wallets/me').catch(e => { console.warn("Wallet fetch failed", e); return null; }),
           api.get<{ tier: "Unverified" | "Basic" | "Full" }>('/kyc/status').catch(e => { console.warn("KYC fetch failed", e); return { tier: "Unverified" as const }; }),
-          api.get<PaymentMethodDto[]>('/wallets/me/methods').catch(e => { console.warn("Methods fetch failed", e); return [] as PaymentMethodDto[]; }),
+          api.get<IPaymentMethod[]>('/wallets/me/methods').catch(e => { console.warn("Methods fetch failed", e); return [] as IPaymentMethod[]; }),
           api.get<{ dailyLimit: number }>('/wallets/me/limits').catch(e => { console.warn("Limits fetch failed", e); return { dailyLimit: 1000000 }; })
         ]);
 
@@ -342,13 +342,13 @@ export default function WithdrawFundsPage() {
         }
 
         if (Array.isArray(methodsRes)) {
-          const mapped: Dest[] = methodsRes.map((m: PaymentMethodDto) => ({
+          const mapped: Dest[] = methodsRes.map((m) => ({
             id: m.id,
             type: m.type === 'card' ? 'bank' : m.type, // Simplify type mapping for icon
             label: m.provider, // Provider name like "MTN MoMo"
-            details: m.details?.number || m.details?.accountNumber || `•••• ${m.details?.last4 || '????'}`,
+            details: String(m.details?.accountNumber || m.details?.masked || m.details?.maskedCard || `•••• ${m.details?.last4 || '????'}`),
             verified: true, // Assume saved methods are verified for now
-            default: m.isDefault
+            default: !!m.isDefault
           }));
           setDestinations(mapped);
 

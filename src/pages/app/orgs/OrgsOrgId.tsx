@@ -117,7 +117,7 @@ export default function OrganizationDashboardPage() {
       // Fetch Org Details
       if (orgId) {
         const data = await OrganizationService.getOrg(orgId);
-        setOrg(data);
+        setOrg(data as unknown as Org);
       }
 
       // Fetch My Orgs for Switcher

@@ -26,11 +26,10 @@ import { motion } from "framer-motion";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
-import { OrganizationService, OrgRole } from "../../../services/OrganizationService";
+import { OrganizationService } from "../../../services/OrganizationService";
+import { OrgRole, IOrgSettingsPayload, Severity } from "../../../utils/types";
 import { formatOrgId } from "../../../utils/format";
 import { api } from "../../../utils/api";
-
-type Severity = "info" | "warning" | "error" | "success";
 type DefaultInviteRole = Exclude<OrgRole, "Owner">;
 
 function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
@@ -138,14 +137,14 @@ export default function OrgSettingsPage() {
       setAddrEnabled(!!addr.line1); // Assume enabled if line1 set
 
       const pol = data.defaultRolePolicy || {};
-      setDefaultInviteRole(pol.defaultInviteRole || "Member");
+      setDefaultInviteRole((pol.defaultInviteRole || "Member") as DefaultInviteRole);
       setRequireApproval(pol.requireAdminApproval ?? true);
       setDomainAutoRoleEnabled(pol.domainAutoRoleEnabled ?? false);
       setDomain(pol.domain || "");
-      setDomainRole(pol.domainRole || "Member");
+      setDomainRole((pol.domainRole || "Member") as DefaultInviteRole);
       setPolicyEnabled(!!pol.defaultInviteRole); // Assume enabled if set
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       setSnack({ open: true, severity: "error", msg: "Failed to load settings" });
     } finally {
       setLoading(false);
@@ -197,7 +196,7 @@ export default function OrgSettingsPage() {
 
     setSaving(true);
     try {
-      const payload: any = {
+      const payload: IOrgSettingsPayload = {
         name,
         country,
         logo
@@ -206,7 +205,7 @@ export default function OrgSettingsPage() {
       if (addrEnabled) {
         payload.address = { line1, line2, city, region, postal };
       } else {
-        payload.address = {}; // Clear
+        payload.address = {}; // Clear or handle backend logic for clearing
       }
 
       if (policyEnabled) {
@@ -221,11 +220,12 @@ export default function OrgSettingsPage() {
         payload.defaultRolePolicy = {};
       }
 
-      await OrganizationService.updateSettings(orgId, payload);
+      if (orgId) await OrganizationService.updateSettings(orgId, payload);
       setSnack({ open: true, severity: "success", msg: "Settings saved." });
 
-    } catch (err: any) {
-      setSnack({ open: true, severity: "error", msg: "Failed to save settings: " + err.message });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      setSnack({ open: true, severity: "error", msg: "Failed to save settings: " + msg });
     } finally {
       setSaving(false);
     }

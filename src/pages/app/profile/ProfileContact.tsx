@@ -36,6 +36,7 @@ import {
   Prefs,
   Severity,
   VerifyChannel,
+  IUser
 } from "../../../utils/types";
 import { api } from "../../../utils/api";
 import { useThemeStore } from "../../../stores/themeStore";
@@ -99,7 +100,7 @@ export default function ContactSettings() {
 
   const loadData = async () => {
     try {
-      const user = await api("/users/me");
+      const user = await api<IUser>("/users/me");
       if (user) {
         // Map contacts
         const fetchedEmails: EmailContact[] = [];
@@ -426,7 +427,7 @@ export default function ContactSettings() {
       }
 
       if (editMode === "add") {
-        const res = await api('/users/me/contacts', {
+        const res = await api<{ id: string }>('/users/me/contacts', {
           method: 'POST',
           body: JSON.stringify(payload)
         });

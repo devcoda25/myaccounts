@@ -1,9 +1,9 @@
 import { create } from 'zustand';
-import { User } from '../utils/types';
+import { IUser } from '../utils/types';
 import { api } from '../utils/api';
 
 interface AuthState {
-    user: User | null;
+    user: IUser | null;
     isLoading: boolean;
     login: (identifier: string, password: string) => Promise<void>;
     socialLogin: (provider: 'google' | 'apple', token: string) => Promise<void>;
@@ -22,7 +22,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     refreshUser: async () => {
         set({ isLoading: true });
         try {
-            const data = await api('/users/me') as User;
+            const data = await api('/users/me') as IUser;
             set({ user: data, isLoading: false });
         } catch (err) {
             set({ user: null, isLoading: false });

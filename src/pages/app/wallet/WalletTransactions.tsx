@@ -26,7 +26,7 @@ import { alpha, useTheme } from "@mui/material/styles";
 import { useThemeStore } from "../../../stores/themeStore";
 import { motion } from "framer-motion";
 import { api } from "../../../utils/api";
-import { Transaction, TxType, TxStatus } from "../../../utils/types";
+import { ITransaction, TxType, TxStatus } from "../../../utils/types";
 import { formatTransactionId } from "../../../utils/format";
 
 type Severity = "info" | "warning" | "error" | "success";
@@ -168,7 +168,7 @@ function dateToTsEnd(v: string) {
   return Number.isFinite(ts) ? ts : Infinity;
 }
 
-function exportCsv(rows: Transaction[]) {
+function exportCsv(rows: ITransaction[]) {
   const header = ["id", "reference", "providerRef", "type", "status", "amount", "currency", "counterparty", "channel", "createdAt"];
   const data = rows.map((r) => [
     r.id,
@@ -212,14 +212,14 @@ export default function TransactionHistoryPage() {
   const [status, setStatus] = useState<"all" | TxStatus>("all");
   const [search, setSearch] = useState("");
 
-  const [txs, setTransactions] = useState<Transaction[]>([]);
+  const [txs, setTransactions] = useState<ITransaction[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchHistory = async () => {
       try {
         setLoading(true);
-        const response = await api('/wallets/me/transactions?take=50');
+        const response = await api<{ data: ITransaction[]; total: number }>('/wallets/me/transactions?take=50');
         setTransactions(response.data || []);
       } catch (err) {
         console.error("Failed to load history", err);

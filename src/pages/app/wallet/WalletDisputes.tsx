@@ -342,16 +342,9 @@ export default function DisputesChargebacksPage() {
   const fetchDisputes = async () => {
     try {
       setLoading(true);
-      const res = await api.get('/wallets/disputes');
+      const res = await api.get<Dispute[]>('/wallets/disputes');
       if (Array.isArray(res)) {
-        // Map backend response to frontend type if needed
-        // Backend returns: { id, reference, amount, currency, status, reason, description, createdAt, updatedAt, ... }
-        // Frontend expects: same keys roughly.
-        setDisputes(res.map((d: any) => ({ // Keeping d: any here as we map to local type, but we could improve if we had DTO. 
-          // Let's rely on type inference if possible or keep minimal change to avoid breaking fields.
-          // Actually, let's cast d to unknown and then to shape if we want to be strict, but d: any in map argument is what we want to remove.
-          // If api.get returns any, res is any.
-          // Let's try: res.map((d: Record<string, unknown>) => ({
+        setDisputes(res.map((d: any) => ({
           ...d,
           createdAt: new Date(d.createdAt).getTime(),
           updatedAt: new Date(d.updatedAt).getTime()
@@ -442,7 +435,7 @@ export default function DisputesChargebacksPage() {
     }
 
     try {
-      const res = await api.post('/wallets/disputes', {
+      const res = await api.post<any>('/wallets/disputes', {
         txnId: newTxnId.trim(),
         amount: Number(newAmount),
         currency: newCurrency,

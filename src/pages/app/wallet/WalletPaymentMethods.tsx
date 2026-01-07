@@ -40,22 +40,9 @@ import { motion } from "framer-motion";
  */
 
 
-type Severity = "info" | "warning" | "error" | "success";
+import { api } from "../../../utils/api";
+import { IPaymentMethod, IPaymentMethodDetails, Severity } from "../../../utils/types";
 
-type MethodType = "momo" | "card" | "bank";
-
-type Provider = "MTN MoMo" | "Airtel Money" | "Visa" | "Mastercard" | "Bank Account";
-
-type PaymentMethod = {
-  id: string;
-  type: MethodType;
-  provider: Provider;
-  label: string;
-  masked: string;
-  verified: boolean;
-  isDefault: boolean;
-  addedAt: number;
-};
 
 const EVZONE = {
   green: "#03cd8c",
@@ -244,20 +231,29 @@ function mkId(prefix: string) {
   return `${prefix}_${Math.random().toString(16).slice(2, 8)}`;
 }
 
-import { getProviderIcon, getProviderColor } from "../../../assets/paymentIcons";
+// ... (keep existing imports)
 
 // ... (keep existing imports)
 
-function providerAccent(p: Provider | string) {
+const getIcon = (item: { provider?: string; type?: string }) => {
+  return getProviderIcon(item.provider || "", 24);
+};
+
+const getColor = (item: { provider?: string; type?: string }) => {
+  return getProviderColor(item.provider || "");
+};
+
+
+function providerAccent(p: string) {
   return getProviderColor(p);
 }
 
-function iconForType(t: MethodType, p: Provider | string) {
+function iconForType(t: string, p: string) {
   return getProviderIcon(p, 24);
 }
 
 
-function buildMasked(type: MethodType, provider: Provider, raw: string) {
+function buildMasked(type: string, provider: string, raw: string) {
   const v = raw.trim();
   if (!v) return "";
   if (type === "momo") {
@@ -297,6 +293,7 @@ function runSelfTestsOnce() {
 }
 
 import { WalletService } from "../../../services/WalletService";
+import { getProviderIcon, getProviderColor } from "../../../assets/paymentIcons";
 
 // ... (keep tests)
 
@@ -311,7 +308,7 @@ export default function PaymentMethodsPage() {
   const theme = useTheme();
   const isDark = mode === "dark";
 
-  const [methods, setMethods] = useState<PaymentMethod[]>([]);
+  const [methods, setMethods] = useState<IPaymentMethod[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [addOpen, setAddOpen] = useState(false);
@@ -319,8 +316,8 @@ export default function PaymentMethodsPage() {
   const [removeId, setRemoveId] = useState<string | null>(null);
 
   // Add form
-  const [newType, setNewType] = useState<MethodType>("momo");
-  const [newProvider, setNewProvider] = useState<Provider>("MTN MoMo");
+  const [newType, setNewType] = useState<IPaymentMethod['type']>("card");
+  const [newProvider, setNewProvider] = useState<string>("");
   const [newLabel, setNewLabel] = useState("My method");
   const [newRaw, setNewRaw] = useState("");
   const [setAsDefault, setSetAsDefault] = useState(true);
@@ -332,18 +329,17 @@ export default function PaymentMethodsPage() {
   });
 
   const fetchMethods = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const data = await WalletService.getMethods();
-      const mapped = data.map((d) => ({
-        id: d.id,
-        type: d.type as MethodType,
-        provider: d.provider as Provider,
+      // API now returns strictly typed array
+      const res = await api<IPaymentMethod[]>("/wallet/payment-methods");
+      // Mapped directly if backend aligns, or mapped with strict typing
+      const mapped: IPaymentMethod[] = res.map((d) => ({
+        ...d,
         label: d.details?.label || "Payment method",
         masked: d.details?.masked || d.details?.maskedCard || "••••",
-        verified: true, // Assuming verified for now
-        isDefault: d.isDefault,
-        addedAt: new Date(d.createdAt).getTime(),
+        verified: true,
+        createdAt: new Date(d.createdAt).getTime(), // Ensure timestamp
       }));
       setMethods(mapped);
     } catch (err) {
@@ -415,7 +411,6 @@ export default function PaymentMethodsPage() {
         details: {
           label: newLabel.trim() || undefined,
           masked: masked, // Store the masked version for display
-          raw: raw, // note: in production, verify if we should send raw
         }
       });
       setSnack({ open: true, severity: "success", msg: "Payment method added." });
@@ -454,9 +449,9 @@ export default function PaymentMethodsPage() {
   };
 
   const providerOptions = useMemo(() => {
-    if (newType === "momo") return ["MTN MoMo", "Airtel Money"] as Provider[];
-    if (newType === "card") return ["Visa", "Mastercard"] as Provider[];
-    return ["Bank Account"] as Provider[];
+    if (newType === "momo") return ["MTN MoMo", "Airtel Money"] as string[];
+    if (newType === "card") return ["Visa", "Mastercard"] as string[];
+    return ["Bank Account"] as string[];
   }, [newType]);
 
   useEffect(() => {
@@ -472,7 +467,7 @@ export default function PaymentMethodsPage() {
     return { total: methods.length, verified, momo, card, bank };
   }, [methods]);
 
-  const MethodCard = ({ m }: { m: PaymentMethod }) => {
+  const MethodCard = ({ m }: { m: IPaymentMethod }) => {
     const accent = providerAccent(m.provider);
 
     return (
@@ -503,7 +498,7 @@ export default function PaymentMethodsPage() {
                   {m.masked}
                 </Typography>
                 <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                  Added {timeAgo(m.addedAt)}
+                  Added {new Date(m.createdAt).toLocaleDateString()}
                 </Typography>
               </Box>
             </Stack>
@@ -629,7 +624,7 @@ export default function PaymentMethodsPage() {
                 ) : (
                   methods
                     .slice()
-                    .sort((a, b) => (a.isDefault ? -1 : b.isDefault ? 1 : b.addedAt - a.addedAt))
+                    .sort((a, b) => (a.isDefault ? -1 : b.isDefault ? 1 : b.createdAt - a.createdAt))
                     .map((m) => (
                       <MethodCard key={m.id} m={m} />
                     ))
@@ -684,13 +679,13 @@ export default function PaymentMethodsPage() {
           <DialogTitle sx={{ fontWeight: 950 }}>Add payment method</DialogTitle>
           <DialogContent>
             <Stack spacing={1.2}>
-              <TextField select label="Type" value={newType} onChange={(e) => setNewType(e.target.value as MethodType)} fullWidth>
+              <TextField select label="Type" value={newType} onChange={(e) => setNewType(e.target.value as IPaymentMethod['type'])} fullWidth>
                 <MenuItem value="momo">Mobile money</MenuItem>
                 <MenuItem value="card">Card</MenuItem>
                 <MenuItem value="bank">Bank account</MenuItem>
               </TextField>
 
-              <TextField select label="Provider" value={newProvider} onChange={(e) => setNewProvider(e.target.value as Provider)} fullWidth>
+              <TextField select label="Provider" value={newProvider} onChange={(e) => setNewProvider(e.target.value as string)} fullWidth>
                 {providerOptions.map((p) => (
                   <MenuItem key={p} value={p}>
                     {p}

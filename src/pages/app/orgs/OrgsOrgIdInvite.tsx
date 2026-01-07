@@ -170,7 +170,7 @@ export default function InviteMembersPage() {
       setError("");
       const [orgData, invitesData] = await Promise.all([
         OrganizationService.getOrg(orgId),
-        api.get(`/orgs/${orgId}/invites`) // Invites might not be in OrganizationService yet, let's keep it or add to service
+        api.get<Invite[]>(`/orgs/${orgId}/invites`) // Invites might not be in OrganizationService yet, let's keep it or add to service
       ]);
       setOrgName(orgData.name);
       setInvites(invitesData);
@@ -237,7 +237,7 @@ export default function InviteMembersPage() {
 
     try {
       await Promise.all(cleaned.map(email =>
-        api.post(`/orgs/${orgId}/invites`, { email, role })
+        api.post<void>(`/orgs/${orgId}/invites`, { email, role })
       ));
 
       setSnack({ open: true, severity: "success", msg: `Invites sent: ${cleaned.length}` });
@@ -258,7 +258,7 @@ export default function InviteMembersPage() {
   const revoke = async () => {
     if (!revokeId || !orgId) return;
     try {
-      await api.delete(`/orgs/${orgId}/invites/${revokeId}`);
+      await api.delete<void>(`/orgs/${orgId}/invites/${revokeId}`);
       setSnack({ open: true, severity: "success", msg: "Invite revoked." });
       setRevokeOpen(false);
       loadData();

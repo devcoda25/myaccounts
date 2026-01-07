@@ -1,9 +1,9 @@
 import { create } from 'zustand';
-import { User } from '../utils/types';
+import { IUser } from '../utils/types';
 import { api } from '../utils/api';
 
 interface AdminAuthState {
-    user: User | null;
+    user: IUser | null;
     isLoading: boolean;
     login: (identifier: string, password: string) => Promise<boolean>;
     logout: () => Promise<void>;
@@ -19,7 +19,7 @@ export const useAdminAuthStore = create<AdminAuthState>((set, get) => ({
         console.log('[AdminAuthStore] refreshAdmin started');
         set({ isLoading: true });
         try {
-            const data = await api('/users/me');
+            const data = await api<IUser>('/users/me');
             if (data.role === 'SUPER_ADMIN' || data.role === 'ADMIN') {
                 set({ user: data, isLoading: false });
             } else {
@@ -33,19 +33,19 @@ export const useAdminAuthStore = create<AdminAuthState>((set, get) => ({
 
     login: async (identifier: string, password: string) => {
         set({ isLoading: true });
-        await api('/auth/login', {
+        await api<void>('/auth/login', {
             method: 'POST',
             body: JSON.stringify({ identifier, password }),
         });
 
-        const data = await api('/users/me');
+        const data = await api<IUser>('/users/me');
         if (data.role === 'SUPER_ADMIN' || data.role === 'ADMIN') {
             set({ user: data, isLoading: false });
             return true;
         } else {
             // Log out if they successfully authenticated but are not allowed here
             set({ user: null, isLoading: false });
-            await api('/auth/logout', { method: 'POST' }).catch(() => { });
+            await api<void>('/auth/logout', { method: 'POST' }).catch(() => { });
             throw new Error('Access denied. This account does not have administrator privileges.');
         }
     },
@@ -53,7 +53,7 @@ export const useAdminAuthStore = create<AdminAuthState>((set, get) => ({
     logout: async () => {
         set({ isLoading: true });
         try {
-            await api('/auth/logout', { method: 'POST' }).catch(() => { });
+            await api<void>('/auth/logout', { method: 'POST' }).catch(() => { });
         } finally {
             set({ user: null, isLoading: false });
         }

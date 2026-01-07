@@ -62,7 +62,7 @@ function healthBadge(health: Health) {
 }
 
 import { api } from "../../../utils/api";
-import { AuditLog } from "../../../utils/types";
+import { IAuditLog } from "../../../utils/types";
 
 // ... (keep types like Health)
 
@@ -76,7 +76,7 @@ export default function AdminDashboard() {
 
     // API Data
     const [stats, setStats] = useState({ usersCount: 0, orgsCount: 0, sessionsCount: 0, balance: 0 });
-    const [logs, setLogs] = useState<AuditLog[]>([]);
+    const [logs, setLogs] = useState<IAuditLog[]>([]);
     const [loading, setLoading] = useState(true);
 
     const isDark = mode === 'dark';
@@ -87,7 +87,7 @@ export default function AdminDashboard() {
                 setLoading(true);
                 const [s, l] = await Promise.all([
                     api<{ usersCount: number; orgsCount: number; sessionsCount: number; balance: number }>('/admin/stats').catch(() => null),
-                    api<{ logs: AuditLog[] }>('/admin/audit-logs?take=5').catch(() => null)
+                    api<{ logs: IAuditLog[] }>('/admin/audit-logs?take=5').catch(() => null)
                 ]);
                 setStats(s || { usersCount: 0, orgsCount: 0, sessionsCount: 0, balance: 0 });
                 setLogs(l?.logs || []);
@@ -345,7 +345,7 @@ export default function AdminDashboard() {
 
                                 <Stack spacing={3}>
                                     {logs.map((e) => {
-                                        const method = e.method || e.details?.method || 'UNK';
+                                        const method = String(e.method || e.details?.method || 'UNK');
                                         const ip = e.ip || e.details?.ip || 'N/A';
                                         const route = e.route || e.details?.route || 'N/A';
                                         const status = e.status || e.details?.status || 200;
@@ -359,13 +359,13 @@ export default function AdminDashboard() {
                                                 }} />
                                                 <Box sx={{ flex: 1 }}>
                                                     <Typography variant="subtitle2" fontWeight={600} color="text.primary">
-                                                        {e.action} ({method})
+                                                        {String(e.action)} ({String(method)})
                                                     </Typography>
                                                     <Typography variant="caption" color="text.secondary" display="block">
-                                                        {ip} • {timeAgo(new Date(e.createdAt).getTime())}
+                                                        {String(ip)} • {timeAgo(e.createdAt ? new Date(e.createdAt).getTime() : Date.now())}
                                                     </Typography>
                                                     <Typography variant="caption" sx={{ fontFamily: 'monospace', color: 'text.secondary', bgcolor: alpha(theme.palette.divider, 0.1), px: 0.5, borderRadius: 0.5 }}>
-                                                        {route} (Status: {status})
+                                                        {String(route)} (Status: {String(status)})
                                                     </Typography>
                                                 </Box>
                                             </Box>

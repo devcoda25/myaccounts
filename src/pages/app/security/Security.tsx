@@ -412,7 +412,7 @@ export default function SecurityOverviewPage() {
                     </Stack>
 
                     <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                      {mfa.methods.map((m) => (
+                      {mfa.methods.map((m: string) => (
                         <Chip
                           key={m}
                           label={m}

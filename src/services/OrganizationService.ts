@@ -1,21 +1,11 @@
 import { api } from '../utils/api';
+import { OrgRole, IOrganization, IOrgSettingsPayload } from '../utils/types';
 
-export type OrgRole = "Owner" | "Admin" | "Manager" | "Member" | "Viewer" | "Support";
+export type { OrgRole }; // Re-export if needed by consumers, or they should import from types.
+// We can alias IOrganization to OrganizationDto for compatibility
+export type OrganizationDto = IOrganization;
 
 export type OrgType = "Company" | "School" | "Fleet" | "Government" | "Other";
-
-export interface OrganizationDto {
-    id: string;
-    name: string;
-    role: OrgRole;
-    joinedAt: string;
-    country?: string;
-    membersCount?: number;
-    walletEnabled?: boolean;
-    walletBalance?: number;
-    currency?: string;
-    ssoEnabled?: boolean;
-}
 
 export interface OrgMemberDto {
     id: string;
@@ -29,46 +19,46 @@ export interface OrgMemberDto {
 
 export const OrganizationService = {
     listMyOrgs: async (): Promise<OrganizationDto[]> => {
-        return api.get('/orgs');
+        return api.get<OrganizationDto[]>('/orgs');
     },
 
     getOrg: async (id: string): Promise<OrganizationDto> => {
-        return api.get(`/orgs/${id}`);
+        return api.get<OrganizationDto>(`/orgs/${id}`);
     },
 
     createOrg: async (data: { name: string; country?: string }) => {
-        return api.post('/orgs', data);
+        return api.post<OrganizationDto>('/orgs', data);
     },
 
-    joinOrg: async (id: string) => {
-        return api.post(`/orgs/${id}/join`);
+    joinOrg: async (id: string): Promise<OrganizationDto> => {
+        return api.post<OrganizationDto>(`/orgs/${id}/join`);
     },
 
     createWallet: async (orgId: string, currency: string = 'USD') => {
-        return api.post(`/orgs/${orgId}/wallet`, { currency });
+        return api.post<void>(`/orgs/${orgId}/wallet`, { currency });
     },
 
     getMembers: async (orgId: string): Promise<OrgMemberDto[]> => {
-        return api.get(`/orgs/${orgId}/members`);
+        return api.get<OrgMemberDto[]>(`/orgs/${orgId}/members`);
     },
 
     updateMember: async (orgId: string, userId: string, data: { role?: string; status?: string }) => {
-        return api.patch(`/orgs/${orgId}/members/${userId}`, data);
+        return api.patch<void>(`/orgs/${orgId}/members/${userId}`, data);
     },
 
     removeMember: async (orgId: string, userId: string) => {
-        return api.delete(`/orgs/${orgId}/members/${userId}`);
+        return api.delete<void>(`/orgs/${orgId}/members/${userId}`);
     },
 
-    updateSettings: async (orgId: string, data: Partial<OrganizationDto>) => {
-        return api.patch(`/orgs/${orgId}`, data);
+    updateSettings: async (orgId: string, data: Partial<IOrgSettingsPayload>) => {
+        return api.patch<IOrganization>(`/orgs/${orgId}`, data);
     },
 
     getPermissions: async (orgId: string): Promise<{ grants: Record<string, unknown>; policy: Record<string, unknown> }> => {
-        return api.get(`/orgs/${orgId}/permissions`);
+        return api.get<{ grants: Record<string, unknown>; policy: Record<string, unknown> }>(`/orgs/${orgId}/permissions`);
     },
 
     updatePermissions: async (orgId: string, data: { grants?: Record<string, unknown>; policy?: Record<string, unknown> }) => {
-        return api.patch(`/orgs/${orgId}/permissions`, data);
+        return api.patch<void>(`/orgs/${orgId}/permissions`, data);
     }
 };

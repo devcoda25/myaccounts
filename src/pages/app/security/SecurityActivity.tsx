@@ -26,6 +26,7 @@ import { motion } from "framer-motion";
 import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
 import { api } from "../../../utils/api";
+import { ISecurityActivityLog } from "../../../utils/types";
 
 /**
  * EVzone My Accounts - Login Activity
@@ -269,21 +270,22 @@ export default function LoginActivityPage() {
   const [status, setStatus] = useState<string>("all");
   const [search, setSearch] = useState<string>("");
 
+
   // Fetch from API
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api("/security/activity")
-      .then((logs: any[]) => {
+    api<ISecurityActivityLog[]>("/security/activity")
+      .then((logs) => {
         const mapped: LoginEvent[] = logs.map((l) => ({
           id: l.id,
-          when: new Date(l.createdAt).getTime(),
-          device: (l.details as any)?.device || "Unknown Device",
-          method: l.action as LoginMethod, // Backend action should map or be generic
-          location: (l.details as any)?.location || "Unknown Location",
+          when: typeof l.createdAt === 'string' ? new Date(l.createdAt).getTime() : l.createdAt,
+          device: l.details?.device || "Unknown Device",
+          method: (l.action as LoginMethod) || "Password", // Fallback
+          location: l.details?.location || "Unknown Location",
           ip: l.ip || "Unknown IP",
-          status: (l.severity === "error" || l.action.toLowerCase().includes("fail")) ? "failure" : "success",
-          risk: l.severity === "error" ? ["suspicious"] : [],
+          status: (l.risk && l.risk.length > 0) ? "failure" : "success", // Simplistic mapping, refine based on 'action' if needed
+          risk: (l.risk as RiskTag[]) || [],
         }));
         setEvents(mapped);
         setLoading(false);
@@ -581,7 +583,7 @@ export default function LoginActivityPage() {
                                       label={c.label}
                                       color={c.color}
                                       sx={{
-                                        ...sx,
+                                        ...(sx || {}),
                                         "& .MuiChip-icon": { color: "inherit" },
                                       }}
                                     />

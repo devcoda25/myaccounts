@@ -25,7 +25,7 @@ import { motion } from "framer-motion";
 import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
 import { api } from "../../../utils/api";
-import { Organization, OrgRole } from "../../../utils/types";
+import { IOrganization, OrgRole } from "../../../utils/types";
 
 import CreateOrgModal from "../../../components/modals/CreateOrgModal";
 import JoinOrgModal from "../../../components/modals/JoinOrgModal";
@@ -167,7 +167,7 @@ export default function OrganizationsListPage() {
   const { mode } = useThemeStore();
   const isDark = mode === "dark";
 
-  const [orgs, setOrgs] = useState<Organization[]>([]);
+  const [orgs, setOrgs] = useState<IOrganization[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [currentOrgId, setCurrentOrgId] = useState<string>(() => getStoredLastOrg() || "");
@@ -184,10 +184,10 @@ export default function OrganizationsListPage() {
   const fetchOrgs = async () => {
     try {
       setLoading(true);
-      const data = await api('/orgs');
+      const data = await api<IOrganization[]>('/orgs');
       setOrgs(data);
       // If we have orgs but none selected (or selected one isn't in list), select first
-      const hasCurrent = data.some((o: Organization) => o.id === currentOrgId);
+      const hasCurrent = data.some((o: IOrganization) => o.id === currentOrgId);
       if (!currentOrgId || !hasCurrent) {
         if (data.length > 0) setCurrentOrgId(data[0].id);
       }
@@ -234,7 +234,7 @@ export default function OrganizationsListPage() {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return orgs
-      .filter((o) => (!q ? true : [o.name, o.role, o.country].some((x) => x.toLowerCase().includes(q))))
+      .filter((o) => (!q ? true : [o.name, o.role, o.country || ""].some((x) => x.toLowerCase().includes(q))))
       .sort((a, b) => (a.id === currentOrgId ? -1 : b.id === currentOrgId ? 1 : a.name.localeCompare(b.name)));
   }, [orgs, search, currentOrgId]);
 
@@ -275,7 +275,7 @@ export default function OrganizationsListPage() {
 
   const createOrg = async (name: string, _type: string, country: string) => {
     try {
-      const newOrg = await api('/orgs', {
+      const newOrg = await api<IOrganization>('/orgs', {
         method: 'POST',
         body: JSON.stringify({ name, country })
       });
@@ -291,7 +291,7 @@ export default function OrganizationsListPage() {
   const joinOrg = async (code: string) => {
     // Assuming code is ID for now
     try {
-      await api(`/orgs/${code}/join`, { method: 'POST' });
+      await api<void>(`/orgs/${code}/join`, { method: 'POST' });
       // Refresh list
       await fetchOrgs();
 
@@ -302,7 +302,7 @@ export default function OrganizationsListPage() {
     }
   };
 
-  const OrgCard = ({ org }: { org: Organization }) => {
+  const OrgCard = ({ org }: { org: IOrganization }) => {
     const isCurrent = org.id === currentOrgId;
     const admin = isAdminRole(org.role);
     const canLeave = org.role !== "Owner";

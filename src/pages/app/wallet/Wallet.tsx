@@ -38,7 +38,7 @@ import { EVZONE } from "../../../theme/evzone";
 
 type ThemeMode = "light" | "dark";
 
-type Severity = "info" | "warning" | "error" | "success";
+
 
 type TxStatus = "completed" | "pending" | "failed";
 
@@ -55,7 +55,7 @@ type WalletTx = {
   note?: string;
 };
 
-type KycTier = "Unverified" | "Basic" | "Full";
+
 
 // Redundant EVZONE and THEME_KEY removed
 
@@ -234,7 +234,7 @@ function runSelfTestsOnce() {
 import { useThemeStore } from "../../../stores/themeStore";
 
 import { api } from "../../../utils/api";
-import { Wallet, Transaction } from "../../../utils/types";
+import { IWallet, ITransaction, KycTier, Severity } from "../../../utils/types";
 import { formatTransactionId, formatWalletId } from "../../../utils/format";
 
 // ... (keep icons)
@@ -248,9 +248,9 @@ export default function WalletPage() {
   const [tab, setTab] = useState<0 | 1>(0);
 
   // Real Data State
-  const [wallet, setWallet] = useState<Wallet | null>(null);
+  const [wallet, setWallet] = useState<IWallet | null>(null);
   const [stats, setStats] = useState({ inflow: 0, outflow: 0 });
-  const [txs, setTransactions] = useState<Transaction[]>([]);
+  const [txs, setTransactions] = useState<ITransaction[]>([]);
   const [limits, setLimits] = useState<{ dailyLimit: number; monthlyLimit: number }>({ dailyLimit: 0, monthlyLimit: 0 });
   const [loading, setLoading] = useState(true);
 
@@ -260,11 +260,11 @@ export default function WalletPage() {
     try {
       setLoading(true);
       const [w, s, t, k, l] = await Promise.all([
-        api('/wallets/me').catch(() => null),
-        api('/wallets/me/stats?days=7').catch(() => ({ inflow: 0, outflow: 0 })),
-        api('/wallets/me/transactions?take=5').catch(() => []),
-        api('/kyc/status').catch(() => null),
-        api('/wallets/me/limits').catch(() => ({ dailyLimit: 1000000, monthlyLimit: 10000000 }))
+        api<IWallet>('/wallets/me').catch(() => null),
+        api<{ inflow: number; outflow: number }>('/wallets/me/stats?days=7').catch(() => ({ inflow: 0, outflow: 0 })),
+        api<{ data: ITransaction[]; total: number }>('/wallets/me/transactions?take=5').catch(() => ({ data: [], total: 0 })),
+        api<{ status: string; tier?: KycTier }>('/kyc/status').catch(() => null),
+        api<{ dailyLimit: number; monthlyLimit: number }>('/wallets/me/limits').catch(() => ({ dailyLimit: 1000000, monthlyLimit: 10000000 }))
       ]);
       setWallet(w);
       setStats(s || { inflow: 0, outflow: 0 });

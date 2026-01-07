@@ -25,7 +25,8 @@ import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { api } from "../../../utils/api";
 import { getProviderIcon, getProviderColor } from "../../../assets/paymentIcons";
-import { WalletService, PaymentMethodDto } from "../../../services/WalletService";
+import { WalletService } from "../../../services/WalletService";
+import { IPaymentMethod } from "../../../utils/types";
 
 
 /**
@@ -284,9 +285,7 @@ export default function WalletAddFunds() {
     msg: "",
   });
 
-  const [methods, setMethods] = useState<PaymentMethodDto[]>([]); // Keep as any[] for now as PaymentMethodDto imports might need verify, or import it.
-  // Actually I should import PaymentMethodDto.
-  // Let's do imports first.
+  const [methods, setMethods] = useState<IPaymentMethod[]>([]);
   const [loadingMethods, setLoadingMethods] = useState(false);
   const [selectedMethodId, setSelectedMethodId] = useState<string>("");
 
@@ -354,7 +353,7 @@ export default function WalletAddFunds() {
         return;
       }
       try {
-        const res = await api.get(`/wallets/fees?amount=${amount}&type=deposit&method=${method}`);
+        const res = await api.get<{ fee: number }>(`/wallets/fees?amount=${amount}&type=deposit&method=${method}`);
         if (res && typeof res.fee === 'number') {
           setFee(res.fee);
         }
@@ -373,7 +372,7 @@ export default function WalletAddFunds() {
 
   const canContinue = clampMoney(amount) >= 1000;
 
-  const MethodCard = ({ item, selected, onSelect }: { item: PaymentMethodDto; selected: boolean; onSelect: () => void }) => {
+  const MethodCard = ({ item, selected, onSelect }: { item: IPaymentMethod; selected: boolean; onSelect: () => void }) => {
     // Helper to get color/icon based on provider string
     const provLower = (item.provider || "").toLowerCase();
     const typeLower = (item.type || "").toLowerCase();
@@ -427,8 +426,8 @@ export default function WalletAddFunds() {
                 {getProviderIcon(iconKey, 24)}
               </Box>
               <Box>
-                <Typography sx={{ fontWeight: 950 }}>{item.details?.masked || item.provider}</Typography>
-                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>{item.details?.label || item.type}</Typography>
+                <Typography sx={{ fontWeight: 950 }}>{String(item.details?.masked || item.provider)}</Typography>
+                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>{String(item.details?.label || item.type)}</Typography>
               </Box>
             </Stack>
             {selected ? <Chip size="small" color="success" label="Selected" /> : null}
@@ -466,7 +465,7 @@ export default function WalletAddFunds() {
     setReceipt(null);
 
     try {
-      const res = await api('/wallets/me/add-funds', {
+      const res = await api<{ id: string; referenceId?: string }>('/wallets/me/add-funds', {
         method: 'POST',
         body: JSON.stringify({
           amount: clampMoney(amount),

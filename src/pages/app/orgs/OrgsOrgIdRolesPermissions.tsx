@@ -22,26 +22,9 @@ import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { useThemeStore } from "../../../stores/themeStore";
 import { useNavigate, useParams } from "react-router-dom";
-import { OrganizationService, OrgRole } from "../../../services/OrganizationService";
+import { OrganizationService } from "../../../services/OrganizationService";
+import { OrgRole, Severity } from "../../../utils/types";
 import { formatOrgId } from "../../../utils/format";
-import { EVZONE } from "../../../theme/evzone";
-
-/**
- * EVzone My Accounts - Org Roles & Permissions
- * Route: /app/orgs/:orgId/roles-permissions
- *
- * This page is necessary for multi-tenant governance.
- *
- * Features:
- * - Role list (built-in + custom)
- * - Permissions by category
- * - Default invite role policy
- * - Save changes (admin only)
- */
-
-type ThemeMode = "light" | "dark";
-
-type Severity = "info" | "warning" | "error" | "success";
 
 type PermissionKey =
   | "members.view"
@@ -246,12 +229,12 @@ export default function OrgRolesPermissionsPage() {
   );
 
   const [roles] = useState<RoleModel[]>(() => [
-    { id: "r_owner", name: "Owner", builtIn: true, membersCount: 1 },
-    { id: "r_admin", name: "Admin", builtIn: true, membersCount: 2 },
-    { id: "r_manager", name: "Manager", builtIn: true, membersCount: 3 },
-    { id: "r_member", name: "Member", builtIn: true, membersCount: 6 },
-    { id: "r_viewer", name: "Viewer", builtIn: true, membersCount: 0 },
-    { id: "r_support", name: "Support", builtIn: false, membersCount: 2 },
+    { id: "r_owner", name: "Owner" as OrgRole, builtIn: true, membersCount: 1 },
+    { id: "r_admin", name: "Admin" as OrgRole, builtIn: true, membersCount: 2 },
+    { id: "r_manager", name: "Manager" as OrgRole, builtIn: true, membersCount: 3 },
+    { id: "r_member", name: "Member" as OrgRole, builtIn: true, membersCount: 6 },
+    { id: "r_viewer", name: "Viewer" as OrgRole, builtIn: true, membersCount: 0 },
+    { id: "r_support", name: "Support" as OrgRole, builtIn: false, membersCount: 2 },
   ]);
 
   const [selectedRole, setSelectedRole] = useState<OrgRole>("Admin");
@@ -329,10 +312,10 @@ export default function OrgRolesPermissionsPage() {
       setMyRole(orgData.role);
 
       if (permData.grants && Object.keys(permData.grants).length > 0) {
-        setGrants(permData.grants);
+        setGrants(permData.grants as unknown as Record<OrgRole, Record<PermissionKey, boolean>>);
       }
       if (permData.policy) {
-        setPolicy(permData.policy);
+        setPolicy(permData.policy as unknown as RolePolicy);
       }
 
     } catch (err) {

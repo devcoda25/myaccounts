@@ -59,15 +59,9 @@ function EditIcon({ size = 18 }: { size?: number }) {
   )
 }
 
-type User = {
-  id: string;
-  email: string;
-  firstName: string;
-  otherNames: string;
-  role: string;
-  createdAt: string;
-  emailVerified: boolean;
-};
+import { IUser, Severity } from "../../../../utils/types";
+
+// ...
 
 export default function AdminUsersPage() {
   const theme = useTheme();
@@ -75,27 +69,31 @@ export default function AdminUsersPage() {
   const isDark = mode === "dark";
 
   const [loading, setLoading] = useState(false);
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<IUser[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
-  const pageSize = 10;
-
-  const [snack, setSnack] = useState({ open: false, msg: "", severity: "success" as "success" | "error" });
 
   // Delete State
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
 
   // Edit Role State
   const [editOpen, setEditOpen] = useState(false);
   const [editRole, setEditRole] = useState("USER");
 
+  // Snackbar State
+  const [snack, setSnack] = useState<{ open: boolean; msg: string; severity: Severity }>({
+    open: false,
+    msg: "",
+    severity: "success",
+  });
   const fetchUsers = async () => {
     setLoading(true);
     try {
       const skip = (page - 1) * pageSize;
-      const res = await api(`/users?skip=${skip}&take=${pageSize}&query=${encodeURIComponent(search)}`);
+      const res = await api<{ users: IUser[]; total: number }>(`/users?skip=${skip}&take=${pageSize}&query=${encodeURIComponent(search)}`);
       setUsers(res.users);
       setTotal(res.total);
     } catch (err) {
@@ -139,12 +137,12 @@ export default function AdminUsersPage() {
     }
   }
 
-  const openDelete = (u: User) => {
+  const openDelete = (u: IUser) => {
     setSelectedUser(u);
     setDeleteOpen(true);
   };
 
-  const openEdit = (u: User) => {
+  const openEdit = (u: IUser) => {
     setSelectedUser(u);
     setEditRole(u.role);
     setEditOpen(true);

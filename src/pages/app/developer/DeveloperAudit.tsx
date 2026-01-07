@@ -22,6 +22,7 @@ import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { useThemeStore } from "../../../stores/themeStore";
 import { api } from "../../../utils/api";
+import { IDeveloperAuditLog } from "../../../utils/types";
 
 /**
  * EVzone My Accounts - Developer Audit Log
@@ -138,20 +139,22 @@ export default function DeveloperAuditPage() {
     const [events, setEvents] = useState<AuditEvent[]>([]);
     const [loading, setLoading] = useState(true);
 
+
+
     useEffect(() => {
         const load = async () => {
             try {
                 setLoading(true);
-                const data = await api('/developer/audit-logs');
+                const data = await api<IDeveloperAuditLog[]>('/developer/audit-logs');
                 // Map backend audit logs to frontend AuditEvent
-                const mapped = data.map((l: any) => ({
+                const mapped = data.map((l) => ({
                     id: l.id,
                     type: l.action,
                     actor: l.actorName || 'System',
                     target: l.details?.target || '-',
                     ip: l.ipAddress || 'Unknown',
-                    status: (l.details?.status as any) || 'Success',
-                    timestamp: new Date(l.createdAt).getTime(),
+                    status: (l.details?.status as "Success" | "Failed") || 'Success',
+                    timestamp: typeof l.createdAt === 'string' ? new Date(l.createdAt).getTime() : l.createdAt,
                     metadata: l.details
                 }));
                 setEvents(mapped);

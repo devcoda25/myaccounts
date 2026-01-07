@@ -1,7 +1,9 @@
 // Common Types
 export type ThemeMode = "light" | "dark";
 
-export interface User {
+export type KycTier = "Unverified" | "Basic" | "Full" | "Pending";
+
+export interface IUser {
     id: string;
     email: string;
     firstName?: string;
@@ -10,9 +12,10 @@ export interface User {
     role: string;
     phoneNumber?: string;
     phoneVerified?: boolean;
-    preferences?: {
-        locale?: string;
-    };
+    createdAt: string | number;
+    emailVerified?: boolean;
+    preferences?: Partial<Prefs>;
+    contacts?: any[]; // Better to define IContact if possible, but any[] is a step up from implicit
 }
 
 export type Severity = "info" | "warning" | "error" | "success";
@@ -23,7 +26,7 @@ export type Delivery = "email_link" | "sms_code" | "whatsapp_code";
 export type Step = "request" | "sent" | "verify" | "success" | "confirm" | "set" | "prompt" | "entry"; // Combined steps from different auth flows
 
 // Org Types
-export type OrgRole = "Owner" | "Admin" | "Manager" | "Member" | "Viewer";
+export type OrgRole = "Owner" | "Admin" | "Manager" | "Member" | "Viewer" | "Support";
 export type AuthState = "not_logged_in" | "logged_in_same_user" | "logged_in_different_user";
 
 // Admin Types
@@ -47,7 +50,7 @@ export type Service = {
 };
 
 // Wallet Types
-export interface Wallet {
+export interface IWallet {
     id: string;
     balance: number | string; // Decimal from Prisma comes as string or number
     currency: string;
@@ -56,7 +59,7 @@ export interface Wallet {
 export type TxType = "Top up" | "Payment" | "Withdrawal" | "Refund" | "Fee";
 export type TxStatus = "completed" | "pending" | "failed";
 
-export interface Transaction {
+export interface ITransaction {
     id: string;
     amount: number | string;
     currency: string;
@@ -71,19 +74,24 @@ export interface Transaction {
 }
 
 // Organization Types
-export interface Organization {
+export interface IOrganization {
     id: string;
     name: string;
     role: OrgRole;
-    membersCount: number;
-    country: string;
+    membersCount?: number;
+    country?: string;
     joinedAt: string;
     ssoEnabled?: boolean;
     walletEnabled?: boolean;
+    walletBalance?: number;
+    currency?: string;
+    logo?: string;
+    address?: IOrgAddress;
+    defaultRolePolicy?: IOrgSettingsDefaultRolePolicy;
 }
 
 // Audit Types
-export interface AuditLog {
+export interface IAuditLog {
     id: string;
     action: string;
     details: Record<string, unknown>;
@@ -158,4 +166,162 @@ export interface BackendUser {
     auditLogs?: Array<{ action: string; createdAt: string }>;
     credentials?: Array<{ providerType: string }>;
     memberships?: Array<{ organization: { id: string; name: string }; role: string }>;
+}
+
+// Strict Interfaces (I-prefixed)
+
+export interface IApiResponse<T> {
+    data: T;
+    message?: string;
+    status: number;
+}
+
+export interface IPaginatedResponse<T> {
+    items: T[];
+    total: number;
+    skip: number;
+    take: number;
+}
+
+// Wallet Strict Types
+export interface IPaymentMethodDetails {
+    masked?: string;
+    maskedCard?: string;
+    label?: string;
+    last4?: string;
+    expiryMonth?: number;
+    expiryYear?: number;
+    holderName?: string;
+    bankName?: string;
+    accountNumber?: string;
+    phoneNumber?: string;
+}
+
+export interface IPaymentMethod {
+    id: string;
+    type: "card" | "momo" | "bank";
+    provider: string;
+    details: IPaymentMethodDetails;
+    isDefault: boolean;
+    createdAt: number;
+    label?: string; // UI computed
+    masked?: string; // UI computed
+    verified?: boolean; // UI computed
+}
+
+
+
+// Organization Strict Types
+export interface IOrgAddress {
+    line1?: string;
+    line2?: string;
+    city?: string;
+    region?: string;
+    postal?: string;
+}
+
+export interface IOrgSettingsDefaultRolePolicy {
+    defaultInviteRole?: OrgRole;
+    requireAdminApproval?: boolean;
+    domainAutoRoleEnabled?: boolean;
+    domain?: string;
+    domainRole?: OrgRole;
+}
+
+export interface IOrgSettingsPayload {
+    name: string;
+    country: string;
+    logo?: string;
+    defaultRolePolicy?: IOrgSettingsDefaultRolePolicy;
+    address?: IOrgAddress;
+}
+
+
+export interface IOrgSsoConfig {
+    entityId?: string;
+    ssoUrl?: string;
+    cert?: string;
+    issuer?: string;
+    authorizationUrl?: string;
+    tokenUrl?: string;
+    userInfoUrl?: string;
+    clientId?: string;
+    clientSecret?: string;
+    redirectUris?: string[];
+    scopes?: string[];
+    usePkce?: boolean;
+}
+
+export interface IOrgDomain {
+    id: string;
+    domain: string;
+    token: string;
+    recordName: string;
+    recordValue: string;
+    status: "Not started" | "Pending" | "Verified" | "Failed";
+    lastCheckedAt?: number;
+    requireSso?: boolean;
+    allowPasswordFallback?: boolean;
+    defaultRole?: string;
+}
+
+// Security Strict Types
+export interface ISecurityActivityLogDetails {
+    device?: string;
+    location?: string;
+    userAgent?: string;
+    os?: string;
+    browser?: string;
+}
+
+export interface ISecurityActivityLog {
+    id: string;
+    action: string;
+    ip: string;
+    createdAt: string | number;
+    details: ISecurityActivityLogDetails;
+    risk: string[];
+    // Mapped properties
+    method?: string;
+    device?: string;
+    location?: string;
+}
+
+export interface IPasskeyTransport {
+    transports: string[];
+}
+
+// Admin Strict Types
+export interface IAdminTransaction {
+    id: string;
+    amount: number;
+    currency: string;
+    status: string;
+    type: string;
+    reference: string;
+    user: {
+        email: string;
+    };
+    createdAt: string;
+}
+
+export interface ISecurityPasskey {
+    id: string;
+    userAgent?: string; // or name
+    createdAt: string | number;
+    lastUsedAt?: string | number;
+    transports?: string[];
+}
+
+export interface IDeveloperAuditLog {
+    id: string;
+    action: string;
+    actorName?: string;
+    ipAddress: string;
+    createdAt: string | number;
+    details?: {
+        target?: string;
+        status?: string;
+        [key: string]: unknown;
+    };
 }

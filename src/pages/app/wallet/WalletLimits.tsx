@@ -194,7 +194,7 @@ export default function WalletLimitsFeesPage() {
   const [tier, setTier] = useState<KycTier>("Basic");
 
   useEffect(() => {
-    api('/kyc/status').then(res => {
+    api<{ tier: KycTier }>('/kyc/status').then(res => {
       if (res && res.tier) {
         setTier(res.tier);
       }

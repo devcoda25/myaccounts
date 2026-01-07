@@ -230,10 +230,10 @@ export default function ParentalControls() {
   const fetchData = async () => {
     try {
       const [childData, householdData, approvalData, activityData] = await Promise.all([
-        api('/parental/children'),
-        api('/parental/household'),
-        api('/parental/approvals'),
-        api('/parental/activity')
+        api<ChildProfile[]>('/parental/children'),
+        api<{ members: HouseholdMember[], approvalMode: ApprovalMode }>('/parental/household'),
+        api<PendingApproval[]>('/parental/approvals'),
+        api<ActivityEvent[]>('/parental/activity')
       ]);
       setChildren(childData);
       if (childData.length > 0 && !selectedChildId) {
@@ -310,7 +310,7 @@ export default function ParentalControls() {
 
   const updateChild = async (id: string, patch: Partial<ChildProfile>, event?: Omit<ActivityEvent, "id" | "at" | "childId">) => {
     try {
-      await api(`/parental/children/${id}`, {
+      await api<void>(`/parental/children/${id}`, {
         method: 'PATCH',
         body: JSON.stringify({ patch, audit: event })
       });
@@ -329,7 +329,7 @@ export default function ParentalControls() {
       approve ? "This will allow the child to continue." : "This will decline the request.",
       async () => {
         try {
-          await api(`/parental/approvals/${id}/decide`, {
+          await api<void>(`/parental/approvals/${id}/decide`, {
             method: 'POST',
             body: JSON.stringify({ approve })
           });
@@ -349,7 +349,7 @@ export default function ParentalControls() {
   const submitLink = (code: string) => {
     requestStepUp("Link child account", "Linking changes supervision and privacy settings.", async () => {
       try {
-        await api('/parental/children/link', {
+        await api<void>('/parental/children/link', {
           method: 'POST',
           body: JSON.stringify({ code })
         });
@@ -369,7 +369,7 @@ export default function ParentalControls() {
   const submitCreate = (name: string, dob: string, school: string) => {
     requestStepUp("Create supervised child", "Creating a child sets you as the guardian.", async () => {
       try {
-        await api('/parental/children/create', {
+        await api<void>('/parental/children/create', {
           method: 'POST',
           body: JSON.stringify({ name, dob, school: school || "EVzone School" })
         });
@@ -390,7 +390,7 @@ export default function ParentalControls() {
   const submitInvite = (name: string, email: string, phone: string, channels: Record<Channel, boolean>) => {
     requestStepUp("Invite household member", "Inviting a guardian changes supervision permissions.", async () => {
       try {
-        await api('/parental/household/members', {
+        await api<void>('/parental/household/members', {
           method: 'POST',
           body: JSON.stringify({ name, email, phone, role: inviteRole, channels })
         });
@@ -406,7 +406,7 @@ export default function ParentalControls() {
   const removeMember = (id: string) => {
     requestStepUp("Remove household member", "This removes access and disables alerts for that member.", async () => {
       try {
-        await api(`/parental/household/members/${id}`, {
+        await api<void>(`/parental/household/members/${id}`, {
           method: 'DELETE'
         });
         await fetchData();
@@ -425,13 +425,13 @@ export default function ParentalControls() {
   };
 
   const savePlace = (id: string, type: "Home" | "School", place: Place) => {
-    const patch = {
+    const patch: Partial<ChildProfile> = {
       geofences: {
         ...selectedChild?.geofences,
-        [type.toLowerCase()]: place,
+        [type.toLowerCase() as "home" | "school"]: place,
         enabled: true,
-      },
-    } as any;
+      } as GeoFences,
+    };
     updateChild(id, patch, { kind: "Safety Updated", summary: `Updated ${type} location: ${place.address}`, severity: "info" });
     setPlaceOpen(false);
   };
@@ -445,7 +445,7 @@ export default function ParentalControls() {
   const updateApprovalMode = (mode: ApprovalMode) => {
     requestStepUp("Update approval mode", "This changes who can approve requests.", async () => {
       try {
-        await api('/parental/household/mode', {
+        await api<void>('/parental/household/mode', {
           method: 'PATCH',
           body: JSON.stringify({ mode })
         });
@@ -575,7 +575,7 @@ export default function ParentalControls() {
         open={placeOpen}
         setOpen={setPlaceOpen}
         target={placeTarget}
-        currentPlace={selectedChild?.geofences.home || selectedChild?.geofences.school}
+        currentPlace={(selectedChild?.geofences.home || selectedChild?.geofences.school) || undefined}
         onSave={(p) => {
           if (selectedChild) savePlace(selectedChild.id, placeTarget, p);
         }}

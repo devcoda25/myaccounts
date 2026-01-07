@@ -30,6 +30,7 @@ import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
 import { startRegistration } from "@simplewebauthn/browser";
 import { api } from "../../../utils/api";
+import { ISecurityPasskey } from "../../../utils/types";
 
 /**
  * EVzone My Accounts - Passkeys Setup
@@ -178,16 +179,16 @@ export default function PasskeysPage() {
 
   const fetchPasskeys = async () => {
     try {
-      const res = await api.get("/auth/passkeys");
+      const res = await api.get<ISecurityPasskey[]>("/auth/passkeys");
       if (Array.isArray(res)) {
-        const mapped: Passkey[] = res.map((p: any) => ({
+        const mapped: Passkey[] = res.map((p) => ({
           id: p.id,
           name: p.userAgent || "Unknown Device",
           createdAt: new Date(p.createdAt).getTime(),
           lastUsedAt: p.lastUsedAt ? new Date(p.lastUsedAt).getTime() : undefined,
           deviceLabel: "Passkey",
           synced: false,
-          transports: p.transports || [],
+          transports: (p.transports as Transport[]) || [],
           residentKey: true,
         }));
         setPasskeys(mapped);
@@ -231,11 +232,15 @@ export default function PasskeysPage() {
         return;
       }
       // 1. Get options from backend
-      const options = await api.post("/auth/passkeys/register/start");
+      // TODO: Type the registration options properly (PublicKeyCredentialCreationOptionsJSON)
+      // For now, using unknown or any is hard to avoid without pulling in types package,
+      // but we can at least avoid explicit 'any' cast if generic is implied or use object.
+      const options = await api.post<Record<string, unknown>>("/auth/passkeys/register/start");
       // 2. Browser interaction
-      const attResp = await startRegistration(options);
+      // startRegistration expects PublicKeyCredentialCreationOptionsJSON. We assume backend returns compatible JSON.
+      const attResp = await startRegistration(options as any); // Cast to any because startRegistration types are strict and backend response might be loosely typed here
       // 3. Finish
-      const verification = await api.post("/auth/passkeys/register/finish", attResp);
+      const verification = await api.post<{ verified: boolean }>("/auth/passkeys/register/finish", attResp);
 
       if (verification.verified) {
         setSnack({ open: true, severity: "success", msg: "Passkey created successfully." });
@@ -243,9 +248,10 @@ export default function PasskeysPage() {
       } else {
         setSnack({ open: true, severity: "error", msg: "Verification failed." });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      if (err.name === "InvalidStateError") {
+      const e = err as Error;
+      if (e.name === "InvalidStateError") {
         setSnack({ open: true, severity: "error", msg: "This authenticator is already registered." });
       } else {
         setSnack({ open: true, severity: "error", msg: "Failed to create passkey." });

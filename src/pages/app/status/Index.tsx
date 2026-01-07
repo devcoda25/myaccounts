@@ -64,7 +64,7 @@ export default function SystemStatusPage() {
     const load = async () => {
       try {
         setLoading(true);
-        const res = await api('/health');
+        const res = await api<{ services: Service[]; status: Health }>('/health');
         setServices(res.services || []);
         setOverallStatus(res.status || "Operational");
       } catch (err) {

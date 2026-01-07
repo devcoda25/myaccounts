@@ -39,7 +39,7 @@ import { useThemeStore } from '../../stores/themeStore';
 import { useAuthStore } from '../../stores/authStore';
 import { EVZONE } from '../../theme/evzone';
 import { api } from '../../utils/api';
-import { Wallet, Transaction } from '../../utils/types';
+import { IWallet, ITransaction } from '../../utils/types';
 
 // Helpers
 function money(amount: number, currency = "UGX") {
@@ -71,18 +71,18 @@ export default function Dashboard() {
   const { mode } = useThemeStore();
   const { user } = useAuthStore();
 
-  const [wallet, setWallet] = useState<Wallet | null>(null);
+  const [wallet, setWallet] = useState<IWallet | null>(null);
   const [stats, setStats] = useState({ inflow: 0, outflow: 0 });
-  const [recentTxns, setRecentTxns] = useState<Transaction[]>([]);
+  const [recentTxns, setRecentTxns] = useState<ITransaction[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [w, s, t] = await Promise.all([
-          api<Wallet>('/wallets/me'),
+          api<IWallet>('/wallets/me'),
           api<{ inflow: number; outflow: number }>('/wallets/me/stats?days=30'), // Monthly stats for dashboard
-          api<{ data: Transaction[] }>('/wallets/me/transactions?take=3')
+          api<{ data: ITransaction[] }>('/wallets/me/transactions?take=3')
         ]);
         setWallet(w);
         setStats(s);

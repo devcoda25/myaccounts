@@ -35,6 +35,13 @@ type KycStatus = "Pending" | "Approved" | "Rejected" | "In Review" | "Unverified
 
 type KycTier = "Unverified" | "Basic" | "Full";
 
+interface KycStatusResponse {
+  status: string;
+  tier?: KycTier;
+  submittedAt?: string;
+  notes?: string;
+}
+
 const EVZONE = {
   green: "#03cd8c",
   orange: "#f77f00",
@@ -144,7 +151,7 @@ export default function KycStatusPage() {
   const fetchStatus = async () => {
     try {
       setLoading(true);
-      const res = await api('/kyc/status');
+      const res = await api<{ status: string; tier?: KycTier; submittedAt?: string; notes?: string }>('/kyc/status');
       if (res) {
         // Map backend status to UI status
         // Backend: 'Pending' | 'Verified' | 'Rejected' | 'In Review' | 'Unverified'

@@ -24,7 +24,7 @@ export default function PersonalProfilePage() {
   const { user, refreshUser } = useAuthStore();
 
   const [fullName, setFullName] = useState("");
-  const [country, setCountry] = useState<string | null>(null);
+  const [country, setCountry] = useState<string>("");
   const [dob, setDob] = useState<Date | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -44,7 +44,7 @@ export default function PersonalProfilePage() {
       setAvatarUrl(user.avatarUrl || null);
       // Note: country and dob are not currently in User interface, ignoring for initial load or casting if needed
       // If backend sends them, we might need to update User type. For now assuming they might be missing or handled elsewhere.
-      setCountry((user as any).country || null);
+      setCountry((user as any).country || "");
       setDob((user as any).dob ? new Date((user as any).dob) : null);
     }
   }, [user]);
@@ -59,7 +59,7 @@ export default function PersonalProfilePage() {
 
     try {
       setSnack({ open: true, severity: "info", msg: "Uploading..." });
-      const res = await api("/users/me/avatar", {
+      const res = await api<{ url: string }>("/users/me/avatar", {
         method: "POST",
         body: formData, // api utility should handle FormData and remove Content-Type header to let browser set boundary
       });
@@ -126,11 +126,11 @@ export default function PersonalProfilePage() {
                   <ProfileForm
                     fullName={fullName}
                     setFullName={setFullName}
-                    country={country}
+                    country={country || ""}
                     setCountry={setCountry}
                     dob={dob}
                     setDob={setDob}
-                    avatarUrl={avatarUrl}
+                    avatarUrl={avatarUrl || ""}
                     onAvatarChange={onAvatarChange}
                     saving={saving}
                     onSave={onSave}

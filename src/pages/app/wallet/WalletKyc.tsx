@@ -23,6 +23,7 @@ import { alpha } from "@mui/material/styles";
 import { useTheme } from "@mui/material/styles";
 import { useThemeStore } from "../../../stores/themeStore";
 import { motion } from "framer-motion";
+import { KycTier, Severity } from "../../../utils/types";
 
 /**
  * EVzone My Accounts - KYC Start
@@ -34,9 +35,7 @@ import { motion } from "framer-motion";
  * • Show required documents list
  */
 
-type Severity = "info" | "warning" | "error" | "success";
 
-type KycTier = "Unverified" | "Basic" | "Full";
 
 const EVZONE = {
   green: "#03cd8c",
@@ -178,7 +177,7 @@ export default function KycStartPage() {
   useEffect(() => {
     if (typeof window !== "undefined") runSelfTestsOnce();
     // Fetch status
-    api('/kyc/status')
+    api<{ tier: KycTier }>('/kyc/status')
       .then(res => {
         setTier(res.tier);
       })

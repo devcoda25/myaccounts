@@ -417,8 +417,8 @@ export default function TwoFASetupPageV2() {
   useEffect(() => {
     if (activeStep === 1 && method === "authenticator") {
       setLoading(true);
-      api.post("/auth/mfa/setup/start")
-        .then((res: any) => {
+      api.post<{ secret: string; qrCodeUrl: string }>("/auth/mfa/setup/start")
+        .then((res) => {
           setSecret(res.secret);
           setQrCodeUrl(res.qrCodeUrl);
           setLoading(false);
@@ -489,9 +489,10 @@ export default function TwoFASetupPageV2() {
       await api.post("/auth/mfa/setup/sms/send", { phone });
       setSnack({ open: true, severity: "success", msg: "Code sent successfully." });
       setActiveStep(2); // Auto-advance to verification
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setSnack({ open: true, severity: "error", msg: err.message || "Failed to send code." });
+      const msg = err instanceof Error ? err.message : "Failed to send code.";
+      setSnack({ open: true, severity: "error", msg });
     } finally {
       setLoading(false);
     }
@@ -503,11 +504,11 @@ export default function TwoFASetupPageV2() {
 
     setLoading(true);
     try {
-      const payload: any = { token: code, method };
+      const payload: Record<string, string> = { token: code, method };
       if (method === "authenticator") payload.secret = secret;
       if (method === "sms" || method === "whatsapp") payload.phone = phone;
 
-      const res = await api.post("/auth/mfa/setup/verify", payload);
+      const res = await api.post<{ success: boolean; recoveryCodes?: string[] }>("/auth/mfa/setup/verify", payload);
       setLoading(false);
 
       if (res.success) {

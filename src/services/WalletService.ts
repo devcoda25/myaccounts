@@ -1,28 +1,22 @@
 import { api } from '../utils/api';
+import { IPaymentMethod, IPaymentMethodDetails } from '../utils/types';
 
-export interface PaymentMethodDto {
-    id: string;
-    type: 'card' | 'momo' | 'bank';
-    provider: string;
-    details: Record<string, unknown>;
-    isDefault: boolean;
-    createdAt: string;
-}
+export type { IPaymentMethod as PaymentMethodDto }; // Alias for backward compat during transition if needed, but better to just export plain
 
 export const WalletService = {
-    getMethods: async (): Promise<PaymentMethodDto[]> => {
-        return api.get('/wallets/me/methods');
+    getMethods: async (): Promise<IPaymentMethod[]> => {
+        return api.get<IPaymentMethod[]>('/wallets/me/methods');
     },
 
-    addMethod: async (data: { type: string; provider: string; details: Record<string, unknown>; token?: string }) => {
-        return api.post('/wallets/me/methods', data);
+    addMethod: async (data: { type: string; provider: string; details: IPaymentMethodDetails; token?: string }) => {
+        return api.post<void>('/wallets/me/methods', data);
     },
 
     removeMethod: async (id: string) => {
-        return api.delete(`/wallets/me/methods/${id}`);
+        return api.delete<void>(`/wallets/me/methods/${id}`);
     },
 
     setDefaultMethod: async (id: string) => {
-        return api.patch(`/wallets/me/methods/${id}/default`);
+        return api.patch<void>(`/wallets/me/methods/${id}/default`);
     }
 };

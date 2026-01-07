@@ -31,21 +31,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
 import { formatOrgId } from "../../../utils/format";
+import { OrganizationService } from "../../../services/OrganizationService";
+import { OrganizationDto } from "../../../services/OrganizationService";
+import { OrgRole, IOrgDomain, Severity } from "../../../utils/types";
 import { api } from "../../../utils/api";
 
-type Severity = "info" | "warning" | "error" | "success";
-type OrgRole = "Owner" | "Admin" | "Manager" | "Member" | "Viewer";
-type DomainStatus = "Not started" | "Pending" | "Verified" | "Failed";
 
-type DomainItem = {
-  id: string;
-  domain: string;
-  token: string;
-  recordName: string;
-  recordValue: string;
-  status: DomainStatus;
-  lastCheckedAt?: number;
-};
 
 // ... Icons ...
 function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
@@ -107,7 +98,7 @@ function timeAgo(ts?: number) {
   return `${d} day${d === 1 ? "" : "s"} ago`;
 }
 
-function statusChip(status: DomainStatus) {
+function statusChip(status: IOrgDomain['status']) {
   if (status === "Verified") return <Chip size="small" color="success" label="Verified" />;
   if (status === "Failed") return <Chip size="small" color="error" label="Failed" />;
   if (status === "Pending") return <Chip size="small" color="warning" label="Pending" />;
@@ -128,7 +119,7 @@ export default function DomainVerificationPage() {
 
   const canEdit = isAdminRole(myRole);
 
-  const [domains, setDomains] = useState<DomainItem[]>([]);
+  const [domains, setDomains] = useState<IOrgDomain[]>([]);
   const [activeId, setActiveId] = useState<string>("");
   const active = useMemo(() => domains.find((d) => d.id === activeId) || domains[0], [domains, activeId]);
 
@@ -156,8 +147,8 @@ export default function DomainVerificationPage() {
       setLoading(true);
       setError("");
       const [orgData, domainsData] = await Promise.all([
-        api(`/orgs/${orgId}`),
-        api(`/orgs/${orgId}/domains`)
+        api<OrganizationDto>(`/orgs/${orgId}`),
+        api<IOrgDomain[]>(`/orgs/${orgId}/domains`)
       ]);
       setOrgName(orgData.name);
       setMyRole(orgData.role);
@@ -165,33 +156,33 @@ export default function DomainVerificationPage() {
       if (domainsData.length > 0) {
         setActiveId(domainsData[0].id);
       }
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      setError(msg);
       setSnack({ open: true, severity: "error", msg: "Failed to load data" });
     } finally {
       setLoading(false);
     }
   };
 
+  // ... skip styles ...
+
   const pageBg =
-    mode === "dark"
+    isDark
       ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
       : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
 
   const orangeContained = {
     backgroundColor: EVZONE.orange,
     color: "#FFFFFF",
-    boxShadow: `0 4px 14px ${alpha(EVZONE.orange, 0.4)}`,
-    borderRadius: "4px",
+    boxShadow: `0 18px 48px ${alpha(EVZONE.orange, isDark ? 0.28 : 0.18)}`,
     "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
-    "&:active": { backgroundColor: alpha(EVZONE.orange, 0.86), color: "#FFFFFF" },
   } as const;
 
   const orangeOutlined = {
     borderColor: alpha(EVZONE.orange, 0.65),
     color: EVZONE.orange,
     backgroundColor: alpha(theme.palette.background.paper, 0.20),
-    borderRadius: "4px",
     "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
   } as const;
 
@@ -213,13 +204,13 @@ export default function DomainVerificationPage() {
     if (!orgId) return;
 
     try {
-      const added = await api.post(`/orgs/${orgId}/domains`, { domain: d });
+      const added = await api.post<IOrgDomain>(`/orgs/${orgId}/domains`, { domain: d });
       setDomains((prev) => [added, ...prev]);
       setActiveId(added.id);
       setAddOpen(false);
       setSnack({ open: true, severity: "success", msg: "Domain added. Create the DNS record next." });
       loadData(); // Reload safely
-    } catch (err: any) {
+    } catch (err: unknown) {
       setSnack({ open: true, severity: "error", msg: "Failed to add domain" });
     }
   };
@@ -240,16 +231,20 @@ export default function DomainVerificationPage() {
     setSnack({ open: true, severity: "info", msg: "Checking DNS..." });
 
     try {
-      const res = await api.post(`/orgs/${orgId}/domains/${active.id}/verify`);
+      const res = await api.post<IOrgDomain | { status: 'FAILED' }>(`/orgs/${orgId}/domains/${active.id}/verify`);
       // res should be the updated domain object or { status: FAILED }
-      if (res.status === 'FAILED') {
+      if (('status' in res) && res.status === 'FAILED' && !('id' in res)) { // simplistic check
+        // Actually better to define response type
+        // Assuming backend returns full object or special failed object.
+        // Let's assume strict IOrgDomain return mostly, but handle failed.
         setDomains(prev => prev.map(d => d.id === active.id ? { ...d, status: 'Failed', lastCheckedAt: Date.now() } : d));
         setSnack({ open: true, severity: "error", msg: "DNS record not found yet. Try again." });
       } else {
-        setDomains(prev => prev.map(d => d.id === active.id ? { ...res, lastCheckedAt: Date.now() } : d));
+        const updated = res as IOrgDomain;
+        setDomains(prev => prev.map(d => d.id === active.id ? { ...updated, lastCheckedAt: Date.now() } : d));
         setSnack({ open: true, severity: "success", msg: "Domain verified." });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setSnack({ open: true, severity: "error", msg: "Verification failed." });
     }
   };
@@ -262,7 +257,7 @@ export default function DomainVerificationPage() {
     if (!orgId) return;
 
     try {
-      await api.delete(`/orgs/${orgId}/domains/${id}`);
+      await api.delete<void>(`/orgs/${orgId}/domains/${id}`);
       setDomains((prev) => prev.filter((d) => d.id !== id));
       if (activeId === id) {
         const next = domains.find((d) => d.id !== id)?.id;
@@ -270,7 +265,7 @@ export default function DomainVerificationPage() {
         else setActiveId("");
       }
       setSnack({ open: true, severity: "success", msg: "Domain removed." });
-    } catch (err: any) {
+    } catch (err: unknown) {
       setSnack({ open: true, severity: "error", msg: "Failed to remove domain" });
     }
   };

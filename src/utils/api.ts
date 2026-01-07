@@ -13,15 +13,15 @@ export interface ApiOptions extends AxiosRequestConfig {
 }
 
 export interface ApiFunction {
-    <T = unknown>(path: string, options?: ApiOptions): Promise<T>;
-    get: <T = unknown>(path: string, config?: AxiosRequestConfig) => Promise<T>;
-    post: <T = unknown>(path: string, data?: unknown, config?: AxiosRequestConfig) => Promise<T>;
-    put: <T = unknown>(path: string, data?: unknown, config?: AxiosRequestConfig) => Promise<T>;
-    patch: <T = unknown>(path: string, data?: unknown, config?: AxiosRequestConfig) => Promise<T>;
-    delete: <T = unknown>(path: string, config?: AxiosRequestConfig) => Promise<T>;
+    <T>(path: string, options?: ApiOptions): Promise<T>;
+    get: <T>(path: string, config?: AxiosRequestConfig) => Promise<T>;
+    post: <T>(path: string, data?: unknown, config?: AxiosRequestConfig) => Promise<T>;
+    put: <T>(path: string, data?: unknown, config?: AxiosRequestConfig) => Promise<T>;
+    patch: <T>(path: string, data?: unknown, config?: AxiosRequestConfig) => Promise<T>;
+    delete: <T>(path: string, config?: AxiosRequestConfig) => Promise<T>;
 }
 
-const apiBase = async <T = unknown>(path: string, options: ApiOptions = {}): Promise<T> => {
+const apiBase = async <T>(path: string, options: ApiOptions = {}): Promise<T> => {
     try {
         // Compatibility with fetch-style 'body'
         const { body, ...axiosOptions } = options;
@@ -41,7 +41,7 @@ const apiBase = async <T = unknown>(path: string, options: ApiOptions = {}): Pro
 
         const response = await instance(config);
         return response.data;
-    } catch (error: unknown) {
+    } catch (error: any) {
         throw new Error(getFriendlyMessage(error));
     }
 };
@@ -49,8 +49,8 @@ const apiBase = async <T = unknown>(path: string, options: ApiOptions = {}): Pro
 export const api = apiBase as ApiFunction;
 
 // Helper methods for compatibility and convenience
-api.get = <T = unknown>(path: string, config?: AxiosRequestConfig) => api<T>(path, { ...config, method: 'GET' });
-api.post = <T = unknown>(path: string, data?: unknown, config?: AxiosRequestConfig) => api<T>(path, { ...config, method: 'POST', data });
-api.put = <T = unknown>(path: string, data?: unknown, config?: AxiosRequestConfig) => api<T>(path, { ...config, method: 'PUT', data });
-api.patch = <T = unknown>(path: string, data?: unknown, config?: AxiosRequestConfig) => api<T>(path, { ...config, method: 'PATCH', data });
-api.delete = <T = unknown>(path: string, config?: AxiosRequestConfig) => api<T>(path, { ...config, method: 'DELETE' });
+api.get = <T>(path: string, config?: AxiosRequestConfig) => api<T>(path, { ...config, method: 'GET' });
+api.post = <T>(path: string, data?: unknown, config?: AxiosRequestConfig) => api<T>(path, { ...config, method: 'POST', data });
+api.put = <T>(path: string, data?: unknown, config?: AxiosRequestConfig) => api<T>(path, { ...config, method: 'PUT', data });
+api.patch = <T>(path: string, data?: unknown, config?: AxiosRequestConfig) => api<T>(path, { ...config, method: 'PATCH', data });
+api.delete = <T>(path: string, config?: AxiosRequestConfig) => api<T>(path, { ...config, method: 'DELETE' });
