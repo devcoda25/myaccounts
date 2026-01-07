@@ -241,14 +241,11 @@ export default function OrgRolesPermissionsPage() {
 
   // Role permissions model
   const [grants, setGrants] = useState<Record<OrgRole, Record<PermissionKey, boolean>>>(() => {
-    const base: Record<OrgRole, Record<PermissionKey, boolean>> = {
-      Owner: {} as any,
-      Admin: {} as any,
-      Manager: {} as any,
-      Member: {} as any,
-      Viewer: {} as any,
-      Support: {} as any,
-    };
+    const base = {} as Record<OrgRole, Record<PermissionKey, boolean>>;
+
+    (["Owner", "Admin", "Manager", "Member", "Viewer", "Support"] as OrgRole[]).forEach((r) => {
+      base[r] = {} as Record<PermissionKey, boolean>;
+    });
 
     (Object.keys(base) as OrgRole[]).forEach((r) => {
       permissions.forEach((p) => {
@@ -312,10 +309,10 @@ export default function OrgRolesPermissionsPage() {
       setMyRole(orgData.role);
 
       if (permData.grants && Object.keys(permData.grants).length > 0) {
-        setGrants(permData.grants as unknown as Record<OrgRole, Record<PermissionKey, boolean>>);
+        setGrants(permData.grants as Record<OrgRole, Record<PermissionKey, boolean>>);
       }
       if (permData.policy) {
-        setPolicy(permData.policy as unknown as RolePolicy);
+        setPolicy(permData.policy as RolePolicy);
       }
 
     } catch (err) {
@@ -388,8 +385,8 @@ export default function OrgRolesPermissionsPage() {
       setSaving(true);
       await OrganizationService.updatePermissions(orgId, { grants, policy });
       setSnack({ open: true, severity: "success", msg: "Roles and permissions saved successfully." });
-    } catch (err: any) {
-      setSnack({ open: true, severity: "error", msg: err.message || "Failed to save permissions." });
+    } catch (err: unknown) {
+      setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to save permissions." });
     } finally {
       setSaving(false);
     }
@@ -619,7 +616,7 @@ export default function OrgRolesPermissionsPage() {
                             select
                             label="Default invite role"
                             value={policy.defaultInviteRole}
-                            onChange={(e) => setPolicy((p) => ({ ...p, defaultInviteRole: e.target.value as any }))}
+                            onChange={(e) => setPolicy((p) => ({ ...p, defaultInviteRole: e.target.value as Exclude<OrgRole, "Owner"> }))}
                             fullWidth
                             disabled={!canEdit}
                           >

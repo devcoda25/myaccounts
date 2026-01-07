@@ -174,8 +174,8 @@ export default function InviteMembersPage() {
       ]);
       setOrgName(orgData.name);
       setInvites(invitesData);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError((err as Error).message);
       setSnack({ open: true, severity: "error", msg: "Failed to load data" });
     } finally {
       setLoading(false);
@@ -245,8 +245,8 @@ export default function InviteMembersPage() {
       setEmailInput("");
       setMessage("");
       loadData(); // Reload invites list
-    } catch (err: any) {
-      setSnack({ open: true, severity: "error", msg: "Failed to send invites: " + err.message });
+    } catch (err: unknown) {
+      setSnack({ open: true, severity: "error", msg: "Failed to send invites: " + (err as Error).message });
     }
   };
 
@@ -262,8 +262,8 @@ export default function InviteMembersPage() {
       setSnack({ open: true, severity: "success", msg: "Invite revoked." });
       setRevokeOpen(false);
       loadData();
-    } catch (err: any) {
-      setSnack({ open: true, severity: "error", msg: "Failed to revoke: " + err.message });
+    } catch (err: unknown) {
+      setSnack({ open: true, severity: "error", msg: "Failed to revoke: " + (err as Error).message });
       setRevokeOpen(false);
     }
   };
@@ -371,7 +371,7 @@ export default function InviteMembersPage() {
                     <TextField
                       value={emailInput}
                       onChange={(e) => setEmailInput(e.target.value)}
-                      onKeyDown={onEmailKeyDown as any}
+                      onKeyDown={onEmailKeyDown}
                       label="Invite emails"
                       placeholder="Type email then press Enter"
                       fullWidth
@@ -390,7 +390,7 @@ export default function InviteMembersPage() {
                     )}
 
                     <Box className="grid gap-3 md:grid-cols-2">
-                      <TextField select label="Role" value={role} onChange={(e) => setRole(e.target.value as any)} fullWidth>
+                      <TextField select label="Role" value={role} onChange={(e) => setRole(e.target.value as Exclude<OrgRole, "Owner">)} fullWidth>
                         {(["Admin", "Manager", "Member", "Viewer"] as Array<Exclude<OrgRole, "Owner">>).map((r) => (
                           <MenuItem key={r} value={r}>
                             {r}

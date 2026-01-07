@@ -28,7 +28,8 @@ import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { useThemeStore } from "../../../stores/themeStore";
 import { api } from "../../../utils/api";
-import { useSocialLogin } from "../../../hooks/useSocialLogin"; // Added import
+import { useSocialLogin } from "../../../hooks/useSocialLogin";
+import { IUser, ICredential } from "../../../utils/types";
 import { ProfileSidebar } from "./components/ProfileSidebar";
 
 /**
@@ -405,11 +406,11 @@ export default function LinkedAccountsPage() {
   }, []);
 
   const reloadProviders = () => {
-    api('/users/me')
-      .then((user: any) => {
+    api<IUser>('/users/me')
+      .then((user) => {
         if (user && user.credentials) {
           setProviders(prev => prev.map(p => {
-            const cred = user.credentials.find((c: any) => c.providerType === p.key);
+            const cred = user.credentials?.find((c) => c.providerType === p.key);
             if (cred) {
               return {
                 ...p,
@@ -526,9 +527,9 @@ export default function LinkedAccountsPage() {
               await api('/auth/link/google', { method: 'POST', body: JSON.stringify({ token }) });
               setSnack({ open: true, severity: "success", msg: "Account linked successfully." });
               reloadProviders();
-            } catch (lErr: any) {
+            } catch (lErr: unknown) {
               console.error(lErr);
-              setSnack({ open: true, severity: "error", msg: lErr.message || "Failed to link account." });
+              setSnack({ open: true, severity: "error", msg: (lErr as Error).message || "Failed to link account." });
             }
           });
         } else {

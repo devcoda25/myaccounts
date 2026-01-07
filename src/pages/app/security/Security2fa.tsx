@@ -63,6 +63,12 @@ type MethodItem = {
   lastUsedAt?: number;
 };
 
+interface IMfaStatusResponse {
+  enabled: boolean;
+  methods: string[];
+}
+
+
 // Redundant EVZONE removed
 
 const WHATSAPP = {
@@ -210,10 +216,10 @@ export default function Manage2FAPage() {
   // Fetch status
   useEffect(() => {
 
-    api("/auth/mfa/status")
-      .then((data: any) => {
+    api<IMfaStatusResponse>("/auth/mfa/status")
+      .then((data) => {
         setMfaEnabled(data.enabled);
-        setMethods(data.methods.map((m: string) => ({
+        setMethods(data.methods.map((m) => ({
           key: m.toLowerCase() as MethodKey, // Assuming m matches MethodKey
           name: m,
           enabled: true, // Assuming methods returned by API are enabled
@@ -236,7 +242,7 @@ export default function Manage2FAPage() {
   const [reauthPassword, setReauthPassword] = useState("");
   const [mfaChannel, setMfaChannel] = useState<MfaChannel>("Authenticator");
   const [otp, setOtp] = useState("");
-  const [pending, setPending] = useState<null | { type: "toggle" | "add" | "disable"; payload?: any }>(null);
+  const [pending, setPending] = useState<null | { type: "toggle" | "add" | "disable"; payload?: string | MethodKey }>(null);
 
   const [addOpen, setAddOpen] = useState(false);
   const [addChoice, setAddChoice] = useState<MethodKey>("sms");
@@ -269,7 +275,7 @@ export default function Manage2FAPage() {
     "&:hover": { borderColor: WHATSAPP.green, backgroundColor: WHATSAPP.green, color: "#FFFFFF" },
   } as const;
 
-  const openReauth = (p: { type: "toggle" | "add" | "disable"; payload?: any }) => {
+  const openReauth = (p: { type: "toggle" | "add" | "disable"; payload?: string | MethodKey }) => {
     setPending(p);
     setReauthMode("password");
     setReauthPassword("");
@@ -286,10 +292,11 @@ export default function Manage2FAPage() {
   const validateReauth = async () => {
     if (reauthMode === "password") {
       try {
-        await api.post("/auth/verify-password", { password: reauthPassword });
+        await api.post<void>("/auth/verify-password", { password: reauthPassword });
         return true;
-      } catch {
-        setSnack({ open: true, severity: "error", msg: "Re-auth failed. Incorrect password." });
+      } catch (err: unknown) {
+        console.error(err);
+        setSnack({ open: true, severity: "error", msg: (err as Error).message || "Re-auth failed. Incorrect password." });
         return false;
       }
     }
@@ -310,9 +317,13 @@ export default function Manage2FAPage() {
     if (pending.type === "toggle") {
       if (mfaEnabled) {
         // We are disabling
-        await api.post("/auth/mfa/disable");
-        setMfaEnabled(false);
-        setSnack({ open: true, severity: "success", msg: "Two-factor authentication disabled." });
+        try {
+          await api.post<void>("/auth/mfa/disable");
+          setMfaEnabled(false);
+          setSnack({ open: true, severity: "success", msg: "Two-factor authentication disabled." });
+        } catch (err: unknown) {
+          setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to disable 2FA." });
+        }
       } else {
         // We are enabling
         navigate("/app/security/2fa/setup");

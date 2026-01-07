@@ -27,6 +27,7 @@ import { motion } from "framer-motion";
 import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
 import { api } from "../../../utils/api";
+import { ISession } from "../../../utils/types";
 
 /**
  * EVzone My Accounts - Security Overview
@@ -44,7 +45,26 @@ type RoleMode = "User" | "Provider";
 
 type Severity = "info" | "warning" | "error" | "success";
 
-// Redundant EVZONE removed as it is imported
+interface ISecurityOverview {
+  password: {
+    lastChangedDays: number;
+    strength: number;
+    compromised: boolean;
+  };
+  mfa: {
+    enabled: boolean;
+    methods: string[];
+    recoveryCodesRemaining: number;
+  };
+  passkeys: {
+    enabled: boolean;
+    count: number;
+  };
+  recovery: {
+    verifiedEmails: number;
+    verifiedPhones: number;
+  };
+}
 
 const WHATSAPP = {
   green: "#25D366",
@@ -213,17 +233,17 @@ export default function SecurityOverviewPage() {
 
 
   // API Data State
-  const [data, setData] = useState<any>(null);
-  const [sessions, setSessions] = useState<any[]>([]);
+  const [data, setData] = useState<ISecurityOverview | null>(null);
+  const [sessions, setSessions] = useState<ISession[]>([]);
   const [loading, setLoading] = useState(true);
   const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
 
   useEffect(() => {
     Promise.all([
-      api("/security/overview").catch(() => null),
-      api("/auth/sessions").catch(() => [])
-    ]).then(([overviewData, sessionsData]) => {
+      api<ISecurityOverview>("/security/overview").catch(() => null),
+      api<ISession[]>("/auth/sessions").catch(() => [])
+    ]).then(([overviewData, sessionsData]: [ISecurityOverview | null, ISession[]]) => {
       setData(overviewData);
       setSessions(Array.isArray(sessionsData) ? sessionsData : []);
       setLoading(false);
@@ -238,9 +258,9 @@ export default function SecurityOverviewPage() {
 
   // Map sessions to devices list (top 3)
   const devices = useMemo(() => {
-    return sessions.slice(0, 3).map((s: any) => ({
+    return sessions.slice(0, 3).map((s) => ({
       id: s.id,
-      when: new Date(s.lastUsedAt).getTime(),
+      when: s.lastUsedAt ? new Date(s.lastUsedAt).getTime() : 0,
       device: s.deviceInfo?.device || "Unknown Device",
       location: s.deviceInfo?.location || "Unknown Location",
       status: "trusted" as const

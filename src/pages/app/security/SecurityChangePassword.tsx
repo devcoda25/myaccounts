@@ -192,9 +192,9 @@ export default function ChangePasswordPage() {
         severity: "success",
         msg: "Password updated successfully.",
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setSnack({ open: true, severity: "error", msg: "Failed to update password. Please check your current password." });
+      setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to update password. Please check your current password." });
     } finally {
       setSaving(false);
     }

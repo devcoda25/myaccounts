@@ -41,8 +41,11 @@ const apiBase = async <T>(path: string, options: ApiOptions = {}): Promise<T> =>
 
         const response = await instance(config);
         return response.data;
-    } catch (error: any) {
-        throw new Error(getFriendlyMessage(error));
+    } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+            throw new Error(getFriendlyMessage(error));
+        }
+        throw new Error(error instanceof Error ? error.message : 'An unexpected error occurred');
     }
 };
 

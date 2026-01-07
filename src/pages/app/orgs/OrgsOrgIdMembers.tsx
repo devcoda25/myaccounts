@@ -166,8 +166,8 @@ export default function OrgMembersPage() {
       setMyRole(orgData.role);
       setMembers(membersData);
 
-    } catch (err: any) {
-      setError(err.message || "Failed to load members");
+    } catch (err: unknown) {
+      setError((err as Error).message || "Failed to load members");
       setSnack({ open: true, severity: "error", msg: "Failed to load data" });
     } finally {
       setLoading(false);
@@ -202,8 +202,8 @@ export default function OrgMembersPage() {
       setSnack({ open: true, severity: "success", msg: "Role updated successfully." });
       loadData();
       setEditOpen(false);
-    } catch (err: any) {
-      setSnack({ open: true, severity: "error", msg: err.message || "Failed to update role" });
+    } catch (err: unknown) {
+      setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to update role" });
       setEditOpen(false);
     }
   };
@@ -224,8 +224,8 @@ export default function OrgMembersPage() {
       setSnack({ open: true, severity: "success", msg: "Member removed successfully." });
       loadData();
       setRemoveOpen(false);
-    } catch (err: any) {
-      setSnack({ open: true, severity: "error", msg: err.message || "Failed to remove member" });
+    } catch (err: unknown) {
+      setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to remove member" });
       setRemoveOpen(false);
     }
   };
@@ -353,7 +353,7 @@ export default function OrgMembersPage() {
                       fullWidth
                       InputProps={{ startAdornment: (<InputAdornment position="start"><SearchIcon size={18} /></InputAdornment>) }}
                     />
-                    <TextField select label="Role" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value as any)} fullWidth>
+                    <TextField select label="Role" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value as "all" | OrgRole)} fullWidth>
                       <MenuItem value="all">All roles</MenuItem>
                       {(["Owner", "Admin", "Manager", "Member", "Viewer"] as OrgRole[]).map((r) => (
                         <MenuItem key={r} value={r}>
@@ -361,7 +361,7 @@ export default function OrgMembersPage() {
                         </MenuItem>
                       ))}
                     </TextField>
-                    <TextField select label="Status" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as any)} fullWidth>
+                    <TextField select label="Status" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as "all" | Member["status"])} fullWidth>
                       <MenuItem value="all">All statuses</MenuItem>
                       {(["ACTIVE", "PENDING", "SUSPENDED"] as Member["status"][]).map((s) => (
                         <MenuItem key={s} value={s}>

@@ -3,6 +3,13 @@ export type ThemeMode = "light" | "dark";
 
 export type KycTier = "Unverified" | "Basic" | "Full" | "Pending";
 
+export interface ICredential {
+    id: string;
+    providerType: string;
+    providerId: string;
+    createdAt: string;
+}
+
 export interface IUser {
     id: string;
     email: string;
@@ -15,7 +22,10 @@ export interface IUser {
     createdAt: string | number;
     emailVerified?: boolean;
     preferences?: Partial<Prefs>;
-    contacts?: any[]; // Better to define IContact if possible, but any[] is a step up from implicit
+    contacts?: IContact[];
+    credentials?: ICredential[];
+    country?: string;
+    dob?: string | Date | number;
 }
 
 export type Severity = "info" | "warning" | "error" | "success";
@@ -91,10 +101,20 @@ export interface IOrganization {
 }
 
 // Audit Types
+export interface IAuditDetails {
+    target?: string;
+    status?: string | number;
+    ip?: string;
+    route?: string;
+    method?: string;
+    userAgent?: string;
+    [key: string]: unknown; // Allowed for arbitrary metadata, but use strict keys where possible
+}
+
 export interface IAuditLog {
     id: string;
     action: string;
-    details: Record<string, unknown>;
+    details: IAuditDetails;
     user?: { email: string };
     createdAt: string;
     // UI specific (optional or mapped from details)
@@ -108,6 +128,25 @@ export interface IAuditLog {
 export type ContactLabel = "Personal" | "Work" | "Other";
 export type ChangeType = "email" | "phone";
 export type VerifyChannel = "Email" | "SMS" | "WhatsApp";
+
+export interface IContact {
+    id: string;
+    type: "EMAIL" | "PHONE" | "email" | "phone";
+    label: string | ContactLabel;
+    value: string;
+    verified: boolean;
+    capabilities?: {
+        login?: boolean;
+        sms?: boolean;
+        whatsapp?: boolean;
+    };
+    createdAt: string | number;
+    lastUsedAt?: string | number;
+}
+
+export interface IUserContact extends IContact {
+    isPrimary: boolean;
+}
 
 export interface EmailContact {
     id: string;
@@ -193,8 +232,21 @@ export interface IPaymentMethodDetails {
     expiryYear?: number;
     holderName?: string;
     bankName?: string;
+    accountName?: string;
     accountNumber?: string;
     phoneNumber?: string;
+    phone?: string;
+    cardholder?: string;
+    providerId?: string;
+    billing?: {
+        line1: string;
+        line2?: string;
+        city: string;
+        region?: string;
+        postal?: string;
+        country: string;
+    };
+    [key: string]: unknown;
 }
 
 export interface IPaymentMethod {
@@ -324,4 +376,72 @@ export interface IDeveloperAuditLog {
         status?: string;
         [key: string]: unknown;
     };
+}
+
+// Dispute Strict Types
+export type IDisputeStatus = "Open" | "Under review" | "Awaiting evidence" | "Won" | "Lost" | "Closed";
+export type IDisputeReason =
+    | "Unauthorized transaction"
+    | "Service not received"
+    | "Duplicate charge"
+    | "Incorrect amount"
+    | "Refund not received"
+    | "Other";
+
+export interface IEvidence {
+    id: string;
+    name: string;
+    size: number;
+    type: string;
+}
+
+export interface IDispute {
+    id: string;
+    txnId: string;
+    reference: string;
+    amount: number;
+    currency: string;
+    reason: IDisputeReason;
+    description: string;
+    status: IDisputeStatus;
+    createdAt: number;
+    updatedAt: number;
+    evidence: IEvidence[];
+}
+
+// Session Strict Types
+export type IRiskTag = "new_location" | "old_device" | "suspicious";
+
+export interface ISession {
+    id: string;
+    isCurrent: boolean;
+    deviceLabel: string;
+    os: string;
+    browser: string;
+    location: string;
+    ip: string;
+    lastActiveAt: number;
+    createdAt: number;
+    trust: "trusted" | "untrusted";
+    risk: IRiskTag[];
+    deviceInfo?: {
+        device?: string;
+        os?: string;
+        browser?: string;
+        location?: string;
+        ip?: string;
+    };
+    lastUsedAt?: string | number;
+}
+
+export interface IRecoveryCodesResponse {
+    codes: string[];
+}
+
+// Window Extension for Testing/Global state
+export interface IEvzoneWindow extends Window {
+    __EVZONE_DISPUTES_TESTS_RAN__?: boolean;
+    __EVZONE_PAYMENT_METHODS_TESTS_RAN__?: boolean;
+    __EVZONE_WALLET_TESTS_RAN__?: boolean;
+    __EVZONE_KYC_TESTS_RAN__?: boolean;
 }

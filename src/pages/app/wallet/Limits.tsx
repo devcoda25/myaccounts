@@ -16,7 +16,9 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const glassStyle = (theme: any) => ({
+import { Theme } from '@mui/material';
+
+const glassStyle = (theme: Theme) => ({
     bgcolor: alpha(theme.palette.background.paper, 0.6),
     backdropFilter: 'blur(12px)',
     border: `1px solid ${theme.palette.divider}`,

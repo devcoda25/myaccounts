@@ -15,6 +15,7 @@ import {
   DialogTitle,
   Divider,
   FormControlLabel,
+  Grid,
   IconButton,
   InputAdornment,
   MenuItem,
@@ -36,7 +37,8 @@ import {
   Prefs,
   Severity,
   VerifyChannel,
-  IUser
+  IUser,
+  IContact
 } from "../../../utils/types";
 import { api } from "../../../utils/api";
 import { useThemeStore } from "../../../stores/themeStore";
@@ -106,7 +108,7 @@ export default function ContactSettings() {
         const fetchedEmails: EmailContact[] = [];
         const fetchedPhones: PhoneContact[] = [];
 
-        (user.contacts || []).forEach((c: any) => {
+        (user.contacts || []).forEach((c: IContact) => {
           const caps = c.capabilities || {};
           if (c.type === 'EMAIL') {
             fetchedEmails.push({
@@ -375,9 +377,8 @@ export default function ContactSettings() {
         severity: "success",
         msg: `Verification code sent via ${verifyChannel}.`,
       });
-    } catch (err: any) {
-      console.error(err);
-      setSnack({ open: true, severity: "error", msg: err.message || "Failed to send code." });
+    } catch (err: unknown) {
+      setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to send code." });
     } finally {
       setLoading(false);
     }
@@ -398,33 +399,26 @@ export default function ContactSettings() {
       } else {
         await api('/auth/verify-phone', { method: 'POST', body: JSON.stringify({ identifier: value.trim(), code }) });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       setLoading(false);
-      setSnack({ open: true, severity: "error", msg: err.message || "Invalid code." });
+      setSnack({ open: true, severity: "error", msg: (err as Error).message || "Invalid code." });
       return;
     }
 
     // Backend Integration
     try {
-      const payload: any = {
+      const payload = {
         label,
         verified: true,
-        isPrimary: false, // logic for primary?
+        type: editType === "email" ? "EMAIL" : "PHONE",
+        value: value.trim(),
         capabilities: {
           login: loginEnabled,
           sms: smsCapable,
           whatsapp: whatsappCapable
         }
       };
-
-      if (editType === "email") {
-        payload.type = 'EMAIL';
-        payload.value = value.trim();
-      } else {
-        payload.type = 'PHONE';
-        payload.value = value.trim();
-      }
 
       if (editMode === "add") {
         const res = await api<{ id: string }>('/users/me/contacts', {

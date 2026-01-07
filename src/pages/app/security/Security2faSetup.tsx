@@ -386,7 +386,7 @@ export default function TwoFASetupPageV2() {
   const [activeStep, setActiveStep] = useState(0);
   const [method, setMethod] = useState<TwoFAMethod>("authenticator");
 
-  const [phone, setPhone] = useState("+256761677709");
+  const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [secret, setSecret] = useState("");

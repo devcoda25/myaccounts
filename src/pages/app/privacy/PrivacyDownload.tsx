@@ -247,7 +247,7 @@ function exportPayload(job: ExportJob) {
   };
 }
 
-function downloadJson(filename: string, obj: any) {
+function downloadJson(filename: string, obj: Record<string, unknown>) {
   const blob = new Blob([JSON.stringify(obj, null, 2)], { type: "application/json;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -262,7 +262,7 @@ function downloadJson(filename: string, obj: any) {
 // --- self-tests ---
 function runSelfTestsOnce() {
   try {
-    const w = window as any;
+    const w = window as unknown as Record<string, unknown>;
     if (w.__EVZONE_PRIVACY_EXPORT_TESTS_RAN__) return;
     w.__EVZONE_PRIVACY_EXPORT_TESTS_RAN__ = true;
 

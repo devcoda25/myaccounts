@@ -26,6 +26,7 @@ import { motion } from "framer-motion";
 import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
 import { api } from "../../../utils/api";
+import { IRecoveryCodesResponse } from "../../../utils/types";
 
 /**
  * EVzone My Accounts - Recovery Codes
@@ -292,10 +293,10 @@ export default function RecoveryCodesPage() {
     setConfirmRegenOpen(false);
     setLoading(true);
     try {
-      const res: any = await api.post("/auth/mfa/recovery-codes");
+      const res = await api.post<IRecoveryCodesResponse>("/auth/mfa/recovery-codes");
       setLoading(false);
-      if (res.recoveryCodes) {
-        setCodes(res.recoveryCodes);
+      if (res.codes) {
+        setCodes(res.codes);
         setLastGeneratedAt(Date.now());
         setRevealed(true);
         setSnack({ open: true, severity: "success", msg: "New recovery codes generated. Old codes are invalid." });

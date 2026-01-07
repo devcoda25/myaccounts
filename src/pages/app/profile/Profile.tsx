@@ -42,10 +42,9 @@ export default function PersonalProfilePage() {
     if (user) {
       setFullName([user.firstName, user.otherNames].filter(Boolean).join(" "));
       setAvatarUrl(user.avatarUrl || null);
-      // Note: country and dob are not currently in User interface, ignoring for initial load or casting if needed
-      // If backend sends them, we might need to update User type. For now assuming they might be missing or handled elsewhere.
-      setCountry((user as any).country || "");
-      setDob((user as any).dob ? new Date((user as any).dob) : null);
+      // Note: country and dob are now in IUser
+      setCountry(user.country || "");
+      setDob(user.dob ? new Date(user.dob) : null);
     }
   }, [user]);
 
@@ -66,9 +65,9 @@ export default function PersonalProfilePage() {
       setAvatarUrl(res.url);
       setSnack({ open: true, severity: "success", msg: "Avatar updated." });
       await refreshUser(); // Update global state (Header avatar)
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(err);
-      setSnack({ open: true, severity: "error", msg: "Failed to upload avatar." });
+      setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to upload avatar." });
     }
   };
 
@@ -95,9 +94,9 @@ export default function PersonalProfilePage() {
       });
       setSnack({ open: true, severity: "success", msg: "Profile saved successfully." });
       await refreshUser(); // Update global state
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(err);
-      setSnack({ open: true, severity: "error", msg: "Failed to save profile." });
+      setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to save profile." });
     } finally {
       setSaving(false);
     }

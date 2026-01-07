@@ -18,8 +18,9 @@ import { alpha } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Landmark, Smartphone, ArrowRight, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Theme } from '@mui/material';
 
-const glassStyle = (theme: any) => ({
+const glassStyle = (theme: Theme) => ({
     bgcolor: alpha(theme.palette.background.paper, 0.6),
     backdropFilter: 'blur(12px)',
     border: `1px solid ${theme.palette.divider}`,

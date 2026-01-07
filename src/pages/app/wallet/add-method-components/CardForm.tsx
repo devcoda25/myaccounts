@@ -4,8 +4,8 @@ import { alpha, useTheme } from "@mui/material/styles";
 import { BrandVisa, BrandMastercard, LockIcon } from "./Icons";
 
 interface CardFormProps {
-    cardProvider: string;
-    setCardProvider: (p: any) => void;
+    cardProvider: "Visa" | "Mastercard" | "UnionPay";
+    setCardProvider: (p: "Visa" | "Mastercard" | "UnionPay") => void;
     cardholder: string;
     setCardholder: (c: string) => void;
     widgetConfirmed: boolean;

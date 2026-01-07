@@ -28,7 +28,7 @@ export const ProfileFooter = () => {
                 }}
             >
                 <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    © 2024 EVzone. All rights reserved.
+                    © 2026 EVzone. All rights reserved.
                 </Typography>
 
                 <Stack direction="row" spacing={2}>

@@ -24,6 +24,7 @@ import { useTheme } from "@mui/material/styles";
 import { useThemeStore } from "../../../stores/themeStore";
 import { motion } from "framer-motion";
 import { getProviderIcon, MtnMomoLogo, AirtelMoneyLogo, VisaLogo, MastercardLogo, PayPalLogo, AfricellLogo, GooglePayLogo, ApplePayLogo, AlipayLogo, JumiaPayLogo, PayoneerLogo, UnionPayLogo, WeChatPayLogo } from "../../../assets/paymentIcons";
+import { EVZONE } from "../../../theme/evzone";
 
 // Sub-components
 import MobileMoneyForm from "./add-method-components/MobileMoneyForm";
@@ -33,13 +34,15 @@ import BankTransferForm from "./add-method-components/BankTransferForm";
 import { ArrowLeftIcon, CheckCircleIcon, KeypadIcon, LockIcon, PhoneIcon, PlusIcon, ShieldCheckIcon, XCircleIcon } from "./add-method-components/Icons";
 import { WalletService } from "../../../services/WalletService";
 import { useAuthStore } from "../../../stores/authStore";
+import { IPaymentMethodDetails, Severity } from "../../../utils/types";
 
 /**
  * EVzone My Accounts - Add Payment Method
  * Route: /app/wallet/payment-methods/add
  */
 
-type Severity = "info" | "warning" | "error" | "success";
+// Types moved to global utils/types.ts
+
 
 // New Method Types to support distinct flows
 type MethodType = "card" | "momo" | "wallet" | "bank";
@@ -52,10 +55,7 @@ type VerifyChannel = "3DS" | "OTP" | "None";
 
 type ResultState = "idle" | "verifying" | "success" | "failed";
 
-const EVZONE = {
-  green: "#03cd8c",
-  orange: "#f77f00",
-} as const;
+
 
 export default function AddPaymentMethodPage() {
   const navigate = useNavigate();
@@ -206,7 +206,7 @@ export default function AddPaymentMethodPage() {
 
   const submitMethod = async () => {
     try {
-      let details: Record<string, unknown> = {};
+      let details: IPaymentMethodDetails = {};
       let providerName = "";
 
       if (methodType === "momo") {

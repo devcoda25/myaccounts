@@ -36,6 +36,16 @@ import { alpha } from "@mui/material/styles";
 import { useTheme } from "@mui/material/styles";
 import { useThemeStore } from "../../../stores/themeStore";
 import { motion } from "framer-motion";
+import {
+  IDispute,
+  IDisputeReason,
+  IDisputeStatus,
+  IEvidence,
+  Severity,
+  IEvzoneWindow
+} from "../../../utils/types";
+import { api } from "../../../utils/api";
+import { EVZONE } from "../../../theme/evzone";
 
 /**
  * EVzone My Accounts - Disputes & Chargebacks
@@ -48,38 +58,10 @@ import { motion } from "framer-motion";
  * - Status tracking
  */
 
-type Severity = "info" | "warning" | "error" | "success";
+// Types removed and moved to global utils/types.ts
 
-type DisputeStatus = "Open" | "Under review" | "Awaiting evidence" | "Won" | "Lost" | "Closed";
 
-type DisputeReason =
-  | "Unauthorized transaction"
-  | "Service not received"
-  | "Duplicate charge"
-  | "Incorrect amount"
-  | "Refund not received"
-  | "Other";
 
-type Evidence = { id: string; name: string; size: number; type: string };
-
-type Dispute = {
-  id: string;
-  txnId: string;
-  reference: string;
-  amount: number;
-  currency: string;
-  reason: DisputeReason;
-  description: string;
-  status: DisputeStatus;
-  createdAt: number;
-  updatedAt: number;
-  evidence: Evidence[];
-};
-
-const EVZONE = {
-  green: "#03cd8c",
-  orange: "#f77f00",
-} as const;
 
 const THEME_KEY = "evzone_myaccounts_theme";
 
@@ -237,7 +219,7 @@ function toSize(bytes: number) {
   return `${kb.toFixed(0)} KB`;
 }
 
-function statusChip(s: DisputeStatus) {
+function statusChip(s: IDisputeStatus) {
   if (s === "Won") return <Chip size="small" color="success" label="Won" />;
   if (s === "Lost") return <Chip size="small" color="error" label="Lost" />;
   if (s === "Closed") return <Chip size="small" variant="outlined" label="Closed" />;
@@ -246,7 +228,7 @@ function statusChip(s: DisputeStatus) {
   return <Chip size="small" color="info" label="Open" />;
 }
 
-function stepForStatus(s: DisputeStatus) {
+function stepForStatus(s: IDisputeStatus) {
   if (s === "Open") return 0;
   if (s === "Awaiting evidence") return 1;
   if (s === "Under review") return 2;
@@ -254,7 +236,7 @@ function stepForStatus(s: DisputeStatus) {
   return 0;
 }
 
-function canAddEvidence(s: DisputeStatus) {
+function canAddEvidence(s: IDisputeStatus) {
   return s === "Open" || s === "Awaiting evidence" || s === "Under review";
 }
 
@@ -280,7 +262,7 @@ function readQueryParam(key: string) {
 // --- lightweight self-tests ---
 function runSelfTestsOnce() {
   try {
-    const w = window as Window & { __EVZONE_DISPUTES_TESTS_RAN__?: boolean };
+    const w = window as IEvzoneWindow;
     if (w.__EVZONE_DISPUTES_TESTS_RAN__) return;
     w.__EVZONE_DISPUTES_TESTS_RAN__ = true;
     const assert = (name: string, cond: boolean) => {
@@ -293,9 +275,8 @@ function runSelfTestsOnce() {
   }
 }
 
-import { api } from "../../../utils/api";
+// redundant imports removed
 
-// ... (existing imports)
 
 // ...
 
@@ -336,15 +317,15 @@ export default function DisputesChargebacksPage() {
 
 
 
-  const [disputes, setDisputes] = useState<Dispute[]>([]);
+  const [disputes, setDisputes] = useState<IDispute[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchDisputes = async () => {
     try {
       setLoading(true);
-      const res = await api.get<Dispute[]>('/wallets/disputes');
+      const res = await api.get<IDispute[]>('/wallets/disputes');
       if (Array.isArray(res)) {
-        setDisputes(res.map((d: any) => ({
+        setDisputes(res.map((d) => ({
           ...d,
           createdAt: new Date(d.createdAt).getTime(),
           updatedAt: new Date(d.updatedAt).getTime()
@@ -364,7 +345,7 @@ export default function DisputesChargebacksPage() {
   const [selectedId, setSelectedId] = useState<string>("");
   const selected = useMemo(() => disputes.find((d) => d.id === selectedId) || disputes[0], [disputes, selectedId]);
 
-  const [filterStatus, setFilterStatus] = useState<"all" | DisputeStatus>("all");
+  const [filterStatus, setFilterStatus] = useState<"all" | IDisputeStatus>("all");
   const [search, setSearch] = useState("");
 
   const [createOpen, setCreateOpen] = useState(false);
@@ -372,9 +353,9 @@ export default function DisputesChargebacksPage() {
   const [newRef, setNewRef] = useState(prefillRef || "");
   const [newAmount, setNewAmount] = useState<string>("");
   const [newCurrency, setNewCurrency] = useState<string>("UGX");
-  const [newReason, setNewReason] = useState<DisputeReason>("Unauthorized transaction");
+  const [newReason, setNewReason] = useState<IDisputeReason>("Unauthorized transaction");
   const [newDesc, setNewDesc] = useState("");
-  const [newEvidence, setNewEvidence] = useState<Evidence[]>([]);
+  const [newEvidence, setNewEvidence] = useState<IEvidence[]>([]);
 
   const [evidenceAddOpen, setEvidenceAddOpen] = useState(false);
   const [evidenceTargetId, setEvidenceTargetId] = useState<string | null>(null);
@@ -410,7 +391,7 @@ export default function DisputesChargebacksPage() {
 
   const addEvidenceToNew = (files: FileList | null) => {
     if (!files?.length) return;
-    const next: Evidence[] = [];
+    const next: IEvidence[] = [];
     for (const f of Array.from(files)) {
       const err = validateEvidenceFile(f);
       if (err) {
@@ -435,7 +416,7 @@ export default function DisputesChargebacksPage() {
     }
 
     try {
-      const res = await api.post<any>('/wallets/disputes', {
+      const res = await api.post<IDispute>('/wallets/disputes', {
         txnId: newTxnId.trim(),
         amount: Number(newAmount),
         currency: newCurrency,
@@ -465,7 +446,7 @@ export default function DisputesChargebacksPage() {
   const addEvidenceToExisting = (files: FileList | null) => {
     if (!files?.length || !evidenceTargetId) return;
 
-    const toAdd: Evidence[] = [];
+    const toAdd: IEvidence[] = [];
     for (const f of Array.from(files)) {
       const err = validateEvidenceFile(f);
       if (err) {
@@ -498,7 +479,7 @@ export default function DisputesChargebacksPage() {
     );
   };
 
-  const updateStatus = (disputeId: string, status: DisputeStatus) => {
+  const updateStatus = (disputeId: string, status: IDisputeStatus) => {
     setDisputes((prev) => prev.map((d) => (d.id === disputeId ? { ...d, status, updatedAt: Date.now() } : d)));
     setSnack({ open: true, severity: "info", msg: "Status updated (demo)." });
   };
@@ -565,9 +546,9 @@ export default function DisputesChargebacksPage() {
                         fullWidth
                         InputProps={{ startAdornment: (<InputAdornment position="start"><SearchIcon size={18} /></InputAdornment>) }}
                       />
-                      <TextField select label="Status" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as DisputeStatus | "all")} fullWidth>
+                      <TextField select label="Status" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as IDisputeStatus | "all")} fullWidth>
                         <MenuItem value="all">All</MenuItem>
-                        {(["Open", "Awaiting evidence", "Under review", "Won", "Lost", "Closed"] as DisputeStatus[]).map((s) => (
+                        {(["Open", "Awaiting evidence", "Under review", "Won", "Lost", "Closed"] as IDisputeStatus[]).map((s) => (
                           <MenuItem key={s} value={s}>{s}</MenuItem>
                         ))}
                       </TextField>
@@ -777,10 +758,10 @@ export default function DisputesChargebacksPage() {
                             size="small"
                             label="Set status"
                             value={selected.status}
-                            onChange={(e) => updateStatus(selected.id, e.target.value as DisputeStatus)}
+                            onChange={(e) => updateStatus(selected.id, e.target.value as IDisputeStatus)}
                             fullWidth
                           >
-                            {(["Open", "Awaiting evidence", "Under review", "Won", "Lost", "Closed"] as DisputeStatus[]).map((s) => (
+                            {(["Open", "Awaiting evidence", "Under review", "Won", "Lost", "Closed"] as IDisputeStatus[]).map((s) => (
                               <MenuItem key={s} value={s}>{s}</MenuItem>
                             ))}
                           </TextField>
@@ -839,7 +820,7 @@ export default function DisputesChargebacksPage() {
                 <TextField value={newCurrency} onChange={(e) => setNewCurrency(e.target.value.toUpperCase().slice(0, 3))} label="Currency" placeholder="UGX" fullWidth />
               </Box>
 
-              <TextField select label="Reason" value={newReason} onChange={(e) => setNewReason(e.target.value as DisputeReason)} fullWidth>
+              <TextField select label="Reason" value={newReason} onChange={(e) => setNewReason(e.target.value as IDisputeReason)} fullWidth>
                 {([
                   "Unauthorized transaction",
                   "Service not received",
@@ -847,7 +828,7 @@ export default function DisputesChargebacksPage() {
                   "Incorrect amount",
                   "Refund not received",
                   "Other",
-                ] as DisputeReason[]).map((r) => (
+                ] as IDisputeReason[]).map((r) => (
                   <MenuItem key={r} value={r}>{r}</MenuItem>
                 ))}
               </TextField>

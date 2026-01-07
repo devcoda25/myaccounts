@@ -38,7 +38,24 @@ import { api } from "../../../utils/api";
 interface SsoConfigResponse {
   isEnabled: boolean;
   provider: SsoType;
-  config: any;
+  config: ISsoConfig;
+}
+
+interface ISsoConfig {
+  entityId?: string;
+  ssoUrl?: string;
+  sloUrl?: string;
+  cert?: string;
+  wantSignedResponse?: boolean;
+  issuer?: string;
+  authorizationUrl?: string;
+  tokenUrl?: string;
+  jwksUrl?: string;
+  clientId?: string;
+  clientSecret?: string;
+  redirectUris?: string[];
+  scopes?: string[];
+  usePkce?: boolean;
 }
 
 interface DomainRuleResponse {
@@ -204,7 +221,7 @@ export default function EnterpriseSSOSetupPage() {
       }
 
       // Map domains
-      const rules: DomainRule[] = domainsData.map((d: any) => ({
+      const rules: DomainRule[] = domainsData.map((d) => ({
         id: d.id,
         domain: d.domain,
         verified: d.status === 'VERIFIED',
@@ -214,7 +231,7 @@ export default function EnterpriseSSOSetupPage() {
       }));
       setDomainRules(rules);
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       setSnack({ open: true, severity: "error", msg: "Failed to load SSO data" });
     } finally {
       setLoading(false);
@@ -290,7 +307,7 @@ export default function EnterpriseSSOSetupPage() {
       loadData();
       setAddDomainOpen(false);
       setSnack({ open: true, severity: "success", msg: "Domain added." });
-    } catch (err: any) {
+    } catch (err: unknown) {
       setSnack({ open: true, severity: "error", msg: "Failed to add domain." });
     }
   };
@@ -304,7 +321,7 @@ export default function EnterpriseSSOSetupPage() {
     try {
       await api.patch<void>(`/orgs/${orgId}/domains/${id}`, patch);
       setSnack({ open: true, severity: "success", msg: "Rule updated." });
-    } catch (err: any) {
+    } catch (err: unknown) {
       setSnack({ open: true, severity: "error", msg: "Failed to update rule." });
       loadData(); // Revert
     }
@@ -317,12 +334,7 @@ export default function EnterpriseSSOSetupPage() {
     setSaving(true);
 
     // Construct config
-    const config: any = {}; // TODO: Strictly type IOrgSsoConfig, but UI state vs flat structure varies.
-    // Keeping as any strictly for the construction to match backend expected JSON if it differs,
-    // but the inputs are typed.
-    // The task requires removing *checking* for any/unknown. Construction of an object to pass to API
-    // should ideally match an interface.
-    // Let's rely on api call generics.
+    const config: ISsoConfig = {};
 
     if (ssoType === 'SAML') {
       config.entityId = samlEntityId;

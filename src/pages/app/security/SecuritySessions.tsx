@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -24,7 +25,11 @@ import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
-
+import {
+  ISession,
+  IRiskTag,
+  Severity
+} from "../../../utils/types";
 import { api } from "../../../utils/api";
 
 /**
@@ -32,22 +37,8 @@ import { api } from "../../../utils/api";
  * Route: /app/security/sessions
  */
 
-type Severity = "info" | "warning" | "error" | "success";
-type RiskTag = "new_location" | "old_device" | "suspicious";
+// Types moved to global utils/types.ts
 
-type Session = {
-  id: string;
-  isCurrent: boolean;
-  deviceLabel: string;
-  os: string;
-  browser: string;
-  location: string;
-  ip: string;
-  lastActiveAt: number;
-  createdAt: number;
-  trust: "trusted" | "untrusted";
-  risk: RiskTag[];
-};
 
 // -----------------------------
 // Inline icons
@@ -140,7 +131,7 @@ function maskIp(ip: string) {
   return `${parts[0]}.${parts[1]}.x.x`;
 }
 
-function riskChipProps(r: RiskTag) {
+function riskChipProps(r: IRiskTag) {
   if (r === "suspicious") return { label: "Suspicious", color: "error" as const, icon: <AlertTriangleIcon size={16} /> };
   if (r === "new_location") return { label: "New location", color: "warning" as const, icon: <MapPinIcon size={16} /> };
   return { label: "Old device", color: "info" as const, icon: <ClockIcon size={16} /> };
@@ -161,16 +152,13 @@ export default function ActiveSessionsPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
-  const [sessions, setSessions] = useState<Session[]>([]);
+  const [sessions, setSessions] = useState<ISession[]>([]);
 
   const fetchSessions = async () => {
     try {
       setLoading(true);
-      const data = await api("/auth/sessions");
-      // Map backend response to UI model
-      // Backend: { id, deviceInfo, lastUsedAt, isCurrent }
-      // userAgent parsing could be done here or in backend. For MVP assuming basic parsing/defaults.
-      const mapped: Session[] = (Array.isArray(data) ? data : []).map((s: any) => ({
+      const data = await api<ISession[]>("/auth/sessions");
+      const mapped: ISession[] = (Array.isArray(data) ? data : []).map((s) => ({
         id: s.id,
         isCurrent: s.isCurrent,
         deviceLabel: s.deviceInfo?.device || "Unknown Device",
@@ -178,10 +166,10 @@ export default function ActiveSessionsPage() {
         browser: s.deviceInfo?.browser || "Unknown Browser",
         location: s.deviceInfo?.location || "Unknown Location",
         ip: s.deviceInfo?.ip || "Unknown IP",
-        lastActiveAt: new Date(s.lastUsedAt).getTime(),
-        createdAt: Date.now(), // Backend doesn't send this yet, could add if needed
-        trust: "trusted", // Default
-        risk: [],
+        lastActiveAt: s.lastUsedAt ? new Date(s.lastUsedAt).getTime() : Date.now(),
+        createdAt: Date.now(),
+        trust: "trusted",
+        risk: s.risk || [],
       }));
       setSessions(mapped);
     } catch (err) {

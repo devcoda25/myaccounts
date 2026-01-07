@@ -6,8 +6,8 @@ import { PhoneIcon, ShieldCheckIcon } from "./Icons";
 type MomoProvider = "MTN MoMo" | "Airtel Money" | "Africell";
 
 interface MobileMoneyFormProps {
-    provider: string; // Keep as string to be flexible
-    setProvider: (p: any) => void;
+    provider: MomoProvider;
+    setProvider: (p: MomoProvider) => void;
     phone: string;
     setPhone: (p: string) => void;
 }
@@ -20,7 +20,7 @@ export default function MobileMoneyForm({ provider, setProvider, phone, setPhone
             <Stack spacing={1.2}>
                 <Typography sx={{ fontWeight: 950 }}>Mobile money</Typography>
                 <Box className="grid gap-3 md:grid-cols-2">
-                    <TextField select label="Provider" value={provider} onChange={(e) => setProvider(e.target.value)} fullWidth>
+                    <TextField select label="Provider" value={provider} onChange={(e) => setProvider(e.target.value as MomoProvider)} fullWidth>
                         <MenuItem value="MTN MoMo">MTN MoMo</MenuItem>
                         <MenuItem value="Airtel Money">Airtel Money</MenuItem>
                         <MenuItem value="Africell">Africell</MenuItem>
