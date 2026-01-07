@@ -28,6 +28,7 @@ import {
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { api } from "../../../utils/api";
+import { PaymentMethodDto } from "../../../services/WalletService";
 import { getProviderIcon, getProviderColor } from "../../../assets/paymentIcons";
 
 
@@ -280,7 +281,7 @@ function shortId(prefix: string) {
 // --- lightweight self-tests ---
 function runSelfTestsOnce() {
   try {
-    const w = window as any;
+    const w = window as Window & { __EVZONE_WITHDRAW_TESTS_RAN__?: boolean };
     if (w.__EVZONE_WITHDRAW_TESTS_RAN__) return;
     w.__EVZONE_WITHDRAW_TESTS_RAN__ = true;
 
@@ -321,10 +322,10 @@ export default function WithdrawFundsPage() {
     const fetchData = async () => {
       try {
         const [walletRes, kycRes, methodsRes, limitsRes] = await Promise.all([
-          api.get('/wallets/me').catch(e => { console.warn("Wallet fetch failed", e); return null; }),
-          api.get('/kyc/status').catch(e => { console.warn("KYC fetch failed", e); return { tier: "Unverified" }; }),
-          api.get('/wallets/me/methods').catch(e => { console.warn("Methods fetch failed", e); return []; }),
-          api.get('/wallets/me/limits').catch(e => { console.warn("Limits fetch failed", e); return { dailyLimit: 1000000 }; })
+          api.get<{ balance: number }>('/wallets/me').catch(e => { console.warn("Wallet fetch failed", e); return null; }),
+          api.get<{ tier: "Unverified" | "Basic" | "Full" }>('/kyc/status').catch(e => { console.warn("KYC fetch failed", e); return { tier: "Unverified" as const }; }),
+          api.get<PaymentMethodDto[]>('/wallets/me/methods').catch(e => { console.warn("Methods fetch failed", e); return [] as PaymentMethodDto[]; }),
+          api.get<{ dailyLimit: number }>('/wallets/me/limits').catch(e => { console.warn("Limits fetch failed", e); return { dailyLimit: 1000000 }; })
         ]);
 
         if (walletRes) {
@@ -341,7 +342,7 @@ export default function WithdrawFundsPage() {
         }
 
         if (Array.isArray(methodsRes)) {
-          const mapped: Dest[] = methodsRes.map((m: any) => ({
+          const mapped: Dest[] = methodsRes.map((m: PaymentMethodDto) => ({
             id: m.id,
             type: m.type === 'card' ? 'bank' : m.type, // Simplify type mapping for icon
             label: m.provider, // Provider name like "MTN MoMo"
@@ -471,8 +472,9 @@ export default function WithdrawFundsPage() {
       await requestPhoneVerification(user.phoneNumber, method);
       setCooldown(30);
       setSnack({ open: true, severity: "success", msg: `Code sent via ${mfaChannel}.` });
-    } catch (err: any) {
-      setSnack({ open: true, severity: "error", msg: err.message || "Failed to send code" });
+      setSnack({ open: true, severity: "success", msg: `Code sent via ${mfaChannel}.` });
+    } catch (err: unknown) {
+      setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to send code" });
     }
   };
 
@@ -508,7 +510,7 @@ export default function WithdrawFundsPage() {
         'd_bank': 'standard_chartered' // demo mapping
       };
 
-      const res = await api('/wallets/me/withdraw', {
+      const res = await api<{ id: string; referenceId?: string; reference?: string }>('/wallets/me/withdraw', {
         method: 'POST',
         body: JSON.stringify({
           amount: clampMoney(amount),

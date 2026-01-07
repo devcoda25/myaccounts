@@ -7,9 +7,9 @@ interface AuthState {
     isLoading: boolean;
     login: (identifier: string, password: string) => Promise<void>;
     socialLogin: (provider: 'google' | 'apple', token: string) => Promise<void>;
-    register: (data: any) => Promise<any>;
+    register: (data: Record<string, unknown>) => Promise<unknown>;
     verifyEmail: (email: string, code: string) => Promise<void>;
-    requestPhoneVerification: (identifier: string, deliveryMethod: 'sms_code' | 'whatsapp_code') => Promise<any>;
+    requestPhoneVerification: (identifier: string, deliveryMethod: 'sms_code' | 'whatsapp_code') => Promise<unknown>;
     verifyPhone: (identifier: string, code: string) => Promise<void>;
     logout: () => Promise<void>;
     refreshUser: () => Promise<void>;
@@ -55,7 +55,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         }
     },
 
-    register: async (data: any) => {
+    register: async (data: Record<string, unknown>) => {
         return await api('/users', {
             method: 'POST',
             body: JSON.stringify(data),

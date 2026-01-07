@@ -215,7 +215,7 @@ function txIcon(type: TxType) {
 // --- lightweight self-tests ---
 function runSelfTestsOnce() {
   try {
-    const w = window as any;
+    const w = window as Window & { __EVZONE_WALLET_OVERVIEW_TESTS_RAN__?: boolean };
     if (w.__EVZONE_WALLET_OVERVIEW_TESTS_RAN__) return;
     w.__EVZONE_WALLET_OVERVIEW_TESTS_RAN__ = true;
 

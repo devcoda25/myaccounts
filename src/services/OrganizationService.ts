@@ -32,7 +32,7 @@ export const OrganizationService = {
         return api.get('/orgs');
     },
 
-    getOrg: async (id: string): Promise<any> => {
+    getOrg: async (id: string): Promise<OrganizationDto> => {
         return api.get(`/orgs/${id}`);
     },
 
@@ -60,15 +60,15 @@ export const OrganizationService = {
         return api.delete(`/orgs/${orgId}/members/${userId}`);
     },
 
-    updateSettings: async (orgId: string, data: any) => {
+    updateSettings: async (orgId: string, data: Partial<OrganizationDto>) => {
         return api.patch(`/orgs/${orgId}`, data);
     },
 
-    getPermissions: async (orgId: string): Promise<{ grants: any; policy: any }> => {
+    getPermissions: async (orgId: string): Promise<{ grants: Record<string, unknown>; policy: Record<string, unknown> }> => {
         return api.get(`/orgs/${orgId}/permissions`);
     },
 
-    updatePermissions: async (orgId: string, data: { grants?: any; policy?: any }) => {
+    updatePermissions: async (orgId: string, data: { grants?: Record<string, unknown>; policy?: Record<string, unknown> }) => {
         return api.patch(`/orgs/${orgId}/permissions`, data);
     }
 };

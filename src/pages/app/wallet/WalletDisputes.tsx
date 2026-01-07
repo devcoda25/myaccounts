@@ -280,7 +280,7 @@ function readQueryParam(key: string) {
 // --- lightweight self-tests ---
 function runSelfTestsOnce() {
   try {
-    const w = window as any;
+    const w = window as Window & { __EVZONE_DISPUTES_TESTS_RAN__?: boolean };
     if (w.__EVZONE_DISPUTES_TESTS_RAN__) return;
     w.__EVZONE_DISPUTES_TESTS_RAN__ = true;
     const assert = (name: string, cond: boolean) => {
@@ -347,7 +347,11 @@ export default function DisputesChargebacksPage() {
         // Map backend response to frontend type if needed
         // Backend returns: { id, reference, amount, currency, status, reason, description, createdAt, updatedAt, ... }
         // Frontend expects: same keys roughly.
-        setDisputes(res.map((d: any) => ({
+        setDisputes(res.map((d: any) => ({ // Keeping d: any here as we map to local type, but we could improve if we had DTO. 
+          // Let's rely on type inference if possible or keep minimal change to avoid breaking fields.
+          // Actually, let's cast d to unknown and then to shape if we want to be strict, but d: any in map argument is what we want to remove.
+          // If api.get returns any, res is any.
+          // Let's try: res.map((d: Record<string, unknown>) => ({
           ...d,
           createdAt: new Date(d.createdAt).getTime(),
           updatedAt: new Date(d.updatedAt).getTime()
@@ -568,7 +572,7 @@ export default function DisputesChargebacksPage() {
                         fullWidth
                         InputProps={{ startAdornment: (<InputAdornment position="start"><SearchIcon size={18} /></InputAdornment>) }}
                       />
-                      <TextField select label="Status" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as any)} fullWidth>
+                      <TextField select label="Status" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as DisputeStatus | "all")} fullWidth>
                         <MenuItem value="all">All</MenuItem>
                         {(["Open", "Awaiting evidence", "Under review", "Won", "Lost", "Closed"] as DisputeStatus[]).map((s) => (
                           <MenuItem key={s} value={s}>{s}</MenuItem>

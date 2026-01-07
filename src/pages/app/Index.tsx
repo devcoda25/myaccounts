@@ -80,9 +80,9 @@ export default function Dashboard() {
     const fetchData = async () => {
       try {
         const [w, s, t] = await Promise.all([
-          api('/wallets/me'),
-          api('/wallets/me/stats?days=30'), // Monthly stats for dashboard
-          api('/wallets/me/transactions?take=3')
+          api<Wallet>('/wallets/me'),
+          api<{ inflow: number; outflow: number }>('/wallets/me/stats?days=30'), // Monthly stats for dashboard
+          api<{ data: Transaction[] }>('/wallets/me/transactions?take=3')
         ]);
         setWallet(w);
         setStats(s);

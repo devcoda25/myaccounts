@@ -143,12 +143,12 @@ export default function AuditLogs() {
         const load = async () => {
             try {
                 setLoading(true);
-                const params: any = { take: 100 };
+                const params: Record<string, string | number> = { take: 100 };
                 if (q) params.query = q;
                 if (outcome !== "All") params.outcome = outcome;
                 if (risk !== "All") params.risk = risk;
 
-                const res = await api('/admin/audit-logs', { params });
+                const res = await api<{ logs: AuditEvent[]; total: number }>('/admin/audit-logs', { params });
                 setRows(res.logs || []);
                 setTotal(res.total || 0);
             } catch (err) {
@@ -224,14 +224,14 @@ export default function AuditLogs() {
                                     />
                                 </Box>
                                 <Box className="md:col-span-3">
-                                    <TextField select value={outcome} onChange={(e) => setOutcome(e.target.value as any)} label="Outcome" fullWidth size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 3 } }}>
+                                    <TextField select value={outcome} onChange={(e) => setOutcome(e.target.value as Outcome | "All")} label="Outcome" fullWidth size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 3 } }}>
                                         <MenuItem value="All">All</MenuItem>
                                         <MenuItem value="Success">Success</MenuItem>
                                         <MenuItem value="Failed">Failed</MenuItem>
                                     </TextField>
                                 </Box>
                                 <Box className="md:col-span-3">
-                                    <TextField select value={risk} onChange={(e) => setRisk(e.target.value as any)} label="Risk" fullWidth size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 3 } }}>
+                                    <TextField select value={risk} onChange={(e) => setRisk(e.target.value as Risk | "All")} label="Risk" fullWidth size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 3 } }}>
                                         <MenuItem value="All">All</MenuItem>
                                         <MenuItem value="Low">Low</MenuItem>
                                         <MenuItem value="Medium">Medium</MenuItem>

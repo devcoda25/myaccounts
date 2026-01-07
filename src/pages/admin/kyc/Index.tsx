@@ -77,7 +77,7 @@ export default function KycQueue() {
 
     const fetchRequests = () => {
         setLoading(true);
-        api('/admin/kyc?take=100') // Simplistic fetch for now
+        api<{ requests: KycRequest[] }>('/admin/kyc?take=100') // Simplistic fetch for now
             .then((res) => {
                 if (res && res.requests) {
                     setRequests(res.requests);

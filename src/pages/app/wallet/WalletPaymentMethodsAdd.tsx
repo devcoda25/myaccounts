@@ -206,7 +206,7 @@ export default function AddPaymentMethodPage() {
 
   const submitMethod = async () => {
     try {
-      let details: any = {};
+      let details: Record<string, unknown> = {};
       let providerName = "";
 
       if (methodType === "momo") {
@@ -272,8 +272,8 @@ export default function AddPaymentMethodPage() {
         await requestPhoneVerification(momoPhone, 'sms_code');
         setCooldown(30);
         setSnack({ open: true, severity: "success", msg: "OTP sent to your phone." });
-      } catch (e: any) {
-        setSnack({ open: true, severity: "error", msg: e.message || "Failed to send OTP." });
+      } catch (e: unknown) {
+        setSnack({ open: true, severity: "error", msg: (e as Error).message || "Failed to send OTP." });
       }
       return;
     }
@@ -309,7 +309,7 @@ export default function AddPaymentMethodPage() {
         // We use direct API call to avoid refreshing user if not needed, but store helper is fine
         await verifyPhone(momoPhone, verifyCode);
         await submitMethod();
-      } catch (e: any) {
+      } catch (e: unknown) {
         setResult("failed");
         setSnack({ open: true, severity: "error", msg: "Invalid OTP code." });
       }
@@ -581,9 +581,9 @@ export default function AddPaymentMethodPage() {
                                   onClick={() => {
                                     setMethodType(p.type as MethodType);
                                     if (p.type === 'momo') {
-                                      setMomoProvider(p.label as any);
+                                      setMomoProvider(p.label as MomoProvider);
                                     } else if (p.type === 'card') {
-                                      setCardProvider(p.label as any);
+                                      setCardProvider(p.label as CardProvider);
                                     } else if (p.type === 'wallet') { // Gateways included here
                                       setSelectedProviderId(p.id);
                                       setSelectedProviderLabel(p.label);

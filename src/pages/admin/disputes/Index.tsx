@@ -88,16 +88,17 @@ export default function AdminDisputesList() {
         setLoading(true);
         setError(null);
         try {
-            const data = await api.get(`/admin/disputes?skip=${page * rowsPerPage}&take=${rowsPerPage}&query=${q}&status=${statusFilter}`);
+            const data = await api.get<{ disputes: DisputeRow[]; total: number }>(`/admin/disputes?skip=${page * rowsPerPage}&take=${rowsPerPage}&query=${q}&status=${statusFilter}`);
             setDisputes(data.disputes);
             setTotal(data.total);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error(err);
             // Fallback for demo if backend not ready
-            if (err.message?.includes("404")) {
+            const msg = err instanceof Error ? err.message : String(err);
+            if (msg.includes("404")) {
                 setError("Backend endpoint not found. Ensure server is running and updated.");
             } else {
-                setError(err.message || "Failed to fetch disputes");
+                setError(msg || "Failed to fetch disputes");
             }
         } finally {
             setLoading(false);
@@ -119,8 +120,9 @@ export default function AdminDisputesList() {
             setSnack({ open: true, msg: `Dispute marked as ${decision}` });
             setReviewOpen(false);
             fetchData();
-        } catch (err: any) {
-            setSnack({ open: true, msg: err.message || "Failed to resolve dispute" });
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : "Failed to resolve dispute";
+            setSnack({ open: true, msg });
         } finally {
             setProcessing(false);
         }
@@ -198,7 +200,7 @@ export default function AdminDisputesList() {
                                 label="Status"
                                 value={statusFilter}
                                 onChange={(e) => {
-                                    setStatusFilter(e.target.value as any);
+                                    setStatusFilter(e.target.value as DisputeStatus | "All");
                                     setPage(0);
                                 }}
                                 size="small"

@@ -4,7 +4,7 @@ export interface PaymentMethodDto {
     id: string;
     type: 'card' | 'momo' | 'bank';
     provider: string;
-    details: any;
+    details: Record<string, unknown>;
     isDefault: boolean;
     createdAt: string;
 }
@@ -14,7 +14,7 @@ export const WalletService = {
         return api.get('/wallets/me/methods');
     },
 
-    addMethod: async (data: { type: string; provider: string; details: any; token?: string }) => {
+    addMethod: async (data: { type: string; provider: string; details: Record<string, unknown>; token?: string }) => {
         return api.post('/wallets/me/methods', data);
     },
 

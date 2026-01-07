@@ -55,6 +55,8 @@ import {
 } from "lucide-react";
 import { exportToCsv } from "../../../utils/export";
 
+import { BackendUser } from "../../../utils/types";
+
 // Types
 type ThemeMode = "light" | "dark";
 type Severity = "success" | "info" | "warning" | "error";
@@ -160,7 +162,7 @@ export default function AdminUsersList() {
     const [rows, setRows] = useState<UserRow[]>([]);
     const [total, setTotal] = useState(0);
 
-    const mapUserToRow = (u: any): UserRow => ({
+    const mapUserToRow = (u: BackendUser): UserRow => ({
         id: u.id,
         name: `${u.firstName || ''} ${u.otherNames || ''}`.trim() || 'Unknown',
         email: u.email,
@@ -203,12 +205,12 @@ export default function AdminUsersList() {
             const queryStr = new URLSearchParams(rParams).toString();
             const url = `/users?skip=${skip}&take=${rowsPerPage}&${queryStr}`;
 
-            const res = await api(url);
+            const res = await api<{ users: BackendUser[]; total: number }>(url);
             if (res && Array.isArray(res.users)) {
                 setRows(res.users.map(mapUserToRow));
                 setTotal(res.total || 0);
             }
-        } catch (err) {
+        } catch (err: unknown) {
             console.error(err);
             setSnack({ open: true, severity: 'error', msg: 'Failed to load users' });
         } finally {
@@ -380,7 +382,7 @@ export default function AdminUsersList() {
             }
         } catch (err: any) {
             console.error(err);
-            setSnack({ open: true, severity: "error", msg: err.message || "Action failed" });
+            setSnack({ open: true, severity: "error", msg: (err as Error).message || "Action failed" });
         }
 
         closeAction();
@@ -426,9 +428,9 @@ export default function AdminUsersList() {
             setNewPhone("");
             setNewType("User");
             setNewKyc("Unverified");
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error(err);
-            setSnack({ open: true, severity: "error", msg: err.message || "Failed to create user" });
+            setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to create user" });
         }
     };
 

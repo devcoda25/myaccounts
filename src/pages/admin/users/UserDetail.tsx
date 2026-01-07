@@ -46,6 +46,8 @@ import {
     ClipboardList as ClipboardIcon
 } from "lucide-react";
 
+import { BackendUser } from "../../../utils/types";
+
 // Types
 type Severity = "success" | "info" | "warning" | "error";
 
@@ -165,14 +167,14 @@ export default function AdminUserDetail() {
     useEffect(() => {
         if (!userId) return;
         setLoading(true);
-        api(`/users/${userId}`)
+        api<BackendUser>(`/users/${userId}`)
             .then((u) => {
                 // Map backend user to UserRecord
                 const rec: UserRecord = {
                     id: u.id,
                     name: `${u.firstName || ''} ${u.otherNames || ''}`.trim() || 'No Name',
                     email: u.email,
-                    phone: u.phoneNumber || u.contacts?.find((c: any) => c.type === 'PHONE' && c.isPrimary)?.value || u.contacts?.find((c: any) => c.type === 'PHONE')?.value,
+                    phone: u.phoneNumber || u.contacts?.find((c) => c.type === 'PHONE' && c.isPrimary)?.value || u.contacts?.find((c) => c.type === 'PHONE')?.value,
                     country: u.country,
                     type: u.role === 'SUPER_ADMIN' ? 'Org Admin' : u.role === 'ADMIN' ? 'Agent' : 'User',
                     status: (u.emailVerified || u.phoneVerified) ? 'Active' : 'Disabled',
@@ -184,17 +186,17 @@ export default function AdminUserDetail() {
                     passkeys: 0,
                     createdAt: new Date(u.createdAt).getTime(),
                     lastLoginAt: u.sessions && u.sessions[0] ? new Date(u.sessions[0].createdAt).getTime() : undefined,
-                    lastPasswordChangeAt: u.auditLogs?.find((l: any) => l.action === 'password_change')?.createdAt
-                        ? new Date(u.auditLogs.find((l: any) => l.action === 'password_change').createdAt).getTime()
+                    lastPasswordChangeAt: u.auditLogs?.find((l) => l.action === 'password_change')?.createdAt
+                        ? new Date(u.auditLogs.find((l) => l.action === 'password_change')!.createdAt).getTime()
                         : undefined,
-                    linkedGoogle: u.credentials?.some((c: any) => c.providerType === 'google'),
-                    linkedApple: u.credentials?.some((c: any) => c.providerType === 'apple'),
-                    orgs: u.memberships?.map((m: any) => ({ id: m.organization.id, name: m.organization.name, role: m.role })) || [],
+                    linkedGoogle: u.credentials?.some((c) => c.providerType === 'google'),
+                    linkedApple: u.credentials?.some((c) => c.providerType === 'apple'),
+                    orgs: u.memberships?.map((m) => ({ id: m.organization.id, name: m.organization.name, role: m.role })) || [],
                     notes: u.kyc?.notes || ''
                 };
                 setUser(rec);
             })
-            .catch((err) => {
+            .catch((err: unknown) => {
                 console.error(err);
                 setSnack({ open: true, severity: 'error', msg: 'Failed to load user' });
             })

@@ -83,7 +83,7 @@ export default function AdminOrgDetailPage() {
     React.useEffect(() => {
         if (!orgId) return;
         setLoading(true);
-        api(`/admin/orgs/${orgId}`)
+        api<OrgDetail>(`/admin/orgs/${orgId}`)
             .then(data => setOrg(data))
             .catch(err => console.error(err))
             .finally(() => setLoading(false));

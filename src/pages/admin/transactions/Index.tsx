@@ -79,11 +79,11 @@ export default function TransactionsList() {
         setLoading(true);
         setError(null);
         try {
-            const data = await api(`/admin/transactions?skip=${page * rowsPerPage}&take=${rowsPerPage}&query=${q}&type=${typeFilter}&status=${statusFilter}`);
+            const data = await api<{ txs: Transaction[]; total: number }>(`/admin/transactions?skip=${page * rowsPerPage}&take=${rowsPerPage}&query=${q}&type=${typeFilter}&status=${statusFilter}`);
             setTxs(data.txs);
             setTotal(data.total);
-        } catch (err: any) {
-            setError(err.message || "Failed to fetch transactions");
+        } catch (err: unknown) {
+            setError((err as Error).message || "Failed to fetch transactions");
         } finally {
             setLoading(false);
         }
@@ -204,7 +204,7 @@ export default function TransactionsList() {
                                 label="Type"
                                 value={typeFilter}
                                 onChange={(e) => {
-                                    setTypeFilter(e.target.value as any);
+                                    setTypeFilter(e.target.value as TxType | "All");
                                     setPage(0);
                                 }}
                                 size="small"
@@ -225,7 +225,7 @@ export default function TransactionsList() {
                                 label="Status"
                                 value={statusFilter}
                                 onChange={(e) => {
-                                    setStatusFilter(e.target.value as any);
+                                    setStatusFilter(e.target.value as TxStatus | "All");
                                     setPage(0);
                                 }}
                                 size="small"

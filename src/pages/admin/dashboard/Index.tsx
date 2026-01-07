@@ -86,8 +86,8 @@ export default function AdminDashboard() {
             try {
                 setLoading(true);
                 const [s, l] = await Promise.all([
-                    api('/admin/stats').catch(() => null),
-                    api('/admin/audit-logs?take=5').catch(() => null)
+                    api<{ usersCount: number; orgsCount: number; sessionsCount: number; balance: number }>('/admin/stats').catch(() => null),
+                    api<{ logs: AuditLog[] }>('/admin/audit-logs?take=5').catch(() => null)
                 ]);
                 setStats(s || { usersCount: 0, orgsCount: 0, sessionsCount: 0, balance: 0 });
                 setLogs(l?.logs || []);

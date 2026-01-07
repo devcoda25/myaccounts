@@ -51,6 +51,7 @@ type ApiKey = {
   lastUsedAt?: number;
   scopes: string[];
   status: "Active" | "Revoked";
+  secret?: string;
 };
 
 type OAuthClient = {
@@ -61,6 +62,7 @@ type OAuthClient = {
   redirectUris: string[];
   createdAt: number;
   status: "Active" | "Revoked";
+  clientSecret?: string;
 };
 
 const EVZONE = { green: "#03cd8c", orange: "#f77f00" } as const;
@@ -308,8 +310,8 @@ export default function DeveloperAccessPage() {
       try {
         setLoading(true);
         const [keys, cls] = await Promise.all([
-          api('/developer/api-keys'),
-          api('/developer/oauth-clients')
+          api<ApiKey[]>('/developer/api-keys'),
+          api<OAuthClient[]>('/developer/oauth-clients')
         ]);
         setApiKeys(keys);
         setClients(cls);
@@ -400,10 +402,10 @@ export default function DeveloperAccessPage() {
     requireReauth(async () => {
       try {
         setLoading(true);
-        const res = await api.post('/developer/api-keys', { name: keyName.trim(), scopes: keyScopes });
+        const res = await api.post<ApiKey>('/developer/api-keys', { name: keyName.trim(), scopes: keyScopes });
         setApiKeys((prev) => [res, ...prev]);
         setCreateKeyOpen(false);
-        setCreatedSecret(res.secret);
+        setCreatedSecret(res.secret || null);
         setCreatedLabel(res.name);
         setSnack({ open: true, severity: "success", msg: "API key created. Copy the secret now." });
       } catch (err) {
@@ -454,11 +456,11 @@ export default function DeveloperAccessPage() {
     requireReauth(async () => {
       try {
         setLoading(true);
-        const res = await api.post('/developer/oauth-clients', { name: clientName.trim(), type: clientType, redirectUris: uris });
+        const res = await api.post<OAuthClient>('/developer/oauth-clients', { name: clientName.trim(), type: clientType, redirectUris: uris });
         setClients((prev) => [res, ...prev]);
         setCreateClientOpen(false);
         setCreatedClientId(res.clientId);
-        setCreatedClientSecret(res.clientSecret);
+        setCreatedClientSecret(res.clientSecret || null);
         setSnack({ open: true, severity: "success", msg: "OAuth client created." });
       } catch (err) {
         setSnack({ open: true, severity: "error", msg: "Failed to create client." });
@@ -739,7 +741,7 @@ export default function DeveloperAccessPage() {
                 Register a client for OAuth/OIDC. Use PKCE for public clients.
               </Typography>
               <TextField value={clientName} onChange={(e) => setClientName(e.target.value)} label="Client name" fullWidth />
-              <TextField select value={clientType} onChange={(e) => setClientType(e.target.value as any)} label="Client type" fullWidth>
+              <TextField select value={clientType} onChange={(e) => setClientType(e.target.value as OAuthClient["type"])} label="Client type" fullWidth>
                 <MenuItem value="confidential">Confidential (server)</MenuItem>
                 <MenuItem value="public">Public (mobile/web)</MenuItem>
               </TextField>

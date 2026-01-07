@@ -52,6 +52,11 @@ type UploadFile = {
 
 type SubmitState = "idle" | "submitting" | "success" | "failed";
 
+type KycStatusResponse = {
+  status: string;
+  tier: string;
+};
+
 const EVZONE = {
   green: "#03cd8c",
   orange: "#f77f00",
@@ -222,7 +227,7 @@ function slotLabel(slot: UploadSlot) {
 // --- lightweight self-tests ---
 function runSelfTestsOnce() {
   try {
-    const w = window as any;
+    const w = window as Window & { __EVZONE_KYC_UPLOAD_TESTS_RAN__?: boolean };
     if (w.__EVZONE_KYC_UPLOAD_TESTS_RAN__) return;
     w.__EVZONE_KYC_UPLOAD_TESTS_RAN__ = true;
   } catch (e) {
@@ -241,9 +246,11 @@ export default function KycDocumentUploadPage() {
   const paramTier = searchParams.get("tier");
   const [isFullTier, setIsFullTier] = useState(paramTier === "full");
 
+
+
   // Auto-detect if user is already basic verified
   useEffect(() => {
-    api('/kyc/status').then((res) => {
+    api<KycStatusResponse>('/kyc/status').then((res) => {
       // If already Verified (Basic) and we are not explicitly Full yet, upgrade to Full
       if (res && res.status === 'Verified' && res.tier !== 'Full') {
         setIsFullTier(true);
@@ -372,9 +379,9 @@ export default function KycDocumentUploadPage() {
         body: formData
       });
 
-      const filesPayload: any[] = [];
+      const filesPayload: { slot: string; url: string }[] = [];
       // Helper to find url
-      const findUrl = (file: File) => uploadRes.find((r: any) => r.originalName === file.name)?.url;
+      const findUrl = (file: File) => (uploadRes as Array<{ originalName: string; url: string }>).find((r) => r.originalName === file.name)?.url || "";
 
       if (isFullTier) {
         if (uploads.proofAddress?.file) filesPayload.push({ slot: 'proofAddress', url: findUrl(uploads.proofAddress.file) });
@@ -401,12 +408,12 @@ export default function KycDocumentUploadPage() {
         navigate("/app/wallet/kyc/status");
       }, 1500);
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       setSubmitState("failed");
 
       // Handle "Already verified" gracefully
-      const errMsg = err?.message || JSON.stringify(err);
+      const errMsg = err instanceof Error ? err.message : JSON.stringify(err);
       if (errMsg.includes("Already verified")) {
         setSubmitState("success");
         setSnack({ open: true, severity: "success", msg: "You are already verified at this level!" });

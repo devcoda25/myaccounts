@@ -25,7 +25,7 @@ import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { api } from "../../../utils/api";
 import { getProviderIcon, getProviderColor } from "../../../assets/paymentIcons";
-import { WalletService } from "../../../services/WalletService";
+import { WalletService, PaymentMethodDto } from "../../../services/WalletService";
 
 
 /**
@@ -243,7 +243,7 @@ function resultLabel(r: ResultStatus) {
 // --- lightweight self-tests ---
 function runSelfTestsOnce() {
   try {
-    const w = window as any;
+    const w = window as Window & { __EVZONE_ADD_FUNDS_TESTS_RAN__?: boolean };
     if (w.__EVZONE_ADD_FUNDS_TESTS_RAN__) return;
     w.__EVZONE_ADD_FUNDS_TESTS_RAN__ = true;
 
@@ -284,7 +284,9 @@ export default function WalletAddFunds() {
     msg: "",
   });
 
-  const [methods, setMethods] = useState<any[]>([]);
+  const [methods, setMethods] = useState<PaymentMethodDto[]>([]); // Keep as any[] for now as PaymentMethodDto imports might need verify, or import it.
+  // Actually I should import PaymentMethodDto.
+  // Let's do imports first.
   const [loadingMethods, setLoadingMethods] = useState(false);
   const [selectedMethodId, setSelectedMethodId] = useState<string>("");
 
@@ -299,10 +301,10 @@ export default function WalletAddFunds() {
       const data = await WalletService.getMethods();
       setMethods(data);
       // Auto-select default or first
-      const def = data.find((m: any) => m.isDefault) || data[0];
+      const def = data.find((m) => m.isDefault) || data[0];
       if (def) {
         setSelectedMethodId(def.id);
-        setMethod(def.type as any); // Sync purely for fee calc compatibility for now
+        setMethod(def.type as PayMethod);
       }
     } catch (err) {
       console.warn("Failed to load methods", err);
@@ -371,7 +373,7 @@ export default function WalletAddFunds() {
 
   const canContinue = clampMoney(amount) >= 1000;
 
-  const MethodCard = ({ item, selected, onSelect }: { item: any; selected: boolean; onSelect: () => void }) => {
+  const MethodCard = ({ item, selected, onSelect }: { item: PaymentMethodDto; selected: boolean; onSelect: () => void }) => {
     // Helper to get color/icon based on provider string
     const provLower = (item.provider || "").toLowerCase();
     const typeLower = (item.type || "").toLowerCase();
@@ -446,10 +448,10 @@ export default function WalletAddFunds() {
       setSnack({ open: true, severity: "warning", msg: "Enter an amount of at least UGX 1,000." });
       return;
     }
-    setStep((s) => (s === 2 ? 2 : ((s + 1) as any)));
+    setStep((s) => (s === 2 ? 2 : ((s + 1) as 0 | 1 | 2)));
   };
 
-  const back = () => setStep((s) => (s === 0 ? 0 : ((s - 1) as any)));
+  const back = () => setStep((s) => (s === 0 ? 0 : ((s - 1) as 0 | 1 | 2)));
 
 
   // ...

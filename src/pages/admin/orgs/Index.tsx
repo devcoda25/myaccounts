@@ -87,12 +87,12 @@ export default function AdminOrgsListPage() {
         try {
             const skip = page * rowsPerPage;
             // For now pass status filter too, though backend might just accept query
-            const res = await import("../../../utils/api").then(m => m.api(`/admin/orgs?skip=${skip}&take=${rowsPerPage}&query=${encodeURIComponent(q)}&status=${statusFilter}`));
+            const res = await import("../../../utils/api").then(m => m.api<{ orgs: OrgRow[]; total: number }>(`/admin/orgs?skip=${skip}&take=${rowsPerPage}&query=${encodeURIComponent(q)}&status=${statusFilter}`));
             if (res && Array.isArray(res.orgs)) {
                 setRows(res.orgs);
                 setTotal(res.total || 0);
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error(err);
             setSnack({ open: true, severity: "error", msg: "Failed to load organizations" });
         } finally {
@@ -174,7 +174,7 @@ export default function AdminOrgsListPage() {
                                     fullWidth
                                     sx={{ flexGrow: 1, '& .MuiOutlinedInput-root': { borderRadius: 3 } }}
                                 />
-                                <TextField select size="small" label="Status" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as any)} sx={{ minWidth: 150, '& .MuiOutlinedInput-root': { borderRadius: 3 } }}>
+                                <TextField select size="small" label="Status" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as OrgStatus | "All")} sx={{ minWidth: 150, '& .MuiOutlinedInput-root': { borderRadius: 3 } }}>
                                     <MenuItem value="All">All</MenuItem>
                                     <MenuItem value="Active">Active</MenuItem>
                                     <MenuItem value="Suspended">Suspended</MenuItem>

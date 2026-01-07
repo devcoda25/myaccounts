@@ -275,7 +275,7 @@ function buildMasked(type: MethodType, provider: Provider, raw: string) {
 // --- lightweight self-tests ---
 function runSelfTestsOnce() {
   try {
-    const w = window as any;
+    const w = window as Window & { __EVZONE_PAYMENT_METHODS_TESTS_RAN__?: boolean };
     if (w.__EVZONE_PAYMENT_METHODS_TESTS_RAN__) return;
     w.__EVZONE_PAYMENT_METHODS_TESTS_RAN__ = true;
 
@@ -335,7 +335,7 @@ export default function PaymentMethodsPage() {
     try {
       setLoading(true);
       const data = await WalletService.getMethods();
-      const mapped = data.map((d: any) => ({
+      const mapped = data.map((d) => ({
         id: d.id,
         type: d.type as MethodType,
         provider: d.provider as Provider,

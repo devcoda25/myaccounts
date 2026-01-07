@@ -86,7 +86,7 @@ export interface Organization {
 export interface AuditLog {
     id: string;
     action: string;
-    details: any;
+    details: Record<string, unknown>;
     user?: { email: string };
     createdAt: string;
     // UI specific (optional or mapped from details)
@@ -133,4 +133,29 @@ export interface Prefs {
     receipts_email: string | null;
     mfa_sms: string | null;
     mfa_whatsapp: string | null;
+}
+
+export interface BackendUser {
+    id: string;
+    firstName?: string;
+    otherNames?: string;
+    email: string;
+    phoneNumber?: string;
+    contacts?: Array<{ type: string; isPrimary: boolean; value: string }>;
+    country?: string;
+    role: "SUPER_ADMIN" | "ADMIN" | "USER";
+    emailVerified: boolean;
+    phoneVerified: boolean;
+    kyc?: {
+        status: "Verified" | "Pending" | "Unverified";
+        riskScore: "Low" | "Medium" | "High";
+        notes?: string;
+    };
+    walletBalance?: number;
+    twoFactorEnabled: boolean;
+    createdAt: string | number;
+    sessions?: Array<{ createdAt: string }>;
+    auditLogs?: Array<{ action: string; createdAt: string }>;
+    credentials?: Array<{ providerType: string }>;
+    memberships?: Array<{ organization: { id: string; name: string }; role: string }>;
 }

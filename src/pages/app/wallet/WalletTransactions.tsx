@@ -339,7 +339,7 @@ export default function TransactionHistoryPage() {
                     <Box className="grid gap-3 md:grid-cols-5">
                       <TextField type="date" label="From" value={from} onChange={(e) => setFrom(e.target.value)} InputLabelProps={{ shrink: true }} fullWidth />
                       <TextField type="date" label="To" value={to} onChange={(e) => setTo(e.target.value)} InputLabelProps={{ shrink: true }} fullWidth />
-                      <TextField select label="Type" value={type} onChange={(e) => setType(e.target.value as any)} fullWidth>
+                      <TextField select label="Type" value={type} onChange={(e) => setType(e.target.value as "all" | TxType)} fullWidth>
                         <MenuItem value="all">All</MenuItem>
                         {(["Top up", "Payment", "Withdrawal", "Refund", "Fee"] as TxType[]).map((t) => (
                           <MenuItem key={t} value={t}>
@@ -347,7 +347,7 @@ export default function TransactionHistoryPage() {
                           </MenuItem>
                         ))}
                       </TextField>
-                      <TextField select label="Status" value={status} onChange={(e) => setStatus(e.target.value as any)} fullWidth>
+                      <TextField select label="Status" value={status} onChange={(e) => setStatus(e.target.value as "all" | TxStatus)} fullWidth>
                         <MenuItem value="all">All</MenuItem>
                         <MenuItem value="completed">Completed</MenuItem>
                         <MenuItem value="pending">Pending</MenuItem>

@@ -4,7 +4,7 @@
  * @param fileName Name of the file to be downloaded (e.g., 'users.csv').
  * @param headers Optional mapping of keys to human-readable column headers.
  */
-export function exportToCsv(data: any[], fileName: string, headers?: Record<string, string>) {
+export function exportToCsv<T extends object>(data: T[], fileName: string, headers?: Record<string, string>) {
     if (!data || !data.length) return;
 
     // Get keys from first item if headers mapping not provided
@@ -15,7 +15,7 @@ export function exportToCsv(data: any[], fileName: string, headers?: Record<stri
 
     for (const row of data) {
         const values = columns.map(col => {
-            let val = row[col];
+            let val = (row as Record<string, unknown>)[col];
 
             // Handle null/undefined
             if (val === null || val === undefined) val = '';

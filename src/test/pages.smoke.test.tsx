@@ -117,7 +117,7 @@ import StatusMaintenanceComp from '../pages/app/status/Maintenance'
 
 afterEach(() => cleanup())
 
-const PAGES: Array<[string, React.ComponentType<any>]> = [
+const PAGES: Array<[string, React.ComponentType<unknown>]> = [
   ['/app', AppComp],
   ['/app/apps', AppAppsComp],
   ['/app/apps/permissions', AppAppsPermissionsComp],

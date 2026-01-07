@@ -88,14 +88,14 @@ export default function WalletsList() {
         setError(null);
         try {
             const [walletData, statsData] = await Promise.all([
-                api(`/admin/wallets?skip=${page * rowsPerPage}&take=${rowsPerPage}&query=${q}&status=${statusFilter}`),
-                api('/admin/wallets/stats')
+                api<{ wallets: WalletRow[]; total: number }>(`/admin/wallets?skip=${page * rowsPerPage}&take=${rowsPerPage}&query=${q}&status=${statusFilter}`),
+                api<WalletStats>('/admin/wallets/stats')
             ]);
             setWallets(walletData.wallets);
             setTotal(walletData.total);
             setStats(statsData);
-        } catch (err: any) {
-            setError(err.message || "Failed to fetch wallets");
+        } catch (err: unknown) {
+            setError((err as Error).message || "Failed to fetch wallets");
         } finally {
             setLoading(false);
         }
@@ -114,8 +114,8 @@ export default function WalletsList() {
             });
             setSnack({ open: true, msg: `Wallet ${action.toLowerCase()}d successfully` });
             fetchData();
-        } catch (err: any) {
-            setSnack({ open: true, msg: err.message || "Failed to update wallet status" });
+        } catch (err: unknown) {
+            setSnack({ open: true, msg: (err as Error).message || "Failed to update wallet status" });
         }
     };
 
@@ -167,7 +167,15 @@ export default function WalletsList() {
         return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount);
     };
 
-    const StatCard = ({ title, value, icon, color, subtext }: any) => (
+    interface StatCardProps {
+        title: string;
+        value: string | number;
+        icon: React.ReactNode;
+        color: string;
+        subtext?: string;
+    }
+
+    const StatCard = ({ title, value, icon, color, subtext }: StatCardProps) => (
         <Paper sx={{
             p: 3,
             borderRadius: '16px',
@@ -288,7 +296,7 @@ export default function WalletsList() {
                                 label="Status"
                                 value={statusFilter}
                                 onChange={(e) => {
-                                    setStatusFilter(e.target.value as any);
+                                    setStatusFilter(e.target.value as WalletStatus | "All");
                                     setPage(0);
                                 }}
                                 size="small"
