@@ -25,6 +25,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { OrganizationService } from "../../../services/OrganizationService";
 import { OrgRole, Severity } from "../../../utils/types";
 import { formatOrgId } from "../../../utils/format";
+import { EVZONE } from "../../../theme/evzone";
 
 type PermissionKey =
   | "members.view"

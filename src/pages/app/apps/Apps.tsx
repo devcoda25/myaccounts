@@ -25,6 +25,7 @@ import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
+import { api } from "../../../utils/api";
 
 /**
  * EVzone My Accounts - Connected EVzone Apps
@@ -210,6 +211,14 @@ function appIcon(key: AppKey) {
   return <AppsIcon size={18} />;
 }
 
+interface IAppResponse {
+  key: string;
+  name: string;
+  status: string;
+  lastUsedAt?: number;
+  launchUrl?: string;
+}
+
 // Self-tests removed
 
 export default function ConnectedAppsPage() {
@@ -244,38 +253,24 @@ export default function ConnectedAppsPage() {
     const fetchApps = async () => {
       try {
         setLoading(true);
-        // We'll trust the proxy
-        const res = await fetch("/api/apps", {
-          headers: {
-            // We rely on the browser cookie or header injection if handled by an auth provider wrapper.
-            // If we need the token, we might need a context.
-            // Given I don't see useAuth, I'll assume the cookie/proxy handles it or I'll just skip the token for now
-            // and let the backend (which I know uses cookies if present?)
-            // Actually backend OIDC uses cookies? No, it used Bearer in header usually.
-            // I'll check if there's a stored token.
-            'Authorization': `Bearer ${localStorage.getItem('access_token') || ''}`
-          }
-        });
-        if (!res.ok) throw new Error("Failed to load apps");
-        const data = await res.json();
+        const data = await api.get<any[]>("/apps");
 
         // Transform backend data to frontend tile
-        const mapped: AppTile[] = data.map((d: any) => ({
-          key: d.key,
+        const mapped: AppTile[] = data.map((d) => ({
+          key: d.key as AppKey,
           name: d.name,
-          tagline: "Integrated App", // Backend doesn't store tagline yet, use placeholder
-          status: d.status,
+          tagline: "Integrated App",
+          status: d.status as AccessStatus,
           lastUsedAt: d.lastUsedAt,
-          launchUrl: d.launchUrl, // Store this!
+          launchUrl: d.launchUrl,
           shortcuts: [
             { label: "Launch", action: "launch" }
           ]
         }));
         setApps(mapped);
-      } catch (e) {
-        console.error(e);
-        // Fallback to mock for demo if fetch fails
-        // setApps(MOCK_APPS); 
+      } catch (err: unknown) {
+        console.error(err);
+        setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to load apps" });
       } finally {
         setLoading(false);
       }

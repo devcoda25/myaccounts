@@ -29,6 +29,7 @@ import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { useThemeStore } from "../../../stores/themeStore";
 import { EVZONE } from "../../../theme/evzone";
+import { api } from "../../../utils/api";
 
 /**
  * EVzone My Accounts - Authorized Apps & Permissions
@@ -200,19 +201,11 @@ export default function AppsPermissionsPage() {
     const fetchPerms = async () => {
       try {
         setLoading(true);
-        const res = await fetch("/api/apps/permissions", {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('access_token') || ''}`
-          }
-        });
-        if (!res.ok) throw new Error("Failed to load permissions");
-        const data = await res.json();
-        // Backend returns active consents. Backend does not return "revoked" items usually (they are deleted).
-        // But frontend UI has a "Revoked" tab.
-        // For now, we only show Active consents from backend.
+        const data = await api.get<AppPerm[]>("/apps/permissions");
         setApps(data);
-      } catch (e) {
-        console.error(e);
+      } catch (err: unknown) {
+        console.error(err);
+        setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to load permissions" });
       } finally {
         setLoading(false);
       }
@@ -311,20 +304,14 @@ export default function AppsPermissionsPage() {
     if (!validateReauth()) return;
 
     try {
-      const res = await fetch(`/api/apps/${pendingRevoke}/revoke`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token') || ''}`
-        }
-      });
-      if (!res.ok) throw new Error("Failed to revoke");
+      await api.post<void>(`/apps/${pendingRevoke}/revoke`);
 
       // Update local state to show as revoked
       setApps((prev) => prev.map((a) => (a.id === pendingRevoke ? { ...a, revoked: true } : a)));
       setSnack({ open: true, severity: "success", msg: "Access revoked. You will be logged out of that service." });
       closeReauth();
-    } catch (e) {
-      setSnack({ open: true, severity: "error", msg: "Failed to revoke access." });
+    } catch (err: unknown) {
+      setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to revoke access." });
     }
   };
 
