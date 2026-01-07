@@ -207,7 +207,7 @@ export default function AccountChooserV4() {
     {
       id: "u1",
       fullName: "Ronald Isabirye",
-      handle: "ronald@evzone.com",
+      handle: "example@mail.com",
       lastUsedLabel: "Last used today",
       badges: [
         { label: "2FA Enabled", tone: "success" },

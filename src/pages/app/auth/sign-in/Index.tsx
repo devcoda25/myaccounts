@@ -138,7 +138,7 @@ export default function SignInPage() {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
 
-  const [identifier, setIdentifier] = useState("ronald@evzone.com");
+  const [identifier, setIdentifier] = useState("example@mail.com");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
@@ -362,7 +362,7 @@ export default function SignInPage() {
 
                   <Divider sx={{ my: 1 }} />
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    Pre-filled for demo: ronald@evzone.com
+                    Pre-filled for demo: example@mail.com
                   </Typography>
                 </Stack>
               </CardContent>

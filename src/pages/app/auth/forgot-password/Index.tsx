@@ -84,7 +84,7 @@ export default function ForgotPasswordPage() {
   const isDark = theme.palette.mode === "dark";
 
   const [step, setStep] = useState<Step>("request");
-  const [identifier, setIdentifier] = useState("ronald@evzone.com");
+  const [identifier, setIdentifier] = useState("example@mail.com");
   const idType = detectIdType(identifier);
 
   const [delivery, setDelivery] = useState<Delivery>("email_link");

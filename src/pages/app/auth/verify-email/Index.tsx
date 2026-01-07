@@ -152,7 +152,7 @@ export default function VerifyEmailPage() {
 
   const [step, setStep] = useState<Step>("verify");
 
-  const [email, setEmail] = useState(() => localStorage.getItem('pending_verification_email') || "ronald@evzone.com");
+  const [email, setEmail] = useState(() => localStorage.getItem('pending_verification_email') || "example@mail.com");
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
 

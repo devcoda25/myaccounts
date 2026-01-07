@@ -64,7 +64,7 @@ export default function SignInOtpPage() {
   const isDark = theme.palette.mode === "dark";
 
   const [step, setStep] = useState<Step>("request");
-  const [identifier, setIdentifier] = useState("ronald@evzone.com");
+  const [identifier, setIdentifier] = useState("example@mail.com");
   const [cooldown, setCooldown] = useState(0);
   const [banner, setBanner] = useState<{ severity: "error" | "warning" | "info" | "success"; msg: string } | null>(null);
 
