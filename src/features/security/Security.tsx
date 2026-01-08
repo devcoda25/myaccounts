@@ -262,7 +262,9 @@ export default function SecurityOverviewPage() {
       id: s.id,
       when: s.lastUsedAt ? new Date(s.lastUsedAt).getTime() : 0,
       device: s.deviceInfo?.device || "Unknown Device",
-      location: s.deviceInfo?.location || "Unknown Location",
+      location: typeof s.deviceInfo?.location === "object" && s.deviceInfo.location
+        ? [s.deviceInfo.location.city, s.deviceInfo.location.country].filter(Boolean).join(", ") || "Unknown Location"
+        : (s.deviceInfo?.location as string) || "Unknown Location",
       status: "trusted" as const
     }));
   }, [sessions]);
