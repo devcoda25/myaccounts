@@ -24,7 +24,8 @@ import {
     TableRow,
     TextField,
     Typography,
-    useTheme
+    useTheme,
+    useMediaQuery
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { motion } from "framer-motion";
@@ -113,6 +114,7 @@ import { exportToCsv } from "@/utils/export";
 
 export default function AuditLogs() {
     const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const isDark = theme.palette.mode === 'dark';
     const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
     const [rows, setRows] = useState<AuditEvent[]>([]);
@@ -243,43 +245,81 @@ export default function AuditLogs() {
                     </CardContent>
                 </Card>
 
-                <Card sx={{ borderRadius: 6 }}>
-                    <TableContainer>
-                        <Table size="small">
-                            <TableHead>
-                                <TableRow sx={{ backgroundColor: alpha(theme.palette.background.paper, 0.55) }}>
-                                    <TableCell sx={{ fontWeight: 950 }}>Time</TableCell>
-                                    <TableCell sx={{ fontWeight: 950 }}>Actor</TableCell>
-                                    <TableCell sx={{ fontWeight: 950 }}>Action</TableCell>
-                                    <TableCell sx={{ fontWeight: 950 }}>Target</TableCell>
-                                    <TableCell sx={{ fontWeight: 950 }}>Risk</TableCell>
-                                    <TableCell sx={{ fontWeight: 950 }}>Outcome</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {filtered.map((r) => (
-                                    <TableRow key={r.id} hover sx={{ cursor: "pointer" }} onClick={() => setDetail(r)}>
-                                        <TableCell>{new Date(r.at).toLocaleString()}</TableCell>
-                                        <TableCell>
-                                            <Typography sx={{ fontWeight: 900 }}>{r.actor}</Typography>
-                                            <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{r.role}</Typography>
-                                        </TableCell>
-                                        <TableCell>{r.action}</TableCell>
-                                        <TableCell>{r.target}</TableCell>
-                                        <TableCell>{riskChip(r.risk)}</TableCell>
-                                        <TableCell>
-                                            {r.outcome === "Success" ? <Chip size="small" color="success" label="Success" /> : <Chip size="small" color="error" label="Failed" />}
-                                        </TableCell>
+                <Card sx={{ borderRadius: 6, overflow: 'hidden' }}>
+                    {!isMobile ? (
+                        <TableContainer>
+                            <Table size="small">
+                                <TableHead>
+                                    <TableRow sx={{ backgroundColor: alpha(theme.palette.background.paper, 0.55) }}>
+                                        <TableCell sx={{ fontWeight: 950 }}>Time</TableCell>
+                                        <TableCell sx={{ fontWeight: 950 }}>Actor</TableCell>
+                                        <TableCell sx={{ fontWeight: 950 }}>Action</TableCell>
+                                        <TableCell sx={{ fontWeight: 950 }}>Target</TableCell>
+                                        <TableCell sx={{ fontWeight: 950 }}>Risk</TableCell>
+                                        <TableCell sx={{ fontWeight: 950 }}>Outcome</TableCell>
                                     </TableRow>
-                                ))}
-                                {filtered.length === 0 && (
-                                    <TableRow>
-                                        <TableCell colSpan={6} align="center">No logs found.</TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                                </TableHead>
+                                <TableBody>
+                                    {filtered.map((r) => (
+                                        <TableRow key={r.id} hover sx={{ cursor: "pointer" }} onClick={() => setDetail(r)}>
+                                            <TableCell>{new Date(r.at).toLocaleString()}</TableCell>
+                                            <TableCell>
+                                                <Typography sx={{ fontWeight: 900 }}>{r.actor}</Typography>
+                                                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{r.role}</Typography>
+                                            </TableCell>
+                                            <TableCell>{r.action}</TableCell>
+                                            <TableCell>{r.target}</TableCell>
+                                            <TableCell>{riskChip(r.risk)}</TableCell>
+                                            <TableCell>
+                                                {r.outcome === "Success" ? <Chip size="small" color="success" label="Success" /> : <Chip size="small" color="error" label="Failed" />}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                    {filtered.length === 0 && (
+                                        <TableRow>
+                                            <TableCell colSpan={6} align="center">No logs found.</TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    ) : (
+                        <Stack spacing={0} divider={<Divider />}>
+                            {filtered.map((r) => (
+                                <Box key={r.id} onClick={() => setDetail(r)} sx={{ p: 2, cursor: 'pointer', '&:active': { bgcolor: alpha(theme.palette.action.active, 0.1) } }}>
+                                    <Stack spacing={1.5}>
+                                        <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+                                            <Box>
+                                                <Typography variant="subtitle2" fontWeight={700}>{r.action}</Typography>
+                                                <Typography variant="caption" color="text.secondary">{new Date(r.at).toLocaleString()}</Typography>
+                                            </Box>
+                                            {r.outcome === "Success" ?
+                                                <Chip size="small" color="success" label="Success" variant="outlined" /> :
+                                                <Chip size="small" color="error" label="Failed" variant="outlined" />
+                                            }
+                                        </Stack>
+
+                                        <Stack direction="row" justifyContent="space-between" alignItems="center">
+                                            <Box>
+                                                <Typography variant="body2" fontWeight={600} fontSize="0.85rem">{r.actor}</Typography>
+                                                <Typography variant="caption" color="text.secondary">{r.role}</Typography>
+                                            </Box>
+                                            {riskChip(r.risk)}
+                                        </Stack>
+
+                                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary, bgcolor: alpha(theme.palette.background.default, 0.5), p: 0.5, borderRadius: 1 }}>
+                                            Target: {r.target}
+                                        </Typography>
+                                    </Stack>
+                                </Box>
+                            ))}
+                            {filtered.length === 0 && (
+                                <Box sx={{ p: 4, textAlign: 'center' }}>
+                                    <Typography variant="body2" color="text.secondary">No logs found.</Typography>
+                                </Box>
+                            )}
+                        </Stack>
+                    )}
                 </Card>
             </Stack>
 

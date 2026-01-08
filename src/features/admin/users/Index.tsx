@@ -32,7 +32,8 @@ import {
     TextField,
     Typography,
     useTheme,
-    IconButton
+    IconButton,
+    useMediaQuery
 } from "@mui/material";
 import { useThemeStore } from "@/stores/themeStore";
 import { alpha } from "@mui/material/styles";
@@ -142,6 +143,7 @@ function kycTone(t: KycTier) {
 export default function AdminUsersList() {
     const navigate = useNavigate();
     const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const { mode } = useThemeStore();
     const isDark = mode === 'dark';
 
@@ -539,51 +541,89 @@ export default function AdminUsersList() {
                         </CardContent>
                     </Card>
 
-                    <Card sx={{ borderRadius: 6 }}>
-                        <TableContainer>
-                            <Table sx={{ minWidth: 800 }}>
-                                <TableHead>
-                                    <TableRow sx={{ backgroundColor: alpha(theme.palette.background.paper, 0.55) }}>
-                                        <TableCell sx={{ fontWeight: 950 }}>User</TableCell>
-                                        <TableCell sx={{ fontWeight: 950 }}>Type</TableCell>
-                                        <TableCell sx={{ fontWeight: 950 }}>Status</TableCell>
-                                        <TableCell sx={{ fontWeight: 950 }}>KYC</TableCell>
-                                        <TableCell sx={{ fontWeight: 950 }}>Risk</TableCell>
-                                        <TableCell sx={{ fontWeight: 950 }}>Actions</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {filtered
-                                        .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
-                                        .map((r) => (
-                                            <TableRow key={r.id} hover>
-                                                <TableCell>
-                                                    <Stack>
-                                                        <Typography sx={{ fontWeight: 900 }}>{r.name}</Typography>
-                                                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{r.email || r.phone}</Typography>
-                                                    </Stack>
-                                                </TableCell>
-                                                <TableCell>{r.type}</TableCell>
-                                                <TableCell>{statusChip(r.status)}</TableCell>
-                                                <TableCell>{kycChip(r.kyc)}</TableCell>
-                                                <TableCell>{riskChip(r.risk)}</TableCell>
-                                                <TableCell>
-                                                    <RowActions r={r} />
+                    <Card sx={{ borderRadius: 6, overflow: 'hidden' }}>
+                        {!isMobile ? (
+                            <TableContainer>
+                                <Table sx={{ minWidth: 800 }}>
+                                    <TableHead>
+                                        <TableRow sx={{ backgroundColor: alpha(theme.palette.background.paper, 0.55) }}>
+                                            <TableCell sx={{ fontWeight: 950 }}>User</TableCell>
+                                            <TableCell sx={{ fontWeight: 950 }}>Type</TableCell>
+                                            <TableCell sx={{ fontWeight: 950 }}>Status</TableCell>
+                                            <TableCell sx={{ fontWeight: 950 }}>KYC</TableCell>
+                                            <TableCell sx={{ fontWeight: 950 }}>Risk</TableCell>
+                                            <TableCell sx={{ fontWeight: 950 }}>Actions</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {filtered
+                                            .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
+                                            .map((r) => (
+                                                <TableRow key={r.id} hover>
+                                                    <TableCell>
+                                                        <Stack>
+                                                            <Typography sx={{ fontWeight: 900 }}>{r.name}</Typography>
+                                                            <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{r.email || r.phone}</Typography>
+                                                        </Stack>
+                                                    </TableCell>
+                                                    <TableCell>{r.type}</TableCell>
+                                                    <TableCell>{statusChip(r.status)}</TableCell>
+                                                    <TableCell>{kycChip(r.kyc)}</TableCell>
+                                                    <TableCell>{riskChip(r.risk)}</TableCell>
+                                                    <TableCell>
+                                                        <RowActions r={r} />
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        {filtered.length === 0 && (
+                                            <TableRow>
+                                                <TableCell colSpan={6} align="center" sx={{ py: 8 }}>
+                                                    <Typography variant="body1" sx={{ color: theme.palette.text.secondary }}>
+                                                        No users found matching your filters.
+                                                    </Typography>
                                                 </TableCell>
                                             </TableRow>
-                                        ))}
-                                    {filtered.length === 0 && (
-                                        <TableRow>
-                                            <TableCell colSpan={6} align="center" sx={{ py: 8 }}>
-                                                <Typography variant="body1" sx={{ color: theme.palette.text.secondary }}>
-                                                    No users found matching your filters.
-                                                </Typography>
-                                            </TableCell>
-                                        </TableRow>
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        ) : (
+                            <Stack spacing={0} divider={<Divider />}>
+                                {filtered
+                                    .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
+                                    .map((r) => (
+                                        <Box key={r.id} sx={{ p: 2 }}>
+                                            <Stack spacing={1.5}>
+                                                <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+                                                    <Stack spacing={0.5}>
+                                                        <Typography variant="subtitle2" fontWeight={700}>{r.name}</Typography>
+                                                        <Typography variant="caption" color="text.secondary">{r.email || r.phone}</Typography>
+                                                    </Stack>
+                                                    {statusChip(r.status)}
+                                                </Stack>
+
+                                                <Stack direction="row" spacing={1} alignItems="center">
+                                                    <Chip size="small" label={r.type} variant="outlined" />
+                                                    {kycChip(r.kyc)}
+                                                    {riskChip(r.risk)}
+                                                </Stack>
+
+                                                {/* Mobile Actions */}
+                                                <Box sx={{ pt: 1 }}>
+                                                    <RowActions r={r} />
+                                                </Box>
+                                            </Stack>
+                                        </Box>
+                                    ))}
+                                {filtered.length === 0 && (
+                                    <Box sx={{ p: 4, textAlign: 'center' }}>
+                                        <Typography variant="body1" sx={{ color: theme.palette.text.secondary }}>
+                                            No users found matching your filters.
+                                        </Typography>
+                                    </Box>
+                                )}
+                            </Stack>
+                        )}
                         <Divider />
                         <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
                             <Pagination
