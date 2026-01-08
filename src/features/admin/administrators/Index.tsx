@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { api } from "@/utils/api";
 import {
     Box,
     Button,
@@ -54,28 +55,45 @@ const MOCK_ADMINS: AdminMember[] = [
 export default function Administrators() {
     const theme = useTheme();
     const isDark = theme.palette.mode === 'dark';
-    const [admins, setAdmins] = useState(MOCK_ADMINS);
+    const [admins, setAdmins] = useState<AdminMember[]>([]);
     const [openInvite, setOpenInvite] = useState(false);
     const [inviteEmail, setInviteEmail] = useState('');
     const [inviteRole, setInviteRole] = useState<AdminRole>('Admin');
 
-    const handleInvite = () => {
-        const newAdmin: AdminMember = {
-            id: String(Date.now()),
-            name: inviteEmail.split('@')[0], // Mock name
-            email: inviteEmail,
-            role: inviteRole,
-            lastActive: '-',
-            status: 'Invited'
-        };
-        setAdmins([...admins, newAdmin]);
-        setOpenInvite(false);
-        setInviteEmail('');
+    const fetchAdmins = async () => {
+        try {
+            const data = await api<AdminMember[]>('/admin/members');
+            setAdmins(data);
+        } catch (error) {
+            console.error("Failed to fetch admins", error);
+        }
     };
 
-    const handleDelete = (id: string) => {
+    useEffect(() => {
+        fetchAdmins();
+    }, []);
+
+    const handleInvite = async () => {
+        try {
+            await api.post('/admin/members', { email: inviteEmail, role: inviteRole });
+            setOpenInvite(false);
+            setInviteEmail('');
+            fetchAdmins();
+        } catch (error) {
+            const msg = error instanceof Error ? error.message : "Unknown error";
+            alert("Failed to invite admin: " + msg);
+        }
+    };
+
+    const handleDelete = async (id: string) => {
         if (window.confirm("Are you sure you want to remove this admin?")) {
-            setAdmins(admins.filter(a => a.id !== id));
+            try {
+                await api.delete(`/admin/members/${id}`);
+                fetchAdmins();
+            } catch (error) {
+                const msg = error instanceof Error ? error.message : "Unknown error";
+                alert("Failed to remove admin: " + msg);
+            }
         }
     };
 
