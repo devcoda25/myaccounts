@@ -177,6 +177,7 @@ export default function AppRouter() {
           <Route path="/legal/privacy" element={<LegalPrivacy />} />
           <Route path="/legal/terms" element={<LegalTerms />} />
           <Route path="/org-invite/accept" element={<OrgInviteAccept />} />
+          <Route path="/accept-invite" element={<StartRedirect to="/org-invite/accept" />} />
           <Route path="/status" element={<Status />} />
           <Route path="/status/maintenance" element={<StatusMaintenance />} />
           <Route path="/admin/*" element={<AdminProtectedRoute><AdminRouter /></AdminProtectedRoute>} />
@@ -186,4 +187,11 @@ export default function AppRouter() {
     </ErrorBoundary>
 
   )
+}
+
+function StartRedirect({ to }: { to: string }) {
+  // Preserve query params
+  const { search } = window.location;
+  if (typeof window === "undefined") return <Navigate to={to} replace />;
+  return <Navigate to={to + search} replace />;
 }
