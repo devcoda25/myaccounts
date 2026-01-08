@@ -279,6 +279,13 @@ export default function VerifyPhonePage() {
   // Determine if we have a phone number to verify
   const hasPhone = !!phone && phone.length > 5;
 
+  // Auto-detect if already verified
+  useEffect(() => {
+    if (user?.phoneVerified && user?.phoneNumber && phone === user.phoneNumber) {
+      setStep("success");
+    }
+  }, [user, phone]);
+
   const handleAddOrUpdatePhone = async () => {
     setBanner(null);
     const p = newPhone.trim();
@@ -292,6 +299,7 @@ export default function VerifyPhonePage() {
       await requestPhoneVerification(p, channel === "WhatsApp" ? "whatsapp_code" : "sms_code");
 
       setPhone(p);
+      setStep("verify"); // Ensure we are in verify mode for the new number
       setOtp(["", "", "", "", "", ""]);
       setCooldown(30);
       setChangeOpen(false);
@@ -455,79 +463,83 @@ export default function VerifyPhonePage() {
 
                     <Divider sx={{ my: 1 }} />
 
-                    <Stack spacing={1}>
-                      <Typography sx={{ fontWeight: 900 }}>Select Channel</Typography>
-                      <Box className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                        <ChannelCard
-                          value="SMS"
-                          title="SMS"
-                          icon={<PhoneIcon size={18} />}
-                        />
-                        <ChannelCard
-                          value="WhatsApp"
-                          title="WhatsApp"
-                          icon={<WhatsAppIcon size={18} />}
-                        />
-                      </Box>
-                      <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                        {channelHint}
-                      </Typography>
-                    </Stack>
-
-                    <Divider sx={{ my: 1 }} />
-
-                    <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      We sent a code to <b>{maskPhone(phone)}</b>.
-                    </Typography>
-
-                    <Divider sx={{ my: 1 }} />
-
-                    <Stack spacing={1.1}>
-                      <Stack direction="row" spacing={1.1} alignItems="center">
-                        <Box
-                          sx={{
-                            width: 36,
-                            height: 36,
-                            borderRadius: 14,
-                            display: "grid",
-                            placeItems: "center",
-                            backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.16 : 0.10),
-                            border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
-                          }}
-                        >
-                          <TimerIcon size={18} />
-                        </Box>
-                        <Box>
-                          <Typography sx={{ fontWeight: 900 }}>Resend Code</Typography>
-                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Click below to send a new code.
+                    {step !== "success" && (
+                      <>
+                        <Stack spacing={1}>
+                          <Typography sx={{ fontWeight: 900 }}>Select Channel</Typography>
+                          <Box className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                            <ChannelCard
+                              value="SMS"
+                              title="SMS"
+                              icon={<PhoneIcon size={18} />}
+                            />
+                            <ChannelCard
+                              value="WhatsApp"
+                              title="WhatsApp"
+                              icon={<WhatsAppIcon size={18} />}
+                            />
+                          </Box>
+                          <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                            {channelHint}
                           </Typography>
-                        </Box>
-                      </Stack>
-                      <Stack direction="row" spacing={1.1} alignItems="center">
-                        <Box
-                          sx={{
-                            width: 36,
-                            height: 36,
-                            borderRadius: 14,
-                            display: "grid",
-                            placeItems: "center",
-                            backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.16 : 0.10),
-                            border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
-                          }}
-                        >
-                          <ShieldCheckIcon size={18} />
-                        </Box>
-                        <Box>
-                          <Typography sx={{ fontWeight: 900 }}>Safe Verification</Typography>
-                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Your account is protected.
-                          </Typography>
-                        </Box>
-                      </Stack>
-                    </Stack>
+                        </Stack>
 
-                    <Divider sx={{ my: 1 }} />
+                        <Divider sx={{ my: 1 }} />
+
+                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                          We sent a code to <b>{maskPhone(phone)}</b>.
+                        </Typography>
+
+                        <Divider sx={{ my: 1 }} />
+
+                        <Stack spacing={1.1}>
+                          <Stack direction="row" spacing={1.1} alignItems="center">
+                            <Box
+                              sx={{
+                                width: 36,
+                                height: 36,
+                                borderRadius: 14,
+                                display: "grid",
+                                placeItems: "center",
+                                backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.16 : 0.10),
+                                border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
+                              }}
+                            >
+                              <TimerIcon size={18} />
+                            </Box>
+                            <Box>
+                              <Typography sx={{ fontWeight: 900 }}>Resend Code</Typography>
+                              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                                Click below to send a new code.
+                              </Typography>
+                            </Box>
+                          </Stack>
+                          <Stack direction="row" spacing={1.1} alignItems="center">
+                            <Box
+                              sx={{
+                                width: 36,
+                                height: 36,
+                                borderRadius: 14,
+                                display: "grid",
+                                placeItems: "center",
+                                backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.16 : 0.10),
+                                border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
+                              }}
+                            >
+                              <ShieldCheckIcon size={18} />
+                            </Box>
+                            <Box>
+                              <Typography sx={{ fontWeight: 900 }}>Safe Verification</Typography>
+                              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                                Your account is protected.
+                              </Typography>
+                            </Box>
+                          </Stack>
+                        </Stack>
+
+                        <Divider sx={{ my: 1 }} />
+                      </>
+                    )}
 
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                       <Button
