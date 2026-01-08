@@ -68,7 +68,7 @@ export default function AdminLogin() {
         }
     }, [user, navigate]);
 
-    const [identifier, setIdentifier] = useState("admin@evzone.com");
+    const [identifier, setIdentifier] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(true);
@@ -217,10 +217,6 @@ export default function AdminLogin() {
                                     <Button fullWidth variant="contained" endIcon={<ArrowRightIcon size={18} />} onClick={submit} disabled={isLocked} sx={orangeContainedSx}>
                                         {isLocked ? `Try again in ${secondsLeft}s` : "Sign In"}
                                     </Button>
-
-                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                                        Demo: admin@evzone.com / superadmin-secure-pw
-                                    </Typography>
 
                                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
                                         By signing in, you agree to EVzone Terms and acknowledge the Privacy Policy.
