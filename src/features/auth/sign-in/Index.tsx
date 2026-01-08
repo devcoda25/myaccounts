@@ -343,7 +343,7 @@ export default function SignInPage() {
       <Box className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">
         <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
           {/* Left */}
-          <motion.div className="md:col-span-5" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
+          <motion.div className="hidden md:block md:col-span-5" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
             <Card>
               <CardContent className="p-5 md:p-6">
                 <Stack spacing={1.2}>
