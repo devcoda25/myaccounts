@@ -164,7 +164,9 @@ export default function ActiveSessionsPage() {
         deviceLabel: s.deviceInfo?.device || "Unknown Device",
         os: s.deviceInfo?.os || "Unknown OS",
         browser: s.deviceInfo?.browser || "Unknown Browser",
-        location: s.deviceInfo?.location || "Unknown Location",
+        location: typeof s.deviceInfo?.location === 'object' && s.deviceInfo.location
+          ? `${s.deviceInfo.location.city || ''}, ${s.deviceInfo.location.country || ''}`.replace(/^, |, $/g, '') || "Unknown Location"
+          : s.deviceInfo?.location || "Unknown Location",
         ip: s.deviceInfo?.ip || "Unknown IP",
         lastActiveAt: s.lastUsedAt ? new Date(s.lastUsedAt).getTime() : Date.now(),
         createdAt: Date.now(),

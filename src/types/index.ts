@@ -108,7 +108,7 @@ export interface IAuditDetails {
     route?: string;
     method?: string;
     userAgent?: string;
-    [key: string]: unknown; // Allowed for arbitrary metadata, but use strict keys where possible
+    [key: string]: string | number | boolean | null | undefined; // Allowed for arbitrary metadata, but use strict keys where possible
 }
 
 export interface IAuditLog {
@@ -223,6 +223,15 @@ export interface IPaginatedResponse<T> {
 }
 
 // Wallet Strict Types
+export interface IBillingAddress {
+    line1: string;
+    line2?: string;
+    city: string;
+    region?: string;
+    postal?: string;
+    country: string;
+}
+
 export interface IPaymentMethodDetails {
     masked?: string;
     maskedCard?: string;
@@ -238,15 +247,8 @@ export interface IPaymentMethodDetails {
     phone?: string;
     cardholder?: string;
     providerId?: string;
-    billing?: {
-        line1: string;
-        line2?: string;
-        city: string;
-        region?: string;
-        postal?: string;
-        country: string;
-    };
-    [key: string]: unknown;
+    billing?: IBillingAddress;
+    [key: string]: string | number | boolean | null | undefined | IBillingAddress;
 }
 
 export interface IPaymentMethod {
@@ -320,7 +322,7 @@ export interface IOrgDomain {
 // Security Strict Types
 export interface ISecurityActivityLogDetails {
     device?: string;
-    location?: string;
+    location?: string | { city?: string; country?: string };
     userAgent?: string;
     os?: string;
     browser?: string;
@@ -374,7 +376,7 @@ export interface IDeveloperAuditLog {
     details?: {
         target?: string;
         status?: string;
-        [key: string]: unknown;
+        [key: string]: string | number | boolean | null | undefined;
     };
 }
 
@@ -428,7 +430,7 @@ export interface ISession {
         device?: string;
         os?: string;
         browser?: string;
-        location?: string;
+        location?: string | { city?: string; country?: string };
         ip?: string;
     };
     lastUsedAt?: string | number;

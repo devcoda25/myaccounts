@@ -282,7 +282,9 @@ export default function LoginActivityPage() {
           when: typeof l.createdAt === 'string' ? new Date(l.createdAt).getTime() : l.createdAt,
           device: l.details?.device || "Unknown Device",
           method: (l.action as LoginMethod) || "Password", // Fallback
-          location: l.details?.location || "Unknown Location",
+          location: typeof l.details?.location === 'object' && l.details.location
+            ? `${l.details.location.city || ''}, ${l.details.location.country || ''}`.replace(/^, |, $/g, '') || "Unknown Location"
+            : l.details?.location || "Unknown Location",
           ip: l.ip || "Unknown IP",
           status: (l.risk && l.risk.length > 0) ? "failure" : "success", // Simplistic mapping, refine based on 'action' if needed
           risk: (l.risk as RiskTag[]) || [],
