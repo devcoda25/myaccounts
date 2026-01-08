@@ -379,6 +379,12 @@ export default function InviteMembersPage() {
                       helperText="You can add multiple emails. Use Enter or comma to add."
                     />
 
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+                      <Button variant="outlined" sx={orangeOutlined} startIcon={<TicketIcon size={18} />} onClick={() => addEmail(emailInput)}>
+                        Add email
+                      </Button>
+                    </Box>
+
                     {emails.length ? (
                       <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                         {emails.map((e) => (
@@ -407,9 +413,6 @@ export default function InviteMembersPage() {
                     </Box>
 
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                      <Button variant="outlined" sx={orangeOutlined} startIcon={<TicketIcon size={18} />} onClick={() => addEmail(emailInput)}>
-                        Add email
-                      </Button>
                       <Button variant="contained" color="secondary" sx={orangeContained} endIcon={<ArrowRightIcon size={18} />} onClick={sendInvites}>
                         Send invites
                       </Button>

@@ -23,7 +23,8 @@ import {
     useTheme,
     IconButton,
     Snackbar,
-    Alert
+    Alert,
+    useMediaQuery
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import {
@@ -67,6 +68,7 @@ function planTone(p: OrgPlan) {
 
 export default function AdminOrgsListPage() {
     const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const navigate = useNavigate();
     const isDark = theme.palette.mode === 'dark';
 
@@ -186,52 +188,89 @@ export default function AdminOrgsListPage() {
                 </Card>
 
                 <Card sx={{ borderRadius: 6 }}>
-                    <TableContainer>
-                        <Table sx={{ minWidth: 800 }}>
-                            <TableHead>
-                                <TableRow sx={{ backgroundColor: alpha(theme.palette.background.paper, 0.55) }}>
-                                    <TableCell sx={{ fontWeight: 950 }}>Organization</TableCell>
-                                    <TableCell sx={{ fontWeight: 950 }}>Owner</TableCell>
-                                    <TableCell sx={{ fontWeight: 950 }}>Status</TableCell>
-                                    <TableCell sx={{ fontWeight: 950 }}>Plan</TableCell>
-                                    <TableCell sx={{ fontWeight: 950 }}>Members</TableCell>
-                                    <TableCell sx={{ fontWeight: 950 }}>Actions</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {filtered.slice(page * rowsPerPage, (page + 1) * rowsPerPage).map((r) => (
-                                    <TableRow key={r.id} hover>
-                                        <TableCell>
-                                            <Stack>
-                                                <Typography sx={{ fontWeight: 900 }}>{r.name}</Typography>
-                                                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{formatOrgId(r.id)} • {r.domain}</Typography>
-                                            </Stack>
-                                        </TableCell>
-                                        <TableCell>{r.owner}</TableCell>
-                                        <TableCell><StatusChip s={r.status} /></TableCell>
-                                        <TableCell><PlanChip p={r.plan} /></TableCell>
-                                        <TableCell>{r.members}</TableCell>
-                                        <TableCell>
-                                            <Stack direction="row" spacing={1}>
-                                                <Button variant="outlined" sx={orangeOutlined} startIcon={<EyeIcon size={16} />} onClick={() => navigate(`/admin/orgs/${r.id}`)}>
-                                                    View
-                                                </Button>
-                                            </Stack>
-                                        </TableCell>
+                    {!isMobile ? (
+                        <TableContainer>
+                            <Table sx={{ minWidth: 800 }}>
+                                <TableHead>
+                                    <TableRow sx={{ backgroundColor: alpha(theme.palette.background.paper, 0.55) }}>
+                                        <TableCell sx={{ fontWeight: 950 }}>Organization</TableCell>
+                                        <TableCell sx={{ fontWeight: 950 }}>Owner</TableCell>
+                                        <TableCell sx={{ fontWeight: 950 }}>Status</TableCell>
+                                        <TableCell sx={{ fontWeight: 950 }}>Plan</TableCell>
+                                        <TableCell sx={{ fontWeight: 950 }}>Members</TableCell>
+                                        <TableCell sx={{ fontWeight: 950 }}>Actions</TableCell>
                                     </TableRow>
-                                ))}
-                                {filtered.length === 0 && (
-                                    <TableRow>
-                                        <TableCell colSpan={6} align="center" sx={{ py: 8 }}>
-                                            <Typography variant="body1" sx={{ color: theme.palette.text.secondary }}>
-                                                No organizations found.
-                                            </Typography>
-                                        </TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                                </TableHead>
+                                <TableBody>
+                                    {filtered.slice(page * rowsPerPage, (page + 1) * rowsPerPage).map((r) => (
+                                        <TableRow key={r.id} hover>
+                                            <TableCell>
+                                                <Stack>
+                                                    <Typography sx={{ fontWeight: 900 }}>{r.name}</Typography>
+                                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{formatOrgId(r.id)} • {r.domain}</Typography>
+                                                </Stack>
+                                            </TableCell>
+                                            <TableCell>{r.owner}</TableCell>
+                                            <TableCell><StatusChip s={r.status} /></TableCell>
+                                            <TableCell><PlanChip p={r.plan} /></TableCell>
+                                            <TableCell>{r.members}</TableCell>
+                                            <TableCell>
+                                                <Stack direction="row" spacing={1}>
+                                                    <Button variant="outlined" sx={orangeOutlined} startIcon={<EyeIcon size={16} />} onClick={() => navigate(`/admin/orgs/${r.id}`)}>
+                                                        View
+                                                    </Button>
+                                                </Stack>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                    {filtered.length === 0 && (
+                                        <TableRow>
+                                            <TableCell colSpan={6} align="center" sx={{ py: 8 }}>
+                                                <Typography variant="body1" sx={{ color: theme.palette.text.secondary }}>
+                                                    No organizations found.
+                                                </Typography>
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    ) : (
+                        <Stack spacing={0} divider={<Divider />}>
+                            {filtered.slice(page * rowsPerPage, (page + 1) * rowsPerPage).map((r) => (
+                                <Box key={r.id} sx={{ p: 2 }}>
+                                    <Stack spacing={1.5}>
+                                        <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+                                            <Stack spacing={0.5}>
+                                                <Typography variant="subtitle2" fontWeight={700}>{r.name}</Typography>
+                                                <Typography variant="caption" color="text.secondary">{r.domain}</Typography>
+                                            </Stack>
+                                            <StatusChip s={r.status} />
+                                        </Stack>
+
+                                        <Stack direction="row" justifyContent="space-between" alignItems="center">
+                                            <PlanChip p={r.plan} />
+                                            <Typography variant="caption" color="text.secondary">{r.members} Members</Typography>
+                                        </Stack>
+
+                                        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ pt: 1 }}>
+                                            <Typography variant="caption" color="text.secondary">Owner: {r.owner}</Typography>
+                                            <Button size="small" variant="outlined" sx={orangeOutlined} startIcon={<EyeIcon size={16} />} onClick={() => navigate(`/admin/orgs/${r.id}`)}>
+                                                View
+                                            </Button>
+                                        </Stack>
+                                    </Stack>
+                                </Box>
+                            ))}
+                            {filtered.length === 0 && (
+                                <Box sx={{ p: 4, textAlign: 'center' }}>
+                                    <Typography variant="body1" sx={{ color: theme.palette.text.secondary }}>
+                                        No organizations found.
+                                    </Typography>
+                                </Box>
+                            )}
+                        </Stack>
+                    )}
                     <Divider />
                     <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
                         <Pagination

@@ -24,7 +24,8 @@ import {
     Divider,
     Alert,
     CircularProgress,
-    Snackbar
+    Snackbar,
+    useMediaQuery
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import {
@@ -70,6 +71,7 @@ interface WalletStats {
 
 export default function WalletsList() {
     const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const navigate = useNavigate();
     const [q, setQ] = useState("");
     const [page, setPage] = useState(0);
@@ -317,83 +319,155 @@ export default function WalletsList() {
                 </Box>
 
                 {/* Data Table */}
-                <TableContainer sx={{ minHeight: 400, position: 'relative' }}>
-                    {loading && (
-                        <Box sx={{
-                            position: 'absolute',
-                            top: 0, left: 0, right: 0, bottom: 0,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            bgcolor: alpha(theme.palette.background.paper, 0.4),
-                            zIndex: 1
-                        }}>
-                            <CircularProgress size={40} thickness={4} />
-                        </Box>
-                    )}
-                    <Table>
-                        <TableHead sx={{ bgcolor: alpha(theme.palette.background.default, 0.5) }}>
-                            <TableRow>
-                                <TableCell sx={{ fontWeight: 700 }}>Wallet ID</TableCell>
-                                <TableCell sx={{ fontWeight: 700 }}>Owner</TableCell>
-                                <TableCell sx={{ fontWeight: 700 }}>Balance</TableCell>
-                                <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
-                                <TableCell sx={{ fontWeight: 700 }}>Risk</TableCell>
-                                <TableCell sx={{ fontWeight: 700 }} align="right">Actions</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
+                {/* Data Table */}
+                {!isMobile ? (
+                    <TableContainer sx={{ minHeight: 400, position: 'relative' }}>
+                        {loading && (
+                            <Box sx={{
+                                position: 'absolute',
+                                top: 0, left: 0, right: 0, bottom: 0,
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                bgcolor: alpha(theme.palette.background.paper, 0.4),
+                                zIndex: 1
+                            }}>
+                                <CircularProgress size={40} thickness={4} />
+                            </Box>
+                        )}
+                        <Table>
+                            <TableHead sx={{ bgcolor: alpha(theme.palette.background.default, 0.5) }}>
+                                <TableRow>
+                                    <TableCell sx={{ fontWeight: 700 }}>Wallet ID</TableCell>
+                                    <TableCell sx={{ fontWeight: 700 }}>Owner</TableCell>
+                                    <TableCell sx={{ fontWeight: 700 }}>Balance</TableCell>
+                                    <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
+                                    <TableCell sx={{ fontWeight: 700 }}>Risk</TableCell>
+                                    <TableCell sx={{ fontWeight: 700 }} align="right">Actions</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {wallets.map((w) => (
+                                    <TableRow key={w.id} hover>
+                                        <TableCell sx={{ fontFamily: 'monospace', color: 'text.secondary', fontSize: '0.8rem' }}>{formatWalletId(w.id)}</TableCell>
+                                        <TableCell>
+                                            <Stack>
+                                                <Typography variant="subtitle2" fontWeight={600}>{w.ownerName}</Typography>
+                                                <Typography variant="caption" color="text.secondary">{w.ownerEmail}</Typography>
+                                            </Stack>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Typography variant="subtitle2" fontWeight={700}>
+                                                {formatCurrency(w.balance, w.currency)}
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <StatusChip status={w.status} />
+                                        </TableCell>
+                                        <TableCell>
+                                            <ArrowUpRight size={16} color={riskColor(w.riskScore)} style={{ display: 'inline', marginRight: 4 }} />
+                                            <Typography variant="caption" fontWeight={600} color={riskColor(w.riskScore)}>
+                                                {w.riskScore}
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            <Stack direction="row" justifyContent="flex-end" spacing={1}>
+                                                <IconButton size="small" onClick={() => navigate(`/admin/transactions?wallet=${w.id}`)}>
+                                                    <Activity size={18} />
+                                                </IconButton>
+                                                {w.status === 'Active' ? (
+                                                    <IconButton size="small" color="error" onClick={() => toggleWalletStatus(w.id, w.status)}>
+                                                        <LockIcon size={18} />
+                                                    </IconButton>
+                                                ) : (
+                                                    <IconButton size="small" color="success" onClick={() => toggleWalletStatus(w.id, w.status)}>
+                                                        <UnlockIcon size={18} />
+                                                    </IconButton>
+                                                )}
+                                            </Stack>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                                {!loading && wallets.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={6} align="center" sx={{ py: 8 }}>
+                                            <Typography variant="body1" color="text.secondary">
+                                                No wallets found matching your filters.
+                                            </Typography>
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                ) : (
+                    <Box sx={{ minHeight: 400, position: 'relative' }}>
+                        {loading && (
+                            <Box sx={{
+                                position: 'absolute',
+                                top: 0, left: 0, right: 0, bottom: 0,
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                bgcolor: alpha(theme.palette.background.paper, 0.4),
+                                zIndex: 1
+                            }}>
+                                <CircularProgress size={40} thickness={4} />
+                            </Box>
+                        )}
+                        <Stack spacing={0} divider={<Divider />}>
                             {wallets.map((w) => (
-                                <TableRow key={w.id} hover>
-                                    <TableCell sx={{ fontFamily: 'monospace', color: 'text.secondary', fontSize: '0.8rem' }}>{formatWalletId(w.id)}</TableCell>
-                                    <TableCell>
-                                        <Stack>
-                                            <Typography variant="subtitle2" fontWeight={600}>{w.ownerName}</Typography>
-                                            <Typography variant="caption" color="text.secondary">{w.ownerEmail}</Typography>
+                                <Box key={w.id} sx={{ p: 2 }}>
+                                    <Stack spacing={1.5}>
+                                        <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+                                            <Box>
+                                                <Typography variant="subtitle2" fontWeight={700} sx={{ fontFamily: 'monospace' }}>{formatWalletId(w.id)}</Typography>
+                                                <Typography variant="caption" color="text.secondary">{w.ownerName}</Typography>
+                                            </Box>
+                                            <StatusChip status={w.status} />
                                         </Stack>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="subtitle2" fontWeight={700}>
-                                            {formatCurrency(w.balance, w.currency)}
-                                        </Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <StatusChip status={w.status} />
-                                    </TableCell>
-                                    <TableCell>
-                                        <ArrowUpRight size={16} color={riskColor(w.riskScore)} style={{ display: 'inline', marginRight: 4 }} />
-                                        <Typography variant="caption" fontWeight={600} color={riskColor(w.riskScore)}>
-                                            {w.riskScore}
-                                        </Typography>
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        <Stack direction="row" justifyContent="flex-end" spacing={1}>
-                                            <IconButton size="small" onClick={() => navigate(`/admin/transactions?wallet=${w.id}`)}>
-                                                <Activity size={18} />
-                                            </IconButton>
+
+                                        <Stack direction="row" justifyContent="space-between" alignItems="baseline">
+                                            <Typography variant="h6" fontWeight={800}>
+                                                {formatCurrency(w.balance, w.currency)}
+                                            </Typography>
+                                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                <ArrowUpRight size={14} color={riskColor(w.riskScore)} style={{ marginRight: 4 }} />
+                                                <Typography variant="caption" fontWeight={600} color={riskColor(w.riskScore)}>
+                                                    {w.riskScore} Risk
+                                                </Typography>
+                                            </Box>
+                                        </Stack>
+
+                                        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ pt: 1 }}>
+                                            <Button
+                                                size="small"
+                                                variant="outlined"
+                                                startIcon={<Activity size={16} />}
+                                                onClick={() => navigate(`/admin/transactions?wallet=${w.id}`)}
+                                                sx={{ borderRadius: 2, color: 'text.primary', borderColor: theme.palette.divider }}
+                                            >
+                                                Transactions
+                                            </Button>
                                             {w.status === 'Active' ? (
-                                                <IconButton size="small" color="error" onClick={() => toggleWalletStatus(w.id, w.status)}>
-                                                    <LockIcon size={18} />
-                                                </IconButton>
+                                                <Button size="small" variant="contained" color="error" startIcon={<LockIcon size={16} />} onClick={() => toggleWalletStatus(w.id, w.status)} sx={{ borderRadius: 2 }}>
+                                                    Freeze
+                                                </Button>
                                             ) : (
-                                                <IconButton size="small" color="success" onClick={() => toggleWalletStatus(w.id, w.status)}>
-                                                    <UnlockIcon size={18} />
-                                                </IconButton>
+                                                <Button size="small" variant="contained" color="success" startIcon={<UnlockIcon size={16} />} onClick={() => toggleWalletStatus(w.id, w.status)} sx={{ borderRadius: 2 }}>
+                                                    Unfreeze
+                                                </Button>
                                             )}
                                         </Stack>
-                                    </TableCell>
-                                </TableRow>
+                                    </Stack>
+                                </Box>
                             ))}
                             {!loading && wallets.length === 0 && (
-                                <TableRow>
-                                    <TableCell colSpan={6} align="center" sx={{ py: 8 }}>
-                                        <Typography variant="body1" color="text.secondary">
-                                            No wallets found matching your filters.
-                                        </Typography>
-                                    </TableCell>
-                                </TableRow>
+                                <Box sx={{ p: 4, textAlign: 'center' }}>
+                                    <Typography variant="body1" color="text.secondary">
+                                        No wallets found matching your filters.
+                                    </Typography>
+                                </Box>
                             )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                        </Stack>
+                    </Box>
+                )}
 
                 <Box sx={{ p: 2, borderTop: `1px solid ${theme.palette.divider}` }}>
                     <Pagination

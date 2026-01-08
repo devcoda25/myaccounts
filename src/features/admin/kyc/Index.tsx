@@ -29,7 +29,8 @@ import {
     Avatar,
     Divider,
     Alert,
-    useTheme
+    useTheme,
+    useMediaQuery
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import {
@@ -67,6 +68,7 @@ interface KycRequest {
 
 export default function KycQueue() {
     const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const [tab, setTab] = useState(0);
     const [q, setQ] = useState("");
     const [page, setPage] = useState(0);
@@ -193,45 +195,98 @@ export default function KycQueue() {
                     />
                 </Box>
 
-                <TableContainer>
-                    <Table>
-                        <TableHead sx={{ bgcolor: alpha(theme.palette.background.default, 0.5) }}>
-                            <TableRow>
-                                <TableCell>User</TableCell>
-                                <TableCell>Document Type</TableCell>
-                                <TableCell>Submitted</TableCell>
-                                <TableCell>Status</TableCell>
-                                <TableCell>Risk Score</TableCell>
-                                <TableCell align="right">Action</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {filtered
-                                .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
-                                .map((r) => (
-                                    <TableRow key={r.id} hover>
-                                        <TableCell>
+                {!isMobile ? (
+                    <TableContainer>
+                        <Table>
+                            <TableHead sx={{ bgcolor: alpha(theme.palette.background.default, 0.5) }}>
+                                <TableRow>
+                                    <TableCell>User</TableCell>
+                                    <TableCell>Document Type</TableCell>
+                                    <TableCell>Submitted</TableCell>
+                                    <TableCell>Status</TableCell>
+                                    <TableCell>Risk Score</TableCell>
+                                    <TableCell align="right">Action</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {filtered
+                                    .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
+                                    .map((r) => (
+                                        <TableRow key={r.id} hover>
+                                            <TableCell>
+                                                <Stack direction="row" spacing={1.5} alignItems="center">
+                                                    <Avatar sx={{ width: 32, height: 32 }}>{r.userName.charAt(0)}</Avatar>
+                                                    <Box>
+                                                        <Typography variant="subtitle2" fontWeight={600}>{r.userName}</Typography>
+                                                        <Typography variant="caption" color="text.secondary">{formatUserId(r.userId)} • {r.email}</Typography>
+                                                    </Box>
+                                                </Stack>
+                                            </TableCell>
+                                            <TableCell>{r.docType}</TableCell>
+                                            <TableCell sx={{ color: 'text.secondary' }}>
+                                                {new Date(r.submittedAt).toLocaleDateString()}
+                                            </TableCell>
+                                            <TableCell><StatusChip status={r.status} /></TableCell>
+                                            <TableCell>
+                                                <Chip label={r.riskScore} size="small" sx={{
+                                                    bgcolor: r.riskScore === 'High' ? alpha(EVZONE.red, 0.1) : alpha(EVZONE.green, 0.1),
+                                                    color: r.riskScore === 'High' ? EVZONE.red : EVZONE.green,
+                                                    fontWeight: 700
+                                                }} />
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                <Button
+                                                    size="small"
+                                                    variant="outlined"
+                                                    startIcon={<EyeIcon size={16} />}
+                                                    onClick={() => setSelectedRequest(r)}
+                                                    sx={{ borderRadius: '8px', borderColor: theme.palette.divider, color: 'text.primary' }}
+                                                >
+                                                    Review
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                {filtered.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
+                                            <Typography color="text.secondary">No requests found in this category.</Typography>
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                ) : (
+                    <Stack spacing={0} divider={<Divider />}>
+                        {filtered
+                            .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
+                            .map((r) => (
+                                <Box key={r.id} sx={{ p: 2 }}>
+                                    <Stack spacing={1.5}>
+                                        <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
                                             <Stack direction="row" spacing={1.5} alignItems="center">
                                                 <Avatar sx={{ width: 32, height: 32 }}>{r.userName.charAt(0)}</Avatar>
                                                 <Box>
                                                     <Typography variant="subtitle2" fontWeight={600}>{r.userName}</Typography>
-                                                    <Typography variant="caption" color="text.secondary">{formatUserId(r.userId)} • {r.email}</Typography>
+                                                    <Typography variant="caption" color="text.secondary">{formatUserId(r.userId)}</Typography>
                                                 </Box>
                                             </Stack>
-                                        </TableCell>
-                                        <TableCell>{r.docType}</TableCell>
-                                        <TableCell sx={{ color: 'text.secondary' }}>
-                                            {new Date(r.submittedAt).toLocaleDateString()}
-                                        </TableCell>
-                                        <TableCell><StatusChip status={r.status} /></TableCell>
-                                        <TableCell>
+                                            <StatusChip status={r.status} />
+                                        </Stack>
+
+                                        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ pl: 5.5 }}>
+                                            <Typography variant="caption" color="text.secondary">{r.docType}</Typography>
+                                            <Typography variant="caption" color="text.secondary">{new Date(r.submittedAt).toLocaleDateString()}</Typography>
+                                        </Stack>
+
+                                        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ pl: 5.5, pt: 0.5 }}>
                                             <Chip label={r.riskScore} size="small" sx={{
                                                 bgcolor: r.riskScore === 'High' ? alpha(EVZONE.red, 0.1) : alpha(EVZONE.green, 0.1),
                                                 color: r.riskScore === 'High' ? EVZONE.red : EVZONE.green,
-                                                fontWeight: 700
+                                                fontWeight: 700,
+                                                height: 24
                                             }} />
-                                        </TableCell>
-                                        <TableCell align="right">
                                             <Button
                                                 size="small"
                                                 variant="outlined"
@@ -241,19 +296,17 @@ export default function KycQueue() {
                                             >
                                                 Review
                                             </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            {filtered.length === 0 && (
-                                <TableRow>
-                                    <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
-                                        <Typography color="text.secondary">No requests found in this category.</Typography>
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                                        </Stack>
+                                    </Stack>
+                                </Box>
+                            ))}
+                        {filtered.length === 0 && (
+                            <Box sx={{ p: 4, textAlign: 'center' }}>
+                                <Typography color="text.secondary">No requests found in this category.</Typography>
+                            </Box>
+                        )}
+                    </Stack>
+                )}
 
                 <Box sx={{ p: 2, borderTop: `1px solid ${theme.palette.divider}` }}>
                     <Pagination
