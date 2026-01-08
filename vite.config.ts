@@ -13,14 +13,11 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'https://api.evzone.app',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '/api/v1'),
       },
-      '/uploads': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
-      },
+
     },
   },
   build: {
