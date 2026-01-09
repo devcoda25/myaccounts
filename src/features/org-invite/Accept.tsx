@@ -347,11 +347,25 @@ export default function AcceptOrgInvitePage() {
             <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} flexWrap="wrap" useFlexGap>
               {!isAuthenticated ? (
                 <>
-                  <Button variant="contained" sx={orangeContained} onClick={showSignIn}>
-                    Sign In & Accept
-                  </Button>
-                  <Button variant="outlined" sx={orangeOutlined} onClick={showSignUp}>
-                    Create Account
+                  <Button variant="contained" sx={orangeContained} onClick={async () => {
+                    // Smart Redirection
+                    try {
+                      const { exists } = await api.post<{ exists: boolean }>('/auth/exists', { email: details.email });
+                      const returnTo = `/org-invite/accept?token=${encodeURIComponent(token || '')}`;
+
+                      if (exists) {
+                        // Redirect to Sign In
+                        navigate(`/auth/sign-in?returnTo=${encodeURIComponent(returnTo)}&email=${encodeURIComponent(details.email)}`);
+                      } else {
+                        // Redirect to Sign Up
+                        navigate(`/auth/sign-up?returnTo=${encodeURIComponent(returnTo)}&email=${encodeURIComponent(details.email)}`);
+                      }
+                    } catch (e) {
+                      // Fallback to manual choice if check fails
+                      showSignIn();
+                    }
+                  }}>
+                    Accept Invite
                   </Button>
                 </>
               ) : (
