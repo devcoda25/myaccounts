@@ -67,6 +67,7 @@ const AuthReAuth = lazy(() => import('../features/auth/re-auth/Index'))
 const AuthRecoveryCode = lazy(() => import('../features/auth/recovery-code/Index'))
 const AuthResetPassword = lazy(() => import('../features/auth/reset-password/Index'))
 const AuthSetPassword = lazy(() => import('../features/auth/set-password/Index'))
+const AuthCallback = lazy(() => import('../features/auth/Callback'))
 const AuthSignIn = lazy(() => import('../features/auth/sign-in/Index'))
 const AuthSignInOtp = lazy(() => import('../features/auth/sign-in/Otp'))
 const AuthSignUp = lazy(() => import('../features/auth/sign-up/Index'))
@@ -162,6 +163,7 @@ export default function AppRouter() {
           <Route path="/auth/recovery-code" element={<AuthRecoveryCode />} />
           <Route path="/auth/reset-password" element={<AuthResetPassword />} />
           <Route path="/auth/set-password" element={<AuthSetPassword />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/auth/sign-in" element={<AuthSignIn />} />
           <Route path="/auth/sign-in/otp" element={<AuthSignInOtp />} />
           <Route path="/auth/sign-up" element={<AuthSignUp />} />

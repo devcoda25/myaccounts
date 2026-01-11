@@ -19,24 +19,8 @@ import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { api } from "@/utils/api";
-import { useAuthStore } from "@/stores/authStore";
 import { useEffect, useMemo, useState } from "react";
-
-/**
- * EVzone My Accounts - Consent Screen
- * Route: /auth/consent
- * Purpose: When a client requests scopes that need user approval.
- *
- * Features:
- * - "{AppName} wants to access…"
- * - Scope list with friendly descriptions
- * - Allow / Deny actions
- * - Remember this decision
- *
- * Style rules:
- * - Background: green-only
- * - EVzone actions: orange-only buttons with white text
- */
+import { BACKEND_URL } from "@/config";
 
 type ThemeMode = "light" | "dark";
 
@@ -53,9 +37,6 @@ const EVZONE = {
   orange: "#f77f00",
 } as const;
 
-// -----------------------------
-// Inline icons (CDN-safe)
-// -----------------------------
 function IconBase({ size = 18, children }: { size?: number; children: React.ReactNode }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{ display: "block" }}>
@@ -167,9 +148,7 @@ function ScopeIcon({ kind }: { kind: ScopeItem["icon"] }) {
   return <KeyIcon size={18} />;
 }
 
-// -----------------------------
-// Theme
-// -----------------------------
+
 function getStoredMode(): ThemeMode {
   try {
     const v = window.localStorage.getItem("evzone_myaccounts_theme");
@@ -291,19 +270,19 @@ function buildScopeItems(keys: string[]): ScopeItem[] {
 
 export default function ConsentScreenPage() {
   const navigate = useNavigate();
+
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";
 
   const qs = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
+  // OIDC Params
+  const uid = qs.get("uid");
   const redirectUri = qs.get("redirect_uri") || "";
   const clientId = qs.get("client_id") || "";
   const rawScopes = qs.get("scopes") || "openid profile email";
-  const state = qs.get("state") || "";
-  const codeChallenge = qs.get("code_challenge") || "";
-  const codeChallengeMethod = qs.get("code_challenge_method") || "S256";
-  const responseType = qs.get("response_type") || "code";
 
+  // Client Fetching
   const [client, setClient] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -333,10 +312,10 @@ export default function ConsentScreenPage() {
     msg: "",
   });
 
-  const pageBg =
-    mode === "dark"
-      ? "radial-gradient(1200px 600px at 12% 6%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 10%, rgba(3,205,140,0.16), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
-      : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.18), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.12), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
+  // Styles
+  const pageBg = mode === "dark"
+    ? "radial-gradient(1200px 600px at 12% 6%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 10%, rgba(3,205,140,0.16), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
+    : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.18), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.12), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
 
   const orangeContainedSx = {
     backgroundColor: EVZONE.orange,
@@ -344,20 +323,20 @@ export default function ConsentScreenPage() {
     boxShadow: `0 18px 48px ${alpha(EVZONE.orange, mode === "dark" ? 0.28 : 0.20)}`,
     "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
     "&:active": { backgroundColor: alpha(EVZONE.orange, 0.86), color: "#FFFFFF" },
-  } as const;
+  };
 
   const orangeOutlinedSx = {
     borderColor: alpha(EVZONE.orange, 0.65),
     color: EVZONE.orange,
     backgroundColor: alpha(theme.palette.background.paper, 0.35),
     "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
-  } as const;
+  };
 
   const orangeTextSx = {
     color: EVZONE.orange,
     fontWeight: 900,
     "&:hover": { backgroundColor: alpha(EVZONE.orange, mode === "dark" ? 0.14 : 0.10) },
-  } as const;
+  };
 
   const toggleMode = () => {
     const next: ThemeMode = mode === "light" ? "dark" : "light";
@@ -365,45 +344,34 @@ export default function ConsentScreenPage() {
     setStoredMode(next);
   };
 
-  const onAllow = async () => {
-    try {
-      // 1. Grant Consent on backend
-      await api('/oauth/consent', {
-        method: 'POST',
-        body: JSON.stringify({ clientId, scopes: scopeKeys })
-      });
-
-      setSnack({ open: true, severity: "success", msg: `Permission granted. Returning to ${safeHost(redirectUri) || "the app"}…` });
-
-      // 2. Redirect to backend authorize to complete the flow
-      const authUrl = `/api/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=${responseType}&code_challenge=${codeChallenge}&code_challenge_method=${codeChallengeMethod}&state=${state}`;
-
-      setTimeout(() => {
-        window.location.href = authUrl;
-      }, 800);
-    } catch (e: any) {
-      setSnack({ open: true, severity: "error", msg: e.message || "Failed to grant consent" });
+  // ACTIONS
+  const submitChoice = (action: 'confirm' | 'abort') => {
+    if (!uid) {
+      setSnack({ open: true, severity: "error", msg: "Missing interaction UID" });
+      return;
     }
+
+    const form = document.createElement('form');
+    form.method = action === 'confirm' ? 'POST' : 'GET';
+    form.action = `${BACKEND_URL}/interaction/${uid}/${action}`;
+    document.body.appendChild(form);
+    form.submit();
+  };
+
+  const onAllow = async () => {
+    setSnack({ open: true, severity: "success", msg: "Confirming..." });
+    // Short delay to show snack?
+    setTimeout(() => submitChoice('confirm'), 500);
   };
 
   const onDeny = () => {
-    if (remember) {
-      try {
-        window.localStorage.setItem(`evzone_consent_${clientId}_${scopeKeys.join("_")}`, "deny");
-      } catch {
-        // ignore
-      }
-    }
-    setSnack({ open: true, severity: "info", msg: "Denied. Returning to the app…" });
-    setTimeout(() => {
-      navigate("/app");
-    }, 800);
+    setSnack({ open: true, severity: "info", msg: "Denying..." });
+    setTimeout(() => submitChoice('abort'), 500);
   };
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-
       <Box className="min-h-screen" sx={{ background: pageBg }}>
         {/* Top bar */}
         <Box sx={{ borderBottom: `1px solid ${theme.palette.divider}` }}>
@@ -431,16 +399,6 @@ export default function ConsentScreenPage() {
                 <Tooltip title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}>
                   <IconButton onClick={toggleMode} size="small" sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}>
                     {isDark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Language">
-                  <IconButton size="small" sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}>
-                    <GlobeIcon size={18} />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Help">
-                  <IconButton size="small" onClick={() => navigate("/auth/account-recovery-help")} sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.35)}`, borderRadius: 12, backgroundColor: alpha(theme.palette.background.paper, 0.6), color: EVZONE.orange }}>
-                    <HelpCircleIcon size={18} />
                   </IconButton>
                 </Tooltip>
               </Stack>
@@ -476,18 +434,6 @@ export default function ConsentScreenPage() {
                         </Typography>
                       </Box>
                     </Stack>
-
-                    <Box sx={{
-                      borderRadius: 16,
-                      border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
-                      backgroundColor: alpha(theme.palette.background.paper, 0.45),
-                      px: 1.5,
-                      py: 1.2,
-                      minWidth: { xs: "100%", md: 300 },
-                    }}>
-                      <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Redirect destination</Typography>
-                      <Typography sx={{ fontWeight: 900 }}>{safeHost(redirectUri) || "unknown"}</Typography>
-                    </Box>
                   </Stack>
 
                   <Divider />
@@ -610,7 +556,7 @@ export default function ConsentScreenPage() {
                     </Stack>
 
                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      By continuing, you agree to EVzone Terms and acknowledge the Privacy Policy.
+                      By continuing, you acknowledge you are interacting with the OIDC Provider.
                     </Typography>
                   </Stack>
                 </Stack>
@@ -621,10 +567,6 @@ export default function ConsentScreenPage() {
           {/* Footer */}
           <Box className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
             <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group.</Typography>
-            <Stack direction="row" spacing={1.2} alignItems="center">
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>Terms</Button>
-              <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>Privacy</Button>
-            </Stack>
           </Box>
         </Box>
 

@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { useAuth } from "react-oidc-context";
+import { BACKEND_URL } from "@/config";
 import {
   Alert,
   Box,
@@ -244,18 +246,48 @@ export default function SignInPage() {
   const location = useLocation();
   const { initGoogleLogin, initGoogleCustomLogin, initAppleLogin, isGoogleLoading, isAppleLoading, renderGoogleButton, isGoogleScriptLoaded } = useSocialLogin();
 
+  // OIDC Integration
+  const [searchParams] = useSearchParams();
+  const uid = searchParams.get("uid");
+  const auth = useAuth();
+
+  // If not logged in and not in interaction flow (uid), start OIDC login
   useEffect(() => {
-    if (user) {
-      const from = (location.state as any)?.from || "/app";
-      navigate(from, { replace: true });
+    if (!uid && !auth.isAuthenticated && !auth.isLoading && !auth.activeNavigator) {
+      auth.signinRedirect();
     }
-  }, [user, navigate, location]);
+  }, [uid, auth]);
+
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      // If standard login success (via callback), redirect
+      navigate("/app", { replace: true });
+    }
+  }, [auth.isAuthenticated, navigate]);
 
   // React.useEffect(() => {
   //   if (isGoogleScriptLoaded) {
   //     renderGoogleButton('google-signin-btn');
   //   }
   // }, [isGoogleScriptLoaded, renderGoogleButton]);
+
+  // Helper: Submit Interaction via Hidden Form (to follow redirects)
+  const submitInteraction = (uidVal: string, e: string, p: string) => {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `${BACKEND_URL}/interaction/${uidVal}/login`;
+
+    const fUid = document.createElement('input'); fUid.type = 'hidden'; fUid.name = 'uid'; fUid.value = uidVal;
+    const fEmail = document.createElement('input'); fEmail.type = 'hidden'; fEmail.name = 'email'; fEmail.value = e;
+    const fPass = document.createElement('input'); fPass.type = 'hidden'; fPass.name = 'password'; fPass.value = p;
+
+    form.appendChild(fUid);
+    form.appendChild(fEmail);
+    form.appendChild(fPass);
+
+    document.body.appendChild(form);
+    form.submit();
+  };
 
   const submitPasswordSignIn = async () => {
     setBanner(null);
@@ -275,8 +307,19 @@ export default function SignInPage() {
       return;
     }
 
+    // OIDC INTERACTION MODE
+    if (uid) {
+      setSnack({ open: true, severity: "info", msg: "Verifying credentials..." });
+      submitInteraction(uid, id, password);
+      return;
+    }
+
+    // Fallback Legacy Login (if any) or User Store update
+    // But we prefer OIDC flow. If we are here without UID, the Effect should have triggered redirect.
+    // Assuming we handle legacy for now or just wait for redirect.
     try {
       await login(id, password);
+      // ... same logic
       setAttempts(0);
       setLockUntil(null);
       setSnack({ open: true, severity: "success", msg: `Signed in successfully as ${maskIdentifier(id)}.` });
