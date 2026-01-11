@@ -41,6 +41,17 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 })
 
+// Mock react-oidc-context
+vi.mock('react-oidc-context', () => ({
+  useAuth: () => ({
+    isAuthenticated: false,
+    isLoading: false,
+    activeNavigator: undefined,
+    signinRedirect: vi.fn(),
+  }),
+  AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
 import AppComp from '../features/dashboard/Index'
 import AppAppsComp from '../features/apps/Apps'
 import AppAppsPermissionsComp from '../features/apps/AppsPermissions'
@@ -87,6 +98,7 @@ import AppWalletTransactionsComp from '../features/wallet/WalletTransactions'
 import AppWalletTransactionsTxnIdComp from '../features/wallet/WalletTransactionsTxnId'
 import AppWalletWithdrawComp from '../features/wallet/WalletWithdraw'
 import AuthAccountRecoveryHelpComp from '../features/auth/account-recovery-help/Index'
+import AuthCallbackComp from '../features/auth/Callback'
 import AuthChooseAccountComp from '../features/auth/choose-account/Index'
 import AuthConsentComp from '../features/auth/consent/Index'
 import AuthContinueComp from '../features/auth/continue/Index'
@@ -164,6 +176,7 @@ const PAGES: Array<[string, React.ComponentType<unknown>]> = [
   ['/app/wallet/transactions/:txnId', AppWalletTransactionsTxnIdComp],
   ['/app/wallet/withdraw', AppWalletWithdrawComp],
   ['/auth/account-recovery-help', AuthAccountRecoveryHelpComp],
+  ['/auth/callback', AuthCallbackComp],
   ['/auth/choose-account', AuthChooseAccountComp],
   ['/auth/consent', AuthConsentComp],
   ['/auth/continue', AuthContinueComp],
