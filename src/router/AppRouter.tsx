@@ -88,15 +88,7 @@ export default function AppRouter() {
               <Route path="/app/developer/docs" element={<AppDeveloperDocs />} /> */}
               <Route path="/app/notifications" element={<AppNotifications />} />
               <Route path="/app/orgs/*" element={<Navigate to="/app" replace />} />
-              {/* <Route path="/app/orgs/:orgId" element={<AppOrgsOrgId />} />
-              <Route path="/app/orgs/:orgId/domain-verification" element={<AppOrgsOrgIdDomainVerification />} />
-              <Route path="/app/orgs/:orgId/invite" element={<AppOrgsOrgIdInvite />} />
-              <Route path="/app/orgs/:orgId/members" element={<AppOrgsOrgIdMembers />} />
-              <Route path="/app/orgs/:orgId/provisioning" element={<AppOrgsOrgIdProvisioning />} />
-              <Route path="/app/orgs/:orgId/roles-permissions" element={<AppOrgsOrgIdRolesPermissions />} />
-              <Route path="/app/orgs/:orgId/settings" element={<AppOrgsOrgIdSettings />} />
-              <Route path="/app/orgs/:orgId/sso" element={<AppOrgsOrgIdSso />} />
-              <Route path="/app/orgs/switch" element={<AppOrgsSwitch />} /> */}
+             
               <Route path="/app/parental-controls" element={<AppParentalControls />} />
               <Route path="/app/privacy/consents" element={<AppPrivacyConsents />} />
               <Route path="/app/privacy/data-requests" element={<AppPrivacyDataRequests />} />
