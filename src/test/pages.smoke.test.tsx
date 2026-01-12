@@ -59,7 +59,7 @@ import AppDeveloperComp from '../features/developer/Index'
 import AppNotificationsComp from '../features/notifications/Index'
 import AppOrgsComp from '../features/orgs/Orgs'
 // Org sub-pages removed
-import AppOrgsSwitchComp from '../features/orgs/OrgsSwitch'
+// Org sub-pages removed (including Switch)
 import AppParentalControlsComp from '../features/parental/Index'
 import AppPrivacyConsentsComp from '../features/privacy/PrivacyConsents'
 import AppPrivacyDeleteAccountComp from '../features/privacy/PrivacyDeleteAccount'
@@ -105,7 +105,6 @@ import Errors500Comp from '../features/errors/Error500'
 import LegalCookiesComp from '../features/legal/Cookies'
 import LegalPrivacyComp from '../features/legal/Privacy'
 import LegalTermsComp from '../features/legal/Terms'
-import OrgInviteAcceptComp from '../features/org-invite/Accept'
 import StatusComp from '../features/status/Index'
 import StatusMaintenanceComp from '../features/status/Maintenance'
 
@@ -126,7 +125,7 @@ const PAGES: Array<[string, React.ComponentType<unknown>]> = [
   // ['/app/orgs/:orgId/roles-permissions', AppOrgsOrgIdRolesPermissionsComp],
   // ['/app/orgs/:orgId/settings', AppOrgsOrgIdSettingsComp],
   // ['/app/orgs/:orgId/sso', AppOrgsOrgIdSsoComp],
-  ['/app/orgs/switch', AppOrgsSwitchComp],
+  // ['/app/orgs/switch', AppOrgsSwitchComp],
   ['/app/parental-controls', AppParentalControlsComp],
   ['/app/privacy/consents', AppPrivacyConsentsComp],
   ['/app/privacy/delete-account', AppPrivacyDeleteAccountComp],
@@ -184,7 +183,7 @@ const PAGES: Array<[string, React.ComponentType<unknown>]> = [
   ['/legal/cookies', LegalCookiesComp],
   ['/legal/privacy', LegalPrivacyComp],
   ['/legal/terms', LegalTermsComp],
-  ['/org-invite/accept', OrgInviteAcceptComp],
+  // ['/org-invite/accept', OrgInviteAcceptComp],
   ['/status', StatusComp],
   ['/status/maintenance', StatusMaintenanceComp],
 ]
