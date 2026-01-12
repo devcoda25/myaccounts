@@ -273,9 +273,12 @@ export default function SignInPage() {
 
   // Helper: Submit Interaction via Hidden Form (to follow redirects)
   const submitInteraction = (uidVal: string, e: string, p: string) => {
+    // [FIX] Interaction endpoints are at root, not /api/v1
+    const interactionBaseUrl = BACKEND_URL.replace(/\/api\/v1\/?$/, '');
+
     const form = document.createElement('form');
     form.method = 'POST';
-    form.action = `${BACKEND_URL}/interaction/${uidVal}/login`;
+    form.action = `${interactionBaseUrl}/interaction/${uidVal}/login`;
 
     const fUid = document.createElement('input'); fUid.type = 'hidden'; fUid.name = 'uid'; fUid.value = uidVal;
     const fEmail = document.createElement('input'); fEmail.type = 'hidden'; fEmail.name = 'email'; fEmail.value = e;
