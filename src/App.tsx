@@ -1,4 +1,5 @@
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, useNavigate } from 'react-router-dom';
+import React from 'react';
 import AppRouter from './router/AppRouter';
 import { AppThemeProvider } from './theme/AppThemeProvider';
 import { useAuthStore } from './stores/authStore';
@@ -17,18 +18,29 @@ export default function App() {
     refreshUser();
   }, []);
 
-  const onSigninCallback = (_user: any) => {
-    // Clear OIDC params from URL
-    window.history.replaceState({}, document.title, window.location.pathname);
-  };
-
   return (
     <BrowserRouter>
-      <AuthProvider {...oidcConfig} onSigninCallback={onSigninCallback}>
+      <AuthProviderWrapper>
         <AppThemeProvider>
           <AppRouter />
         </AppThemeProvider>
-      </AuthProvider>
+      </AuthProviderWrapper>
     </BrowserRouter>
+  );
+}
+
+function AuthProviderWrapper({ children }: { children: React.ReactNode }) {
+  const navigate = useNavigate();
+
+  const onSigninCallback = (_user: any) => {
+    // Clear OIDC params from URL and navigate to app
+    window.history.replaceState({}, document.title, window.location.pathname);
+    navigate('/app', { replace: true });
+  };
+
+  return (
+    <AuthProvider {...oidcConfig} onSigninCallback={onSigninCallback}>
+      {children}
+    </AuthProvider>
   );
 }

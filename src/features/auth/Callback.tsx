@@ -7,14 +7,12 @@ export default function Callback() {
     const auth = useAuth();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (auth.isAuthenticated) {
-            navigate('/app', { replace: true });
-        }
-        if (auth.error) {
-            console.error('OIDC Error:', auth.error);
-        }
-    }, [auth.isAuthenticated, auth.error, navigate]);
+    // Navigation is handled by onSigninCallback in App.tsx
+
+    // Just handle errors if they persist in state
+    if (auth.error) {
+        console.error('OIDC Error:', auth.error);
+    }
 
     if (auth.error) {
         return (
