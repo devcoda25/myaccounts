@@ -88,7 +88,7 @@ export default function AppRouter() {
               <Route path="/app/developer/docs" element={<AppDeveloperDocs />} /> */}
               <Route path="/app/notifications" element={<AppNotifications />} />
               <Route path="/app/orgs/*" element={<Navigate to="/app" replace />} />
-             
+
               <Route path="/app/parental-controls" element={<AppParentalControls />} />
               <Route path="/app/privacy/consents" element={<AppPrivacyConsents />} />
               <Route path="/app/privacy/data-requests" element={<AppPrivacyDataRequests />} />
@@ -126,7 +126,7 @@ export default function AppRouter() {
 
           <Route path="/auth/account-recovery-help" element={<AuthAccountRecoveryHelp />} />
           <Route path="/auth/choose-account" element={<AuthChooseAccount />} />
-          <Route path="/auth/consent" element={<ProtectedRoute><AuthConsent /></ProtectedRoute>} />
+          <Route path="/auth/consent" element={<AuthConsent />} />
           <Route path="/auth/continue" element={<AuthContinue />} />
           <Route path="/auth/error" element={<AuthError />} />
           <Route path="/auth/forgot-password" element={<AuthForgotPassword />} />
