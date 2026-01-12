@@ -6,32 +6,18 @@ import {
   Grid,
   Paper,
   Button,
-  IconButton,
-  Avatar,
-  Divider,
   useTheme,
-  Chip,
-  Stack,
+  Avatar,
   CircularProgress
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import {
-  Wallet as WalletIcon,
   ShieldCheck,
-  Users,
-  Bell,
-  ArrowUpRight,
-  ArrowDownLeft,
-  Plus,
   CreditCard,
-  Settings,
-  ChevronRight,
-  Zap,
-  LayoutDashboard,
-  Shield,
-  ArrowDown,
-  ArrowUp,
-  FileText
+  Users,
+  Code,
+  ExternalLink,
+  Settings
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -39,30 +25,14 @@ import { useThemeStore } from "@/stores/themeStore";
 import { useAuthStore } from "@/stores/authStore";
 import { EVZONE } from "@/theme/evzone";
 import { api } from "@/utils/api";
-import { IWallet, ITransaction } from "@/types";
 
-// Helpers
-function money(amount: number, currency = "UGX") {
-  const sign = amount < 0 ? "-" : "";
-  const v = Math.abs(Math.round(amount));
-  return `${sign}${currency} ${v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
-}
-
-function timeAgo(ts: number) {
-  const diff = Date.now() - ts;
-  const min = Math.floor(diff / 60000);
-  if (min < 1) return "Just now";
-  if (min < 60) return `${min} m`;
-  const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr} h`;
-  const d = Math.floor(hr / 24);
-  return `${d} d`;
-}
-
-function txIcon(type: string) {
-  if (type === "Top up" || type === "Refund") return <ArrowDownLeft size={18} />;
-  if (type === "Payment" || type === "Withdrawal") return <ArrowUpRight size={18} />;
-  return <Zap size={18} />;
+interface IApp {
+  id: string;
+  name: string;
+  description: string;
+  icon: React.ReactNode;
+  url: string;
+  color: string;
 }
 
 export default function Dashboard() {
@@ -70,38 +40,7 @@ export default function Dashboard() {
   const theme = useTheme();
   const { mode } = useThemeStore();
   const { user } = useAuthStore();
-
-  const [wallet, setWallet] = useState<IWallet | null>(null);
-  const [stats, setStats] = useState({ inflow: 0, outflow: 0 });
-  const [recentTxns, setRecentTxns] = useState<ITransaction[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [w, s, t] = await Promise.all([
-          api<IWallet>('/wallets/me'),
-          api<{ inflow: number; outflow: number }>('/wallets/me/stats?days=30'), // Monthly stats for dashboard
-          api<{ data: ITransaction[] }>('/wallets/me/transactions?take=3')
-        ]);
-        setWallet(w);
-        setStats(s);
-        setRecentTxns(t.data || []);
-      } catch (err) {
-        console.error("Dashboard load failed", err);
-        setRecentTxns([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
-  const balance = wallet ? Number(wallet.balance) : 0;
-  const currency = wallet?.currency || "UGX";
-
-  // Calculate percentage change (mock logic as API might not return period comparison yet)
-  const percentChange = stats.inflow > 0 ? "+12.4%" : "0%";
+  const [loading, setLoading] = useState(false); // Can be used for fetching sessions later
 
   const containerVars = {
     hidden: { opacity: 0 },
@@ -123,217 +62,186 @@ export default function Dashboard() {
     return "Good evening";
   };
 
+  const APPS: IApp[] = [
+    {
+      id: 'wallet',
+      name: 'EVZone Wallet',
+      description: 'Manage funds, top-ups, and payments.',
+      icon: <CreditCard size={24} />,
+      url: 'https://wallet.evzone.app', // External App
+      color: EVZONE.green
+    },
+    {
+      id: 'orgs',
+      name: 'Organization Hub',
+      description: 'Team management and enterprise billing.',
+      icon: <Users size={24} />,
+      url: 'https://orgs.evzone.app', // External App (was /app/orgs)
+      color: '#3B82F6' // Blue
+    },
+    {
+      id: 'dev',
+      name: 'Developer Portal',
+      description: 'API keys, OAuth clients, and docs.',
+      icon: <Code size={24} />,
+      url: 'https://developers.evzone.app', // External App
+      color: '#8B5CF6' // Purple
+    }
+  ];
+
+  const pageBg = mode === 'dark'
+    ? 'radial-gradient(circle at 50% 0%, #1a2e29 0%, #07110F 100%)'
+    : 'radial-gradient(circle at 50% 0%, #e8fbf4 0%, #ffffff 100%)';
+
   return (
     <Box sx={{
       minHeight: '100%',
       position: 'relative',
+      background: pageBg,
       pb: { xs: 12, md: 8 }
     }}>
-      {/* Background Mesh Gradient */}
-      <Box sx={{
-        position: 'absolute',
-        top: 0, left: 0, right: 0, height: '400px',
-        zIndex: 0,
-        background: `radial-gradient(circle at 15% 10%, ${alpha(EVZONE.green, 0.08)}, transparent 40%)`
-      }} />
-
-      <Container maxWidth="xl" sx={{ pt: { xs: 3, md: 6 }, position: 'relative', zIndex: 1 }}>
+      <Container maxWidth="lg" sx={{ pt: { xs: 4, md: 8 }, position: 'relative', zIndex: 1 }}>
         <motion.div variants={containerVars} initial="hidden" animate="show">
 
-          {/* Dashboard Content Header */}
-          <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          {/* Header */}
+          <Box sx={{ mb: 6, textAlign: 'center' }}>
             <motion.div variants={itemVars}>
-              <Typography variant="h4" sx={{ fontWeight: 800, letterSpacing: '-0.02em', mb: 0.5, color: 'text.primary' }}>
-                Dashboard
+              <Typography variant="h3" sx={{ fontWeight: 800, letterSpacing: '-0.02em', mb: 1, color: 'text.primary' }}>
+                {greeting()}, {user?.firstName}
               </Typography>
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                {greeting()}, {user?.firstName || 'User'}
+              <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 400 }}>
+                Access your applications and manage your EVZone identity.
               </Typography>
             </motion.div>
           </Box>
 
-          <Grid container spacing={3}>
-            {/* Left Column */}
-            <Grid item xs={12} lg={8}>
-              {/* Wallet Hero Card */}
-              <motion.div variants={itemVars}>
-                <Paper sx={{
-                  p: 0,
-                  mb: 3,
-                  position: 'relative',
-                  borderRadius: '16px',
-                  overflow: 'hidden',
-                  background: `linear-gradient(135deg, ${mode === 'dark' ? '#0B1A17' : '#FFFFFF'} 0%, ${mode === 'dark' ? '#07110F' : '#F4FFFB'} 100%)`,
-                  border: `1px solid ${EVZONE.divider[mode]}`,
-                  boxShadow: EVZONE.shadows[mode].card
-                }}>
-                  <Box sx={{
-                    position: 'absolute', top: -80, right: -20, width: 250, height: 250,
-                    borderRadius: '50%', background: `radial-gradient(circle, ${alpha(EVZONE.green, 0.15)} 0%, transparent 70%)`, filter: 'blur(50px)'
-                  }} />
-
-                  <Box sx={{ p: { xs: 3, md: 4 }, display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { md: 'flex-end' }, position: 'relative', zIndex: 2 }}>
-                    <Box>
-                      <Typography variant="subtitle2" sx={{ color: 'text.secondary', mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <WalletIcon size={16} /> Total Balance
-                      </Typography>
-                      {loading ? (
-                        <Box sx={{ height: 60, display: 'flex', alignItems: 'center' }}><CircularProgress size={24} color="inherit" /></Box>
-                      ) : (
-                        <Typography variant="h2" sx={{ fontWeight: 700, mb: 1, letterSpacing: '-0.02em', color: 'text.primary' }}>
-                          <span style={{ color: EVZONE.green }}>{currency}</span> {balance.toLocaleString()}
-                        </Typography>
-                      )}
-
-                      <Chip label={`${percentChange} this month`} size="small" sx={{
-                        bgcolor: alpha('#03cd8c', 0.1),
-                        color: '#03cd8c',
-                        fontWeight: 600,
-                        borderRadius: '8px',
-                        border: `1px solid ${alpha('#03cd8c', 0.2)}`
-                      }} />
+          {/* Apps Grid */}
+          <Grid container spacing={3} sx={{ mb: 6 }}>
+            {APPS.map((app) => (
+              <Grid item xs={12} md={4} key={app.id}>
+                <motion.div variants={itemVars}>
+                  <Paper
+                    component="a"
+                    href={app.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    sx={{
+                      p: 4,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      textAlign: 'center',
+                      textDecoration: 'none',
+                      height: '100%',
+                      borderRadius: '20px',
+                      background: alpha(theme.palette.background.paper, 0.6),
+                      backdropFilter: 'blur(20px)',
+                      border: `1px solid ${theme.palette.divider}`,
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      '&:hover': {
+                        transform: 'translateY(-8px)',
+                        boxShadow: `0 20px 40px -10px ${alpha(app.color, 0.3)}`,
+                        borderColor: alpha(app.color, 0.5)
+                      }
+                    }}
+                  >
+                    <Box sx={{
+                      width: 64, height: 64,
+                      borderRadius: '16px',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      bgcolor: alpha(app.color, 0.1),
+                      color: app.color,
+                      mb: 2
+                    }}>
+                      {app.icon}
                     </Box>
-
-                    <Box sx={{ mt: { xs: 3, md: 0 }, display: 'flex', gap: 2 }}>
-                      <Button variant="contained" size="large" startIcon={<Plus size={18} />} onClick={() => navigate('/app/wallet/add-funds')} sx={{
-                        borderRadius: '12px',
-                        px: 3,
-                        bgcolor: EVZONE.green,
-                        color: '#fff',
-                        fontWeight: 700,
-                        boxShadow: `0 8px 16px ${alpha(EVZONE.green, 0.25)}`,
-                        '&:hover': { bgcolor: alpha(EVZONE.green, 0.9) }
-                      }}>
-                        Add Funds
-                      </Button>
-                      <Button variant="outlined" size="large" startIcon={<ArrowUpRight size={18} />} onClick={() => navigate('/app/wallet/withdraw')} sx={{
-                        borderRadius: '12px',
-                        px: 3,
-                        borderColor: alpha(theme.palette.text.primary, 0.2),
-                        color: 'text.primary',
-                        '&:hover': { borderColor: theme.palette.text.primary, bgcolor: alpha(theme.palette.text.primary, 0.05) }
-                      }}>
-                        Send
-                      </Button>
-                    </Box>
-                  </Box>
-                </Paper>
-              </motion.div>
-
-              {/* Quick Actions Grid */}
-              <motion.div variants={itemVars}>
-                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: 'text.primary' }}>Quick Actions</Typography>
-                <Grid container spacing={2} sx={{ mb: 4 }}>
-                  {[
-                    { label: "Pay Bills", icon: <CreditCard size={20} />, color: EVZONE.orange, path: "/app/wallet" },
-                    { label: "Security", icon: <ShieldCheck size={20} />, color: EVZONE.green, path: "/app/security" },
-                    { label: "Orgs", icon: <Users size={20} />, color: EVZONE.green, path: "/app/orgs" },
-                    { label: "Settings", icon: <Settings size={20} />, color: EVZONE.orange, path: "/app/profile" },
-                  ].map((action, i) => (
-                    <Grid item xs={6} sm={3} key={i}>
-                      <Paper onClick={() => navigate(action.path)} sx={{
-                        borderRadius: '16px',
-                        p: 3,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: 1.5,
-                        cursor: 'pointer',
-                        transition: 'transform 0.2s, box-shadow 0.2s',
-                        bgcolor: alpha(theme.palette.background.paper, 0.6),
-                        border: `1px solid ${theme.palette.divider}`,
-                        backdropFilter: 'blur(12px)',
+                    <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
+                      {app.name}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>
+                      {app.description}
+                    </Typography>
+                    <Button
+                      variant="outlined"
+                      endIcon={<ExternalLink size={16} />}
+                      sx={{
+                        mt: 'auto',
+                        borderRadius: '10px',
+                        borderColor: alpha(app.color, 0.3),
+                        color: app.color,
                         '&:hover': {
-                          transform: 'translateY(-4px)',
-                          boxShadow: theme.shadows[4],
-                          borderColor: alpha(action.color, 0.5)
+                          borderColor: app.color,
+                          bgcolor: alpha(app.color, 0.05)
                         }
-                      }}>
-                        <Box sx={{
-                          width: 44, height: 44,
-                          borderRadius: '12px',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          background: alpha(action.color, 0.1),
-                          border: `1px solid ${alpha(action.color, 0.2)}`,
-                          color: action.color
-                        }}>
-                          {action.icon}
-                        </Box>
-                        <Typography variant="subtitle2" fontWeight={600} color="text.primary">{action.label}</Typography>
-                      </Paper>
-                    </Grid>
-                  ))}
-                </Grid>
-              </motion.div>
-            </Grid>
-
-            {/* Right Column: Recent Activity */}
-            <Grid item xs={12} lg={4}>
-              <motion.div variants={itemVars}>
-                <Paper sx={{
-                  p: 3,
-                  position: 'relative',
-                  borderRadius: '16px',
-                  bgcolor: alpha(theme.palette.background.paper, 0.6),
-                  border: `1px solid ${theme.palette.divider}`,
-                  backdropFilter: 'blur(12px)'
-                }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                    <Typography variant="h6" fontWeight={600} color="text.primary">Recent Activity</Typography>
-                    <IconButton size="small"><ArrowUpRight size={16} /></IconButton>
-                  </Box>
-
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                    {loading ? (
-                      <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}><CircularProgress size={20} /></Box>
-                    ) : recentTxns.length === 0 ? (
-                      <Typography variant="body2" color="text.secondary" align="center" sx={{ py: 4 }}>No recent transactions</Typography>
-                    ) : (
-                      recentTxns.map((txn) => {
-                        const isCredit = txn.type === 'Top up' || txn.type === 'Refund';
-                        return (
-                          <Box key={txn.id} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                            <Box sx={{
-                              width: 40, height: 40, borderRadius: '12px',
-                              bgcolor: alpha(theme.palette.text.primary, 0.05),
-                              display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              color: 'text.secondary'
-                            }}>
-                              {txIcon(txn.type)}
-                            </Box>
-                            <Box sx={{ flex: 1 }}>
-                              <Typography variant="subtitle2" fontWeight={600} color="text.primary">
-                                {txn.type}
-                              </Typography>
-                              <Typography variant="caption" color="text.secondary">
-                                {timeAgo(new Date(txn.createdAt).getTime())} • {txn.counterparty || (isCredit ? 'Deposit' : 'Transfer')}
-                              </Typography>
-                            </Box>
-                            <Typography variant="body2" fontWeight={600} sx={{
-                              color: isCredit ? EVZONE.green : 'text.primary'
-                            }}>
-                              {isCredit ? '+' : ''}{money(Number(txn.amount), txn.currency).replace(txn.currency, '')}
-                            </Typography>
-                          </Box>
-                        );
-                      })
-                    )}
-                  </Box>
-
-                  <Divider sx={{ my: 3 }} />
-
-                  <Button fullWidth endIcon={<ChevronRight size={16} />} onClick={() => navigate('/app/wallet/transactions')} sx={{
-                    justifyContent: 'space-between',
-                    color: 'text.secondary',
-                    textTransform: 'none',
-                    '&:hover': { color: 'text.primary', bgcolor: 'transparent' }
-                  }}>
-                    View all transactions
-                  </Button>
-                </Paper>
-              </motion.div>
-            </Grid>
+                      }}
+                    >
+                      Launch App
+                    </Button>
+                  </Paper>
+                </motion.div>
+              </Grid>
+            ))}
           </Grid>
+
+          {/* Account & Security Quick Links */}
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" sx={{ mb: 3, fontWeight: 700, color: 'text.primary' }}>
+              Account & Security
+            </Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <motion.div variants={itemVars}>
+                  <Paper
+                    onClick={() => navigate('/app/security')}
+                    sx={{
+                      p: 3,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 2,
+                      cursor: 'pointer',
+                      borderRadius: '16px',
+                      border: `1px solid ${theme.palette.divider}`,
+                      '&:hover': { bgcolor: alpha(theme.palette.action.hover, 0.1) }
+                    }}
+                  >
+                    <Box sx={{ p: 1.5, borderRadius: '12px', bgcolor: alpha('#3B82F6', 0.1), color: '#3B82F6' }}>
+                      <ShieldCheck size={24} />
+                    </Box>
+                    <Box>
+                      <Typography variant="subtitle1" fontWeight={700}>Security Settings</Typography>
+                      <Typography variant="caption" color="text.secondary">2FA, Password, Sessions</Typography>
+                    </Box>
+                  </Paper>
+                </motion.div>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <motion.div variants={itemVars}>
+                  <Paper
+                    onClick={() => navigate('/app/profile')}
+                    sx={{
+                      p: 3,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 2,
+                      cursor: 'pointer',
+                      borderRadius: '16px',
+                      border: `1px solid ${theme.palette.divider}`,
+                      '&:hover': { bgcolor: alpha(theme.palette.action.hover, 0.1) }
+                    }}
+                  >
+                    <Box sx={{ p: 1.5, borderRadius: '12px', bgcolor: alpha(EVZONE.orange, 0.1), color: EVZONE.orange }}>
+                      <Settings size={24} />
+                    </Box>
+                    <Box>
+                      <Typography variant="subtitle1" fontWeight={700}>Profile & Preferences</Typography>
+                      <Typography variant="caption" color="text.secondary">Personal info, Language, Theme</Typography>
+                    </Box>
+                  </Paper>
+                </motion.div>
+              </Grid>
+            </Grid>
+          </Box>
+
         </motion.div>
       </Container>
     </Box>
