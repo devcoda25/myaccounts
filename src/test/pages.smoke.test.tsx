@@ -55,9 +55,8 @@ vi.mock('react-oidc-context', () => ({
 import AppComp from '../features/dashboard/Index'
 import AppAppsComp from '../features/apps/Apps'
 import AppAppsPermissionsComp from '../features/apps/AppsPermissions'
-import AppDeveloperComp from '../features/developer/Index'
+
 import AppNotificationsComp from '../features/notifications/Index'
-import AppOrgsComp from '../features/orgs/Orgs'
 // Org sub-pages removed
 // Org sub-pages removed (including Switch)
 import AppParentalControlsComp from '../features/parental/Index'
@@ -77,7 +76,7 @@ import AppSecurityRecoveryCodesComp from '../features/security/SecurityRecoveryC
 import AppSecuritySessionsComp from '../features/security/SecuritySessions'
 import AppSupportComp from '../features/support/Support'
 import AppSupportSecurityComp from '../features/support/SupportSecurity'
-import AppWalletComp from '../features/wallet/Wallet'
+// AppWalletComp removed - external link
 // Wallet sub-pages removed
 import AuthAccountRecoveryHelpComp from '../features/auth/account-recovery-help/Index'
 import AuthCallbackComp from '../features/auth/Callback'
@@ -114,9 +113,9 @@ const PAGES: Array<[string, React.ComponentType<unknown>]> = [
   ['/app', AppComp],
   ['/app/apps', AppAppsComp],
   ['/app/apps/permissions', AppAppsPermissionsComp],
-  ['/app/developer', AppDeveloperComp],
+  
   ['/app/notifications', AppNotificationsComp],
-  ['/app/orgs', AppOrgsComp],
+  // ['/app/orgs', AppOrgsComp],
   // ['/app/orgs/:orgId', AppOrgsOrgIdComp],
   // ['/app/orgs/:orgId/domain-verification', AppOrgsOrgIdDomainVerificationComp],
   // ['/app/orgs/:orgId/invite', AppOrgsOrgIdInviteComp],
@@ -143,7 +142,7 @@ const PAGES: Array<[string, React.ComponentType<unknown>]> = [
   ['/app/security/sessions', AppSecuritySessionsComp],
   ['/app/support', AppSupportComp],
   ['/app/support/security', AppSupportSecurityComp],
-  ['/app/wallet', AppWalletComp],
+  // ['/app/wallet', AppWalletComp],
   // Wallet sub-pages removed
   // ['/app/wallet/add-funds', AppWalletAddFundsComp],
   // ['/app/wallet/disputes', AppWalletDisputesComp],

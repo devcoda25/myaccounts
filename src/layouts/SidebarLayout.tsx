@@ -38,15 +38,15 @@ const DRAWER_WIDTH = 280;
 
 const NAV_ITEMS = [
     { label: 'Overview', path: '/app', icon: <LayoutDashboard size={20} /> },
-    { label: 'Wallet', path: '/app/wallet', icon: <Wallet size={20} /> },
+    // { label: 'Wallet', path: 'https://wallet.evzone.app', icon: <Wallet size={20} />, external: true },
     { label: 'Security', path: '/app/security', icon: <Shield size={20} /> },
-    { label: 'Orgs', path: '/app/orgs', icon: <Users size={20} /> },
+    // { label: 'Orgs', path: 'https://orgs.evzone.app', icon: <Users size={20} />, external: true },
     { label: 'Apps', path: '/app/apps', icon: <Grid size={20} /> },
 ];
 
 const SECONDARY_NAV_ITEMS = [
     { label: "Parental Controls", path: "/app/parental-controls", icon: <Lock size={20} /> },
-    { label: "Developer", path: "/app/developer", icon: <Code size={20} /> },
+    // { label: "Developer", path: "https://developers.evzone.app", icon: <Code size={20} />, external: true },
     { label: "Support", path: "/app/support", icon: <HelpCircle size={20} /> },
     { label: "Terms", path: "/legal/terms", icon: <FileText size={20} />, external: true },
     { label: "Privacy", path: "/legal/privacy", icon: <Shield size={20} />, external: true },

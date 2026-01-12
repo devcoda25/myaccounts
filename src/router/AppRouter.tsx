@@ -6,10 +6,10 @@ import RouteLoader from '../components/loading/RouteLoader'
 const App = lazy(() => import('../features/dashboard/Index'))
 const AppApps = lazy(() => import('../features/apps/Apps'))
 const AppAppsPermissions = lazy(() => import('../features/apps/AppsPermissions'))
-const AppDeveloper = lazy(() => import('../features/developer/Index'))
+
 // Developer Docs/Audit removed
 const AppNotifications = lazy(() => import('../features/notifications/Index'))
-const AppOrgs = lazy(() => import('../features/orgs/Orgs'))
+
 // Org sub-pages removed
 const AppParentalControls = lazy(() => import('../features/parental/Index'))
 const AppPrivacyConsents = lazy(() => import('../features/privacy/PrivacyConsents'))
@@ -30,7 +30,7 @@ const AppSecuritySessions = lazy(() => import('../features/security/SecuritySess
 const AppSettings = lazy(() => import('../features/settings/Settings'))
 const AppSupport = lazy(() => import('../features/support/Support'))
 const AppSupportSecurity = lazy(() => import('../features/support/SupportSecurity'))
-const AppWallet = lazy(() => import('../features/wallet/Wallet'))
+
 // Wallet sub-pages removed
 const AuthAccountRecoveryHelp = lazy(() => import('../features/auth/account-recovery-help/Index'))
 const AuthChooseAccount = lazy(() => import('../features/auth/choose-account/Index'))
@@ -61,7 +61,7 @@ const Errors500 = lazy(() => import('../features/errors/Error500'))
 const LegalCookies = lazy(() => import('../features/legal/Cookies'))
 const LegalPrivacy = lazy(() => import('../features/legal/Privacy'))
 const LegalTerms = lazy(() => import('../features/legal/Terms'))
-const OrgInviteAccept = lazy(() => import('../features/org-invite/Accept'))
+// const OrgInviteAccept = lazy(() => import('../features/org-invite/Accept'))
 const Status = lazy(() => import('../features/status/Index'))
 const StatusMaintenance = lazy(() => import('../features/status/Maintenance'))
 import SidebarLayout from '../layouts/SidebarLayout'
@@ -82,13 +82,12 @@ export default function AppRouter() {
               <Route path="/app" element={<App />} />
               <Route path="/app/apps" element={<AppApps />} />
               <Route path="/app/apps/permissions" element={<AppAppsPermissions />} />
-              <Route path="/app/developer" element={<AppDeveloper />} />
-              <Route path="/app/developer/*" element={<Navigate to="/app/developer" replace />} />
+              {/* App Developer Moved to External Link */}
+              <Route path="/app/developer/*" element={<Navigate to="/app" replace />} />
               {/* <Route path="/app/developer/audit" element={<AppDeveloperAudit />} />
               <Route path="/app/developer/docs" element={<AppDeveloperDocs />} /> */}
               <Route path="/app/notifications" element={<AppNotifications />} />
-              <Route path="/app/orgs" element={<AppOrgs />} />
-              <Route path="/app/orgs/*" element={<Navigate to="/app/orgs" replace />} />
+              <Route path="/app/orgs/*" element={<Navigate to="/app" replace />} />
               {/* <Route path="/app/orgs/:orgId" element={<AppOrgsOrgId />} />
               <Route path="/app/orgs/:orgId/domain-verification" element={<AppOrgsOrgIdDomainVerification />} />
               <Route path="/app/orgs/:orgId/invite" element={<AppOrgsOrgIdInvite />} />
@@ -117,8 +116,7 @@ export default function AppRouter() {
               <Route path="/app/settings" element={<AppSettings />} />
               <Route path="/app/support" element={<AppSupport />} />
               <Route path="/app/support/security" element={<AppSupportSecurity />} />
-              <Route path="/app/wallet" element={<AppWallet />} />
-              <Route path="/app/wallet/*" element={<Navigate to="/app/wallet" replace />} />
+              <Route path="/app/wallet/*" element={<Navigate to="/app" replace />} />
               {/* <Route path="/app/wallet/add-funds" element={<AppWalletAddFunds />} />
               <Route path="/app/wallet/disputes" element={<AppWalletDisputes />} />
               <Route path="/app/wallet/kyc" element={<AppWalletKyc />} />
@@ -161,8 +159,8 @@ export default function AppRouter() {
           <Route path="/legal/cookies" element={<LegalCookies />} />
           <Route path="/legal/privacy" element={<LegalPrivacy />} />
           <Route path="/legal/terms" element={<LegalTerms />} />
-          <Route path="/org-invite/accept" element={<OrgInviteAccept />} />
-          <Route path="/accept-invite" element={<StartRedirect to="/org-invite/accept" />} />
+          <Route path="/legal/terms" element={<LegalTerms />} />
+          {/* Org Invite Routes Removed */}
           <Route path="/status" element={<Status />} />
           <Route path="/status/maintenance" element={<StatusMaintenance />} />
           <Route path="/admin/*" element={<AdminProtectedRoute><AdminRouter /></AdminProtectedRoute>} />
