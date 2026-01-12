@@ -115,16 +115,7 @@ const PAGES: Array<[string, React.ComponentType<unknown>]> = [
   ['/app/apps/permissions', AppAppsPermissionsComp],
   
   ['/app/notifications', AppNotificationsComp],
-  // ['/app/orgs', AppOrgsComp],
-  // ['/app/orgs/:orgId', AppOrgsOrgIdComp],
-  // ['/app/orgs/:orgId/domain-verification', AppOrgsOrgIdDomainVerificationComp],
-  // ['/app/orgs/:orgId/invite', AppOrgsOrgIdInviteComp],
-  // ['/app/orgs/:orgId/members', AppOrgsOrgIdMembersComp],
-  // ['/app/orgs/:orgId/provisioning', AppOrgsOrgIdProvisioningComp],
-  // ['/app/orgs/:orgId/roles-permissions', AppOrgsOrgIdRolesPermissionsComp],
-  // ['/app/orgs/:orgId/settings', AppOrgsOrgIdSettingsComp],
-  // ['/app/orgs/:orgId/sso', AppOrgsOrgIdSsoComp],
-  // ['/app/orgs/switch', AppOrgsSwitchComp],
+ 
   ['/app/parental-controls', AppParentalControlsComp],
   ['/app/privacy/consents', AppPrivacyConsentsComp],
   ['/app/privacy/delete-account', AppPrivacyDeleteAccountComp],
