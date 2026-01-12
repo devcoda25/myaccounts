@@ -7,19 +7,10 @@ const App = lazy(() => import('../features/dashboard/Index'))
 const AppApps = lazy(() => import('../features/apps/Apps'))
 const AppAppsPermissions = lazy(() => import('../features/apps/AppsPermissions'))
 const AppDeveloper = lazy(() => import('../features/developer/Index'))
-const AppDeveloperAudit = lazy(() => import('../features/developer/DeveloperAudit'))
-const AppDeveloperDocs = lazy(() => import('../features/developer/DeveloperDocs'))
+// Developer Docs/Audit removed
 const AppNotifications = lazy(() => import('../features/notifications/Index'))
 const AppOrgs = lazy(() => import('../features/orgs/Orgs'))
-const AppOrgsOrgId = lazy(() => import('../features/orgs/OrgsOrgId'))
-const AppOrgsOrgIdDomainVerification = lazy(() => import('../features/orgs/OrgsOrgIdDomainVerification'))
-const AppOrgsOrgIdInvite = lazy(() => import('../features/orgs/OrgsOrgIdInvite'))
-const AppOrgsOrgIdMembers = lazy(() => import('../features/orgs/OrgsOrgIdMembers'))
-const AppOrgsOrgIdProvisioning = lazy(() => import('../features/orgs/OrgsOrgIdProvisioning'))
-const AppOrgsOrgIdRolesPermissions = lazy(() => import('../features/orgs/OrgsOrgIdRolesPermissions'))
-const AppOrgsOrgIdSettings = lazy(() => import('../features/orgs/OrgsOrgIdSettings'))
-const AppOrgsOrgIdSso = lazy(() => import('../features/orgs/OrgsOrgIdSso'))
-const AppOrgsSwitch = lazy(() => import('../features/orgs/OrgsSwitch'))
+// Org sub-pages removed
 const AppParentalControls = lazy(() => import('../features/parental/Index'))
 const AppPrivacyConsents = lazy(() => import('../features/privacy/PrivacyConsents'))
 const AppPrivacyDataRequests = lazy(() => import('../features/privacy/PrivacyDataRequests'))
@@ -40,18 +31,7 @@ const AppSettings = lazy(() => import('../features/settings/Settings'))
 const AppSupport = lazy(() => import('../features/support/Support'))
 const AppSupportSecurity = lazy(() => import('../features/support/SupportSecurity'))
 const AppWallet = lazy(() => import('../features/wallet/Wallet'))
-const AppWalletAddFunds = lazy(() => import('../features/wallet/WalletAddFunds')) // Assuming this file was moved
-const AppWalletDisputes = lazy(() => import('../features/wallet/WalletDisputes'))
-const AppWalletKyc = lazy(() => import('../features/wallet/WalletKyc'))
-const AppWalletKycDetails = lazy(() => import('../features/wallet/WalletKycDetails'))
-const AppWalletKycStatus = lazy(() => import('../features/wallet/WalletKycStatus'))
-const AppWalletKycUpload = lazy(() => import('../features/wallet/WalletKycUpload'))
-const AppWalletLimits = lazy(() => import('../features/wallet/WalletLimits'))
-const AppWalletPaymentMethods = lazy(() => import('../features/wallet/WalletPaymentMethods'))
-const AppWalletPaymentMethodsAdd = lazy(() => import('../features/wallet/WalletPaymentMethodsAdd'))
-const AppWalletTransactions = lazy(() => import('../features/wallet/WalletTransactions'))
-const AppWalletTransactionsTxnId = lazy(() => import('../features/wallet/WalletTransactionsTxnId'))
-const AppWalletWithdraw = lazy(() => import('../features/wallet/WalletWithdraw'))
+// Wallet sub-pages removed
 const AuthAccountRecoveryHelp = lazy(() => import('../features/auth/account-recovery-help/Index'))
 const AuthChooseAccount = lazy(() => import('../features/auth/choose-account/Index'))
 const AuthConsent = lazy(() => import('../features/auth/consent/Index'))
@@ -103,11 +83,13 @@ export default function AppRouter() {
               <Route path="/app/apps" element={<AppApps />} />
               <Route path="/app/apps/permissions" element={<AppAppsPermissions />} />
               <Route path="/app/developer" element={<AppDeveloper />} />
-              <Route path="/app/developer/audit" element={<AppDeveloperAudit />} />
-              <Route path="/app/developer/docs" element={<AppDeveloperDocs />} />
+              <Route path="/app/developer/*" element={<Navigate to="/app/developer" replace />} />
+              {/* <Route path="/app/developer/audit" element={<AppDeveloperAudit />} />
+              <Route path="/app/developer/docs" element={<AppDeveloperDocs />} /> */}
               <Route path="/app/notifications" element={<AppNotifications />} />
               <Route path="/app/orgs" element={<AppOrgs />} />
-              <Route path="/app/orgs/:orgId" element={<AppOrgsOrgId />} />
+              <Route path="/app/orgs/*" element={<Navigate to="/app/orgs" replace />} />
+              {/* <Route path="/app/orgs/:orgId" element={<AppOrgsOrgId />} />
               <Route path="/app/orgs/:orgId/domain-verification" element={<AppOrgsOrgIdDomainVerification />} />
               <Route path="/app/orgs/:orgId/invite" element={<AppOrgsOrgIdInvite />} />
               <Route path="/app/orgs/:orgId/members" element={<AppOrgsOrgIdMembers />} />
@@ -115,7 +97,7 @@ export default function AppRouter() {
               <Route path="/app/orgs/:orgId/roles-permissions" element={<AppOrgsOrgIdRolesPermissions />} />
               <Route path="/app/orgs/:orgId/settings" element={<AppOrgsOrgIdSettings />} />
               <Route path="/app/orgs/:orgId/sso" element={<AppOrgsOrgIdSso />} />
-              <Route path="/app/orgs/switch" element={<AppOrgsSwitch />} />
+              <Route path="/app/orgs/switch" element={<AppOrgsSwitch />} /> */}
               <Route path="/app/parental-controls" element={<AppParentalControls />} />
               <Route path="/app/privacy/consents" element={<AppPrivacyConsents />} />
               <Route path="/app/privacy/data-requests" element={<AppPrivacyDataRequests />} />
@@ -136,7 +118,8 @@ export default function AppRouter() {
               <Route path="/app/support" element={<AppSupport />} />
               <Route path="/app/support/security" element={<AppSupportSecurity />} />
               <Route path="/app/wallet" element={<AppWallet />} />
-              <Route path="/app/wallet/add-funds" element={<AppWalletAddFunds />} />
+              <Route path="/app/wallet/*" element={<Navigate to="/app/wallet" replace />} />
+              {/* <Route path="/app/wallet/add-funds" element={<AppWalletAddFunds />} />
               <Route path="/app/wallet/disputes" element={<AppWalletDisputes />} />
               <Route path="/app/wallet/kyc" element={<AppWalletKyc />} />
               <Route path="/app/wallet/kyc/details" element={<AppWalletKycDetails />} />
@@ -147,7 +130,7 @@ export default function AppRouter() {
               <Route path="/app/wallet/payment-methods/add" element={<AppWalletPaymentMethodsAdd />} />
               <Route path="/app/wallet/transactions" element={<AppWalletTransactions />} />
               <Route path="/app/wallet/transactions/:txnId" element={<AppWalletTransactionsTxnId />} />
-              <Route path="/app/wallet/withdraw" element={<AppWalletWithdraw />} />
+              <Route path="/app/wallet/withdraw" element={<AppWalletWithdraw />} /> */}
             </Route>
           </Route> { /* End Sidebar Layout */}
 

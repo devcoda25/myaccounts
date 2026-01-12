@@ -58,14 +58,7 @@ import AppAppsPermissionsComp from '../features/apps/AppsPermissions'
 import AppDeveloperComp from '../features/developer/Index'
 import AppNotificationsComp from '../features/notifications/Index'
 import AppOrgsComp from '../features/orgs/Orgs'
-import AppOrgsOrgIdComp from '../features/orgs/OrgsOrgId'
-import AppOrgsOrgIdDomainVerificationComp from '../features/orgs/OrgsOrgIdDomainVerification'
-import AppOrgsOrgIdInviteComp from '../features/orgs/OrgsOrgIdInvite'
-import AppOrgsOrgIdMembersComp from '../features/orgs/OrgsOrgIdMembers'
-import AppOrgsOrgIdProvisioningComp from '../features/orgs/OrgsOrgIdProvisioning'
-import AppOrgsOrgIdRolesPermissionsComp from '../features/orgs/OrgsOrgIdRolesPermissions'
-import AppOrgsOrgIdSettingsComp from '../features/orgs/OrgsOrgIdSettings'
-import AppOrgsOrgIdSsoComp from '../features/orgs/OrgsOrgIdSso'
+// Org sub-pages removed
 import AppOrgsSwitchComp from '../features/orgs/OrgsSwitch'
 import AppParentalControlsComp from '../features/parental/Index'
 import AppPrivacyConsentsComp from '../features/privacy/PrivacyConsents'
@@ -85,18 +78,7 @@ import AppSecuritySessionsComp from '../features/security/SecuritySessions'
 import AppSupportComp from '../features/support/Support'
 import AppSupportSecurityComp from '../features/support/SupportSecurity'
 import AppWalletComp from '../features/wallet/Wallet'
-import AppWalletAddFundsComp from '../features/wallet/WalletAddFunds'
-import AppWalletDisputesComp from '../features/wallet/WalletDisputes'
-import AppWalletKycComp from '../features/wallet/WalletKyc'
-import AppWalletKycDetailsComp from '../features/wallet/WalletKycDetails'
-import AppWalletKycStatusComp from '../features/wallet/WalletKycStatus'
-import AppWalletKycUploadComp from '../features/wallet/WalletKycUpload'
-import AppWalletLimitsComp from '../features/wallet/WalletLimits'
-import AppWalletPaymentMethodsComp from '../features/wallet/WalletPaymentMethods'
-import AppWalletPaymentMethodsAddComp from '../features/wallet/WalletPaymentMethodsAdd'
-import AppWalletTransactionsComp from '../features/wallet/WalletTransactions'
-import AppWalletTransactionsTxnIdComp from '../features/wallet/WalletTransactionsTxnId'
-import AppWalletWithdrawComp from '../features/wallet/WalletWithdraw'
+// Wallet sub-pages removed
 import AuthAccountRecoveryHelpComp from '../features/auth/account-recovery-help/Index'
 import AuthCallbackComp from '../features/auth/Callback'
 import AuthChooseAccountComp from '../features/auth/choose-account/Index'
@@ -136,14 +118,14 @@ const PAGES: Array<[string, React.ComponentType<unknown>]> = [
   ['/app/developer', AppDeveloperComp],
   ['/app/notifications', AppNotificationsComp],
   ['/app/orgs', AppOrgsComp],
-  ['/app/orgs/:orgId', AppOrgsOrgIdComp],
-  ['/app/orgs/:orgId/domain-verification', AppOrgsOrgIdDomainVerificationComp],
-  ['/app/orgs/:orgId/invite', AppOrgsOrgIdInviteComp],
-  ['/app/orgs/:orgId/members', AppOrgsOrgIdMembersComp],
-  ['/app/orgs/:orgId/provisioning', AppOrgsOrgIdProvisioningComp],
-  ['/app/orgs/:orgId/roles-permissions', AppOrgsOrgIdRolesPermissionsComp],
-  ['/app/orgs/:orgId/settings', AppOrgsOrgIdSettingsComp],
-  ['/app/orgs/:orgId/sso', AppOrgsOrgIdSsoComp],
+  // ['/app/orgs/:orgId', AppOrgsOrgIdComp],
+  // ['/app/orgs/:orgId/domain-verification', AppOrgsOrgIdDomainVerificationComp],
+  // ['/app/orgs/:orgId/invite', AppOrgsOrgIdInviteComp],
+  // ['/app/orgs/:orgId/members', AppOrgsOrgIdMembersComp],
+  // ['/app/orgs/:orgId/provisioning', AppOrgsOrgIdProvisioningComp],
+  // ['/app/orgs/:orgId/roles-permissions', AppOrgsOrgIdRolesPermissionsComp],
+  // ['/app/orgs/:orgId/settings', AppOrgsOrgIdSettingsComp],
+  // ['/app/orgs/:orgId/sso', AppOrgsOrgIdSsoComp],
   ['/app/orgs/switch', AppOrgsSwitchComp],
   ['/app/parental-controls', AppParentalControlsComp],
   ['/app/privacy/consents', AppPrivacyConsentsComp],
@@ -163,18 +145,19 @@ const PAGES: Array<[string, React.ComponentType<unknown>]> = [
   ['/app/support', AppSupportComp],
   ['/app/support/security', AppSupportSecurityComp],
   ['/app/wallet', AppWalletComp],
-  ['/app/wallet/add-funds', AppWalletAddFundsComp],
-  ['/app/wallet/disputes', AppWalletDisputesComp],
-  ['/app/wallet/kyc', AppWalletKycComp],
-  ['/app/wallet/kyc/details', AppWalletKycDetailsComp],
-  ['/app/wallet/kyc/status', AppWalletKycStatusComp],
-  ['/app/wallet/kyc/upload', AppWalletKycUploadComp],
-  ['/app/wallet/limits', AppWalletLimitsComp],
-  ['/app/wallet/payment-methods', AppWalletPaymentMethodsComp],
-  ['/app/wallet/payment-methods/add', AppWalletPaymentMethodsAddComp],
-  ['/app/wallet/transactions', AppWalletTransactionsComp],
-  ['/app/wallet/transactions/:txnId', AppWalletTransactionsTxnIdComp],
-  ['/app/wallet/withdraw', AppWalletWithdrawComp],
+  // Wallet sub-pages removed
+  // ['/app/wallet/add-funds', AppWalletAddFundsComp],
+  // ['/app/wallet/disputes', AppWalletDisputesComp],
+  // ['/app/wallet/kyc', AppWalletKycComp],
+  // ['/app/wallet/kyc/details', AppWalletKycDetailsComp],
+  // ['/app/wallet/kyc/status', AppWalletKycStatusComp],
+  // ['/app/wallet/kyc/upload', AppWalletKycUploadComp],
+  // ['/app/wallet/limits', AppWalletLimitsComp],
+  // ['/app/wallet/payment-methods', AppWalletPaymentMethodsComp],
+  // ['/app/wallet/payment-methods/add', AppWalletPaymentMethodsAddComp],
+  // ['/app/wallet/transactions', AppWalletTransactionsComp],
+  // ['/app/wallet/transactions/:txnId', AppWalletTransactionsTxnIdComp],
+  // ['/app/wallet/withdraw', AppWalletWithdrawComp],
   ['/auth/account-recovery-help', AuthAccountRecoveryHelpComp],
   ['/auth/callback', AuthCallbackComp],
   ['/auth/choose-account', AuthChooseAccountComp],
