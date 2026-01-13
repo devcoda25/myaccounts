@@ -15,6 +15,7 @@ import {
   IconButton,
   InputAdornment,
   LinearProgress,
+  CircularProgress,
   Snackbar,
   Stack,
   Switch,
@@ -377,6 +378,16 @@ export default function SignInPage() {
       <Chip size="small" color="warning" label="Unavailable" />
     );
 
+  // Anti-Flicker: If initializing OIDC (redirecting), show loading instead of form
+  if (!uid && !auth.isAuthenticated) {
+    return (
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: pageBg }}>
+        <CircularProgress />
+        <Typography sx={{ mt: 2, color: theme.palette.text.secondary }}>Initializing secure session...</Typography>
+      </Box>
+    );
+  }
+
   return (
     <Box className="min-h-screen" sx={{ background: pageBg }}>
       {/* Unified Auth Header */}
@@ -559,7 +570,7 @@ export default function SignInPage() {
                       >
                         {isLocked ? `Locked. Retry in ${secondsLeft}s` : "Sign In"}
                       </Button>
-                      <Button fullWidth variant="outlined" onClick={() => navigate("/auth/sign-up")} sx={orangeOutlinedSx}>
+                      <Button fullWidth variant="outlined" onClick={() => navigate(uid ? `/auth/sign-up?uid=${uid}` : "/auth/sign-up")} sx={orangeOutlinedSx}>
                         Create account
                       </Button>
                     </Stack>

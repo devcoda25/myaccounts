@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -20,7 +20,9 @@ import {
   TextField,
   Tooltip,
   Typography,
+  CircularProgress
 } from "@mui/material";
+import { useAuth } from "react-oidc-context";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import AuthHeader from "@/components/layout/AuthHeader";
@@ -120,6 +122,32 @@ export default function SignUpPageV3() {
     isDark
       ? "radial-gradient(1200px 600px at 12% 6%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 10%, rgba(3,205,140,0.16), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
       : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.18), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.12), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
+
+  // OIDC Integration (Same as Sign In)
+  const [searchParams] = useSearchParams();
+  const uid = searchParams.get("uid");
+  const auth = useAuth();
+
+  // If not logged in and not in interaction flow (uid), start OIDC login
+  // This ensures we have a valid secure session before creating an account
+  React.useEffect(() => {
+    if (!uid && !auth.isAuthenticated && !auth.isLoading && !auth.activeNavigator) {
+      // We start a login flow. The backend generally redirects 'login' prompt to Sign In page.
+      // But having a session is better than none. The user can navigate back to Sign Up if needed, 
+      // or we accept that 'Sign Up' usually happens after 'Sign In' attempt.
+      auth.signinRedirect();
+    }
+  }, [uid, auth]);
+
+  // Anti-Flicker: Loading state
+  if (!uid && !auth.isAuthenticated) {
+    return (
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: pageBg }}>
+        <CircularProgress />
+        <Typography sx={{ mt: 2, color: theme.palette.text.secondary }}>Initializing secure session...</Typography>
+      </Box>
+    );
+  }
 
   // EVzone buttons
   const orangeContainedSx = {
@@ -274,7 +302,7 @@ export default function SignUpPageV3() {
                     </Stack>
                   </Stack>
                   <Divider sx={{ my: 1 }} />
-                  <Button variant="outlined" startIcon={<ArrowLeftIcon size={18} />} sx={orangeOutlinedSx} onClick={() => navigate("/auth/sign-in")}>
+                  <Button variant="outlined" startIcon={<ArrowLeftIcon size={18} />} sx={orangeOutlinedSx} onClick={() => navigate(uid ? `/auth/sign-in?uid=${uid}` : "/auth/sign-in")}>
                     Back to Sign In
                   </Button>
                 </Stack>
@@ -516,7 +544,7 @@ export default function SignUpPageV3() {
                       <Button fullWidth variant="contained" color="secondary" endIcon={<ArrowRightIcon size={18} />} onClick={onContinue} sx={orangeContainedSx}>
                         Continue
                       </Button>
-                      <Button fullWidth variant="outlined" startIcon={<ArrowLeftIcon size={18} />} onClick={() => navigate("/auth/sign-in")} sx={orangeOutlinedSx}>
+                      <Button fullWidth variant="outlined" startIcon={<ArrowLeftIcon size={18} />} onClick={() => navigate(uid ? `/auth/sign-in?uid=${uid}` : "/auth/sign-in")} sx={orangeOutlinedSx}>
                         Switch to Sign In
                       </Button>
                     </Stack>
