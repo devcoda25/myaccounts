@@ -47,7 +47,9 @@ vi.mock('react-oidc-context', () => ({
     isAuthenticated: false,
     isLoading: false,
     activeNavigator: undefined,
-    signinRedirect: vi.fn(),
+    signinRedirect: vi.fn().mockResolvedValue(undefined),
+    removeUser: vi.fn().mockResolvedValue(undefined),
+    signoutRedirect: vi.fn().mockResolvedValue(undefined),
   }),
   AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
@@ -113,9 +115,9 @@ const PAGES: Array<[string, React.ComponentType<unknown>]> = [
   ['/app', AppComp],
   ['/app/apps', AppAppsComp],
   ['/app/apps/permissions', AppAppsPermissionsComp],
-  
+
   ['/app/notifications', AppNotificationsComp],
- 
+
   ['/app/parental-controls', AppParentalControlsComp],
   ['/app/privacy/consents', AppPrivacyConsentsComp],
   ['/app/privacy/delete-account', AppPrivacyDeleteAccountComp],
