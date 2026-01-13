@@ -106,7 +106,7 @@ export default function AdminDashboard() {
         // Static for now as APi doesn't provide this yet
         return [
             { key: "auth", name: "Auth Service", icon: <ShieldIcon size={18} />, health: "Operational" as Health, updatedAt: now },
-            { key: "wallet", name: "Wallet Service", icon: <WalletIcon size={18} />, health: "Operational" as Health, updatedAt: now },
+
             { key: "api", name: "API Gateway", icon: <PlugIcon size={18} />, health: "Operational" as Health, updatedAt: now },
             { key: "db", name: "Database", icon: <Zap size={18} />, health: "Operational" as Health, updatedAt: now },
         ];
@@ -270,12 +270,7 @@ export default function AdminDashboard() {
                                 <Grid item xs={12} sm={6} lg={3}>
                                     <StatsCard title="Total Users" value={(stats?.usersCount ?? 0).toString()} hint="Registered accounts" icon={<Users size={20} />} color={EVZONE.green} />
                                 </Grid>
-                                <Grid item xs={12} sm={6} lg={3}>
-                                    <StatsCard title="Organizations" value={(stats?.orgsCount ?? 0).toString()} hint="Active organizations" icon={<ShieldIcon size={20} />} color="#B42318" />
-                                </Grid>
-                                <Grid item xs={12} sm={6} lg={3}>
-                                    <StatsCard title="Total Balance" value={`UGX ${(stats?.balance ?? 0).toLocaleString()}`} hint="System wide" icon={<WalletIcon size={20} />} color={EVZONE.orange} />
-                                </Grid>
+
                                 <Grid item xs={12} sm={6} lg={3}>
                                     <StatsCard title="Active Sessions" value={(stats?.sessionsCount ?? 0).toString()} hint="Logged in now" icon={<Lock size={20} />} color={theme.palette.primary.main} />
                                 </Grid>
