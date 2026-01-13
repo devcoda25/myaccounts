@@ -281,7 +281,7 @@ export default function Maintenance503Page() {
                   </Alert>
 
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    © {new Date().getFullYear()} EVzone Group.
+                    © {new Date().getFullYear()} EVzone Group
                   </Typography>
                 </Stack>
               </CardContent>

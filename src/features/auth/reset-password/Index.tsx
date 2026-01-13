@@ -845,7 +845,7 @@ export default function ResetPasswordPageV2() {
           sx={{ opacity: 0.92 }}
         >
           <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-            © {new Date().getFullYear()} EVzone Group.
+            © {new Date().getFullYear()} EVzone Group
           </Typography>
           <Stack direction="row" spacing={1.2} alignItems="center">
             <Button

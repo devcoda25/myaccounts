@@ -293,7 +293,7 @@ export default function Error404Page() {
                   <Alert severity="info">If you got here from an EVzone app, return to that app and try again.</Alert>
 
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    © {new Date().getFullYear()} EVzone Group.
+                    © {new Date().getFullYear()} EVzone Group
                   </Typography>
                 </Stack>
               </CardContent>

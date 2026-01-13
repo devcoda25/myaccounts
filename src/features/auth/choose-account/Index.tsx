@@ -719,7 +719,7 @@ export default function AccountChooserV4() {
             {/* Footer */}
             <Box className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
               <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                © {new Date().getFullYear()} EVzone Group. Secure sign-in across EVzone platforms.
+                © {new Date().getFullYear()} EVzone Group Secure sign-in across EVzone platforms.
               </Typography>
               <Stack direction="row" spacing={1.2} alignItems="center">
                 <Button size="small" variant="text" sx={{ color: EVZONE.orange, fontWeight: 820 }} onClick={() => window.open("/legal/terms", "_blank")}>

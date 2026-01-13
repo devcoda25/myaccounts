@@ -573,7 +573,7 @@ export default function PrivacyConsentsPage() {
               </Box>
 
               <Box sx={{ opacity: 0.92 }}>
-                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group.</Typography>
+                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
               </Box>
             </Stack>
           </motion.div>
