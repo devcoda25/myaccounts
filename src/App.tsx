@@ -49,6 +49,14 @@ function AuthProviderWrapper({ children }: { children: React.ReactNode }) {
 function AuthSync() {
   const auth = useAuth();
 
+  const { refreshUser } = useAuthStore();
+
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      refreshUser();
+    }
+  }, [auth.isAuthenticated, refreshUser]);
+
   useEffect(() => {
     const handleLogout = () => {
       console.warn("[App] Received auth:logout event. Removing user from OIDC context.");
