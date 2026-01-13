@@ -60,10 +60,9 @@ export default function AdminLayout() {
     const menuItems = [
         { label: "Dashboard", icon: <LayoutIcon size={18} />, route: "/admin/dashboard", permission: "view_dashboard" },
         { label: "Users", icon: <ShieldIcon size={18} />, route: "/admin/users", permission: "manage_users" },
-        { label: "Organizations", icon: <BuildingIcon size={18} />, route: "/admin/orgs", permission: "manage_orgs" },
+
         { label: "KYC Requests", icon: <FileTextIcon size={18} />, route: "/admin/kyc", permission: "view_kyc" },
-        { label: "Wallets", icon: <RefreshIcon size={18} />, route: "/admin/wallets", permission: "view_wallets" },
-        { label: "Transactions", icon: <ClipboardIcon size={18} />, route: "/admin/transactions", permission: "view_transactions" },
+
         { label: "Disputes", icon: <GavelIcon size={18} />, route: "/admin/disputes", permission: "view_disputes" },
         { label: "Apps", icon: <LayoutIcon size={18} />, route: "/admin/apps", permission: "manage_apps" },
         { label: "Audit logs", icon: <ClipboardIcon size={18} />, route: "/admin/audit", permission: "view_audit_logs" },
