@@ -25,9 +25,16 @@ const apiBase = async <T>(path: string, options: ApiOptions = {}): Promise<T> =>
     // Helper to get OIDC token from storage
     // Key format: oidc.user:<authority>:<client_id>
     const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-    let authority = apiBaseUrl;
+
+    // Match logic in oidcConfig.ts
+    const isProd = import.meta.env.PROD;
+    const prodAuthority = 'https://accounts.evzone.app';
+
+    let authority = isProd ? prodAuthority : apiBaseUrl;
     try {
-        authority = new URL(apiBaseUrl).origin;
+        if (!isProd) {
+            authority = new URL(apiBaseUrl).origin;
+        }
     } catch { /* ignore */ }
 
     const storageKey = `oidc.user:${authority}:evzone-portal`;
