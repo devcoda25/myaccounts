@@ -3,15 +3,16 @@ import { AuthProviderProps } from 'react-oidc-context';
 // Derive authority (Origin) from API URL because OIDC is mounted at root, not /api/v1
 // USER REQUEST: Production should use accounts.evzone.app
 const isProd = import.meta.env.PROD;
-const devAuthority = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-const prodAuthority = 'https://accounts.evzone.app';
+const devAuthorityOrigin = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+// Append /oidc to authority because backend now namespaces it
+const prodAuthority = 'https://accounts.evzone.app/oidc';
 
-let authority = isProd ? prodAuthority : devAuthority;
+let authority = isProd ? prodAuthority : `${new URL(devAuthorityOrigin).origin}/oidc`;
 try {
-    // If devAuthority has a path (e.g. /api), strip it to get origin
-    // But for prod, we typically want the full domain 'https://accounts.evzone.app'
     if (!isProd) {
-        authority = new URL(devAuthority).origin;
+        // Ensure we use the origin from env then append /oidc
+        const origin = new URL(devAuthorityOrigin).origin;
+        authority = `${origin}/oidc`;
     }
 } catch { /* ignore */ }
 
