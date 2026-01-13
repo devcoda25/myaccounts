@@ -45,7 +45,9 @@ jobs:
             echo "VITE_APPLE_CLIENT_ID=${{ secrets.VITE_APPLE_CLIENT_ID }}" >> .env
             
            
-            # Build the application (Vite builds to /dist)
+            # Build not required if just running ts-node, but we are using built dist
+            # Rebuild the application
+            export NODE_OPTIONS="--max-old-space-size=5096"
             npm run build
             
             # Nginx serves the static files directly, so usually no restart needed.
