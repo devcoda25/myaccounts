@@ -131,16 +131,31 @@ export default function SignUpPageV3() {
   // If not logged in and not in interaction flow (uid), start OIDC login
   // This ensures we have a valid secure session before creating an account
   React.useEffect(() => {
-    if (!uid && !auth.isAuthenticated && !auth.isLoading && !auth.activeNavigator) {
+    if (!uid && !auth.isAuthenticated && !auth.isLoading && !auth.activeNavigator && !auth.error) {
       // We start a login flow. The backend generally redirects 'login' prompt to Sign In page.
       // But having a session is better than none. The user can navigate back to Sign Up if needed, 
       // or we accept that 'Sign Up' usually happens after 'Sign In' attempt.
-      auth.signinRedirect();
+      auth.signinRedirect().catch(console.error);
     }
   }, [uid, auth]);
 
+  // Error Handling: If OIDC fails, show error and allow retry
+  if (auth.error) {
+    return (
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: pageBg, p: 4 }}>
+        <Typography variant="h5" color="error" gutterBottom>Authentication Error</Typography>
+        <Typography color="text.secondary" align="center" sx={{ mb: 3, maxWidth: 400 }}>
+          {auth.error.message || "Failed to initialize secure session."}
+        </Typography>
+        <Button variant="outlined" onClick={() => window.location.reload()}>
+          Retry
+        </Button>
+      </Box>
+    );
+  }
+
   // Anti-Flicker: Loading state
-  if (!uid && !auth.isAuthenticated) {
+  if (!uid && !auth.error && (auth.isLoading || auth.isAuthenticated)) {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: pageBg }}>
         <CircularProgress />

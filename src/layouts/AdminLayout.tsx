@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import AdminHeader from "@/components/layout/AdminHeader";
 import { useAdminAuthStore } from '../stores/adminAuthStore';
+import { useAuth } from "react-oidc-context";
 
 const EVZONE = { green: "#03cd8c", orange: "#f77f00" } as const;
 const SIDEBAR_WIDTH = 260;
@@ -44,7 +45,17 @@ export default function AdminLayout() {
     // State for Bottom Navigation
     const [bottomNavValue, setBottomNavValue] = useState(0);
 
-    const { checkPermission, user, isLoading, logout } = useAdminAuthStore();
+    const { checkPermission, user, isLoading } = useAdminAuthStore();
+    const auth = useAuth();
+    const logout = async () => {
+        try {
+            await auth.signoutRedirect();
+        } catch (e) {
+            console.error("Admin logout redirect failed", e);
+            await auth.removeUser();
+            window.location.href = "/auth/signed-out";
+        }
+    };
     const isAuthenticated = !!user;
 
     useEffect(() => {

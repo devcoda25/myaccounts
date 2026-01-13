@@ -5,7 +5,7 @@ import { AppThemeProvider } from './theme/AppThemeProvider';
 import { useAuthStore } from './stores/authStore';
 import { useIdleTimer } from './hooks/useIdleTimer';
 import { useEffect } from 'react';
-import { AuthProvider } from 'react-oidc-context';
+import { AuthProvider, useAuth } from 'react-oidc-context';
 import { oidcConfig } from './auth/oidcConfig';
 
 export default function App() {
@@ -40,7 +40,24 @@ function AuthProviderWrapper({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthProvider {...oidcConfig} onSigninCallback={onSigninCallback}>
+      <AuthSync />
       {children}
     </AuthProvider>
   );
+}
+
+function AuthSync() {
+  const auth = useAuth();
+
+  useEffect(() => {
+    const handleLogout = () => {
+      console.warn("[App] Received auth:logout event. Removing user from OIDC context.");
+      // void auth.removeUser(); // Use void to ignore promise, or await inside async func
+      auth.removeUser().catch(console.error);
+    };
+    window.addEventListener('auth:logout', handleLogout);
+    return () => window.removeEventListener('auth:logout', handleLogout);
+  }, [auth]);
+
+  return null;
 }

@@ -11,6 +11,7 @@ export const oidcConfig: AuthProviderProps = {
     authority, // Backend URL (Origin)
     client_id: 'evzone-portal',
     redirect_uri: window.location.origin + '/auth/callback',
+    post_logout_redirect_uri: window.location.origin + '/auth/signed-out',
     response_type: 'code',
     scope: 'openid profile email offline_access', // Add offline_access for Refresh Tokens
     automaticSilentRenew: true,

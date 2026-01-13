@@ -254,8 +254,11 @@ export default function SignInPage() {
 
   // If not logged in and not in interaction flow (uid), start OIDC login
   useEffect(() => {
-    if (!uid && !auth.isAuthenticated && !auth.isLoading && !auth.activeNavigator) {
-      auth.signinRedirect();
+    if (!uid && !auth.isAuthenticated && !auth.isLoading && !auth.activeNavigator && !auth.error) {
+      auth.signinRedirect().catch(err => {
+        console.error("Sign in redirect failed", err);
+        // auth.error should be set by the lib, but if not we can't do much here except rely on the UI to show something if auth.error updates.
+      });
     }
   }, [uid, auth]);
 
@@ -378,8 +381,24 @@ export default function SignInPage() {
       <Chip size="small" color="warning" label="Unavailable" />
     );
 
-  // Anti-Flicker: If initializing OIDC (redirecting), show loading instead of form
-  if (!uid && !auth.isAuthenticated) {
+  // Error Handling: If OIDC fails, show error and allow retry
+  if (auth.error) {
+    return (
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: pageBg, p: 4 }}>
+        <Typography variant="h5" color="error" gutterBottom>Authentication Error</Typography>
+        <Typography color="text.secondary" align="center" sx={{ mb: 3, maxWidth: 400 }}>
+          {auth.error.message || "Failed to initialize secure session."}
+        </Typography>
+        <Button variant="outlined" onClick={() => window.location.reload()}>
+          Retry
+        </Button>
+      </Box>
+    );
+  }
+
+  // Anti-Flicker: If initializing OIDC (redirecting) or already authenticated, show loading instead of form
+  // But ONLY if no error exists.
+  if (!uid && !auth.error && (auth.isLoading || auth.isAuthenticated)) {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: pageBg }}>
         <CircularProgress />

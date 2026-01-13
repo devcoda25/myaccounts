@@ -24,7 +24,7 @@ export function useSocialLogin() {
             script.defer = true;
             script.onload = () => setIsGoogleScriptLoaded(true);
             document.head.appendChild(script);
-        } else if (window.google) {
+        } else if (window.google && !isGoogleScriptLoaded) {
             setIsGoogleScriptLoaded(true);
         }
 
@@ -37,7 +37,7 @@ export function useSocialLogin() {
             script.defer = true;
             document.head.appendChild(script);
         }
-    }, []);
+    }, [isGoogleScriptLoaded]);
 
     const initGoogleLogin = () => {
 

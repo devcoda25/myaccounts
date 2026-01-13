@@ -33,6 +33,7 @@ import {
 import { alpha } from '@mui/material/styles';
 import AppHeader from "@/components/layout/AppHeader";
 import { useAuthStore } from '../stores/authStore';
+import { useAuth } from "react-oidc-context";
 
 const DRAWER_WIDTH = 280;
 
@@ -59,7 +60,18 @@ export default function SidebarLayout() {
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const [mobileOpen, setMobileOpen] = useState(false);
     const [bottomNavValue, setBottomNavValue] = useState(0);
-    const { logout } = useAuthStore();
+    // const { logout } = useAuthStore();
+    const auth = useAuth();
+    const logout = async () => {
+        try {
+            await auth.signoutRedirect();
+        } catch (e) {
+            console.error("Logout redirect failed", e);
+            // Fallback: Remove user and go to signed out page manually
+            await auth.removeUser();
+            window.location.href = "/auth/signed-out";
+        }
+    };
 
     // Sync bottom nav state with current path
     useEffect(() => {
