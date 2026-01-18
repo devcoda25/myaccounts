@@ -41,6 +41,7 @@ import LinkChildDialog from './components/dialogs/LinkChildDialog';
 import CreateChildDialog from './components/dialogs/CreateChildDialog';
 import InviteHouseholdMemberDialog from './components/dialogs/InviteHouseholdMemberDialog';
 import PlaceEditorDialog from './components/dialogs/PlaceEditorDialog';
+import AddStationDialog from './components/dialogs/AddStationDialog';
 import {
   ChildStatus, Channel, AppKey, SchedulePreset, AgeTemplate, Place, GeoFences, Curfew, ChargingControls, ChildProfile, ActivityEvent, ApprovalKind, PendingApproval, HouseholdRole, HouseholdMember, ApprovalMode, GuardianContext
 } from './types';
@@ -220,6 +221,7 @@ export default function ParentalControls() {
   // Place editor
   const [placeOpen, setPlaceOpen] = useState(false);
   const [placeTarget, setPlaceTarget] = useState<"Home" | "School">("Home");
+  const [addStationOpen, setAddStationOpen] = useState(false);
 
   // Step-up
   const [stepUpOpen, setStepUpOpen] = useState(false);
@@ -470,15 +472,20 @@ export default function ParentalControls() {
   };
 
   const addAllowedStation = () => {
+    setAddStationOpen(true);
+  };
+
+  const submitAddStation = (name: string) => {
     if (!selectedChild) return;
     requestStepUp("Add allowed station", "This changes where charging is allowed.", () => {
-      const next = Array.from(new Set([...(selectedChild.charging.allowedStations || []), "EVzone Station - Nsambya"]));
+      const next = Array.from(new Set([...(selectedChild.charging.allowedStations || []), name]));
       updateChild(
         selectedChild.id,
         { charging: { ...selectedChild.charging, enabled: true, allowedStations: next } },
         { kind: "Charging Updated", summary: "Added allowed charging station", severity: "info" }
       );
-      setSnack({ open: true, severity: "success", msg: "Station added (demo)." });
+      setSnack({ open: true, severity: "success", msg: "Station added." });
+      setAddStationOpen(false);
     });
   };
 
@@ -579,6 +586,12 @@ export default function ParentalControls() {
         onSave={(p: Place) => {
           if (selectedChild) savePlace(selectedChild.id, placeTarget, p);
         }}
+      />
+
+      <AddStationDialog
+        open={addStationOpen}
+        setOpen={setAddStationOpen}
+        onSubmit={submitAddStation}
       />
 
       {/* Step-up */}

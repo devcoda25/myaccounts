@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Card, CardContent, Typography, Stack, Divider, Button, Chip, Alert, Switch, FormControlLabel, useTheme, alpha } from '@mui/material';
 import { useThemeStore } from "@/stores/themeStore";
+import { useAuthStore } from "@/stores/authStore";
 import { getStyles } from '../../styles';
 import { Bell as BellIcon, Shield as ShieldIcon, School as SchoolIcon, Globe as GlobeIcon, Clock as ClockIcon, Lock as LockIcon } from 'lucide-react';
 import { displayMoney, displayTimeAgo, approvalKindChip } from "../../utils";
@@ -36,7 +37,9 @@ function InfoRow({ label, value, icon }: { label: string; value: string; icon: R
 export default function OverviewTab({ approvals, selectedChild, updateChild, requestStepUp, setSnack, approveRequest }: OverviewTabProps) {
     const theme = useTheme();
     const { mode } = useThemeStore();
+    const { user } = useAuthStore();
     const { evOrangeContainedSx, evOrangeOutlinedSx, cardSx } = getStyles(theme, mode);
+    const userId = user?.profile?.sub;
 
     return (
         <Box className="grid gap-4 md:grid-cols-12">
@@ -55,39 +58,49 @@ export default function OverviewTab({ approvals, selectedChild, updateChild, req
                                     .filter((a) => a.childId === selectedChild.id)
                                     .filter((a) => a.status === "Pending")
                                     .slice(0, 6)
-                                    .map((a) => (
-                                        <Box key={a.id} sx={{
-                                            borderRadius: "4px", // Wallet Match
-                                            border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
-                                            backgroundColor: alpha(theme.palette.background.paper, 0.45),
-                                            p: 1.2
-                                        }}>
-                                            <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} alignItems={{ xs: "flex-start", sm: "center" }} justifyContent="space-between">
-                                                <Box>
-                                                    <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
-                                                        {approvalKindChip(a.kind)}
-                                                        <Chip size="small" variant="outlined" label={a.app} sx={{ borderRadius: "4px" }} />
-                                                        <Chip size="small" variant="outlined" label={timeAgo(a.at)} sx={{ borderRadius: "4px" }} />
-                                                    </Stack>
-                                                    <Typography sx={{ fontWeight: 950, mt: 0.6 }}>{a.title}</Typography>
-                                                    <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                                                        {money(a.amount, a.currency)} • {a.vendor || ""}
-                                                    </Typography>
-                                                    {a.details ? <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{a.details}</Typography> : null}
-                                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary, display: "block", marginTop: 0.5 }}>{a.reason}</Typography>
-                                                </Box>
+                                    .map((a) => {
+                                        const hasVoted = a.votes?.includes(userId || "");
 
-                                                <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ width: { xs: "100%", sm: "auto" } }}>
-                                                    <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => approveRequest(a.id, false)}>
-                                                        Decline
-                                                    </Button>
-                                                    <Button variant="contained" sx={evOrangeContainedSx} onClick={() => approveRequest(a.id, true)}>
-                                                        Approve
-                                                    </Button>
+                                        return (
+                                            <Box key={a.id} sx={{
+                                                borderRadius: "4px", // Wallet Match
+                                                border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
+                                                backgroundColor: alpha(theme.palette.background.paper, 0.45),
+                                                p: 1.2
+                                            }}>
+                                                <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} alignItems={{ xs: "flex-start", sm: "center" }} justifyContent="space-between">
+                                                    <Box>
+                                                        <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
+                                                            {approvalKindChip(a.kind)}
+                                                            <Chip size="small" variant="outlined" label={a.app} sx={{ borderRadius: "4px" }} />
+                                                            <Chip size="small" variant="outlined" label={timeAgo(a.at)} sx={{ borderRadius: "4px" }} />
+                                                            {hasVoted && <Chip size="small" color="info" label="Waiting for other guardian" sx={{ borderRadius: "4px" }} />}
+                                                        </Stack>
+                                                        <Typography sx={{ fontWeight: 950, mt: 0.6 }}>{a.title}</Typography>
+                                                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                                                            {money(a.amount, a.currency)} • {a.vendor || ""}
+                                                        </Typography>
+                                                        {a.details ? <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>{a.details}</Typography> : null}
+                                                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary, display: "block", marginTop: 0.5 }}>{a.reason}</Typography>
+                                                    </Box>
+
+                                                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ width: { xs: "100%", sm: "auto" } }}>
+                                                        <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => approveRequest(a.id, false)}>
+                                                            Decline
+                                                        </Button>
+                                                        <Button
+                                                            variant="contained"
+                                                            sx={evOrangeContainedSx}
+                                                            onClick={() => approveRequest(a.id, true)}
+                                                            disabled={hasVoted}
+                                                        >
+                                                            {hasVoted ? "Approved" : "Approve"}
+                                                        </Button>
+                                                    </Stack>
                                                 </Stack>
-                                            </Stack>
-                                        </Box>
-                                    ))}
+                                            </Box>
+                                        );
+                                    })}
 
                                 {!approvals.some((a) => a.childId === selectedChild.id && a.status === "Pending") ? (
                                     <Alert severity="info" icon={<BellIcon size={18} />} sx={{ borderRadius: "4px" }}>No pending approvals.</Alert>

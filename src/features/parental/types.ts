@@ -129,6 +129,7 @@ export interface PendingApproval {
     reason: string;
     details?: string;
     status: "Pending" | "Approved" | "Declined";
+    votes?: string[];
     at: number;
 }
 
