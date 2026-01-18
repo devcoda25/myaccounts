@@ -28,12 +28,12 @@ const apiBase = async <T>(path: string, options: ApiOptions = {}): Promise<T> =>
 
     // Match logic in oidcConfig.ts
     const isProd = import.meta.env.PROD;
-    const prodAuthority = 'https://accounts.evzone.app';
+    const prodAuthority = 'https://accounts.evzone.app/oidc';
 
-    let authority = isProd ? prodAuthority : apiBaseUrl;
+    let authority = isProd ? prodAuthority : `${new URL(apiBaseUrl).origin}/oidc`;
     try {
         if (!isProd) {
-            authority = new URL(apiBaseUrl).origin;
+            authority = `${new URL(apiBaseUrl).origin}/oidc`;
         }
     } catch { /* ignore */ }
 
