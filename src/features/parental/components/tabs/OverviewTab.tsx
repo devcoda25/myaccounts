@@ -39,7 +39,7 @@ export default function OverviewTab({ approvals, selectedChild, updateChild, req
     const { mode } = useThemeStore();
     const { user } = useAuthStore();
     const { evOrangeContainedSx, evOrangeOutlinedSx, cardSx } = getStyles(theme, mode);
-    const userId = user?.profile?.sub;
+    const userId = user?.id; // Fixed: IUser has 'id', not 'profile.sub'
 
     return (
         <Box className="grid gap-4 md:grid-cols-12">
