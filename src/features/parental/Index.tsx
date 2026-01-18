@@ -285,12 +285,13 @@ export default function ParentalControls() {
   // Quick: keep charging controls disabled unless EVzone Charging app is allowed
   useEffect(() => {
     if (!selectedChild) return;
-    const shouldEnable = !!selectedChild.apps["EVzone Charging"];
+    const apps = selectedChild.apps || {};
+    const shouldEnable = !!apps["EVzone Charging"];
     if (selectedChild.charging.enabled && !shouldEnable) {
       updateChild(selectedChild.id, { charging: { ...selectedChild.charging, enabled: false } }, { kind: "Charging Updated", summary: "Disabled charging controls because app is blocked", severity: "warning" });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedChild?.apps["EVzone Charging"]]);
+  }, [selectedChild?.apps ? selectedChild.apps["EVzone Charging"] : undefined]);
 
   const householdCounts = useMemo(() => {
     const co = householdMembers.filter((m) => m.role === "Co-guardian").length;
