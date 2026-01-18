@@ -253,6 +253,9 @@ export default function SignInPage() {
   const auth = useAuth();
 
   // If not logged in and not in interaction flow (uid), start OIDC login
+  // If not logged in and not in interaction flow (uid), start OIDC login
+  // [DISABLED] Auto-redirect causes loops and prevents seeing the UI. User should click "Sign In" or "Google".
+  /*
   useEffect(() => {
     if (!uid && !auth.isAuthenticated && !auth.isLoading && !auth.activeNavigator && !auth.error) {
       auth.signinRedirect().catch(err => {
@@ -261,6 +264,7 @@ export default function SignInPage() {
       });
     }
   }, [uid, auth]);
+  */
 
   useEffect(() => {
     if (auth.isAuthenticated) {
@@ -321,29 +325,17 @@ export default function SignInPage() {
       return;
     }
 
-    // Fallback Legacy Login (if any) or User Store update
-    // But we prefer OIDC flow. If we are here without UID, the Effect should have triggered redirect.
-    // Assuming we handle legacy for now or just wait for redirect.
+    // Start OIDC Flow
     try {
-      await login(id, password);
-      // ... same logic
-      setAttempts(0);
-      setLockUntil(null);
-      setSnack({ open: true, severity: "success", msg: `Signed in successfully as ${maskIdentifier(id)}.` });
-
-      const from = (location.state as any)?.from || "/app";
-      navigate(from, { replace: true });
+      setSnack({ open: true, severity: "info", msg: "Redirecting to secure sign in..." });
+      await auth.signinRedirect({
+        extraQueryParams: {
+          login_hint: id
+        }
+      });
     } catch (err: any) {
-      const nextAttempts = attempts + 1;
-      setAttempts(nextAttempts);
-
-      if (nextAttempts >= 3) {
-        setLockUntil(Date.now() + 30_000);
-        setBanner({ severity: "error", msg: "Too many failed attempts. Account temporarily locked for 30 seconds." });
-        return;
-      }
-
-      setBanner({ severity: "error", msg: err.message || "Invalid credentials. Please check your details and try again." });
+      console.error("Sign in redirect error:", err);
+      setBanner({ severity: "error", msg: "Failed to start sign-in flow. Please try again." });
     }
   };
 
