@@ -60,10 +60,13 @@ export default function SidebarLayout() {
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const [mobileOpen, setMobileOpen] = useState(false);
     const [bottomNavValue, setBottomNavValue] = useState(0);
-    // const { logout } = useAuthStore();
+    const { logout: storeLogout } = useAuthStore();
     const auth = useAuth();
     const logout = async () => {
         try {
+            // 1. Clear API Cookies first (ignore errors if already invalid)
+            await storeLogout().catch(err => console.error("API Logout failed (non-critical)", err));
+            // 2. Then Clear OIDC Session
             await auth.signoutRedirect();
         } catch (e) {
             console.error("Logout redirect failed", e);
