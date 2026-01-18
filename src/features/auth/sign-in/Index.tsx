@@ -275,6 +275,15 @@ export default function SignInPage() {
   }, [auth.isAuthenticated, navigate]);
   */
 
+  // Restore redirection to App when API session is established (e.g. via Google Custom Login)
+  // This avoids the OIDC loop because it depends on the API 'user' object, which is cleared on 401.
+  useEffect(() => {
+    if (user) {
+      const from = (location.state as any)?.from?.pathname || "/app";
+      navigate(from, { replace: true });
+    }
+  }, [user, navigate, location]);
+
   // React.useEffect(() => {
   //   if (isGoogleScriptLoaded) {
   //     renderGoogleButton('google-signin-btn');
