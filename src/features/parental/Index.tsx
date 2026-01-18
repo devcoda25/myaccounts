@@ -445,6 +445,7 @@ export default function ParentalControls() {
   };
 
   const updateApprovalMode = (mode: ApprovalMode) => {
+    if (mode === approvalMode) return;
     requestStepUp("Update approval mode", "This changes who can approve requests.", async () => {
       try {
         await api<void>('/parental/household/mode', {
