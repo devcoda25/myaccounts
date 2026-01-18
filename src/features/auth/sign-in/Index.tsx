@@ -266,12 +266,14 @@ export default function SignInPage() {
   }, [uid, auth]);
   */
 
+  /*
   useEffect(() => {
     if (auth.isAuthenticated) {
       // If standard login success (via callback), redirect
       navigate("/app", { replace: true });
     }
   }, [auth.isAuthenticated, navigate]);
+  */
 
   // React.useEffect(() => {
   //   if (isGoogleScriptLoaded) {
@@ -390,7 +392,7 @@ export default function SignInPage() {
 
   // Anti-Flicker: If initializing OIDC (redirecting) or already authenticated, show loading instead of form
   // But ONLY if no error exists.
-  if (!uid && !auth.error && (auth.isLoading || auth.isAuthenticated)) {
+  if (!uid && !auth.error && auth.isLoading) {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: pageBg }}>
         <CircularProgress />
