@@ -30,7 +30,7 @@ export default function CreateChildDialog({ open, setOpen, onSubmit }: CreateChi
             <DialogContent>
                 <Stack spacing={1.2}>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        This creates a child account and sets you as the guardian (demo).
+                        This creates a child account and sets you as the guardian.
                     </Typography>
                     <TextField value={newChildName} onChange={(e) => setNewChildName(e.target.value)} label="Child name" fullWidth />
                     <TextField value={newChildDob} onChange={(e) => setNewChildDob(e.target.value)} label="Date of birth" type="date" InputLabelProps={{ shrink: true }} fullWidth />

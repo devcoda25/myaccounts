@@ -24,9 +24,7 @@ export default function StepUpDialog({ open, title, subtitle, onCancel, onVerifi
                     <Typography variant="body2" color="text.secondary">
                         {subtitle}
                     </Typography>
-                    <Typography variant="caption" sx={{ color: "text.secondary", fontStyle: "italic" }}>
-                        (This is a demo step-up. In production, this would prompt for MFA/Biometrics.)
-                    </Typography>
+
                 </Stack>
             </DialogContent>
             <DialogActions sx={{ p: 2, pt: 0 }}>
