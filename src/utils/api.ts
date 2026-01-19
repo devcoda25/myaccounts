@@ -43,9 +43,20 @@ import { userManager } from '../auth/oidcConfig';
 
 instance.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
     try {
+        // [DEBUG] Log existing headers
+        // console.log("[API Interceptor] Before: ", config.headers);
+
         const user = await userManager.getUser();
+
+        // [DEBUG] Log user check
+        // console.log(`[API Interceptor] UserManager User found: ${!!user}`);
+
         if (user?.access_token) {
-            config.headers.Authorization = `Bearer ${user.access_token}`;
+            // Only set if not already set? Or overwrite? 
+            // If we passed explicit token, it should be in config.headers.Authorization already.
+            if (!config.headers.Authorization) {
+                config.headers.Authorization = `Bearer ${user.access_token}`;
+            }
         }
     } catch { /* ignore */ }
     return config;
@@ -80,15 +91,14 @@ const apiBase = async <T>(path: string, options: ApiOptions = {}): Promise<T> =>
         if (axios.isAxiosError(error)) {
             // [Security] Handle 401 Session Expiry
             if (error.response?.status === 401) {
-                console.warn("[API] 401 Unauthorized. Clearing session.");
-                // We should let the OnAuthError handler in the App deal with this ideally
-                // But legacy logic cleared storage here.
-                const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-                const isProd = import.meta.env.PROD;
-                const authority = isProd ? 'https://accounts.evzone.app/oidc' : `${new URL(apiBaseUrl).origin}/oidc`;
-                const storageKey = `oidc.user:${authority}:evzone-portal`;
-                sessionStorage.removeItem(storageKey);
-                window.dispatchEvent(new Event('auth:logout'));
+                console.warn("[API] 401 Unauthorized. Session might be expired or invalid.");
+                // [DEBUG] Disable auto-logout to trace the "Ghost 401"
+                // const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+                // const isProd = import.meta.env.PROD;
+                // const authority = isProd ? 'https://accounts.evzone.app/oidc' : `${new URL(apiBaseUrl).origin}/oidc`;
+                // const storageKey = `oidc.user:${authority}:evzone-portal`;
+                // sessionStorage.removeItem(storageKey);
+                // window.dispatchEvent(new Event('auth:logout'));
             }
 
             const msg = getFriendlyMessage(error as AxiosError); // Cast safe due to guard
