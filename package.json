@@ -19,6 +19,7 @@
     "@mui/material": "5.16.0",
     "@simplewebauthn/browser": "13.2.2",
     "axios": "1.13.2",
+    "axios-retry": "^4.5.0",
     "framer-motion": "11.5.0",
     "lucide-react": "0.454.0",
     "oidc-client-ts": "^3.4.1",

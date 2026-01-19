@@ -31,9 +31,8 @@ export default function AppsTab({ selectedChild, updateChild, requestStepUp, set
                     <Divider />
 
                     <Box className="grid gap-2 md:grid-cols-2">
-                        {Object.keys(selectedChild.apps).map((k) => {
-                            const key = k as AppKey;
-                            const isOn = selectedChild.apps[key];
+                        {(["EVzone School", "EduMart", "EVzone Marketplace", "EVzone Charging", "ServiceMart", "ShopNow", "Properties", "Fashion", "Art"] as AppKey[]).map((key) => {
+                            const isOn = selectedChild.apps?.[key] ?? false;
                             const icon = key === "EVzone School" ? <SchoolIcon size={20} /> : key === "EVzone Charging" ? <ZapIcon size={20} /> : <ShoppingBagIcon size={20} />;
 
                             return (
@@ -69,9 +68,10 @@ export default function AppsTab({ selectedChild, updateChild, requestStepUp, set
                                                     "Update app access",
                                                     `This changes access to ${key}.`,
                                                     () => {
+                                                        const currentApps = selectedChild.apps || {};
                                                         updateChild(
                                                             selectedChild.id,
-                                                            { apps: { ...selectedChild.apps, [key]: e.target.checked } as any },
+                                                            { apps: { ...currentApps, [key]: e.target.checked } as any },
                                                             { kind: "App Access Updated", summary: `${e.target.checked ? "Allowed" : "Blocked"} ${key} `, severity: e.target.checked ? "info" : "warning" }
                                                         );
                                                         setSnack({ open: true, severity: "success", msg: "Updated." });

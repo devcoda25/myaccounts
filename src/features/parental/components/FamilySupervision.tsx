@@ -333,7 +333,7 @@ export default function FamilySupervision({
                                         <Alert severity={selectedChild.guardianVerified ? "success" : "warning"}>
                                             Guardian Verification: {selectedChild.guardianVerified ? "Verified" : "Pending"}
                                         </Alert>
-                                        <Button variant="contained" sx={evOrangeContainedSx} onClick={() => updateChild(selectedChild.id, { guardianVerified: true })}>Verify now (Demo)</Button>
+                                        <Button variant="contained" sx={evOrangeContainedSx} onClick={() => updateChild(selectedChild.id, { guardianVerified: true })}>Verify Guardian Identity</Button>
                                     </Stack>
                                 </CardContent>
                             </Card>

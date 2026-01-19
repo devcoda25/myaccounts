@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useMemo, useRef, useState } from "react";
+﻿import React, { useEffect, useMemo, useRef, useState, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -29,12 +29,16 @@ import {
   TextField,
   Tooltip,
   Typography,
+  CircularProgress
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
-import SummaryStats from './components/SummaryStats';
-import HouseholdSnapshot from './components/HouseholdSnapshot';
-import FamilySupervision from './components/FamilySupervision';
+
+// [Performance] Lazy Load Heavy Components
+const SummaryStats = React.lazy(() => import('./components/SummaryStats'));
+const HouseholdSnapshot = React.lazy(() => import('./components/HouseholdSnapshot'));
+const FamilySupervision = React.lazy(() => import('./components/FamilySupervision'));
+
 import StepUpDialog from './components/StepUpDialog';
 import ContextSwitcher from './components/dialogs/ContextSwitcher';
 import LinkChildDialog from './components/dialogs/LinkChildDialog';
@@ -509,37 +513,39 @@ export default function ParentalControls() {
               </Alert>
             ) : null}
 
-            <SummaryStats summary={summary} />
+            <Suspense fallback={<Box sx={{ py: 4, display: 'flex', justifyContent: 'center' }}><CircularProgress size={28} /></Box>}>
+              <SummaryStats summary={summary} />
 
-            <HouseholdSnapshot
-              householdCounts={householdCounts}
-              approvalMode={approvalMode}
-              householdMembers={householdMembers}
-              openInvite={openInvite}
-              updateApprovalMode={updateApprovalMode}
-            />
+              <HouseholdSnapshot
+                householdCounts={householdCounts}
+                approvalMode={approvalMode}
+                householdMembers={householdMembers}
+                openInvite={openInvite}
+                updateApprovalMode={updateApprovalMode}
+              />
 
-            <FamilySupervision
-              children={children}
-              selectedChildId={selectedChildId}
-              setSelectedChildId={setSelectedChildId}
-              selectedChild={selectedChild}
-              approvals={approvals}
-              activity={activity}
-              householdMembers={householdMembers}
-              updateChild={updateChild}
-              requestStepUp={requestStepUp}
-              setSnack={setSnack}
-              openLink={openLink}
-              openCreate={openCreate}
-              approveRequest={approveRequest}
-              updateCharging={updateCharging}
-              addAllowedStation={addAllowedStation}
-              openPlaceEditor={openPlaceEditor}
-              removeMember={removeMember}
-              openInvite={openInvite}
-              applyTemplate={applyTemplate}
-            />
+              <FamilySupervision
+                children={children}
+                selectedChildId={selectedChildId}
+                setSelectedChildId={setSelectedChildId}
+                selectedChild={selectedChild}
+                approvals={approvals}
+                activity={activity}
+                householdMembers={householdMembers}
+                updateChild={updateChild}
+                requestStepUp={requestStepUp}
+                setSnack={setSnack}
+                openLink={openLink}
+                openCreate={openCreate}
+                approveRequest={approveRequest}
+                updateCharging={updateCharging}
+                addAllowedStation={addAllowedStation}
+                openPlaceEditor={openPlaceEditor}
+                removeMember={removeMember}
+                openInvite={openInvite}
+                applyTemplate={applyTemplate}
+              />
+            </Suspense>
           </Stack>
         </motion.div>
       </Box>
