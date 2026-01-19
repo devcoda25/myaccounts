@@ -39,6 +39,7 @@ import { EVZONE } from "@/theme/evzone";
  * • Buttons: orange-only with white text (outlined hover -> solid orange + white text)
  */
 
+import { api } from "@/utils/api";
 import { Delivery, Step } from "@/types";
 import {
   ArrowRightIcon,
@@ -189,25 +190,36 @@ export default function ForgotPasswordPage() {
     setConfirmOpen(true);
   };
 
-  const doSend = () => {
+  const doSend = async () => {
     setConfirmOpen(false);
+    setBanner(null);
 
-    const nextAttempts = attempts + 1;
-    setAttempts(nextAttempts);
+    try {
+      await api.post('/auth/forgot-password', {
+        identifier,
+        deliveryMethod: delivery
+      });
 
-    // require captcha after repeated requests
-    if (nextAttempts >= 3) setCaptchaRequired(true);
+      const nextAttempts = attempts + 1;
+      setAttempts(nextAttempts);
 
-    setCooldown(30);
-    setStep("sent");
+      // require captcha after repeated requests
+      if (nextAttempts >= 3) setCaptchaRequired(true);
 
-    const via = labelForDelivery(delivery);
+      setCooldown(30);
+      setStep("sent");
 
-    setSnack({
-      open: true,
-      severity: "success",
-      msg: `Sent successfully via ${via}.`
-    });
+      const via = labelForDelivery(delivery);
+
+      setSnack({
+        open: true,
+        severity: "success",
+        msg: `Sent successfully via ${via}.`
+      });
+    } catch (e: any) {
+      console.error("Forgot Password Error:", e);
+      setBanner({ severity: "error", msg: e.message || "Failed to send request. Please try again." });
+    }
   };
 
   const resetForm = () => {
