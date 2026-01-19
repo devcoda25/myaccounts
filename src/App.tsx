@@ -6,7 +6,7 @@ import { useAuthStore } from './stores/authStore';
 import { useIdleTimer } from './hooks/useIdleTimer';
 import { useEffect } from 'react';
 import { AuthProvider, useAuth } from 'react-oidc-context';
-import { oidcConfig } from './auth/oidcConfig';
+import { oidcConfig, userManager } from './auth/oidcConfig';
 
 export default function App() {
   const { refreshUser } = useAuthStore();
@@ -39,7 +39,7 @@ function AuthProviderWrapper({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthProvider {...oidcConfig} onSigninCallback={onSigninCallback}>
+    <AuthProvider userManager={userManager} onSigninCallback={onSigninCallback}>
       <AuthSync />
       {children}
     </AuthProvider>
@@ -53,11 +53,7 @@ function AuthSync() {
 
   useEffect(() => {
     if (auth.isAuthenticated) {
-      // [Fix] Race Condition: Allow oidc-client-ts to flush to sessionStorage
-      const timer = setTimeout(() => {
-        refreshUser();
-      }, 1000); // 1s delay to guarantee persistence
-      return () => clearTimeout(timer);
+      refreshUser();
     }
   }, [auth.isAuthenticated, refreshUser]);
 
