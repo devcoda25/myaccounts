@@ -132,7 +132,7 @@ export default function SignUpPageV3() {
   // This ensures we have a valid secure session before creating an account
   // If not logged in and not in interaction flow (uid), start OIDC login
   // This ensures we have a valid secure session before creating an account
-  /*
+  // [ENABLED] Auto-redirect to ensure OIDC session is initialized.
   React.useEffect(() => {
     if (!uid && !auth.isAuthenticated && !auth.isLoading && !auth.activeNavigator && !auth.error) {
       // We start a login flow. The backend generally redirects 'login' prompt to Sign In page.
@@ -141,7 +141,6 @@ export default function SignUpPageV3() {
       auth.signinRedirect().catch(console.error);
     }
   }, [uid, auth]);
-  */
 
   // Error Handling: If OIDC fails, show error and allow retry
   if (auth.error) {
