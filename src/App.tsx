@@ -53,7 +53,11 @@ function AuthSync() {
 
   useEffect(() => {
     if (auth.isAuthenticated) {
-      refreshUser();
+      // [Fix] Race Condition: Allow oidc-client-ts to flush to sessionStorage
+      const timer = setTimeout(() => {
+        refreshUser();
+      }, 300); // 300ms delay
+      return () => clearTimeout(timer);
     }
   }, [auth.isAuthenticated, refreshUser]);
 
