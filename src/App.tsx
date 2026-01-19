@@ -14,9 +14,7 @@ export default function App() {
   // Auto-logout after 30 minutes of inactivity
   useIdleTimer(30);
 
-  useEffect(() => {
-    refreshUser();
-  }, []);
+
 
   return (
     <BrowserRouter>
@@ -52,10 +50,15 @@ function AuthSync() {
   const { refreshUser } = useAuthStore();
 
   useEffect(() => {
+    if (auth.isLoading) return; // Wait for OIDC check
+
     if (auth.isAuthenticated && auth.user?.access_token) {
       refreshUser(auth.user.access_token);
+    } else {
+      // Not authenticated, stop loading state
+      useAuthStore.setState({ isLoading: false });
     }
-  }, [auth.isAuthenticated, auth.user?.access_token, refreshUser]);
+  }, [auth.isLoading, auth.isAuthenticated, auth.user?.access_token, refreshUser]);
 
   useEffect(() => {
     const handleLogout = () => {
