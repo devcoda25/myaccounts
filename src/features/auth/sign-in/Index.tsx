@@ -254,8 +254,7 @@ export default function SignInPage() {
 
   // If not logged in and not in interaction flow (uid), start OIDC login
   // If not logged in and not in interaction flow (uid), start OIDC login
-  // [DISABLED] Auto-redirect causes loops and prevents seeing the UI. User should click "Sign In" or "Google".
-  /*
+  // [ENABLED] Auto-redirect to ensure OIDC session is initialized.
   useEffect(() => {
     if (!uid && !auth.isAuthenticated && !auth.isLoading && !auth.activeNavigator && !auth.error) {
       auth.signinRedirect().catch(err => {
@@ -264,7 +263,6 @@ export default function SignInPage() {
       });
     }
   }, [uid, auth]);
-  */
 
   /*
   useEffect(() => {
