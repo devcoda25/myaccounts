@@ -20,6 +20,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     isLoading: true,
 
     refreshUser: async (token?: string) => {
+        // console.trace(`[AuthStore] refreshUser called. Token present: ${!!token}`);
         set({ isLoading: true });
         try {
             const options = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
