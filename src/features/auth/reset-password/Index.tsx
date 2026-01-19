@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { api } from "@/utils/api";
 import {
   Alert,
   Box,
@@ -161,12 +162,13 @@ function OtpInput({
 }
 
 export default function ResetPasswordPageV2() {
+  const [searchParams] = useSearchParams();
+  const tokenFromUrl = searchParams.get("token") || searchParams.get("code") || "";
+  const emailFromUrl = searchParams.get("email") || "";
+
   const navigate = useNavigate();
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
-
-  const qs = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
-  const tokenFromUrl = qs.get("token") || "";
 
   const [resetMode, setResetMode] = useState<ResetMode>(tokenFromUrl ? "token" : "otp");
   const [step, setStep] = useState<Step>("verify");
@@ -175,7 +177,7 @@ export default function ResetPasswordPageV2() {
   const [token, setToken] = useState(tokenFromUrl || "");
 
   // otp-based
-  const [identifier, setIdentifier] = useState("+256761677709");
+  const [identifier, setIdentifier] = useState(emailFromUrl || "");
   const idType = detectIdType(identifier);
 
   const [otpChannel, setOtpChannel] = useState<OtpChannel>(idType === "email" ? "email" : "sms");
@@ -200,7 +202,6 @@ export default function ResetPasswordPageV2() {
     msg: string;
   }>({ open: false, severity: "info", msg: "" });
 
-  // Green-only background
   const pageBg =
     isDark
       ? "radial-gradient(1200px 600px at 12% 6%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 10%, rgba(3,205,140,0.16), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
@@ -226,6 +227,21 @@ export default function ResetPasswordPageV2() {
     "&:hover": { backgroundColor: alpha(EVZONE.orange, isDark ? 0.14 : 0.10) },
   } as const;
 
+  // Auto-fill and advance from URL
+  useEffect(() => {
+    if (tokenFromUrl && emailFromUrl) {
+      setIdentifier(emailFromUrl);
+      if (tokenFromUrl.length === 6 && /^\d+$/.test(tokenFromUrl)) {
+        setResetMode("otp");
+        setOtp(tokenFromUrl.split(""));
+      } else {
+        setResetMode("token");
+        setToken(tokenFromUrl);
+      }
+      setStep("set");
+    }
+  }, [tokenFromUrl, emailFromUrl]);
+
   useEffect(() => {
     if (cooldown <= 0) return;
     const t = window.setInterval(() => setCooldown((c) => Math.max(0, c - 1)), 1000);
@@ -246,28 +262,24 @@ export default function ResetPasswordPageV2() {
 
   // reset OTP state when switching channel
   useEffect(() => {
-    setOtp(["", "", "", "", "", ""]);
-    setCodeSent(false);
-    setCooldown(0);
+    // Only reset if empty (don't clear auto-filled)
+    if (otp.join("") === "") {
+      setOtp(["", "", "", "", "", ""]);
+      setCodeSent(false);
+      setCooldown(0);
+    }
   }, [otpChannel]);
 
   // reset state when switching resetMode
   useEffect(() => {
     setBanner(null);
-    setStep("verify");
-    setPw("");
-    setConfirm("");
-    setShowPw(false);
-    setShowConfirm(false);
-    setOtp(["", "", "", "", "", ""]);
-    setCooldown(0);
-    setCodeSent(false);
+    if (!tokenFromUrl) { // Only reset if not URL driven
+      setStep("verify");
+      setPw("");
+      setConfirm("");
+    }
   }, [resetMode]);
 
-
-
-  // Token verification (demo)
-  const tokenOk = (v: string) => v.trim() === "EVZ-RESET-TOKEN";
 
   const verifyToken = () => {
     setBanner(null);
@@ -275,20 +287,11 @@ export default function ResetPasswordPageV2() {
       setBanner({ severity: "warning", msg: "Please enter the reset token." });
       return;
     }
-    if (!tokenOk(token)) {
-      setBanner({
-        severity: "error",
-        msg: "Invalid token.",
-      });
-      return;
-    }
+    // We assume token is valid format, let backend check it later
     setStep("set");
-    setSnack({ open: true, severity: "success", msg: "Token verified." });
   };
 
-  const expectedOtp = otpChannel === "whatsapp" ? "555555" : "444444"; // SMS+Email share a demo code
-
-  const sendOtp = () => {
+  const sendOtp = async () => {
     setBanner(null);
 
     if (!identifier.trim()) {
@@ -301,35 +304,33 @@ export default function ResetPasswordPageV2() {
       return;
     }
 
-    if (otpChannel === "email" && idType !== "email") {
-      setBanner({ severity: "warning", msg: "Please enter a valid email." });
-      return;
+    try {
+      const deliveryMethod = otpChannel === 'email' ? 'email_link' :
+        otpChannel === 'whatsapp' ? 'whatsapp_code' : 'sms_code';
+
+      await api.post('/auth/forgot-password', {
+        identifier,
+        deliveryMethod
+      });
+
+      setCodeSent(true);
+      setCooldown(30);
+
+      const msg = otpChannel === "email" ? "Code sent to email." : "Code sent via " + otpChannel;
+      setSnack({ open: true, severity: "success", msg });
+
+    } catch (e: any) {
+      setBanner({ severity: "error", msg: e.message || "Failed to send code." });
     }
-
-    if ((otpChannel === "sms" || otpChannel === "whatsapp") && idType !== "phone") {
-      setBanner({ severity: "warning", msg: "Please enter a valid phone number." });
-      return;
-    }
-
-    setCodeSent(true);
-    setCooldown(30);
-
-    const msg =
-      otpChannel === "email"
-        ? "Code sent to your email."
-        : otpChannel === "sms"
-          ? "Code sent via SMS."
-          : "Code sent via WhatsApp.";
-
-    setSnack({ open: true, severity: "success", msg });
   };
 
   const verifyOtp = () => {
     setBanner(null);
 
-    if (!codeSent) {
-      setBanner({ severity: "warning", msg: "Please send the code first." });
-      return;
+    // If typing manually, warn if not sent
+    if (!codeSent && !tokenFromUrl) {
+      //   setBanner({ severity: "warning", msg: "Please send the code first or use the link." });
+      // Actually allow them to proceed if they have a code from elsewhere
     }
 
     const code = otp.join("");
@@ -338,13 +339,8 @@ export default function ResetPasswordPageV2() {
       return;
     }
 
-    if (code !== expectedOtp) {
-      setBanner({ severity: "error", msg: "Invalid code." });
-      return;
-    }
-
+    // Pass-through validation (backend checks code on reset)
     setStep("set");
-    setSnack({ open: true, severity: "success", msg: "Code verified." });
   };
 
   // Password setting step
@@ -353,7 +349,7 @@ export default function ResetPasswordPageV2() {
   const r = reqs(pw);
   const canReset = s >= 3 && pw === confirm;
 
-  const reset = () => {
+  const reset = async () => {
     setBanner(null);
 
     if (!pw) {
@@ -369,12 +365,23 @@ export default function ResetPasswordPageV2() {
       return;
     }
 
-    setStep("success");
-    setSnack({
-      open: true,
-      severity: "success",
-      msg: signOutAll ? "Password reset. You have been signed out of all devices." : "Password reset successfully.",
-    });
+    try {
+      const codeVal = resetMode === 'token' ? token : otp.join("");
+      await api.post('/auth/reset-password', {
+        identifier,
+        code: codeVal,
+        password: pw
+      });
+
+      setStep("success");
+      setSnack({
+        open: true,
+        severity: "success",
+        msg: signOutAll ? "Password reset. You have been signed out." : "Password reset successfully.",
+      });
+    } catch (e: any) {
+      setBanner({ severity: "error", msg: e.message || "Failed to reset password. Invalid code/token." });
+    }
   };
 
   const goSignIn = () => navigate("/auth/sign-in");
