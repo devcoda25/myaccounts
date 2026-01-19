@@ -56,7 +56,7 @@ function AuthSync() {
       // [Fix] Race Condition: Allow oidc-client-ts to flush to sessionStorage
       const timer = setTimeout(() => {
         refreshUser();
-      }, 300); // 300ms delay
+      }, 1000); // 1s delay to guarantee persistence
       return () => clearTimeout(timer);
     }
   }, [auth.isAuthenticated, refreshUser]);
