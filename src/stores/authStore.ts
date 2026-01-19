@@ -12,17 +12,18 @@ interface AuthState {
     requestPhoneVerification: (identifier: string, deliveryMethod: 'sms_code' | 'whatsapp_code') => Promise<unknown>;
     verifyPhone: (identifier: string, code: string) => Promise<void>;
     logout: () => Promise<void>;
-    refreshUser: () => Promise<void>;
+    refreshUser: (token?: string) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
     user: null,
     isLoading: true,
 
-    refreshUser: async () => {
+    refreshUser: async (token?: string) => {
         set({ isLoading: true });
         try {
-            const data = await api('/users/me') as IUser;
+            const options = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+            const data = await api('/users/me', options) as IUser;
             set({ user: data, isLoading: false });
         } catch (err) {
             set({ user: null, isLoading: false });

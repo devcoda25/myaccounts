@@ -52,10 +52,10 @@ function AuthSync() {
   const { refreshUser } = useAuthStore();
 
   useEffect(() => {
-    if (auth.isAuthenticated) {
-      refreshUser();
+    if (auth.isAuthenticated && auth.user?.access_token) {
+      refreshUser(auth.user.access_token);
     }
-  }, [auth.isAuthenticated, refreshUser]);
+  }, [auth.isAuthenticated, auth.user?.access_token, refreshUser]);
 
   useEffect(() => {
     const handleLogout = () => {
