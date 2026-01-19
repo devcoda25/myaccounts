@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { BACKEND_URL } from "@/config";
 import {
   Alert,
   Box,
@@ -250,7 +251,8 @@ export default function SignUpPageV3() {
 
     try {
       const selectedCountry = COUNTRIES.find(c => c.dial === countryCode);
-      const response = await register({
+      // 1. Register Account
+      await register({
         firstName,
         otherNames,
         email,
@@ -261,11 +263,41 @@ export default function SignUpPageV3() {
         acceptTerms
       });
 
-      // Save email for verification page
+      // Save email for verification page (fallback)
       localStorage.setItem('pending_verification_email', email);
 
+      // 2. Auto-Login if OIDC Interaction is active (uid)
+      // This skips the "Verify Email" screen and logs the user directly into the app (or Consent)
+      if (uid) {
+        setSnack({ open: true, severity: "info", msg: "Account created! Signing you in..." });
+
+        try {
+          const interactionBaseUrl = BACKEND_URL.replace(/\/api\/v1\/?$/, '');
+          const targetUrl = `${interactionBaseUrl}/interaction/${uid}/login`;
+
+          const res = await fetch(targetUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+
+          if (res.ok) {
+            // Success: Follow redirect to complete OIDC flow
+            window.location.assign(res.url);
+            return;
+          } else {
+            // If auto-login fails, just fall through to verification page
+            console.warn("Auto-login failed after registration", await res.text());
+          }
+        } catch (loginErr) {
+          console.error("Auto-login network error", loginErr);
+        }
+      }
+
+      // Fallback: Verify Email Page
       setSnack({ open: true, severity: "success", msg: "Account created! Please verify your email." });
       navigate("/auth/verify-email");
+
     } catch (e: any) {
       setBanner({ severity: "error", msg: e.message || "Failed to create account. Please try again." });
     }

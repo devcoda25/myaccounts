@@ -288,25 +288,38 @@ export default function SignInPage() {
   //   }
   // }, [isGoogleScriptLoaded, renderGoogleButton]);
 
-  // Helper: Submit Interaction via Hidden Form (to follow redirects)
-  const submitInteraction = (uidVal: string, e: string, p: string) => {
+  // Helper: Submit Interaction via Fetch to handle errors inline
+  const submitInteraction = async (uidVal: string, e: string, p: string) => {
     // [FIX] Interaction endpoints are at root, not /api/v1
     const interactionBaseUrl = BACKEND_URL.replace(/\/api\/v1\/?$/, '');
+    const targetUrl = `${interactionBaseUrl}/interaction/${uidVal}/login`;
 
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = `${interactionBaseUrl}/interaction/${uidVal}/login`;
+    try {
+      const res = await fetch(targetUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email: e, password: p })
+      });
 
-    const fUid = document.createElement('input'); fUid.type = 'hidden'; fUid.name = 'uid'; fUid.value = uidVal;
-    const fEmail = document.createElement('input'); fEmail.type = 'hidden'; fEmail.name = 'email'; fEmail.value = e;
-    const fPass = document.createElement('input'); fPass.type = 'hidden'; fPass.name = 'password'; fPass.value = p;
-
-    form.appendChild(fUid);
-    form.appendChild(fEmail);
-    form.appendChild(fPass);
-
-    document.body.appendChild(form);
-    form.submit();
+      if (res.ok) {
+        // Success: OIDC provider redirects us. Fetch follows redirects automatically.
+        // If the final destination is the app or consent page, navigate there.
+        // Ideally, res.url is the new location.
+        window.location.assign(res.url);
+      } else {
+        // Error: Parse JSON
+        const data = await res.json().catch(() => ({}));
+        const errorMsg = data.error || "Login failed. Please check your credentials.";
+        setBanner({ severity: "error", msg: errorMsg });
+        setSnack({ open: false, severity: "info", msg: "" }); // Clear loading snack
+      }
+    } catch (err: any) {
+      console.error("Login Interaction Error:", err);
+      setBanner({ severity: "error", msg: "Network error. Please try again." });
+      setSnack({ open: false, severity: "info", msg: "" });
+    }
   };
 
   const submitPasswordSignIn = async () => {
