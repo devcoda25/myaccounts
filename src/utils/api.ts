@@ -38,22 +38,16 @@ axiosRetry(instance, {
 });
 
 // [Security] Auth Interceptor (OIDC)
-instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-    const isProd = import.meta.env.PROD;
-    // OIDC logic mirroring oidcConfig.ts
-    const authority = isProd ? 'https://accounts.evzone.app/oidc' : `${new URL(apiBaseUrl).origin}/oidc`;
-    const storageKey = `oidc.user:${authority}:evzone-portal`;
+// [Security] Auth Interceptor (OIDC)
+import { userManager } from '../auth/oidcConfig';
 
-    const oidcStorage = sessionStorage.getItem(storageKey);
-    if (oidcStorage) {
-        try {
-            const user = JSON.parse(oidcStorage);
-            if (user?.access_token) {
-                config.headers.Authorization = `Bearer ${user.access_token}`;
-            }
-        } catch { /* ignore */ }
-    }
+instance.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
+    try {
+        const user = await userManager.getUser();
+        if (user?.access_token) {
+            config.headers.Authorization = `Bearer ${user.access_token}`;
+        }
+    } catch { /* ignore */ }
     return config;
 });
 

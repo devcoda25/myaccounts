@@ -17,6 +17,9 @@ try {
     }
 } catch { /* ignore */ }
 
+// [Architecture] Export Singleton UserManager for api.ts access
+import { UserManager } from 'oidc-client-ts';
+
 export const oidcConfig: AuthProviderProps = {
     authority, // Backend URL (Origin)
     client_id: 'evzone-portal',
@@ -28,5 +31,17 @@ export const oidcConfig: AuthProviderProps = {
     userStore: new WebStorageStateStore({ store: window.sessionStorage }), // [Fix] Match api.ts storage
     // We don't save secrets in frontend
 };
+
+// Singleton UserManager for direct access in api.ts
+export const userManager = new UserManager({
+    authority: oidcConfig.authority,
+    client_id: oidcConfig.client_id,
+    redirect_uri: oidcConfig.redirect_uri,
+    post_logout_redirect_uri: oidcConfig.post_logout_redirect_uri,
+    response_type: oidcConfig.response_type,
+    scope: oidcConfig.scope,
+    userStore: oidcConfig.userStore,
+    automaticSilentRenew: true,
+});
 
 export const BACKEND_URL = 'http://localhost:3000';
