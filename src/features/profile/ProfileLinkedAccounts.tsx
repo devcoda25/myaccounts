@@ -368,12 +368,7 @@ function maskEmail(email?: string) {
   return `${m[1]}***${m[2]}`;
 }
 
-function mfaCodeFor(channel: MfaChannel) {
-  if (channel === "Authenticator") return "654321";
-  if (channel === "SMS") return "222222";
-  if (channel === "WhatsApp") return "333333";
-  return "111111";
-}
+// [Removed] mfaCodeFor (was mock)
 
 export default function LinkedAccountsPage() {
   const { mode } = useThemeStore();
@@ -439,6 +434,35 @@ export default function LinkedAccountsPage() {
   const [mfaChannel, setMfaChannel] = useState<MfaChannel>("Authenticator");
   const [otp, setOtp] = useState("");
   const [pendingAction, setPendingAction] = useState<null | { provider: ProviderKey; action: "unlink" | "link" }>(null);
+  const [codeSent, setCodeSent] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+
+  // Cooldown effect
+  useEffect(() => {
+    if (cooldown > 0) {
+      const t = setTimeout(() => setCooldown(c => c - 1), 1000);
+      return () => clearTimeout(t);
+    }
+  }, [cooldown]);
+
+  const requestChallenge = async () => {
+    try {
+      const channelMap: Record<string, 'sms' | 'whatsapp' | 'email'> = {
+        'SMS': 'sms',
+        'WhatsApp': 'whatsapp',
+        'Email': 'email'
+      };
+      const c = channelMap[mfaChannel];
+      if (!c) return;
+
+      await api('/auth/mfa/challenge/send', { method: 'POST', body: JSON.stringify({ channel: c }) });
+      setCodeSent(true);
+      setCooldown(30);
+      setSnack({ open: true, severity: "success", msg: `Code sent to ${mfaChannel}` });
+    } catch (err: any) {
+      setSnack({ open: true, severity: "error", msg: err.message || "Failed to send code" });
+    }
+  };
 
   // redundant code removed
 
@@ -485,6 +509,8 @@ export default function LinkedAccountsPage() {
     setReauthPassword("");
     setMfaChannel("Authenticator");
     setOtp("");
+    setCodeSent(false);
+    setCooldown(0);
   };
 
   const closeReauth = () => {
@@ -500,11 +526,20 @@ export default function LinkedAccountsPage() {
       if (reauthMode === "password") {
         await api('/auth/verify-password', { method: 'POST', body: JSON.stringify({ password: reauthPassword }) });
       } else {
-        // Validation for MFA not fully implemented in this refactor step as MFA verification endpoint might differ
-        // Assuming verify-password handles password. For now we only support Password re-auth fully.
-        if (otp.trim() !== mfaCodeFor(mfaChannel)) {
-          throw new Error("Invalid MFA code (Demo check)");
-        }
+        // MFA Verification
+        const channelMap: Record<string, 'authenticator' | 'sms' | 'whatsapp' | 'email'> = {
+          'Authenticator': 'authenticator',
+          'SMS': 'sms',
+          'WhatsApp': 'whatsapp',
+          'Email': 'email'
+        };
+        const c = channelMap[mfaChannel];
+        await api('/auth/mfa/challenge/verify', {
+          method: 'POST', body: JSON.stringify({
+            code: otp,
+            channel: c
+          })
+        });
       }
     } catch (err) {
       setSnack({ open: true, severity: "error", msg: "Re-authentication failed. Incorrect credentials." });
@@ -840,7 +875,7 @@ export default function LinkedAccountsPage() {
                         key={it.c}
                         variant={selected ? "contained" : "outlined"}
                         startIcon={it.icon}
-                        onClick={() => setMfaChannel(it.c)}
+                        onClick={() => { setMfaChannel(it.c); setCodeSent(false); setOtp(""); }}
                         sx={
                           selected
                             ? ({
@@ -865,6 +900,18 @@ export default function LinkedAccountsPage() {
                   })}
                 </Box>
 
+                {mfaChannel !== "Authenticator" && (
+                  <Button
+                    disabled={cooldown > 0}
+                    onClick={requestChallenge}
+                    fullWidth
+                    variant="outlined"
+                    sx={{ borderRadius: 12, borderColor: theme.palette.divider }}
+                  >
+                    {cooldown > 0 ? `Resend in ${cooldown}s` : codeSent ? "Resend Code" : "Send Code"}
+                  </Button>
+                )}
+
                 <TextField
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
@@ -878,7 +925,7 @@ export default function LinkedAccountsPage() {
                       </InputAdornment>
                     ),
                   }}
-                  helperText={`Demo code for ${mfaChannel}: ${mfaCodeFor(mfaChannel)}`}
+                  helperText={mfaChannel === "Authenticator" ? "Open your Authenticator app" : codeSent ? "Code sent to your contact method" : "Request a code first"}
                 />
               </>
             )}
