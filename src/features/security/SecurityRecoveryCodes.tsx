@@ -190,13 +190,7 @@ async function copyToClipboard(text: string) {
   }
 }
 
-function mfaCodeFor(channel: MfaChannel) {
-  // Demo codes
-  if (channel === "Authenticator") return "123456";
-  if (channel === "SMS") return "222222";
-  if (channel === "WhatsApp") return "333333";
-  return "444444";
-}
+// Mock helper removed
 
 export default function RecoveryCodesPage() {
   const theme = useTheme();
@@ -238,27 +232,38 @@ export default function RecoveryCodesPage() {
     "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
   } as const;
 
-  const validateReauth = () => {
-    if (reauthMode === "password") {
-      // In a real app, verify with backend
-      if (reauthPassword !== "EVzone123!") {
-        setSnack({ open: true, severity: "error", msg: "Re-auth failed. Incorrect password." });
-        return false;
-      }
-      return true;
-    }
-    // Mock MFA check
-    if (otp.length < 6) {
-      setSnack({ open: true, severity: "error", msg: "Re-auth failed. Incorrect code." });
-      return false;
-    }
-    return true;
-  };
+  const submitReauth = async () => {
+    setSnack({ open: false, severity: "info", msg: "" });
 
-  const submitReauth = () => {
-    if (!validateReauth()) return;
-    setAuthed(true);
-    setSnack({ open: true, severity: "success", msg: "Verified. You can regenerate codes now." });
+    if (reauthMode === "password") {
+      if (!reauthPassword) {
+        setSnack({ open: true, severity: "warning", msg: "Enter your password." });
+        return;
+      }
+      try {
+        await api.post("/auth/verify-password", { password: reauthPassword });
+        setAuthed(true);
+        setSnack({ open: true, severity: "success", msg: "Verified. You can regenerate codes now." });
+      } catch (e: any) {
+        setSnack({ open: true, severity: "error", msg: e.message || "Incorrect password." });
+      }
+    } else {
+      // MFA
+      if (otp.length < 6) {
+        setSnack({ open: true, severity: "warning", msg: "Enter a 6-digit code." });
+        return;
+      }
+      try {
+        await api.post("/auth/mfa/challenge/verify", {
+          channel: mfaChannel.toLowerCase(),
+          code: otp
+        });
+        setAuthed(true);
+        setSnack({ open: true, severity: "success", msg: "Verified. You can regenerate codes now." });
+      } catch (e: any) {
+        setSnack({ open: true, severity: "error", msg: e.message || "Invalid code." });
+      }
+    }
   };
 
   const doCopy = async () => {
@@ -362,7 +367,7 @@ export default function RecoveryCodesPage() {
                             </InputAdornment>
                           ),
                         }}
-                        helperText="Demo password: EVzone123!"
+                        helperText=""
                       />
                     ) : (
                       <>
@@ -401,8 +406,21 @@ export default function RecoveryCodesPage() {
                           placeholder="123456"
                           fullWidth
                           InputProps={{ startAdornment: (<InputAdornment position="start"><KeypadIcon size={18} /></InputAdornment>) }}
-                          helperText={`Demo code for ${mfaChannel}: ${mfaCodeFor(mfaChannel)}`}
                         />
+                        <Button
+                          variant="text"
+                          size="small"
+                          onClick={async () => {
+                            try {
+                              await api.post("/auth/mfa/challenge/send", { channel: mfaChannel.toLowerCase() });
+                              setSnack({ open: true, severity: "success", msg: `Code sent via ${mfaChannel}` });
+                            } catch (e: any) {
+                              setSnack({ open: true, severity: "error", msg: e.message || "Failed to send code" });
+                            }
+                          }}
+                        >
+                          Send Code
+                        </Button>
                       </>
                     )}
 

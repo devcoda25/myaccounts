@@ -239,17 +239,22 @@ export default function VerifyEmailPage() {
     window.setTimeout(() => otpRefs.current[lastIndex]?.focus(), 0);
   };
 
-  const resend = () => {
+  const { verifyEmail, requestEmailVerification } = useAuthStore();
+
+  const resend = async () => {
     if (cooldown > 0) return;
-    setCooldown(30);
-    setSnack({ open: true, severity: "success", msg: `Code sent to ${maskEmail(email)}.` });
+    try {
+      await requestEmailVerification(email);
+      setCooldown(30);
+      setSnack({ open: true, severity: "success", msg: `Code sent to ${maskEmail(email)}.` });
+    } catch (err: any) {
+      setBanner({ severity: "error", msg: err.message || "Failed to send code" });
+    }
   };
 
   const openEmailApp = () => {
     setSnack({ open: true, severity: "info", msg: "Opening email app..." });
   };
-
-  const { verifyEmail } = useAuthStore();
 
   const verify = async () => {
     setBanner(null);
@@ -269,19 +274,25 @@ export default function VerifyEmailPage() {
     }
   };
 
-  const saveEmailChange = () => {
+  const saveEmailChange = async () => {
     setBanner(null);
     const e = newEmail.trim();
     if (!isEmail(e)) {
       setBanner({ severity: "warning", msg: "Please enter a valid email address." });
       return;
     }
-    setEmail(e);
-    setOtp(["", "", "", "", "", ""]);
-    setCooldown(30);
-    setChangeOpen(false);
-    setSnack({ open: true, severity: "success", msg: `Email updated to ${maskEmail(e)}.` });
-    window.setTimeout(() => otpRefs.current[0]?.focus(), 250);
+
+    try {
+      await requestEmailVerification(e);
+      setEmail(e);
+      setOtp(["", "", "", "", "", ""]);
+      setCooldown(30);
+      setChangeOpen(false);
+      setSnack({ open: true, severity: "success", msg: `Code sent to ${maskEmail(e)}.` });
+      window.setTimeout(() => otpRefs.current[0]?.focus(), 250);
+    } catch (err: any) {
+      setBanner({ severity: "error", msg: err.message || "Failed to send code to new email" });
+    }
   };
 
   const continueNext = () => {
@@ -397,9 +408,7 @@ export default function VerifyEmailPage() {
 
                     <Divider sx={{ my: 1 }} />
 
-                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      Use <b>123456</b> for demo.
-                    </Typography>
+                    {/* Demo text removed for production */}
                   </Stack>
                 </CardContent>
               </Card>

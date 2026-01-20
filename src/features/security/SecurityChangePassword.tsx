@@ -218,7 +218,7 @@ export default function ChangePasswordPage() {
                     </Typography>
                     <Divider />
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      Demo current password: <b>EVzone123!</b>
+                      {/* Demo info removed */}
                     </Typography>
                     <Alert severity="info" sx={{ borderRadius: "4px" }}>
                       Changing your password is a sensitive action. In production, we may request MFA.

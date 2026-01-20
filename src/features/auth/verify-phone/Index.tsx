@@ -565,9 +565,7 @@ export default function VerifyPhonePage() {
 
                     <Divider sx={{ my: 1 }} />
 
-                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      Use <b>123456</b> for demo.
-                    </Typography>
+                    {/* Demo text removed */}
                   </Stack>
                 </CardContent>
               </Card>

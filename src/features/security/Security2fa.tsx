@@ -195,12 +195,7 @@ function timeAgo(ts?: number) {
   return `${d} day${d === 1 ? "" : "s"} ago`;
 }
 
-function mfaCodeFor(channel: MfaChannel) {
-  if (channel === "Authenticator") return "654321";
-  if (channel === "SMS") return "222222";
-  if (channel === "WhatsApp") return "333333";
-  return "111111";
-}
+// [Removed] mfaCodeFor mock
 
 export default function Manage2FAPage() {
   const theme = useTheme();
@@ -243,6 +238,34 @@ export default function Manage2FAPage() {
   const [mfaChannel, setMfaChannel] = useState<MfaChannel>("Authenticator");
   const [otp, setOtp] = useState("");
   const [pending, setPending] = useState<null | { type: "toggle" | "add" | "disable"; payload?: string | MethodKey }>(null);
+  const [codeSent, setCodeSent] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    if (cooldown > 0) {
+      const t = setTimeout(() => setCooldown(c => c - 1), 1000);
+      return () => clearTimeout(t);
+    }
+  }, [cooldown]);
+
+  const requestChallenge = async () => {
+    try {
+      const channelMap: Record<string, 'sms' | 'whatsapp' | 'email'> = {
+        'SMS': 'sms',
+        'WhatsApp': 'whatsapp',
+        'Email': 'email'
+      };
+      const c = channelMap[mfaChannel];
+      if (!c) return;
+
+      await api('/auth/mfa/challenge/send', { method: 'POST', body: JSON.stringify({ channel: c }) });
+      setCodeSent(true);
+      setCooldown(30);
+      setSnack({ open: true, severity: "success", msg: `Code sent to ${mfaChannel}` });
+    } catch (err: any) {
+      setSnack({ open: true, severity: "error", msg: err.message || "Failed to send code" });
+    }
+  };
 
   const [addOpen, setAddOpen] = useState(false);
   const [addChoice, setAddChoice] = useState<MethodKey>("sms");
@@ -280,6 +303,8 @@ export default function Manage2FAPage() {
     setReauthMode("password");
     setReauthPassword("");
     setMfaChannel("Authenticator");
+    setCodeSent(false);
+    setCooldown(0);
     setOtp("");
     setReauthOpen(true);
   };
@@ -301,12 +326,21 @@ export default function Manage2FAPage() {
       }
     }
 
-    if (otp.trim() !== mfaCodeFor(mfaChannel)) {
-      setSnack({ open: true, severity: "error", msg: "Re-auth failed. Incorrect code." });
+    // Verify MFA via backend
+    try {
+      const channelMap: Record<string, 'authenticator' | 'sms' | 'whatsapp' | 'email'> = {
+        'Authenticator': 'authenticator',
+        'SMS': 'sms',
+        'WhatsApp': 'whatsapp',
+        'Email': 'email'
+      };
+      const c = channelMap[mfaChannel];
+      await api('/auth/mfa/challenge/verify', { method: 'POST', body: JSON.stringify({ code: otp, channel: c }) });
+      return true;
+    } catch (err: any) {
+      setSnack({ open: true, severity: "error", msg: err.message || "Re-auth failed. Invalid code." });
       return false;
     }
-
-    return true;
   };
 
   const applyPending = async () => {
@@ -672,7 +706,7 @@ export default function Manage2FAPage() {
                         key={it.c}
                         variant={selected ? "contained" : "outlined"}
                         startIcon={it.icon}
-                        onClick={() => setMfaChannel(it.c)}
+                        onClick={() => { setMfaChannel(it.c); setCodeSent(false); }}
                         sx={
                           selected
                             ? ({ borderRadius: "4px", backgroundColor: base, color: "#FFFFFF", "&:hover": { backgroundColor: alpha(base, 0.92) } } as const)
@@ -685,6 +719,20 @@ export default function Manage2FAPage() {
                     );
                   })}
                 </Box>
+
+
+
+                {mfaChannel !== "Authenticator" && (
+                  <Button
+                    disabled={cooldown > 0}
+                    onClick={requestChallenge}
+                    fullWidth
+                    variant="outlined"
+                    sx={{ mt: 2, borderRadius: 3, borderColor: theme.palette.divider }}
+                  >
+                    {cooldown > 0 ? `Resend in ${cooldown}s` : codeSent ? "Resend Code" : "Send Code"}
+                  </Button>
+                )}
 
                 <TextField
                   value={otp}
@@ -699,7 +747,7 @@ export default function Manage2FAPage() {
                       </InputAdornment>
                     ),
                   }}
-                  helperText={`Demo code for ${mfaChannel}: ${mfaCodeFor(mfaChannel)}`}
+                  helperText={mfaChannel === "Authenticator" ? "Open Authenticator app" : codeSent ? "Code sent." : "Request a code first"}
                 />
               </>
             )}
@@ -733,6 +781,6 @@ export default function Manage2FAPage() {
           {snack.msg}
         </Alert>
       </Snackbar>
-    </Box>
+    </Box >
   );
 }

@@ -480,7 +480,7 @@ export default function ResetPasswordPageV2() {
                   </Typography>
                   <Divider sx={{ my: 1 }} />
                   <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                    Use <b>EVZ-RESET-TOKEN</b> for demo.
+                    {/* Demo token info removed */}
                   </Typography>
                   <Divider sx={{ my: 1 }} />
                   <Button

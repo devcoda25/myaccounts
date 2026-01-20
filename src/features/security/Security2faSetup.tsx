@@ -476,7 +476,7 @@ export default function TwoFASetupPageV2() {
     if (m === "authenticator") setSecret(randomBase32(16));
   };
 
-  const expectedCode = method === "authenticator" ? "123456" : method === "sms" ? "222222" : "333333";
+  // expectedCode removed
 
   const sendCode = async () => {
     if (method === "authenticator") {

@@ -9,6 +9,7 @@ interface AuthState {
     socialLogin: (provider: 'google' | 'apple', token: string) => Promise<void>;
     register: (data: Record<string, unknown>) => Promise<unknown>;
     verifyEmail: (email: string, code: string) => Promise<void>;
+    requestEmailVerification: (email: string) => Promise<unknown>;
     requestPhoneVerification: (identifier: string, deliveryMethod: 'sms_code' | 'whatsapp_code') => Promise<unknown>;
     verifyPhone: (identifier: string, code: string) => Promise<void>;
     logout: () => Promise<void>;
@@ -70,6 +71,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             body: JSON.stringify({ identifier: email, code }),
         });
         await get().refreshUser();
+    },
+
+    requestEmailVerification: async (email: string) => {
+        return await api('/auth/request-email-verification', {
+            method: 'POST',
+            body: JSON.stringify({ email }),
+        });
     },
 
     requestPhoneVerification: async (identifier: string, deliveryMethod: 'sms_code' | 'whatsapp_code') => {
