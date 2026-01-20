@@ -115,12 +115,7 @@ function uid(prefix: string) {
     return `${prefix}_${Math.random().toString(16).slice(2)}`;
 }
 
-function mfaCodeFor(channel: MfaChannel) {
-    if (channel === "Authenticator") return "654321";
-    if (channel === "SMS") return "222222";
-    if (channel === "WhatsApp") return "333333";
-    return "111111";
-}
+// [Removed] mfaCodeFor mock
 
 function riskTone(r: Risk) {
     if (r === "High") return "#B42318";
@@ -252,9 +247,37 @@ export default function AdminUsersList() {
     const [notifyUser, setNotifyUser] = useState(true);
     const [reauthMode, setReauthMode] = useState<ReAuthMode>("password");
     const [adminPassword, setAdminPassword] = useState("");
-    const [mfaChannel, setMfaChannel] = useState<MfaChannel>("SMS");
+    const [mfaChannel, setMfaChannel] = useState<MfaChannel>("Authenticator");
     const [otp, setOtp] = useState("");
     const [generatedTempPassword, setGeneratedTempPassword] = useState<string | null>(null);
+    const [codeSent, setCodeSent] = useState(false);
+    const [cooldown, setCooldown] = useState(0);
+
+    useEffect(() => {
+        if (cooldown > 0) {
+            const t = setTimeout(() => setCooldown(c => c - 1), 1000);
+            return () => clearTimeout(t);
+        }
+    }, [cooldown]);
+
+    const requestChallenge = async () => {
+        try {
+            const channelMap: Record<string, 'sms' | 'whatsapp' | 'email'> = {
+                'SMS': 'sms',
+                'WhatsApp': 'whatsapp',
+                'Email': 'email'
+            };
+            const c = channelMap[mfaChannel];
+            if (!c) return;
+
+            await api('/auth/mfa/challenge/send', { method: 'POST', body: JSON.stringify({ channel: c }) });
+            setCodeSent(true);
+            setCooldown(30);
+            setSnack({ open: true, severity: "success", msg: `Code sent to ${mfaChannel}` });
+        } catch (err: any) {
+            setSnack({ open: true, severity: "error", msg: err.message || "Failed to send code" });
+        }
+    };
 
     // Create User Dialog
     const [createOpen, setCreateOpen] = useState(false);
@@ -297,7 +320,9 @@ export default function AdminUsersList() {
         setNotifyUser(true);
         setReauthMode("password");
         setAdminPassword("");
-        setMfaChannel("SMS");
+        setMfaChannel("Authenticator");
+        setCodeSent(false);
+        setCooldown(0);
         setOtp("");
         setGeneratedTempPassword(null);
         setActionOpen(true);
@@ -340,27 +365,29 @@ export default function AdminUsersList() {
         return true;
     };
 
-    const validateReauth = () => {
-        if (reauthMode === "password") {
-            if (adminPassword !== "superadmin-secure-pw") {
-                setSnack({ open: true, severity: "error", msg: "Re-auth failed (demo). Incorrect password." });
-                return false;
-            }
-            return true;
-        }
-
-        if (otp.trim() !== mfaCodeFor(mfaChannel)) {
-            setSnack({ open: true, severity: "error", msg: "Re-auth failed (demo). Incorrect code." });
-            return false;
-        }
-        return true;
-    };
+    // [Removed] validateReauth (using real backend check now)
 
     const applyAction = async () => {
         if (!pending || !pendingUser) return;
-        if (!validateReauth()) return;
 
         try {
+            // Re-auth first
+            if (reauthMode === "password") {
+                // Verify password via backend - reusing general verify-password or a specific admin one?
+                // Assuming /auth/verify-password works for current user (the admin)
+                await api('/auth/verify-password', { method: 'POST', body: JSON.stringify({ password: adminPassword }) });
+            } else {
+                const channelMap: Record<string, 'authenticator' | 'sms' | 'whatsapp' | 'email'> = {
+                    'Authenticator': 'authenticator',
+                    'SMS': 'sms',
+                    'WhatsApp': 'whatsapp',
+                    'Email': 'email'
+                };
+                const c = channelMap[mfaChannel];
+                await api('/auth/mfa/challenge/verify', { method: 'POST', body: JSON.stringify({ code: otp, channel: c }) });
+            }
+
+            // If re-auth success, proceed with action
             if (pending.kind === 'DELETE_USER') {
                 await api(`/users/${pending.userId}`, { method: 'DELETE' });
                 setRows((prev) => prev.filter((u) => u.id !== pending.userId));
@@ -734,16 +761,16 @@ export default function AdminUsersList() {
                                     <>
                                         <Typography sx={{ fontWeight: 950, mt: 1 }}>Choose channel</Typography>
                                         <Box className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                                            <Button variant={mfaChannel === "Authenticator" ? "contained" : "outlined"} sx={mfaChannel === "Authenticator" ? orangeContained : orangeOutlined} startIcon={<KeypadIcon size={18} />} onClick={() => setMfaChannel("Authenticator")}>
+                                            <Button variant={mfaChannel === "Authenticator" ? "contained" : "outlined"} sx={mfaChannel === "Authenticator" ? orangeContained : orangeOutlined} startIcon={<KeypadIcon size={18} />} onClick={() => { setMfaChannel("Authenticator"); setCodeSent(false); }}>
                                                 Authenticator
                                             </Button>
-                                            <Button variant={mfaChannel === "SMS" ? "contained" : "outlined"} sx={mfaChannel === "SMS" ? orangeContained : orangeOutlined} startIcon={<SmsIcon size={18} />} onClick={() => setMfaChannel("SMS")}>
+                                            <Button variant={mfaChannel === "SMS" ? "contained" : "outlined"} sx={mfaChannel === "SMS" ? orangeContained : orangeOutlined} startIcon={<SmsIcon size={18} />} onClick={() => { setMfaChannel("SMS"); setCodeSent(false); }}>
                                                 SMS
                                             </Button>
                                             <Button
                                                 variant={mfaChannel === "WhatsApp" ? "contained" : "outlined"}
                                                 startIcon={<WhatsAppIcon size={18} />}
-                                                onClick={() => setMfaChannel("WhatsApp")}
+                                                onClick={() => { setMfaChannel("WhatsApp"); setCodeSent(false); }}
                                                 sx={
                                                     mfaChannel === "WhatsApp"
                                                         ? ({ backgroundColor: WHATSAPP.green, color: "#fff", "&:hover": { backgroundColor: alpha(WHATSAPP.green, 0.92) }, borderRadius: 3 } as const)
@@ -752,10 +779,22 @@ export default function AdminUsersList() {
                                             >
                                                 WhatsApp
                                             </Button>
-                                            <Button variant={mfaChannel === "Email" ? "contained" : "outlined"} sx={mfaChannel === "Email" ? orangeContained : orangeOutlined} startIcon={<MailIcon size={18} />} onClick={() => setMfaChannel("Email")}>
+                                            <Button variant={mfaChannel === "Email" ? "contained" : "outlined"} sx={mfaChannel === "Email" ? orangeContained : orangeOutlined} startIcon={<MailIcon size={18} />} onClick={() => { setMfaChannel("Email"); setCodeSent(false); }}>
                                                 Email
                                             </Button>
                                         </Box>
+
+                                        {mfaChannel !== "Authenticator" && (
+                                            <Button
+                                                disabled={cooldown > 0}
+                                                onClick={requestChallenge}
+                                                fullWidth
+                                                variant="outlined"
+                                                sx={{ mt: 2, borderRadius: 3, borderColor: theme.palette.divider }}
+                                            >
+                                                {cooldown > 0 ? `Resend in ${cooldown}s` : codeSent ? "Resend Code" : "Send Code"}
+                                            </Button>
+                                        )}
 
                                         <TextField
                                             value={otp}
@@ -764,7 +803,7 @@ export default function AdminUsersList() {
                                             placeholder="123456"
                                             fullWidth
                                             InputProps={{ startAdornment: (<InputAdornment position="start"><KeypadIcon size={18} /></InputAdornment>) }}
-                                            helperText={`Demo code for ${mfaChannel}: ${mfaCodeFor(mfaChannel)}`}
+                                            helperText={mfaChannel === "Authenticator" ? "Open Authenticator app" : codeSent ? "Code sent." : "Request a code first"}
                                             sx={{ '& .MuiOutlinedInput-root': { borderRadius: 3 }, mt: 2 }}
                                         />
                                     </>
