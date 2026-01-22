@@ -18,7 +18,7 @@ export default function InteractionDispatcher() {
             // Remove /api/v1 suffix if present to get the root API URL
             // The interaction controller is mounted at /interaction/:uid, NOT /api/v1/interaction/:uid
             const interactionBaseUrl = BACKEND_URL.replace(/\/api\/v1\/?$/, '');
-            const target = `${interactionBaseUrl}/interaction/${uid}`;
+            const target = `${interactionBaseUrl}/oidc/interaction/${uid}`;
 
             // Use replace to avoid history stack issues
             window.location.replace(target);

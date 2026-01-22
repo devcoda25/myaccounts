@@ -292,7 +292,7 @@ export default function SignInPage() {
   const submitInteraction = async (uidVal: string, e: string, p: string) => {
     // [FIX] Interaction endpoints are at root, not /api/v1
     const interactionBaseUrl = BACKEND_URL.replace(/\/api\/v1\/?$/, '');
-    const targetUrl = `${interactionBaseUrl}/interaction/${uidVal}/login`;
+    const targetUrl = `${interactionBaseUrl}/oidc/interaction/${uidVal}/login`;
 
     try {
       const res = await fetch(targetUrl, {

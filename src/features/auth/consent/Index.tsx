@@ -354,7 +354,7 @@ export default function ConsentScreenPage() {
     const form = document.createElement('form');
     form.method = action === 'confirm' ? 'POST' : 'GET';
     const interactionBaseUrl = BACKEND_URL.replace(/\/api\/v1\/?$/, '');
-    form.action = `${interactionBaseUrl}/interaction/${uid}/${action}`;
+    form.action = `${interactionBaseUrl}/oidc/interaction/${uid}/${action}`;
     document.body.appendChild(form);
     form.submit();
   };
