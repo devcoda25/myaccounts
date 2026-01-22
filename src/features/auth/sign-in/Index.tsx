@@ -256,13 +256,24 @@ export default function SignInPage() {
   // If not logged in and not in interaction flow (uid), start OIDC login
   // [ENABLED] Auto-redirect to ensure OIDC session is initialized.
   useEffect(() => {
+    // 1. Check for interaction errors from the server (e.g. SessionNotFound)
+    const interactionErr = searchParams.get("interaction_error");
+    if (interactionErr) {
+      setBanner({
+        severity: "error",
+        msg: interactionErr === "session_expired" || interactionErr.includes("cookie not found")
+          ? "Your secure session has expired. Please sign in again."
+          : `Authentication issue: ${interactionErr}`
+      });
+      return; // Wait for user to react
+    }
+
     if (!uid && !auth.isAuthenticated && !auth.isLoading && !auth.activeNavigator && !auth.error) {
       auth.signinRedirect().catch(err => {
         console.error("Sign in redirect failed", err);
-        // auth.error should be set by the lib, but if not we can't do much here except rely on the UI to show something if auth.error updates.
       });
     }
-  }, [uid, auth]);
+  }, [uid, auth, searchParams]);
 
   /*
   useEffect(() => {
