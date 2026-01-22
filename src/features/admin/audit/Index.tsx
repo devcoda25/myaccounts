@@ -58,50 +58,7 @@ type AuditEvent = {
 
 const EVZONE = { green: "#03cd8c", orange: "#f77f00" } as const;
 
-function mkEvents(): AuditEvent[] {
-    const now = Date.now();
-    return [
-        {
-            id: "AUD-1001",
-            at: now - 1000 * 60 * 2,
-            actor: "admin@evzone.com",
-            role: "Super Admin",
-            action: "Revoke API key",
-            target: "key_01",
-            ip: "197.157.x.x",
-            outcome: "Success",
-            risk: "Medium",
-            requestId: "req_9F2A3B",
-            meta: { scope: "wallet.read", reason: "rotation" },
-        },
-        {
-            id: "AUD-1002",
-            at: now - 1000 * 60 * 16,
-            actor: "secops@evzone.com",
-            role: "Security",
-            action: "Lock account",
-            target: "user: john@example.com",
-            ip: "102.90.x.x",
-            outcome: "Success",
-            risk: "High",
-            requestId: "req_81CC10",
-            meta: { reason: "compromise_reported", channel: "support" },
-        },
-        {
-            id: "AUD-1003",
-            at: now - 1000 * 60 * 47,
-            actor: "admin@evzone.com",
-            role: "Org Admin",
-            action: "Change org role",
-            target: "org_004 member",
-            ip: "41.90.x.x",
-            outcome: "Success",
-            risk: "Low",
-            requestId: "req_77B2EE",
-            meta: { from: "viewer", to: "editor" },
-        },
-    ];
-}
+// mkEvents mock removed
 
 function riskTone(r: Risk) {
     if (r === "High") return "#B42318";

@@ -26,6 +26,16 @@ export interface IUser {
     credentials?: ICredential[];
     country?: string;
     dob?: string | Date | number;
+    twoFactorEnabled?: boolean;
+    orgMemberships?: Array<{
+        id: string;
+        role: string;
+        organization: {
+            id: string;
+            name: string;
+            icon?: string;
+        }
+    }>;
 }
 
 export type Severity = "info" | "warning" | "error" | "success";
@@ -35,18 +45,24 @@ export type IdType = "email" | "phone" | "unknown";
 export type Delivery = "email_link" | "sms_code" | "whatsapp_code";
 export type Step = "request" | "sent" | "verify" | "success" | "confirm" | "set" | "prompt" | "entry"; // Combined steps from different auth flows
 
+export type ReAuthMode = "password" | "mfa";
+export type MfaChannel = "Authenticator" | "SMS" | "WhatsApp" | "Email";
+
 // Org Types
 export type OrgRole = "Owner" | "Admin" | "Manager" | "Member" | "Viewer" | "Support";
 export type AuthState = "not_logged_in" | "logged_in_same_user" | "logged_in_different_user";
 
 // Admin Types
-export type AdminRole = "SuperAdmin" | "Admin";
+export type AdminRole = "SuperAdmin" | "Admin" | "SUPER_ADMIN" | "ADMIN";
 export interface AdminUser {
     id: string;
     email: string;
-    name: string;
+    name?: string;
+    firstName?: string;
+    otherNames?: string;
     role: AdminRole;
     avatar?: string;
+    twoFactorEnabled?: boolean;
 }
 
 // Status Types
@@ -180,6 +196,7 @@ export interface Prefs {
     receipts_email: string | null;
     mfa_sms: string | null;
     mfa_whatsapp: string | null;
+    notifications?: any;
 }
 
 export interface BackendUser {
@@ -194,9 +211,9 @@ export interface BackendUser {
     emailVerified: boolean;
     phoneVerified: boolean;
     kyc?: {
-        status: "Verified" | "Pending" | "Unverified";
-        riskScore: "Low" | "Medium" | "High";
-        notes?: string;
+        status: string; // PENDING, APPROVED, REJECTED
+        level: number;
+        riskScore?: string;
     };
     walletBalance?: number;
     twoFactorEnabled: boolean;
@@ -331,15 +348,19 @@ export interface ISecurityActivityLogDetails {
 export interface ISecurityActivityLog {
     id: string;
     action: string;
-    ip: string;
-    createdAt: string | number;
-    details: ISecurityActivityLogDetails;
-    risk: string[];
+    timestamp: string | number; // Updated to match usage
+    ip?: string;
+    createdAt?: string | number;
+    details?: ISecurityActivityLogDetails;
+    risk?: string[];
     // Mapped properties
     method?: string;
     device?: string;
     location?: string;
 }
+
+// Alias for AdminProfile
+export type ILoginEvent = ISecurityActivityLog;
 
 export interface IPasskeyTransport {
     transports: string[];
@@ -422,7 +443,7 @@ export interface ISession {
     browser: string;
     location: string;
     ip: string;
-    lastActiveAt: number;
+    lastActiveAt?: number;
     createdAt: number;
     trust: "trusted" | "untrusted";
     risk: IRiskTag[];
@@ -430,10 +451,11 @@ export interface ISession {
         device?: string;
         os?: string;
         browser?: string;
+        userAgent?: string;
         location?: string | { city?: string; country?: string };
         ip?: string;
     };
-    lastUsedAt?: string | number;
+    lastUsedAt: string | number; // Ensure strict type matching
 }
 
 export interface IRecoveryCodesResponse {

@@ -23,6 +23,8 @@ import { alpha } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { useThemeStore } from "@/stores/themeStore";
 import { EVZONE } from "@/theme/evzone";
+import { api } from "@/utils/api";
+import { IUser } from "@/types";
 
 /**
  * EVzone My Accounts - Notification Preferences
@@ -56,7 +58,16 @@ type NotifPrefs = {
   quietEnd: string; // HH:MM
 };
 
-const PREFS_KEY = "evzone_myaccounts_notif_prefs_v1";
+const RECOMMENDED: NotifPrefs = {
+  security: { email: true, sms: true, push: false },
+  product: { email: true, sms: false, push: false },
+  marketing: { email: false, sms: false, push: false },
+  productDigest: "Instant",
+  marketingDigest: "Weekly",
+  quietHoursEnabled: false,
+  quietStart: "22:00",
+  quietEnd: "06:00",
+};
 
 // -----------------------------
 // Inline icons (CDN-safe)
@@ -143,41 +154,6 @@ function ClockIcon({ size = 18 }: { size?: number }) {
 // -----------------------------
 // Storage + helpers
 // -----------------------------
-function safeLoadPrefs(): NotifPrefs {
-  const recommended: NotifPrefs = {
-    security: { email: true, sms: true, push: false },
-    product: { email: true, sms: false, push: false },
-    marketing: { email: false, sms: false, push: false },
-    productDigest: "Instant",
-    marketingDigest: "Weekly",
-    quietHoursEnabled: false,
-    quietStart: "22:00",
-    quietEnd: "06:00",
-  };
-
-  try {
-    const raw = window.localStorage.getItem(PREFS_KEY);
-    if (!raw) return recommended;
-    const parsed = JSON.parse(raw) as Partial<NotifPrefs>;
-    return {
-      ...recommended,
-      ...parsed,
-      security: { ...recommended.security, ...(parsed.security || {}) },
-      product: { ...recommended.product, ...(parsed.product || {}) },
-      marketing: { ...recommended.marketing, ...(parsed.marketing || {}) },
-    };
-  } catch {
-    return recommended;
-  }
-}
-
-function safeSavePrefs(p: NotifPrefs) {
-  try {
-    window.localStorage.setItem(PREFS_KEY, JSON.stringify(p));
-  } catch {
-    // ignore
-  }
-}
 
 function countEnabled(c: Channels) {
   return (c.email ? 1 : 0) + (c.sms ? 1 : 0) + (c.push ? 1 : 0);
@@ -188,17 +164,36 @@ export default function NotificationPreferencesPage() {
   const theme = useTheme();
   const isDark = mode === "dark";
 
-  const [prefs, setPrefs] = useState<NotifPrefs>(() => safeLoadPrefs());
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<IUser | null>(null);
+  const [prefs, setPrefs] = useState<NotifPrefs>(RECOMMENDED);
   const [dirty, setDirty] = useState(false);
 
   const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
   useEffect(() => {
-    // Auto-save lightly, but keep a Save CTA
-    if (!dirty) return;
-    const t = window.setTimeout(() => safeSavePrefs(prefs), 650);
-    return () => window.clearTimeout(t);
-  }, [prefs, dirty]);
+    async function load() {
+      try {
+        const u = await api<IUser>('/users/me');
+        setUser(u);
+        if (u.preferences?.notifications) {
+          setPrefs({
+            ...RECOMMENDED,
+            ...u.preferences.notifications,
+            security: { ...RECOMMENDED.security, ...(u.preferences.notifications.security || {}) },
+            product: { ...RECOMMENDED.product, ...(u.preferences.notifications.product || {}) },
+            marketing: { ...RECOMMENDED.marketing, ...(u.preferences.notifications.marketing || {}) },
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load prefs", err);
+        setSnack({ open: true, severity: "error", msg: "Failed to load preferences." });
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
 
   const pageBg =
     mode === "dark"
@@ -222,7 +217,7 @@ export default function NotificationPreferencesPage() {
   } as const;
 
   const setChannel = (key: keyof NotifPrefs, channel: keyof Channels, value: boolean) => {
-    setPrefs((prev) => {
+    setPrefs((prev: NotifPrefs) => {
       const next = { ...prev, [key]: { ...(prev as any)[key], [channel]: value } } as NotifPrefs;
 
       // Security alerts: always on, require at least one channel (push is disabled)
@@ -243,30 +238,34 @@ export default function NotificationPreferencesPage() {
   };
 
   const setDigest = (key: "productDigest" | "marketingDigest", value: Digest) => {
-    setPrefs((p) => ({ ...p, [key]: value }));
+    setPrefs((p: NotifPrefs) => ({ ...p, [key]: value }));
     setDirty(true);
   };
 
-  const saveNow = () => {
-    safeSavePrefs(prefs);
-    setDirty(false);
-    setSnack({ open: true, severity: "success", msg: "Notification preferences saved." });
+  const saveNow = async () => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const nextSettings = {
+        ...user.preferences,
+        notifications: prefs
+      };
+      await api('/users/me/settings', {
+        method: 'PATCH',
+        body: JSON.stringify(nextSettings)
+      });
+      setDirty(false);
+      setSnack({ open: true, severity: "success", msg: "Notification preferences saved." });
+    } catch (err) {
+      console.error("Failed to save prefs", err);
+      setSnack({ open: true, severity: "error", msg: "Failed to save preferences." });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const resetRecommended = () => {
-    const next = safeLoadPrefs();
-    // safeLoadPrefs returns stored or default; build a strict recommended
-    const recommended: NotifPrefs = {
-      security: { email: true, sms: true, push: false },
-      product: { email: true, sms: false, push: false },
-      marketing: { email: false, sms: false, push: false },
-      productDigest: "Instant",
-      marketingDigest: "Weekly",
-      quietHoursEnabled: false,
-      quietStart: "22:00",
-      quietEnd: "06:00",
-    };
-    setPrefs({ ...next, ...recommended });
+    setPrefs(RECOMMENDED);
     setDirty(true);
     setSnack({ open: true, severity: "info", msg: "Applied recommended settings." });
   };
@@ -331,7 +330,7 @@ export default function NotificationPreferencesPage() {
             </Box>
           </Stack>
 
-          <Switch checked={value} onChange={(e) => onChange(e.target.checked)} disabled={!!disabled} color="primary" />
+          <Switch checked={value} onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.checked)} disabled={!!disabled} color="primary" />
         </Stack>
       </Box>
     );
@@ -447,8 +446,8 @@ export default function NotificationPreferencesPage() {
                           desc="Release notes and product announcements."
                           icon={<MailIcon size={18} />}
                           value={prefs.product.email}
-                          onChange={(v) => {
-                            setPrefs((p) => ({ ...p, product: { ...p.product, email: v, push: false } }));
+                          onChange={(v: boolean) => {
+                            setPrefs((p: NotifPrefs) => ({ ...p, product: { ...p.product, email: v, push: false } }));
                             setDirty(true);
                           }}
                         />
@@ -457,8 +456,8 @@ export default function NotificationPreferencesPage() {
                           desc="Short important updates only."
                           icon={<SmsIcon size={18} />}
                           value={prefs.product.sms}
-                          onChange={(v) => {
-                            setPrefs((p) => ({ ...p, product: { ...p.product, sms: v, push: false } }));
+                          onChange={(v: boolean) => {
+                            setPrefs((p: NotifPrefs) => ({ ...p, product: { ...p.product, sms: v, push: false } }));
                             setDirty(true);
                           }}
                         />
@@ -503,8 +502,8 @@ export default function NotificationPreferencesPage() {
                           desc="Offers and announcements (recommended off by default)."
                           icon={<MailIcon size={18} />}
                           value={prefs.marketing.email}
-                          onChange={(v) => {
-                            setPrefs((p) => ({ ...p, marketing: { ...p.marketing, email: v, push: false } }));
+                          onChange={(v: boolean) => {
+                            setPrefs((p: NotifPrefs) => ({ ...p, marketing: { ...p.marketing, email: v, push: false } }));
                             setDirty(true);
                           }}
                         />
@@ -513,8 +512,8 @@ export default function NotificationPreferencesPage() {
                           desc="Limited promotions only."
                           icon={<SmsIcon size={18} />}
                           value={prefs.marketing.sms}
-                          onChange={(v) => {
-                            setPrefs((p) => ({ ...p, marketing: { ...p.marketing, sms: v, push: false } }));
+                          onChange={(v: boolean) => {
+                            setPrefs((p: NotifPrefs) => ({ ...p, marketing: { ...p.marketing, sms: v, push: false } }));
                             setDirty(true);
                           }}
                         />
@@ -560,8 +559,8 @@ export default function NotificationPreferencesPage() {
                           control={
                             <Switch
                               checked={prefs.quietHoursEnabled}
-                              onChange={(e) => {
-                                setPrefs((p) => ({ ...p, quietHoursEnabled: e.target.checked }));
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                setPrefs((p: NotifPrefs) => ({ ...p, quietHoursEnabled: e.target.checked }));
                                 setDirty(true);
                               }}
                             />
@@ -574,7 +573,7 @@ export default function NotificationPreferencesPage() {
                             type="time"
                             label="Start"
                             value={prefs.quietStart}
-                            onChange={(e) => {
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                               setPrefs((p) => ({ ...p, quietStart: e.target.value }));
                               setDirty(true);
                             }}
@@ -586,7 +585,7 @@ export default function NotificationPreferencesPage() {
                             type="time"
                             label="End"
                             value={prefs.quietEnd}
-                            onChange={(e) => {
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                               setPrefs((p) => ({ ...p, quietEnd: e.target.value }));
                               setDirty(true);
                             }}

@@ -64,7 +64,6 @@ type Severity = "success" | "info" | "warning" | "error";
 
 type AccountType = "User" | "Provider" | "Agent" | "Org Admin";
 type UserStatus = "Active" | "Locked" | "Disabled";
-type KycTier = "Unverified" | "Basic" | "Full";
 type Risk = "Low" | "Medium" | "High";
 
 type UserRow = {
@@ -74,8 +73,6 @@ type UserRow = {
     phone?: string;
     type: AccountType;
     status: UserStatus;
-    kyc: KycTier;
-    walletBalance: number;
     currency: string;
     lastLoginAt?: number;
     risk: Risk;
@@ -129,11 +126,6 @@ function statusTone(s: UserStatus) {
     return "#667085";
 }
 
-function kycTone(t: KycTier) {
-    if (t === "Full") return EVZONE.green;
-    if (t === "Basic") return EVZONE.orange;
-    return "#B42318";
-}
 
 export default function AdminUsersList() {
     const navigate = useNavigate();
@@ -150,7 +142,6 @@ export default function AdminUsersList() {
 
     const [statusFilter, setStatusFilter] = useState<UserStatus | "All">("All");
     const [typeFilter, setTypeFilter] = useState<AccountType | "All">("All");
-    const [kycFilter, setKycFilter] = useState<KycTier | "All">("All");
     const [riskFilter, setRiskFilter] = useState<Risk | "All">("All");
 
     const [selected, setSelected] = useState<Record<string, boolean>>({});
@@ -159,20 +150,22 @@ export default function AdminUsersList() {
     const [rows, setRows] = useState<UserRow[]>([]);
     const [total, setTotal] = useState(0);
 
-    const mapUserToRow = (u: BackendUser): UserRow => ({
-        id: u.id,
-        name: `${u.firstName || ''} ${u.otherNames || ''}`.trim() || 'Unknown',
-        email: u.email,
-        phone: u.phoneNumber,
-        type: u.role === 'SUPER_ADMIN' ? 'Org Admin' : u.role === 'ADMIN' ? 'Agent' : 'User', // approximate mapping
-        status: u.emailVerified ? 'Active' : 'Disabled', // simplified status because backend uses emailVerified
-        kyc: 'Unverified', // Placeholder
-        walletBalance: 0,
-        currency: 'USD',
-        risk: 'Low',
-        mfaEnabled: u.twoFactorEnabled,
-        passkeys: 0
-    });
+    const mapUserToRow = (u: BackendUser): UserRow => {
+
+        return {
+            id: u.id,
+            name: `${u.firstName || ''} ${u.otherNames || ''}`.trim() || 'Unknown',
+            email: u.email,
+            phone: u.phoneNumber,
+            type: u.role === 'SUPER_ADMIN' ? 'Org Admin' : u.role === 'ADMIN' ? 'Agent' : 'User',
+            status: u.emailVerified ? 'Active' : 'Disabled',
+    
+            currency: 'UGX',
+            risk: 'Low',
+            mfaEnabled: u.twoFactorEnabled,
+            passkeys: 0
+        };
+    };
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -231,7 +224,6 @@ export default function AdminUsersList() {
             phone: 'Phone',
             type: 'Account Type',
             status: 'Status',
-            kyc: 'KYC Tier',
             walletBalance: 'Balance',
             currency: 'Currency',
             risk: 'Risk Score'
@@ -285,7 +277,6 @@ export default function AdminUsersList() {
     const [newEmail, setNewEmail] = useState("");
     const [newPhone, setNewPhone] = useState("");
     const [newType, setNewType] = useState<AccountType>("User");
-    const [newKyc, setNewKyc] = useState<KycTier>("Unverified");
     const [newNotify, setNewNotify] = useState(true);
 
 
@@ -406,8 +397,17 @@ export default function AdminUsersList() {
                 });
                 setSnack({ open: true, severity: "success", msg: "User unlocked (enabled)." });
                 fetchUsers();
+            } else if (pending.kind === 'FORCE_SIGNOUT') {
+                await api(`/admin/users/${pending.userId}/revoke-sessions`, { method: 'POST' });
+                setSnack({ open: true, severity: "success", msg: "User sessions revoked." });
+            } else if (pending.kind === 'RESET_PASSWORD' && generatedTempPassword) {
+                await api(`/admin/users/${pending.userId}/reset-password`, {
+                    method: 'POST',
+                    body: JSON.stringify({ password: generatedTempPassword })
+                });
+                setSnack({ open: true, severity: "success", msg: "User password reset." });
             } else {
-                setSnack({ open: true, severity: "info", msg: `${actionTitle(pending.kind)} simulated.` });
+                setSnack({ open: true, severity: "info", msg: `${actionTitle(pending.kind)} simulated (not implemented).` });
             }
         } catch (err: any) {
             console.error(err);
@@ -456,7 +456,7 @@ export default function AdminUsersList() {
             setNewEmail("");
             setNewPhone("");
             setNewType("User");
-            setNewKyc("Unverified");
+
         } catch (err: unknown) {
             console.error(err);
             setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to create user" });
@@ -482,6 +482,9 @@ export default function AdminUsersList() {
                     Lock
                 </Button>
             )}
+            <Button variant="outlined" color="warning" startIcon={<RotateCwIcon size={18} />} onClick={() => openAction("RESET_PASSWORD", r.id)} sx={{ borderColor: theme.palette.warning.main, color: theme.palette.warning.main }}>
+                Reset PW
+            </Button>
             <Button variant="outlined" color="error" startIcon={<TrashIcon size={18} />} onClick={() => openAction("DELETE_USER", r.id)} sx={{ borderColor: theme.palette.error.main, color: theme.palette.error.main, '&:hover': { bgcolor: alpha(theme.palette.error.main, 0.1) } }}>
                 Delete
             </Button>
@@ -492,10 +495,7 @@ export default function AdminUsersList() {
         const tone = statusTone(s);
         return <Chip size="small" label={s} sx={{ fontWeight: 900, border: `1px solid ${alpha(tone, 0.35)}`, color: tone, backgroundColor: alpha(tone, 0.10) }} />;
     };
-    const kycChip = (k: KycTier) => {
-        const tone = kycTone(k);
-        return <Chip size="small" label={k} sx={{ fontWeight: 900, border: `1px solid ${alpha(tone, 0.35)}`, color: tone, backgroundColor: alpha(tone, 0.10) }} />;
-    };
+
     const riskChip = (r: Risk) => {
         const tone = riskTone(r);
         return <Chip size="small" label={r} sx={{ fontWeight: 900, border: `1px solid ${alpha(tone, 0.35)}`, color: tone, backgroundColor: alpha(tone, 0.10) }} />;
@@ -551,12 +551,7 @@ export default function AdminUsersList() {
                                         <MenuItem value="Agent">Agent</MenuItem>
                                         <MenuItem value="Org Admin">Org Admin</MenuItem>
                                     </TextField>
-                                    <TextField select size="small" label="KYC" value={kycFilter} onChange={(e) => setKycFilter(e.target.value as any)} sx={{ minWidth: 120, '& .MuiOutlinedInput-root': { borderRadius: 3 } }}>
-                                        <MenuItem value="All">All</MenuItem>
-                                        <MenuItem value="Unverified">Unverified</MenuItem>
-                                        <MenuItem value="Basic">Basic</MenuItem>
-                                        <MenuItem value="Full">Full</MenuItem>
-                                    </TextField>
+
                                     <TextField select size="small" label="Risk" value={riskFilter} onChange={(e) => setRiskFilter(e.target.value as any)} sx={{ minWidth: 120, '& .MuiOutlinedInput-root': { borderRadius: 3 } }}>
                                         <MenuItem value="All">All</MenuItem>
                                         <MenuItem value="Low">Low</MenuItem>
@@ -577,7 +572,7 @@ export default function AdminUsersList() {
                                             <TableCell sx={{ fontWeight: 950 }}>User</TableCell>
                                             <TableCell sx={{ fontWeight: 950 }}>Type</TableCell>
                                             <TableCell sx={{ fontWeight: 950 }}>Status</TableCell>
-                                            <TableCell sx={{ fontWeight: 950 }}>KYC</TableCell>
+
                                             <TableCell sx={{ fontWeight: 950 }}>Risk</TableCell>
                                             <TableCell sx={{ fontWeight: 950 }}>Actions</TableCell>
                                         </TableRow>
@@ -595,7 +590,7 @@ export default function AdminUsersList() {
                                                     </TableCell>
                                                     <TableCell>{r.type}</TableCell>
                                                     <TableCell>{statusChip(r.status)}</TableCell>
-                                                    <TableCell>{kycChip(r.kyc)}</TableCell>
+
                                                     <TableCell>{riskChip(r.risk)}</TableCell>
                                                     <TableCell>
                                                         <RowActions r={r} />
@@ -631,7 +626,7 @@ export default function AdminUsersList() {
 
                                                 <Stack direction="row" spacing={1} alignItems="center">
                                                     <Chip size="small" label={r.type} variant="outlined" />
-                                                    {kycChip(r.kyc)}
+
                                                     {riskChip(r.risk)}
                                                 </Stack>
 
@@ -871,18 +866,7 @@ export default function AdminUsersList() {
                                 <MenuItem value="Org Admin">Org Admin</MenuItem>
                             </TextField>
 
-                            <TextField
-                                select
-                                label="Initial KYC"
-                                value={newKyc}
-                                onChange={(e) => setNewKyc(e.target.value as KycTier)}
-                                fullWidth
-                                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 3 } }}
-                            >
-                                <MenuItem value="Unverified">Unverified</MenuItem>
-                                <MenuItem value="Basic">Basic</MenuItem>
-                                <MenuItem value="Full">Full</MenuItem>
-                            </TextField>
+
                         </Stack>
 
                         <FormControlLabel

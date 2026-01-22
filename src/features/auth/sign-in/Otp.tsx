@@ -30,6 +30,7 @@ import {
 import { motion } from "framer-motion";
 import AuthHeader from "@/components/layout/AuthHeader";
 import { EVZONE } from "@/theme/evzone";
+import { api } from "@/utils/api";
 
 /**
  * EVzone My Accounts - Sign In with OTP
@@ -116,7 +117,9 @@ export default function SignInOtpPage() {
     return () => window.clearInterval(t);
   }, [cooldown]);
 
-  const sendCode = () => {
+  const [loading, setLoading] = useState(false);
+
+  const sendCode = async () => {
     setBanner(null);
 
     const id = identifier.trim();
@@ -125,18 +128,27 @@ export default function SignInOtpPage() {
       return;
     }
 
-    setCooldown(30);
-    setStep("verify");
-    setOtp(["", "", "", "", "", ""]);
+    setLoading(true);
+    try {
+      await api.post("/auth/otp/request", { identifier: id });
 
-    // Focus first OTP field after transition
-    window.setTimeout(() => inputRefs.current[0]?.focus(), 250);
+      setCooldown(30);
+      setStep("verify");
+      setOtp(["", "", "", "", "", ""]);
 
-    setSnack({
-      open: true,
-      severity: "success",
-      msg: `Code sent to ${maskIdentifier(id)}. Demo code is 123456.`,
-    });
+      // Focus first OTP field after transition
+      window.setTimeout(() => inputRefs.current[0]?.focus(), 250);
+
+      setSnack({
+        open: true,
+        severity: "success",
+        msg: `Code sent to ${maskIdentifier(id)}.`,
+      });
+    } catch (err: unknown) {
+      setBanner({ severity: "error", msg: (err as Error).message || "Failed to send code." });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const changeIdentifier = () => {
@@ -180,7 +192,7 @@ export default function SignInOtpPage() {
     window.setTimeout(() => inputRefs.current[lastIndex]?.focus(), 0);
   };
 
-  const verifyCode = () => {
+  const verifyCode = async () => {
     setBanner(null);
     const code = otp.join("");
     if (code.length < 6) {
@@ -188,12 +200,20 @@ export default function SignInOtpPage() {
       return;
     }
 
-    if (code !== "123456") {
-      setBanner({ severity: "error", msg: "Incorrect code. Please try again." });
-      return;
-    }
+    setLoading(true);
+    try {
+      await api.post("/auth/otp/login", { identifier, code });
 
-    setSnack({ open: true, severity: "success", msg: `Signed in successfully as ${maskIdentifier(identifier)}.` });
+      setSnack({ open: true, severity: "success", msg: "Signed in successfully." });
+
+      // Redirect to dashboard or return url
+      const returnUrl = new URLSearchParams(window.location.search).get("return_url") || "/app/dashboard";
+      navigate(returnUrl);
+    } catch (err: unknown) {
+      setBanner({ severity: "error", msg: (err as Error).message || "Incorrect code or expired." });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const resendCode = () => {
@@ -332,10 +352,11 @@ export default function SignInOtpPage() {
                           variant="contained"
                           color="secondary"
                           endIcon={<ArrowRight size={18} />}
+                          disabled={loading}
                           onClick={sendCode}
                           sx={orangeContainedSx}
                         >
-                          Send code
+                          {loading ? "Sending..." : "Send code"}
                         </Button>
                         <Button
                           fullWidth
@@ -405,10 +426,11 @@ export default function SignInOtpPage() {
                           variant="contained"
                           color="secondary"
                           endIcon={<ArrowRight size={18} />}
+                          disabled={loading}
                           onClick={verifyCode}
                           sx={orangeContainedSx}
                         >
-                          Verify and sign in
+                          {loading ? "Verifying..." : "Verify and sign in"}
                         </Button>
                         <Button
                           fullWidth

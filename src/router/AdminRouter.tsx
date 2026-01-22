@@ -14,7 +14,7 @@ const Administrators = React.lazy(() => import('../features/admin/administrators
 const AdminApps = React.lazy(() => import('../features/admin/apps/Index'));
 const AdminAppDetail = React.lazy(() => import('../features/admin/apps/AppDetail'));
 const AdminProfile = React.lazy(() => import('../features/admin/profile/Index'));
-const KycQueue = React.lazy(() => import('../features/admin/kyc/Index'));
+
 
 const Status = React.lazy(() => import('../features/status/Index'));
 
@@ -33,7 +33,7 @@ export default function AdminRouter() {
                 <Route path="administrators" element={<Administrators />} />
                 <Route path="apps" element={<AdminApps />} />
                 <Route path="apps/:clientId" element={<AdminAppDetail />} />
-                <Route path="kyc" element={<KycQueue />} />
+
 
                 <Route path="status" element={<Status />} />
                 <Route path="profile" element={<AdminProfile />} />

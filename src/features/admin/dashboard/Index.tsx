@@ -81,16 +81,20 @@ export default function AdminDashboard() {
 
     const isDark = mode === 'dark';
 
+    const [health, setHealth] = useState({ db: "Operational", auth: "Operational", api: "Operational" });
+
     useEffect(() => {
         const load = async () => {
             try {
                 setLoading(true);
-                const [s, l] = await Promise.all([
+                const [s, l, h] = await Promise.all([
                     api<{ usersCount: number; orgsCount: number; sessionsCount: number; balance: number }>('/admin/stats').catch(() => null),
-                    api<{ logs: IAuditLog[] }>('/admin/audit-logs?take=5').catch(() => null)
+                    api<{ logs: IAuditLog[] }>('/admin/audit-logs?take=5').catch(() => null),
+                    api<{ db: string; auth: string; api: string }>('/admin/health').catch(() => null)
                 ]);
                 setStats(s || { usersCount: 0, orgsCount: 0, sessionsCount: 0, balance: 0 });
                 setLogs(l?.logs || []);
+                if (h) setHealth(h);
             } catch (err) {
                 console.error(err);
                 setSnack({ open: true, severity: "error", msg: "Failed to load dashboard data." });
@@ -103,14 +107,12 @@ export default function AdminDashboard() {
 
     const services = useMemo(() => {
         const now = Date.now();
-        // Static for now as APi doesn't provide this yet
         return [
-            { key: "auth", name: "Auth Service", icon: <ShieldIcon size={18} />, health: "Operational" as Health, updatedAt: now },
-
-            { key: "api", name: "API Gateway", icon: <PlugIcon size={18} />, health: "Operational" as Health, updatedAt: now },
-            { key: "db", name: "Database", icon: <Zap size={18} />, health: "Operational" as Health, updatedAt: now },
+            { key: "auth", name: "Auth Service", icon: <ShieldIcon size={18} />, health: health.auth as Health, updatedAt: now },
+            { key: "api", name: "API Gateway", icon: <PlugIcon size={18} />, health: health.api as Health, updatedAt: now },
+            { key: "db", name: "Database", icon: <Zap size={18} />, health: health.db as Health, updatedAt: now },
         ];
-    }, []);
+    }, [health]);
 
     const containerVars = {
         hidden: { opacity: 0 },

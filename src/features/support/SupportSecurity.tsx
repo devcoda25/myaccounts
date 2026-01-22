@@ -205,20 +205,44 @@ export default function ReportSecurityIssuePage() {
   const [locked, setLocked] = useState(false);
   const [lockDialog, setLockDialog] = useState(false);
 
-  const events: LoginEvent[] = useMemo(() => {
-    const now = Date.now();
-    return [
-      { id: "ev1", when: now - 1000 * 60 * 12, device: "Chrome on Windows", location: "Kampala, UG", ipMasked: "197.157.x.x", status: "Success" },
-      { id: "ev2", when: now - 1000 * 60 * 60 * 8, device: "EVzone Android App", location: "Wakiso, UG", ipMasked: "102.90.x.x", status: "Success" },
-      { id: "ev3", when: now - 1000 * 60 * 60 * 22, device: "Safari", location: "Unknown", ipMasked: "41.90.x.x", status: "Failed" },
-    ];
+  const [events, setEvents] = useState<LoginEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchActivity = async () => {
+      try {
+        const data = await api.get<any[]>("/security/activity");
+        const mapped: LoginEvent[] = data
+          .filter((l) => l.action === "login" || l.action === "login_failure" || l.action === "otp_login")
+          .map((l) => ({
+            id: l.id,
+            when: new Date(l.createdAt).getTime(),
+            device: l.details?.device || "Unknown Device",
+            location: l.details?.location ? `${l.details.location.city || ""}, ${l.details.location.country || "Unknown"}` : "Unknown Location",
+            ipMasked: l.ipAddress || "Unknown IP",
+            status: l.action === "login_failure" ? "Failed" : "Success",
+          }));
+        setEvents(mapped);
+      } catch (e) {
+        console.error("Failed to fetch activity", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchActivity();
   }, []);
 
   // Suspicious login form
-  const [selectedEvent, setSelectedEvent] = useState<string>(events[0]?.id || "");
+  const [selectedEvent, setSelectedEvent] = useState<string>("");
   const [susReason, setSusReason] = useState<SuspiciousReason>("Unknown device");
   const [susDetails, setSusDetails] = useState("");
   const [susConfirm, setSusConfirm] = useState(true);
+
+  useEffect(() => {
+    if (events.length > 0 && !selectedEvent) {
+      setSelectedEvent(events[0].id);
+    }
+  }, [events, selectedEvent]);
 
   // Compromised account form
   const [compReason, setCompReason] = useState<CompromiseReason>("I was phished");
@@ -281,11 +305,14 @@ export default function ReportSecurityIssuePage() {
     }
 
     try {
-      await api.post('/security/reports', {
-        type: 'suspicious_login',
-        eventId: selectedEvent,
-        reason: susReason,
-        details: susDetails
+      await api.post('/support/security/reports', {
+        type: 'SUSPICIOUS_LOGIN',
+        description: susDetails,
+        metadata: {
+          eventId: selectedEvent,
+          reason: susReason,
+          event: selected
+        }
       });
       setSnack({ open: true, severity: "success", msg: "Report submitted. Our team will review it." });
       setSusDetails("");
@@ -305,15 +332,17 @@ export default function ReportSecurityIssuePage() {
     }
 
     try {
-      await api.post('/security/reports', {
-        type: 'compromised_account',
-        reason: compReason,
-        contactEmail: compEmail,
-        details: compDetails,
-        actionsTaken: {
-          changedPassword: actionPwd,
-          enabled2fa: action2fa,
-          reviewedSessions: actionSessions
+      await api.post('/support/security/reports', {
+        type: 'COMPROMISED_ACCOUNT',
+        description: compDetails,
+        metadata: {
+          reason: compReason,
+          contactEmail: compEmail,
+          actionsTaken: {
+            changedPassword: actionPwd,
+            enabled2fa: action2fa,
+            reviewedSessions: actionSessions
+          }
         }
       });
       setSnack({ open: true, severity: "success", msg: "Compromise report submitted." });
@@ -403,7 +432,9 @@ export default function ReportSecurityIssuePage() {
                 <Box className="md:col-span-7">
                   <Card>
                     <CardContent className="p-5 md:p-7">
-                      {tab === 0 ? (
+                      {loading ? (
+                        <Typography>Loading activity...</Typography>
+                      ) : tab === 0 ? (
                         <Stack spacing={1.2}>
                           <Typography variant="h6">Report suspicious login</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>

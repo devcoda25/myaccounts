@@ -23,6 +23,8 @@ export const ProfileSidebar = () => {
         { label: "Profile", icon: <LockIcon size={18} />, route: "/app/profile", activeMatch: "/app/profile" }, // Strict match for profile?
         { label: "Contact", icon: <MailIcon size={18} />, route: "/app/profile/contact" },
         { label: "Linked accounts", icon: <LinkIcon size={18} />, route: "/app/profile/linked-accounts" },
+        { label: "Organizations", icon: <LinkIcon size={18} />, external: "https://org.evzone.app" },
+        { label: "Wallet", icon: <LinkIcon size={18} />, external: "https://wallet.evzone.app" },
         { label: "Security", icon: <ShieldCheckIcon size={18} />, route: "/app/security" },
     ];
 
@@ -57,7 +59,13 @@ export const ProfileSidebar = () => {
                                             "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.10) },
                                         }
                                 }
-                                onClick={() => navigate(item.route)}
+                                onClick={() => {
+                                    if ((item as any).external) {
+                                        window.location.href = (item as any).external;
+                                    } else {
+                                        navigate(item.route!);
+                                    }
+                                }}
                             >
                                 {item.label}
                             </Button>
@@ -74,6 +82,6 @@ export const ProfileSidebar = () => {
                     </Button>
                 </Stack>
             </CardContent>
-        </Card>
+        </Card >
     );
 };

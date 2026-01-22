@@ -211,14 +211,6 @@ function appIcon(key: AppKey) {
   return <AppsIcon size={18} />;
 }
 
-interface IAppResponse {
-  key: string;
-  name: string;
-  status: string;
-  lastUsedAt?: number;
-  launchUrl?: string;
-}
-
 // Self-tests removed
 
 export default function ConnectedAppsPage() {
@@ -259,7 +251,7 @@ export default function ConnectedAppsPage() {
         const mapped: AppTile[] = data.map((d) => ({
           key: d.key as AppKey,
           name: d.name,
-          tagline: "Integrated App",
+          tagline: d.tagline || "EVzone Integrated App",
           status: d.status as AccessStatus,
           lastUsedAt: d.lastUsedAt,
           launchUrl: d.launchUrl,

@@ -23,6 +23,7 @@ import {
 } from "@mui/material";
 import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
 import { motion } from "framer-motion";
+import { api } from "@/utils/api";
 
 /**
  * EVzone My Accounts - Download My Data
@@ -361,53 +362,24 @@ export default function DownloadMyDataPage() {
   } as const;
 
   const requestExport = async () => {
-    // create new job and simulate progress
-    const id = mkId("EXP");
-    const requestedAt = Date.now();
-    const job: ExportJob = { id, requestedAt, status: "queued", progress: 2 };
-    setJobs((prev) => [job, ...prev].slice(0, 8));
+    setSnack({ open: true, severity: "info", msg: "Requesting your data..." });
 
-    setSnack({ open: true, severity: "info", msg: "Export requested. Preparing your data." });
+    try {
+      const data = await api.post<any>('/privacy/export', {});
 
-    // queued -> processing
-    await new Promise((r) => setTimeout(r, 700));
-    setJobs((prev) => prev.map((j, idx) => (idx === 0 ? { ...j, status: "processing", progress: 10 } : j)));
+      const id = mkId("EXP");
+      const requestedAt = Date.now();
+      const readyAt = Date.now();
+      const expiresAt = readyAt + 15 * 60 * 1000;
 
-    // progress simulation
-    const start = Date.now();
-    const duration = 3500;
+      const job: ExportJob = { id, requestedAt, status: "ready", progress: 100, readyAt, expiresAt };
+      setJobs((prev) => [job, ...prev].slice(0, 8));
 
-    const loop = () => {
-      setJobs((prev) => {
-        const top = prev[0];
-        if (!top || top.id !== id) return prev;
-        if (top.status !== "processing") return prev;
-
-        const elapsed = Date.now() - start;
-        const pct = Math.min(96, 10 + Math.floor((elapsed / duration) * 86));
-        const nextTop = { ...top, progress: pct };
-        const next = [nextTop, ...prev.slice(1)];
-        return next;
-      });
-
-      const elapsed = Date.now() - start;
-      if (elapsed < duration) {
-        window.setTimeout(loop, 200);
-      } else {
-        const readyAt = Date.now();
-        const expiresAt = readyAt + 15 * 60 * 1000; // 15 minutes
-        setJobs((prev) =>
-          prev.map((j, idx) =>
-            idx === 0 && j.id === id
-              ? { ...j, status: "ready", progress: 100, readyAt, expiresAt }
-              : j
-          )
-        );
-        setSnack({ open: true, severity: "success", msg: "Export is ready. Download is time-limited." });
-      }
-    };
-
-    window.setTimeout(loop, 220);
+      downloadJson(`evzone-my-data-${id}.json`, data);
+      setSnack({ open: true, severity: "success", msg: "Export ready and download started." });
+    } catch (e) {
+      setSnack({ open: true, severity: "error", msg: "Failed to export data." });
+    }
   };
 
   const download = () => {

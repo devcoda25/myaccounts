@@ -110,18 +110,7 @@ export default function AppRouter() {
               <Route path="/app/support" element={<AppSupport />} />
               <Route path="/app/support/security" element={<AppSupportSecurity />} />
               <Route path="/app/wallet/*" element={<Navigate to="/app" replace />} />
-              {/* <Route path="/app/wallet/add-funds" element={<AppWalletAddFunds />} />
-              <Route path="/app/wallet/disputes" element={<AppWalletDisputes />} />
-              <Route path="/app/wallet/kyc" element={<AppWalletKyc />} />
-              <Route path="/app/wallet/kyc/details" element={<AppWalletKycDetails />} />
-              <Route path="/app/wallet/kyc/status" element={<AppWalletKycStatus />} />
-              <Route path="/app/wallet/kyc/upload" element={<AppWalletKycUpload />} />
-              <Route path="/app/wallet/limits" element={<AppWalletLimits />} />
-              <Route path="/app/wallet/payment-methods" element={<AppWalletPaymentMethods />} />
-              <Route path="/app/wallet/payment-methods/add" element={<AppWalletPaymentMethodsAdd />} />
-              <Route path="/app/wallet/transactions" element={<AppWalletTransactions />} />
-              <Route path="/app/wallet/transactions/:txnId" element={<AppWalletTransactionsTxnId />} />
-              <Route path="/app/wallet/withdraw" element={<AppWalletWithdraw />} /> */}
+
             </Route>
           </Route> { /* End Sidebar Layout */}
 

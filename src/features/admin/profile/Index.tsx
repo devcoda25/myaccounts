@@ -53,15 +53,48 @@ function TabPanel(props: TabPanelProps) {
     );
 }
 
+import { api } from "@/utils/api";
+import { useAdminAuthStore } from "@/stores/adminAuthStore";
+import { ISession, ILoginEvent } from "@/types";
+
 export default function AdminProfile() {
     const theme = useTheme();
+    const { user } = useAdminAuthStore();
     const [tabValue, setTabValue] = useState(0);
     const [showPassword, setShowPassword] = useState(false);
+
+    // Data States
+    const [sessions, setSessions] = useState<ISession[]>([]);
+    const [auditLogs, setAuditLogs] = useState<ILoginEvent[]>([]);
+
+    // Change PW
+    const [oldPw, setOldPw] = useState("");
+    const [newPw, setNewPw] = useState("");
 
     const isDark = theme.palette.mode === 'dark';
 
     const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
         setTabValue(newValue);
+    };
+
+    React.useEffect(() => {
+        if (tabValue === 0) {
+            api.get<{ sessions: ISession[] }>('/security/sessions').then(r => setSessions(r.sessions || [])).catch(console.error);
+        }
+        if (tabValue === 2) {
+            api.get<{ history: ILoginEvent[] }>('/security/activity').then(r => setAuditLogs(r.history || [])).catch(console.error);
+        }
+    }, [tabValue]);
+
+    const handleUpdatePw = async () => {
+        try {
+            await api.post('/auth/change-password', { currentPassword: oldPw, newPassword: newPw });
+            alert("Password updated successfully");
+            setOldPw("");
+            setNewPw("");
+        } catch (e: any) {
+            alert(e.message || "Failed to update password");
+        }
     };
 
     return (
@@ -97,7 +130,7 @@ export default function AdminProfile() {
                             fontSize: '2.5rem',
                             fontWeight: 800
                         }}>
-                            A
+                            {user?.firstName?.charAt(0) || 'A'}
                         </Avatar>
                         <IconButton
                             size="small"
@@ -118,10 +151,10 @@ export default function AdminProfile() {
                 <Box sx={{ pt: 8, px: 5, pb: 4 }}>
                     <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems="flex-start" spacing={2}>
                         <Box>
-                            <Typography variant="h4" fontWeight={800} gutterBottom>Admin User</Typography>
+                            <Typography variant="h4" fontWeight={800} gutterBottom>{user?.firstName} {user?.otherNames}</Typography>
                             <Stack direction="row" spacing={1} alignItems="center">
-                                <Chip label="Super Admin" size="small" sx={{ bgcolor: alpha(EVZONE.green, 0.1), color: EVZONE.green, fontWeight: 700 }} />
-                                <Typography variant="body2" color="text.secondary">admin@evzone.com</Typography>
+                                <Chip label={user?.role || 'Admin'} size="small" sx={{ bgcolor: alpha(EVZONE.green, 0.1), color: EVZONE.green, fontWeight: 700 }} />
+                                <Typography variant="body2" color="text.secondary">{user?.email}</Typography>
                             </Stack>
                         </Box>
                         <Box>
@@ -169,6 +202,8 @@ export default function AdminProfile() {
                                     type="password"
                                     fullWidth
                                     variant="outlined"
+                                    value={oldPw}
+                                    onChange={e => setOldPw(e.target.value)}
                                     InputProps={{ sx: { borderRadius: '12px' } }}
                                 />
                                 <TextField
@@ -176,6 +211,8 @@ export default function AdminProfile() {
                                     type={showPassword ? "text" : "password"}
                                     fullWidth
                                     variant="outlined"
+                                    value={newPw}
+                                    onChange={e => setNewPw(e.target.value)}
                                     InputProps={{
                                         sx: { borderRadius: '12px' },
                                         endAdornment: (
@@ -187,7 +224,7 @@ export default function AdminProfile() {
                                         )
                                     }}
                                 />
-                                <Button variant="contained" size="large" sx={{
+                                <Button variant="contained" size="large" onClick={handleUpdatePw} sx={{
                                     borderRadius: '12px',
                                     bgcolor: theme.palette.text.primary,
                                     color: theme.palette.background.paper,
@@ -206,21 +243,7 @@ export default function AdminProfile() {
                                         Add an extra layer of security to your account.
                                     </Typography>
                                 </Box>
-                                <Switch defaultChecked />
-                            </Stack>
-                            <Stack spacing={2} sx={{ mt: 3, p: 2, bgcolor: alpha(theme.palette.action.hover, 0.05), borderRadius: '12px' }}>
-                                <Stack direction="row" alignItems="center" justifyContent="space-between">
-                                    <Stack direction="row" spacing={2} alignItems="center">
-                                        <Box sx={{ p: 1, bgcolor: theme.palette.background.paper, borderRadius: '8px', boxShadow: theme.shadows[1] }}>
-                                            <Smartphone size={20} />
-                                        </Box>
-                                        <Box>
-                                            <Typography variant="subtitle2" fontWeight={600}>Authenticator App</Typography>
-                                            <Typography variant="caption" color="text.secondary">Google Authenticator</Typography>
-                                        </Box>
-                                    </Stack>
-                                    <Chip label="Configured" size="small" color="success" variant="outlined" icon={<CheckCircle size={14} />} />
-                                </Stack>
+                                <Switch checked={user?.twoFactorEnabled} disabled />
                             </Stack>
                         </Paper>
                     </Grid>
@@ -229,20 +252,15 @@ export default function AdminProfile() {
                         <Paper sx={{ p: 4, borderRadius: '20px', border: `1px solid ${theme.palette.divider}` }}>
                             <Typography variant="h6" fontWeight={700} gutterBottom>Active Sessions</Typography>
                             <Stack spacing={3} sx={{ mt: 3 }}>
-                                <Stack direction="row" spacing={2}>
-                                    <Smartphone size={24} color={theme.palette.text.secondary} />
-                                    <Box>
-                                        <Typography variant="subtitle2" fontWeight={600}>Chrome on Windows</Typography>
-                                        <Typography variant="caption" color="text.secondary">192.168.1.1 • Current Session</Typography>
-                                    </Box>
-                                </Stack>
-                                <Stack direction="row" spacing={2}>
-                                    <Smartphone size={24} color={theme.palette.text.secondary} />
-                                    <Box>
-                                        <Typography variant="subtitle2" fontWeight={600}>Safari on iPhone 15</Typography>
-                                        <Typography variant="caption" color="text.secondary">203.111.x.x • 2 hours ago</Typography>
-                                    </Box>
-                                </Stack>
+                                {sessions.map(s => (
+                                    <Stack key={s.id} direction="row" spacing={2}>
+                                        <Smartphone size={24} color={theme.palette.text.secondary} />
+                                        <Box>
+                                            <Typography variant="subtitle2" fontWeight={600}>{s.deviceInfo?.userAgent || 'Unknown Device'}</Typography>
+                                            <Typography variant="caption" color="text.secondary">{s.deviceInfo?.ip || 'IP Hidden'} • {new Date(s.lastUsedAt).toLocaleString()}</Typography>
+                                        </Box>
+                                    </Stack>
+                                ))}
                             </Stack>
                         </Paper>
                     </Grid>
@@ -250,17 +268,9 @@ export default function AdminProfile() {
             </TabPanel>
 
             <TabPanel value={tabValue} index={1}>
+                {/* Notifications Panel - Static for now as Notification Settings API not requested */}
                 <Paper sx={{ p: 4, borderRadius: '20px', border: `1px solid ${theme.palette.divider}` }}>
-                    <Typography variant="h6" fontWeight={700} sx={{ mb: 3 }}>Email Notifications</Typography>
-
-                    <Stack spacing={2}>
-                        {['Security Alerts', 'New User Registrations', 'Weekly System Reports', 'Wallet Disputes'].map((item) => (
-                            <Stack key={item} direction="row" justifyContent="space-between" alignItems="center" sx={{ py: 1 }}>
-                                <Typography variant="body1">{item}</Typography>
-                                <Switch defaultChecked />
-                            </Stack>
-                        ))}
-                    </Stack>
+                    <Typography>Notification settings are managed globally.</Typography>
                 </Paper>
             </TabPanel>
 
@@ -268,23 +278,19 @@ export default function AdminProfile() {
                 <Paper sx={{ borderRadius: '20px', border: `1px solid ${theme.palette.divider}`, overflow: 'hidden' }}>
                     <Box sx={{ p: 3, borderBottom: `1px solid ${theme.palette.divider}`, bgcolor: alpha(theme.palette.background.default, 0.4) }}>
                         <Typography variant="subtitle2" fontWeight={600} color="text.secondary">
-                            Recent Activity for admin@evzone.com
+                            Recent Activity
                         </Typography>
                     </Box>
                     <Stack>
-                        {[
-                            { action: "Updated security settings", time: "2 mins ago", icon: <Shield size={16} /> },
-                            { action: "Accessed User List", time: "15 mins ago", icon: <Eye size={16} /> },
-                            { action: "Logged in", time: "1 hour ago", icon: <Key size={16} /> },
-                        ].map((log, i) => (
+                        {auditLogs.map((log, i) => (
                             <Box key={i} sx={{ p: 3, borderBottom: `1px solid ${theme.palette.divider}` }}>
                                 <Stack direction="row" alignItems="center" spacing={2}>
                                     <Box sx={{ p: 1, borderRadius: '50%', bgcolor: alpha(theme.palette.primary.main, 0.1), color: theme.palette.primary.main }}>
-                                        {log.icon}
+                                        <Key size={16} />
                                     </Box>
                                     <Box>
-                                        <Typography variant="subtitle2" fontWeight={600}>{log.action}</Typography>
-                                        <Typography variant="caption" color="text.secondary">{log.time}</Typography>
+                                        <Typography variant="subtitle2" fontWeight={600}>{log.action || 'Login'}</Typography>
+                                        <Typography variant="caption" color="text.secondary">{new Date(log.timestamp).toLocaleString()}</Typography>
                                     </Box>
                                 </Stack>
                             </Box>

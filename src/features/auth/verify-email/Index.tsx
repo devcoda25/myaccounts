@@ -207,6 +207,19 @@ export default function VerifyEmailPage() {
   useEffect(() => {
     // initial focus
     window.setTimeout(() => otpRefs.current[0]?.focus(), 250);
+
+    // Auto-fill from query params
+    const c = searchParams.get("code");
+    const e = searchParams.get("email");
+    if (e) setEmail(e);
+    if (c && c.length === 6) {
+      const chars = c.split("");
+      setOtp(chars);
+      // Wait a bit for state to settle then call verify
+      window.setTimeout(() => {
+        verify(chars.join(""), e || email);
+      }, 500);
+    }
   }, []);
 
   const onOtpChange = (index: number, value: string) => {
@@ -256,16 +269,18 @@ export default function VerifyEmailPage() {
     setSnack({ open: true, severity: "info", msg: "Opening email app..." });
   };
 
-  const verify = async () => {
+  const verify = async (codeOverride?: string, emailOverride?: string) => {
     setBanner(null);
-    const code = otp.join("");
+    const code = codeOverride || otp.join("");
+    const targetEmail = emailOverride || email;
+
     if (code.length < 6) {
       setBanner({ severity: "warning", msg: "Please enter a 6-digit code." });
       return;
     }
 
     try {
-      await verifyEmail(email, code);
+      await verifyEmail(targetEmail, code);
       setStep("success");
       setSnack({ open: true, severity: "success", msg: "Email verified successfully." });
       localStorage.removeItem('pending_verification_email');
@@ -483,7 +498,7 @@ export default function VerifyEmailPage() {
                       </Box>
 
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                        <Button variant="contained" color="secondary" endIcon={<ArrowRightIcon size={18} />} sx={orangeContainedSx} onClick={verify}>
+                        <Button variant="contained" color="secondary" endIcon={<ArrowRightIcon size={18} />} sx={orangeContainedSx} onClick={() => verify()}>
                           Verify
                         </Button>
                         <Button variant="outlined" onClick={resend} disabled={cooldown > 0} sx={orangeOutlinedSx} startIcon={<TimerIcon size={18} />}>

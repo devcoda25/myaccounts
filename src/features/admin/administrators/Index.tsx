@@ -46,11 +46,7 @@ interface AdminMember {
     status: 'Active' | 'Invited';
 }
 
-const MOCK_ADMINS: AdminMember[] = [
-    { id: '1', name: 'System Admin', email: 'admin@evzone.com', role: 'SuperAdmin', lastActive: '2 mins ago', status: 'Active' },
-    { id: '2', name: 'Staff Member', email: 'staff@evzone.com', role: 'Admin', lastActive: '1 day ago', status: 'Active' },
-    { id: '3', name: 'New Guy', email: 'new.guy@evzone.com', role: 'Admin', lastActive: '-', status: 'Invited' },
-];
+// MOCK_ADMINS removed
 
 export default function Administrators() {
     const theme = useTheme();

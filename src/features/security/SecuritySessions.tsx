@@ -169,6 +169,7 @@ export default function ActiveSessionsPage() {
           : s.deviceInfo?.location || "Unknown Location",
         ip: s.deviceInfo?.ip || "Unknown IP",
         lastActiveAt: s.lastUsedAt ? new Date(s.lastUsedAt).getTime() : Date.now(),
+        lastUsedAt: s.lastUsedAt,
         createdAt: Date.now(),
         trust: "trusted",
         risk: s.risk || [],
@@ -214,7 +215,7 @@ export default function ActiveSessionsPage() {
           ? true
           : [s.deviceLabel, s.os, s.browser, s.location, s.ip].some((x) => x.toLowerCase().includes(q))
       )
-      .sort((a, b) => b.lastActiveAt - a.lastActiveAt);
+      .sort((a, b) => (b.lastActiveAt || 0) - (a.lastActiveAt || 0));
   }, [sessions, query]);
 
   const riskyCount = useMemo(() => sessions.filter((s) => s.risk.length > 0).length, [sessions]);
@@ -424,7 +425,7 @@ export default function ActiveSessionsPage() {
                             <ClockIcon size={18} />
                           </Box>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Last active {timeAgo(s.lastActiveAt)}
+                            Last active {timeAgo(s.lastActiveAt || Date.now())}
                           </Typography>
                         </Stack>
                         <Stack direction="row" spacing={1} alignItems="center">

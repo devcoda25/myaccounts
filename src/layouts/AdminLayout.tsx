@@ -72,7 +72,6 @@ export default function AdminLayout() {
         { label: "Dashboard", icon: <LayoutIcon size={18} />, route: "/admin/dashboard", permission: "view_dashboard" },
         { label: "Users", icon: <ShieldIcon size={18} />, route: "/admin/users", permission: "manage_users" },
 
-        { label: "KYC Requests", icon: <FileTextIcon size={18} />, route: "/admin/kyc", permission: "view_kyc" },
 
         { label: "Disputes", icon: <GavelIcon size={18} />, route: "/admin/disputes", permission: "view_disputes" },
         { label: "Apps", icon: <LayoutIcon size={18} />, route: "/admin/apps", permission: "manage_apps" },

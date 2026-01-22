@@ -41,6 +41,7 @@ import {
   UploadIcon,
   WalletIcon,
 } from "@/components/icons";
+import { api } from "@/utils/api";
 
 /**
  * EVzone My Accounts - Help & Support Center
@@ -200,26 +201,42 @@ export default function SupportCenterPage() {
 
   const removeAttachment = (id: string) => setAttachments((p) => p.filter((a) => a.id !== id));
 
-  const submit = () => {
+  const submit = async () => {
     if (message.trim().length < 10) {
       setSnack({ open: true, severity: "warning", msg: "Please include details (at least 10 characters)." });
       return;
     }
 
-    // Simulate API call
     setSnack({ open: true, severity: "info", msg: "Submitting..." });
 
-    setTimeout(() => {
+    try {
+      // Map category
+      let cat = "OTHER";
+      if (category === "Account & Sign-in") cat = "ACCOUNT";
+      else if (category === "Security") cat = "SECURITY";
+      else if (category === "Wallet & Payments") cat = "PAYMENTS";
+      else if (category === "Technical") cat = "TECHNICAL";
+
+      await api.post('/support/tickets', {
+        category: cat,
+        subject: subject || category,
+        description: message,
+        metadata: {
+          attachments: attachments.map(a => ({ name: a.name, size: a.size, type: a.type }))
+        }
+      });
+
       setSnack({ open: true, severity: "success", msg: "Support request submitted successfully. We will contact you shortly." });
       setSubject("");
       setMessage("");
       setAttachments([]);
 
-      // Navigate to dashboard after short delay
       setTimeout(() => {
         navigate("/app");
       }, 1500);
-    }, 1000);
+    } catch (e) {
+      setSnack({ open: true, severity: "error", msg: "Failed to submit request." });
+    }
   };
 
   const QuickLink = ({ icon, title, desc, route }: { icon: React.ReactNode; title: string; desc: string; route: string }) => (

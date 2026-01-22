@@ -53,7 +53,6 @@ type Severity = "success" | "info" | "warning" | "error";
 
 type AccountType = "User" | "Provider" | "Agent" | "Org Admin";
 type UserStatus = "Active" | "Locked" | "Disabled";
-type KycTier = "Unverified" | "Basic" | "Full";
 type Risk = "Low" | "Medium" | "High";
 type ReAuthMode = "password" | "mfa";
 type MfaChannel = "Authenticator" | "SMS" | "WhatsApp" | "Email";
@@ -67,7 +66,6 @@ type UserRecord = {
     country?: string;
     type: AccountType;
     status: UserStatus;
-    kyc: KycTier;
     walletBalance: number;
     currency: string;
     risk: Risk;
@@ -109,11 +107,6 @@ function riskTone(r: Risk) {
     return EVZONE.green;
 }
 
-function kycTone(k: KycTier) {
-    if (k === "Full") return EVZONE.green;
-    if (k === "Basic") return EVZONE.orange;
-    return "#B42318";
-}
 
 function mkTempPassword() {
     const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -178,10 +171,9 @@ export default function AdminUserDetail() {
                     country: u.country,
                     type: u.role === 'SUPER_ADMIN' ? 'Org Admin' : u.role === 'ADMIN' ? 'Agent' : 'User',
                     status: (u.emailVerified || u.phoneVerified) ? 'Active' : 'Disabled',
-                    kyc: u.kyc?.status === 'Verified' ? 'Full' : u.kyc?.status === 'Pending' ? 'Basic' : 'Unverified',
                     walletBalance: 0,
                     currency: 'USD',
-                    risk: u.kyc?.riskScore || 'Low',
+                    risk: 'Low',
                     mfaEnabled: u.twoFactorEnabled,
                     passkeys: 0,
                     createdAt: new Date(u.createdAt).getTime(),
@@ -192,7 +184,7 @@ export default function AdminUserDetail() {
                     linkedGoogle: u.credentials?.some((c) => c.providerType === 'google'),
                     linkedApple: u.credentials?.some((c) => c.providerType === 'apple'),
                     orgs: u.memberships?.map((m) => ({ id: m.organization.id, name: m.organization.name, role: m.role })) || [],
-                    notes: u.kyc?.notes || ''
+                    notes: ''
                 };
                 setUser(rec);
             })
@@ -287,9 +279,26 @@ export default function AdminUserDetail() {
         if (!user || !kind) return;
         if (!validateReauth()) return;
 
-        // Backend logic here
-        // For now, simulate
-        setSnack({ open: true, severity: "success", msg: `${actionTitle(kind)} applied for ${user.name}.` });
+        try {
+            if (kind === 'LOCK') {
+                await api(`/users/${user.id}`, { method: 'PATCH', body: JSON.stringify({ emailVerified: false }) });
+                setSnack({ open: true, severity: "success", msg: "User locked." });
+            } else if (kind === 'UNLOCK') {
+                await api(`/users/${user.id}`, { method: 'PATCH', body: JSON.stringify({ emailVerified: true }) });
+                setSnack({ open: true, severity: "success", msg: "User unlocked." });
+            } else if (kind === 'FORCE_SIGNOUT') {
+                await api(`/admin/users/${user.id}/revoke-sessions`, { method: 'POST' });
+                setSnack({ open: true, severity: "success", msg: "Sessions revoked." });
+            } else if (kind === 'RESET_PASSWORD' && tempPassword) {
+                await api(`/admin/users/${user.id}/reset-password`, { method: 'POST', body: JSON.stringify({ password: tempPassword }) });
+                setSnack({ open: true, severity: "success", msg: "Password reset." });
+            } else {
+                setSnack({ open: true, severity: "info", msg: `${actionTitle(kind)} simulated.` });
+            }
+        } catch (e: any) {
+            setSnack({ open: true, severity: "error", msg: e.message || "Failed" });
+        }
+
         closeAction();
         // Ideally refetch user
     };
@@ -301,10 +310,6 @@ export default function AdminUserDetail() {
     const RiskChip = ({ r }: { r: Risk }) => {
         const tone = riskTone(r);
         return <Chip size="small" label={r} sx={{ fontWeight: 900, border: `1px solid ${alpha(tone, 0.35)}`, color: tone, backgroundColor: alpha(tone, 0.10) }} />;
-    };
-    const KycChip = ({ k }: { k: KycTier }) => {
-        const tone = kycTone(k);
-        return <Chip size="small" label={k} sx={{ fontWeight: 900, border: `1px solid ${alpha(tone, 0.35)}`, color: tone, backgroundColor: alpha(tone, 0.10) }} />;
     };
 
     if (loading) {
@@ -338,7 +343,6 @@ export default function AdminUserDetail() {
                                         </Typography>
                                         <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 1 }}>
                                             <StatusChip s={user.status} />
-                                            <KycChip k={user.kyc} />
                                             <RiskChip r={user.risk} />
                                             <Chip size="small" variant="outlined" label={`MFA: ${user.mfaEnabled ? "On" : "Off"}`} />
                                         </Stack>
@@ -402,16 +406,6 @@ export default function AdminUserDetail() {
 
                     <Box className="md:col-span-12 lg:col-span-5">
                         <Stack spacing={2.2}>
-                            {/* Internal Notes */}
-                            <Card sx={{ borderRadius: 6 }}>
-                                <CardContent className="p-5 md:p-7">
-                                    <Typography sx={{ fontWeight: 950, mb: 2 }}>Admin notes</Typography>
-                                    <TextField value={user.notes} fullWidth multiline minRows={3} placeholder="Add internal notes" onChange={() => setSnack({ open: true, severity: "info", msg: "Editing notes (demo)." })} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 3 } }} />
-                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary, mt: 1, display: 'block' }}>
-                                        Notes are internal. They are never shown to the user.
-                                    </Typography>
-                                </CardContent>
-                            </Card>
                         </Stack>
                     </Box>
                 </Box>

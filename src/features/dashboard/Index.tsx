@@ -17,8 +17,10 @@ import {
   Users,
   Code,
   ExternalLink,
-  Settings
+  Settings,
+  HelpCircle
 } from 'lucide-react';
+import * as Icons from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useThemeStore } from "@/stores/themeStore";
@@ -62,32 +64,31 @@ export default function Dashboard() {
     return "Good evening";
   };
 
-  const APPS: IApp[] = [
-    {
-      id: 'wallet',
-      name: 'EVZone Wallet',
-      description: 'Manage funds, top-ups, and payments.',
-      icon: <CreditCard size={24} />,
-      url: 'https://wallet.evzone.app', // External App
-      color: EVZONE.green
-    },
-    {
-      id: 'orgs',
-      name: 'Organization Hub',
-      description: 'Team management and enterprise billing.',
-      icon: <Users size={24} />,
-      url: 'https://orgs.evzone.app', // External App (was /app/orgs)
-      color: '#3B82F6' // Blue
-    },
-    {
-      id: 'dev',
-      name: 'Developer Portal',
-      description: 'API keys, OAuth clients, and docs.',
-      icon: <Code size={24} />,
-      url: 'https://developers.evzone.app', // External App
-      color: '#8B5CF6' // Purple
-    }
-  ];
+  /* Static list removed - fetched from backend */
+  const [apps, setApps] = useState<IApp[]>([]);
+
+  useEffect(() => {
+    const fetchApps = async () => {
+      try {
+        const res = await api.get<any[]>("/apps/system");
+        const mapped = res.map((app) => {
+          // Dynamically load Lucide icon
+          // @ts-ignore
+          const IconCmp = Icons[app.icon] || Icons.HelpCircle;
+          return {
+            ...app,
+            icon: <IconCmp size={24} />
+          };
+        });
+        setApps(mapped);
+      } catch (e) {
+        console.error("Failed to load apps", e);
+      }
+    };
+    fetchApps();
+  }, []);
+
+  const APPS = apps;
 
   const pageBg = mode === 'dark'
     ? 'radial-gradient(circle at 50% 0%, #1a2e29 0%, #07110F 100%)'
@@ -184,7 +185,7 @@ export default function Dashboard() {
           </Grid>
 
           {/* Account & Security Quick Links */}
-          <Box sx={{ mb: 4 }}>
+          <Box sx={{ mb: 6 }}>
             <Typography variant="h6" sx={{ mb: 3, fontWeight: 700, color: 'text.primary' }}>
               Account & Security
             </Typography>
@@ -241,6 +242,43 @@ export default function Dashboard() {
               </Grid>
             </Grid>
           </Box>
+
+          {/* Organizations Section */}
+          {user?.orgMemberships && user.orgMemberships.length > 0 && (
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h6" sx={{ mb: 3, fontWeight: 700, color: 'text.primary' }}>
+                My Organizations
+              </Typography>
+              <Grid container spacing={2}>
+                {user.orgMemberships.map((m) => (
+                  <Grid item xs={12} sm={6} key={m.id}>
+                    <motion.div variants={itemVars}>
+                      <Paper
+                        sx={{
+                          p: 3,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 2,
+                          borderRadius: '16px',
+                          border: `1px solid ${theme.palette.divider}`,
+                          background: alpha(theme.palette.background.paper, 0.4),
+                          backdropFilter: 'blur(10px)',
+                        }}
+                      >
+                        <Box sx={{ p: 1.5, borderRadius: '12px', bgcolor: alpha(EVZONE.green, 0.1), color: EVZONE.green }}>
+                          <Icons.Building2 size={24} />
+                        </Box>
+                        <Box>
+                          <Typography variant="subtitle1" fontWeight={700}>{m.organization.name}</Typography>
+                          <Typography variant="caption" color="text.secondary">{m.role}</Typography>
+                        </Box>
+                      </Paper>
+                    </motion.div>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          )}
 
         </motion.div>
       </Container>

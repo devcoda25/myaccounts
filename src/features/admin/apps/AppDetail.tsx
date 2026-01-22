@@ -38,14 +38,23 @@ import { EVZONE } from "@/theme/evzone";
 interface AppMember {
     id: string;
     userId: string;
+    name: string;
+    email: string;
     role: 'SUPER_APP_ADMIN' | 'REGIONAL_ADMIN' | 'STAFF';
     region?: string;
-    user: {
-        email: string;
-        firstName: string | null;
-        otherNames: string | null;
-        avatarUrl: string | null;
-    };
+    createdAt: string;
+}
+
+interface AppRecord {
+    clientId: string;
+    name: string;
+    description: string | null;
+    website: string | null;
+    redirectUris: string[];
+    isFirstParty: boolean;
+    isPublic: boolean;
+    icon: string | null;
+    color: string | null;
 }
 
 export default function AppDetail() {
@@ -54,7 +63,7 @@ export default function AppDetail() {
     const theme = useTheme();
 
     const [tab, setTab] = useState(0);
-    const [app, setApp] = useState<any>(null);
+    const [app, setApp] = useState<AppRecord | null>(null);
     const [members, setMembers] = useState<AppMember[]>([]);
     const [loading, setLoading] = useState(true);
     const [snack, setSnack] = useState({ open: false, msg: '', severity: 'success' as 'success' | 'error' });
@@ -76,10 +85,10 @@ export default function AppDetail() {
             // Wait, I only edited AppMembersController. The existing AppsController probably already has getOne?
             // If not, I'll fallback.
 
-            if (appRes) setApp(appRes);
+            if (appRes) setApp(appRes as AppRecord);
 
-            // Fetch Members
-            const membersRes = await api<AppMember[]>(`/apps/${clientId}/members`);
+            // Fetch Members (Admin endpoint)
+            const membersRes = await api<AppMember[]>(`/admin/apps/${clientId}/members`);
             setMembers(membersRes);
         } catch (err) {
             console.error(err);
@@ -95,7 +104,7 @@ export default function AppDetail() {
 
     const handleInvite = async () => {
         try {
-            await api(`/apps/${clientId}/members`, {
+            await api(`/admin/apps/${clientId}/members`, {
                 method: 'POST',
                 body: JSON.stringify(inviteData)
             });
@@ -110,7 +119,7 @@ export default function AppDetail() {
     const handleRemoveMember = async (memberId: string) => {
         if (!window.confirm('Remove this member?')) return;
         try {
-            await api(`/apps/${clientId}/members/${memberId}`, { method: 'DELETE' });
+            await api(`/admin/apps/members/${memberId}`, { method: 'DELETE' });
             setSnack({ open: true, msg: 'Member removed', severity: 'success' });
             fetchDetails();
         } catch (err: any) {
@@ -171,12 +180,12 @@ export default function AppDetail() {
                                 <Card key={member.id} sx={{ borderRadius: 3 }}>
                                     <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 2, '&:last-child': { pb: 2 } }}>
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                            <Avatar src={member.user.avatarUrl || undefined} alt={member.user.email} />
+                                            <Avatar sx={{ bgcolor: EVZONE.green }}>{member.name.charAt(0)}</Avatar>
                                             <Box>
                                                 <Typography variant="subtitle2" fontWeight={700}>
-                                                    {member.user.firstName} {member.user.otherNames}
+                                                    {member.name}
                                                 </Typography>
-                                                <Typography variant="caption" color="text.secondary">{member.user.email}</Typography>
+                                                <Typography variant="caption" color="text.secondary">{member.email}</Typography>
                                             </Box>
                                         </Box>
 

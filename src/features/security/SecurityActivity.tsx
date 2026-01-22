@@ -279,7 +279,7 @@ export default function LoginActivityPage() {
       .then((logs) => {
         const mapped: LoginEvent[] = logs.map((l) => ({
           id: l.id,
-          when: typeof l.createdAt === 'string' ? new Date(l.createdAt).getTime() : l.createdAt,
+          when: l.createdAt ? (typeof l.createdAt === 'string' ? new Date(l.createdAt).getTime() : l.createdAt) : Date.now(),
           device: l.details?.device || "Unknown Device",
           method: (l.action as LoginMethod) || "Password", // Fallback
           location: typeof l.details?.location === 'object' && l.details.location
