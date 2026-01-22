@@ -300,6 +300,7 @@ export default function SignInPage() {
         headers: {
           'Content-Type': 'application/json'
         },
+        credentials: 'include', // [Fix] Required for CORS cookies
         body: JSON.stringify({ email: e, password: p })
       });
 
