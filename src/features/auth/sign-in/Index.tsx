@@ -269,8 +269,17 @@ export default function SignInPage() {
       return; // Wait for user to react
     }
 
-    if (!uid && !auth.isAuthenticated && !auth.isLoading && !auth.activeNavigator && !auth.error && !isRedirecting) {
+    // [Fix] Nuclear Redirect Guard: 
+    // Do NOT redirect if:
+    // 1. We have an interaction UID (form should show)
+    // 2. We already have an OIDC error (loop breaker)
+    // 3. We are already authenticated (loading will handle redirect to /app)
+    // 4. Discovery found an error (interaction_error param)
+    const hasInteractionError = searchParams.has('interaction_error') || searchParams.has('error');
+
+    if (!uid && !auth.isAuthenticated && !auth.isLoading && !auth.activeNavigator && !auth.error && !isRedirecting && !hasInteractionError) {
       setIsRedirecting(true);
+      console.log("[SignIn] Initiating OIDC signinRedirect...");
       auth.signinRedirect().catch(err => {
         console.error("Sign in redirect failed", err);
         setIsRedirecting(false);
