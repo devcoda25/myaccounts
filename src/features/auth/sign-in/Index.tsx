@@ -155,6 +155,7 @@ export default function SignInPage() {
   // passkeys
   const [passkeySupported, setPasskeySupported] = useState<boolean | null>(null);
   const [passkeyBusy, setPasskeyBusy] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false); // [Fix] Anti-flicker guard
 
   const [banner, setBanner] = useState<{ severity: "error" | "warning" | "info" | "success"; msg: string } | null>(null);
   const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
@@ -268,12 +269,14 @@ export default function SignInPage() {
       return; // Wait for user to react
     }
 
-    if (!uid && !auth.isAuthenticated && !auth.isLoading && !auth.activeNavigator && !auth.error) {
+    if (!uid && !auth.isAuthenticated && !auth.isLoading && !auth.activeNavigator && !auth.error && !isRedirecting) {
+      setIsRedirecting(true);
       auth.signinRedirect().catch(err => {
         console.error("Sign in redirect failed", err);
+        setIsRedirecting(false);
       });
     }
-  }, [uid, auth, searchParams]);
+  }, [uid, auth, searchParams, isRedirecting]);
 
   /*
   useEffect(() => {
@@ -424,7 +427,7 @@ export default function SignInPage() {
 
   // Anti-Flicker: If initializing OIDC (redirecting) or already authenticated, show loading instead of form
   // But ONLY if no error exists.
-  if (!uid && !auth.error && auth.isLoading) {
+  if (!uid && !auth.error && (auth.isLoading || isRedirecting)) {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: pageBg }}>
         <CircularProgress />
