@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
-import { BACKEND_URL } from "@/config";
+
+
 import {
   Alert,
   Box,
@@ -80,6 +81,28 @@ function scorePassword(pw: string) {
   if (/[^A-Za-z0-9]/.test(pw)) score++;
   return score; // 0..5
 }
+function submitOidcInteractionLogin(uid: string, email: string, password: string) {
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = `/oidc/interaction/${encodeURIComponent(uid)}/login`; // SAME ORIGIN (accounts)
+
+  const e = document.createElement("input");
+  e.type = "hidden";
+  e.name = "email";
+  e.value = email;
+
+  const p = document.createElement("input");
+  p.type = "hidden";
+  p.name = "password";
+  p.value = password;
+
+  form.appendChild(e);
+  form.appendChild(p);
+
+  document.body.appendChild(form);
+  form.submit();
+}
+
 
 export default function SignUpPageV3() {
   const navigate = useNavigate();
@@ -268,31 +291,12 @@ export default function SignUpPageV3() {
 
       // 2. Auto-Login if OIDC Interaction is active (uid)
       // This skips the "Verify Email" screen and logs the user directly into the app (or Consent)
-      if (uid) {
-        setSnack({ open: true, severity: "info", msg: "Account created! Signing you in..." });
+    if (uid && !createWithOtp) {
+  setSnack({ open: true, severity: "info", msg: "Account created! Signing you in..." });
+  submitOidcInteractionLogin(uid, email, password);
+  return;
+}
 
-        try {
-          const interactionBaseUrl = BACKEND_URL.replace(/\/api\/v1\/?$/, '');
-          const targetUrl = `${interactionBaseUrl}/interaction/${uid}/login`;
-
-          const res = await fetch(targetUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-          });
-
-          if (res.ok) {
-            // Success: Follow redirect to complete OIDC flow
-            window.location.assign(res.url);
-            return;
-          } else {
-            // If auto-login fails, just fall through to verification page
-            console.warn("Auto-login failed after registration", await res.text());
-          }
-        } catch (loginErr) {
-          console.error("Auto-login network error", loginErr);
-        }
-      }
 
       // Fallback: Verify Email Page
       setSnack({ open: true, severity: "success", msg: "Account created! Please verify your email." });

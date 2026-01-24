@@ -20,7 +20,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { api } from "@/utils/api";
 import { useEffect, useMemo, useState } from "react";
-import { BACKEND_URL } from "@/config";
+
 
 type ThemeMode = "light" | "dark";
 
@@ -345,19 +345,33 @@ export default function ConsentScreenPage() {
   };
 
   // ACTIONS
-  const submitChoice = (action: 'confirm' | 'abort') => {
-    if (!uid) {
-      setSnack({ open: true, severity: "error", msg: "Missing interaction UID" });
-      return;
-    }
+ // ACTIONS
+const submitChoice = (action: "confirm" | "abort") => {
+  if (!uid) {
+    setSnack({ open: true, severity: "error", msg: "Missing interaction UID" });
+    return;
+  }
 
-    const form = document.createElement('form');
-    form.method = action === 'confirm' ? 'POST' : 'GET';
-    const interactionBaseUrl = BACKEND_URL.replace(/\/api\/v1\/?$/, '');
-    form.action = `${interactionBaseUrl}/oidc/interaction/${uid}/${action}`;
-    document.body.appendChild(form);
-    form.submit();
-  };
+  // ✅ Same-origin: accounts.evzone.app
+  // OIDC endpoints are mounted under /oidc on the same domain
+  const form = document.createElement("form");
+
+  // Most oidc-provider interaction endpoints accept POST.
+  // If your backend expects GET for abort, keep GET for abort.
+  form.method = action === "confirm" ? "POST" : "POST"; // change to "GET" only if your server requires it
+  form.action = `/oidc/interaction/${encodeURIComponent(uid)}/${action}`;
+
+  // Optional: pass remember decision (if your backend consumes it)
+  const rememberInput = document.createElement("input");
+  rememberInput.type = "hidden";
+  rememberInput.name = "remember";
+  rememberInput.value = remember ? "true" : "false";
+  form.appendChild(rememberInput);
+
+  document.body.appendChild(form);
+  form.submit();
+};
+
 
   const onAllow = async () => {
     setSnack({ open: true, severity: "success", msg: "Confirming..." });

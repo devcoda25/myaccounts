@@ -1,106 +1,130 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 import { IUser } from "@/types";
-import { api } from '../utils/api';
+import { api } from "../utils/api";
 
 interface AuthState {
-    user: IUser | null;
-    isLoading: boolean;
-    login: (identifier: string, password: string) => Promise<void>;
-    socialLogin: (provider: 'google' | 'apple', token: string) => Promise<void>;
-    register: (data: Record<string, unknown>) => Promise<unknown>;
-    verifyEmail: (email: string, code: string) => Promise<void>;
-    requestEmailVerification: (email: string) => Promise<unknown>;
-    requestPhoneVerification: (identifier: string, deliveryMethod: 'sms_code' | 'whatsapp_code') => Promise<unknown>;
-    verifyPhone: (identifier: string, code: string) => Promise<void>;
-    logout: () => Promise<void>;
-    refreshUser: (token?: string) => Promise<void>;
+  user: IUser | null;
+  isLoading: boolean;
+
+  refreshUser: (token?: string) => Promise<void>;
+
+  login: (identifier: string, password: string) => Promise<void>;
+  socialLogin: (provider: "google" | "apple", token: string) => Promise<void>;
+
+  register: (data: Record<string, unknown>) => Promise<unknown>;
+
+  verifyEmail: (email: string, code: string) => Promise<void>;
+  requestEmailVerification: (email: string) => Promise<unknown>;
+
+  requestPhoneVerification: (
+    identifier: string,
+    deliveryMethod: "sms_code" | "whatsapp_code"
+  ) => Promise<unknown>;
+
+  verifyPhone: (identifier: string, code: string) => Promise<void>;
+
+  logout: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
-    user: null,
-    isLoading: true,
+  user: null,
+  isLoading: false,
 
-    refreshUser: async (token?: string) => {
-        // console.trace(`[AuthStore] refreshUser called. Token present: ${!!token}`);
-        set({ isLoading: true });
-        try {
-            const options = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-            const data = await api('/users/me', options) as IUser;
-            set({ user: data, isLoading: false });
-        } catch (err) {
-            set({ user: null, isLoading: false });
-        }
-    },
+  refreshUser: async (token?: string) => {
+    set({ isLoading: true });
+    try {
+      const options = token ? { headers: { Authorization: `Bearer ${token}` } } : undefined;
+      const data = await api<IUser>("/users/me", options);
+      set({ user: data, isLoading: false });
+    } catch {
+      set({ user: null, isLoading: false });
+    }
+  },
 
-    login: async (identifier: string, password: string) => {
-        set({ isLoading: true });
-        try {
-            await api('/auth/login', {
-                method: 'POST',
-                body: JSON.stringify({ identifier, password }),
-            });
-            await get().refreshUser();
-        } finally {
-            set({ isLoading: false });
-        }
-    },
+  login: async (identifier: string, password: string) => {
+    set({ isLoading: true });
+    try {
+      await api("/auth/login", {
+        method: "POST",
+        body: { identifier, password }, // ✅ object, not JSON.stringify
+      });
+      await get().refreshUser();
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 
-    socialLogin: async (provider: 'google' | 'apple', token: string) => {
-        set({ isLoading: true });
-        try {
-            await api(`/auth/${provider}`, {
-                method: 'POST',
-                body: JSON.stringify({ token }),
-            });
-            await get().refreshUser();
-        } finally {
-            set({ isLoading: false });
-        }
-    },
+  socialLogin: async (provider: "google" | "apple", token: string) => {
+    set({ isLoading: true });
+    try {
+      await api(`/auth/${provider}`, {
+        method: "POST",
+        body: { token }, // ✅ object
+      });
+      await get().refreshUser();
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 
-    register: async (data: Record<string, unknown>) => {
-        return await api('/users', {
-            method: 'POST',
-            body: JSON.stringify(data),
-        });
-    },
+  register: async (data: Record<string, unknown>) => {
+    // ✅ return server response (user created / verification info etc.)
+    return await api("/users", {
+      method: "POST",
+      body: data, // ✅ object
+    });
+  },
 
-    verifyEmail: async (email: string, code: string) => {
-        await api('/auth/verify-email', {
-            method: 'POST',
-            body: JSON.stringify({ identifier: email, code }),
-        });
-        await get().refreshUser();
-    },
+  verifyEmail: async (email: string, code: string) => {
+    set({ isLoading: true });
+    try {
+      await api("/auth/verify-email", {
+        method: "POST",
+        body: { identifier: email, code }, // ✅ object
+      });
+      await get().refreshUser();
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 
-    requestEmailVerification: async (email: string) => {
-        return await api('/auth/request-email-verification', {
-            method: 'POST',
-            body: JSON.stringify({ email }),
-        });
-    },
+  requestEmailVerification: async (email: string) => {
+    return await api("/auth/request-email-verification", {
+      method: "POST",
+      body: { email }, // ✅ object
+    });
+  },
 
-    requestPhoneVerification: async (identifier: string, deliveryMethod: 'sms_code' | 'whatsapp_code') => {
-        return await api('/auth/request-phone-verification', {
-            method: 'POST',
-            body: JSON.stringify({ identifier, deliveryMethod }),
-        });
-    },
+  requestPhoneVerification: async (
+    identifier: string,
+    deliveryMethod: "sms_code" | "whatsapp_code"
+  ) => {
+    return await api("/auth/request-phone-verification", {
+      method: "POST",
+      body: { identifier, deliveryMethod }, // ✅ object
+    });
+  },
 
-    verifyPhone: async (identifier: string, code: string) => {
-        await api('/auth/verify-phone', {
-            method: 'POST',
-            body: JSON.stringify({ identifier, code }),
-        });
-        await get().refreshUser();
-    },
+  verifyPhone: async (identifier: string, code: string) => {
+    set({ isLoading: true });
+    try {
+      await api("/auth/verify-phone", {
+        method: "POST",
+        body: { identifier, code }, // ✅ object
+      });
+      await get().refreshUser();
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 
-    logout: async () => {
-        set({ isLoading: true });
-        try {
-            await api('/auth/logout', { method: 'POST' }).catch(() => { });
-        } finally {
-            set({ user: null, isLoading: false });
-        }
-    },
+  logout: async () => {
+    set({ isLoading: true });
+    try {
+      // ignore errors on logout (session may already be gone)
+      await api("/auth/logout", { method: "POST" }).catch(() => {});
+    } finally {
+      set({ user: null, isLoading: false });
+    }
+  },
 }));
