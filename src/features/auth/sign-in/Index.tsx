@@ -1,7 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
-import { BACKEND_URL } from "@/config";
+import { API_BASE_URL } from "@/config";
+
+
 import {
   Alert,
   Box,
@@ -311,40 +313,28 @@ export default function SignInPage() {
   //   }
   // }, [isGoogleScriptLoaded, renderGoogleButton]);
 
-  // Helper: Submit Interaction via Fetch to handle errors inline
-  const submitInteraction = async (uidVal: string, e: string, p: string) => {
-    // [FIX] Interaction endpoints are at root, not /api/v1
-    const interactionBaseUrl = BACKEND_URL.replace(/\/api\/v1\/?$/, '');
-    const targetUrl = `${interactionBaseUrl}/oidc/interaction/${uidVal}/login`;
+ function submitInteraction(uid: string, email: string, password: string) {
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = `/oidc/interaction/${encodeURIComponent(uid)}/login`; // SAME ORIGIN
 
-    try {
-      const res = await fetch(targetUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include', // [Fix] Required for CORS cookies
-        body: JSON.stringify({ email: e, password: p })
-      });
+  const e = document.createElement("input");
+  e.type = "hidden";
+  e.name = "email";
+  e.value = email;
 
-      if (res.ok) {
-        // Success: OIDC provider redirects us. Fetch follows redirects automatically.
-        // If the final destination is the app or consent page, navigate there.
-        // Ideally, res.url is the new location.
-        window.location.assign(res.url);
-      } else {
-        // Error: Parse JSON
-        const data = await res.json().catch(() => ({}));
-        const errorMsg = data.error || "Login failed. Please check your credentials.";
-        setBanner({ severity: "error", msg: errorMsg });
-        setSnack({ open: false, severity: "info", msg: "" }); // Clear loading snack
-      }
-    } catch (err: any) {
-      console.error("Login Interaction Error:", err);
-      setBanner({ severity: "error", msg: "Network error. Please try again." });
-      setSnack({ open: false, severity: "info", msg: "" });
-    }
-  };
+  const p = document.createElement("input");
+  p.type = "hidden";
+  p.name = "password";
+  p.value = password;
+
+  form.appendChild(e);
+  form.appendChild(p);
+  document.body.appendChild(form);
+  form.submit();
+}
+
+
 
   const submitPasswordSignIn = async () => {
     setBanner(null);
@@ -365,11 +355,12 @@ export default function SignInPage() {
     }
 
     // OIDC INTERACTION MODE
-    if (uid) {
-      setSnack({ open: true, severity: "info", msg: "Verifying credentials..." });
-      submitInteraction(uid, id, password);
-      return;
-    }
+   if (uid) {
+  setSnack({ open: true, severity: "info", msg: "Verifying credentials..." });
+  submitInteraction(uid, id, password);
+  return;
+}
+
 
     // Start OIDC Flow
     try {
