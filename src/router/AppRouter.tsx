@@ -115,6 +115,7 @@ export default function AppRouter() {
             </Route>
           </Route> { /* End Sidebar Layout */}
 
+          <Route path="/auth/*" element={<PatchOidcResume />} />
           <Route path="/auth/account-recovery-help" element={<AuthAccountRecoveryHelp />} />
           <Route path="/auth/choose-account" element={<AuthChooseAccount />} />
           <Route path="/auth/consent" element={<AuthConsent />} />
@@ -136,7 +137,6 @@ export default function AppRouter() {
           <Route path="/interaction/:uid" element={<AuthInteraction />} />
           <Route path="/auth/verify-email" element={<AuthVerifyEmail />} />
           <Route path="/auth/verify-phone" element={<AuthVerifyPhone />} />
-          <Route path="/auth/:uid" element={<PatchOidcResume />} />
           <Route path="/errors/403" element={<Errors403 />} />
           <Route path="/errors/404" element={<Errors404 />} />
           <Route path="/errors/429" element={<Errors429 />} />
