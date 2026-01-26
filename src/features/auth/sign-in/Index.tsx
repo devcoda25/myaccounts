@@ -319,35 +319,23 @@ export default function SignInPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-        credentials: "include", // ✅ Critical: maintain cookies
-        redirect: "manual" // ✅ Critical: intercept redirects
+        credentials: "include",
       });
 
-      // Handle redirect responses (302, 303, 307, 308)
-      // When redirect: "manual" is set, opaqueredirect type is returned
-      if (response.type === "opaqueredirect" || (response.status >= 300 && response.status < 400)) {
-        const location = response.headers.get("Location");
-        if (location) {
-          console.log("[OIDC] Redirecting to:", location);
-          window.location.href = location;
-          return;
-        }
-      }
-
-      // Handle error responses
       if (!response.ok) {
         const error = await response.json().catch(() => ({ message: "Login failed" }));
         throw new Error(error.message || `Login failed with status ${response.status}`);
       }
 
-      // If 200 OK, check for redirect in body (fallback)
-      const data = await response.json().catch(() => ({}));
-      if (data.redirectTo) {
-        console.log("[OIDC] Redirecting to (from body):", data.redirectTo);
-        window.location.href = data.redirectTo;
-      } else {
-        console.warn("[OIDC] No redirect received from interaction login");
-      }
+      // If successful, the request followed redirects (e.g. back to /auth/authorize -> /app)
+      // We should check the final URL. 
+      // If we are still on the interaction page, something went wrong? 
+      // Actually, standard Fetch following redirects might land us on the Callback HTML or App HTML.
+      // We just need to navigate the browser there.
+
+      console.log("[OIDC] Login success. Final URL:", response.url);
+      window.location.href = response.url;
+
     } catch (error) {
       console.error("[OIDC] Interaction submit error:", error);
       throw error;
