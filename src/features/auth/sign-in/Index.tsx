@@ -332,7 +332,9 @@ export default function SignInPage() {
         const locationHeader = response.headers.get("Location");
         const nextUrl = locationHeader || `/oidc/auth/${encodeURIComponent(uidVal)}`;
 
-        console.log("[OIDC] Redirect detected. Navigating to:", nextUrl);
+        console.log("[OIDC] Interaction Finished. Headers:",
+          Array.from(response.headers.entries()).map(([k, v]) => `${k}: ${v}`).join(', '));
+        console.log("[OIDC] Redirecting to:", nextUrl);
         window.location.assign(nextUrl);
         return;
       }
