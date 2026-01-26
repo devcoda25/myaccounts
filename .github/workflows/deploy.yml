@@ -9,10 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
+
       - run: npm install
       - run: npm run test
 
@@ -26,30 +28,29 @@ jobs:
           host: ${{ secrets.DO_HOST }}
           username: ${{ secrets.DO_USERNAME }}
           key: ${{ secrets.DO_SSH_KEY }}
+          script_stop: true
           script: |
-            # Ensure PM2 is installed globally
-            npm install -g pm2
+            set -euo pipefail
 
-            # Navigate to app directory
             cd /var/www/myaccounts-frontend
-            
-            # Pull latest changes
-            git pull origin main
-            
-            # Install dependencies
-            npm install
-            
-            # Create .env file from secrets for build time
-            echo "VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}" > .env
-            echo "VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}" >> .env
-            echo "VITE_APPLE_CLIENT_ID=${{ secrets.VITE_APPLE_CLIENT_ID }}" >> .env
-            
-           
-            # Build not required if just running ts-node, but we are using built dist
-            # Rebuild the application
+
+            # Force repo to match origin/main (prevents package-lock conflicts)
+            git fetch origin main
+            git reset --hard origin/main
+            git clean -fd
+
+            # Install deps without rewriting package-lock
+            npm ci
+
+            # Build-time env for Vite
+            cat > .env <<EOF
+            VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
+            VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+            VITE_APPLE_CLIENT_ID=${{ secrets.VITE_APPLE_CLIENT_ID }}
+            EOF
+
             export NODE_OPTIONS="--max-old-space-size=5096"
             npm run build
-            
-            # Nginx serves the static files directly, so usually no restart needed.
-            # However, we can reload config just to be safe/sure.
-            # systemctl reload nginx
+
+            # Optional: only if your user can sudo without a password
+            # sudo nginx -t && sudo systemctl reload nginx
