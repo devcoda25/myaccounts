@@ -320,20 +320,27 @@ export default function SignInPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
         credentials: "include",
+        redirect: "manual" // Stop fetch from following the redirect
       });
+
+      // Handle redirect (Same-origin 302/303 from oidc-provider)
+      // When redirect: "manual" is used, browser returns type "opaqueredirect" 
+      // If it's a redirect, we handle it by manually constructing the resume URL.
+      if (response.type === "opaqueredirect" || (response.status >= 300 && response.status < 400)) {
+        // The resume URL is standard: /oidc/auth/UID
+        const resumeUrl = `/oidc/auth/${encodeURIComponent(uid)}`;
+        console.log("[OIDC] Redirect detected. Resuming at:", resumeUrl);
+        window.location.href = resumeUrl;
+        return;
+      }
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({ message: "Login failed" }));
         throw new Error(error.message || `Login failed with status ${response.status}`);
       }
 
-      // If successful, the request followed redirects (e.g. back to /auth/authorize -> /app)
-      // We should check the final URL. 
-      // If we are still on the interaction page, something went wrong? 
-      // Actually, standard Fetch following redirects might land us on the Callback HTML or App HTML.
-      // We just need to navigate the browser there.
-
-      console.log("[OIDC] Login success. Final URL:", response.url);
+      // Final URL handling for 200 OK (if applicable)
+      console.log("[OIDC] Login success. Navigating to:", response.url);
       window.location.href = response.url;
 
     } catch (error) {
