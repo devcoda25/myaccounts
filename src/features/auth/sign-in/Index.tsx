@@ -313,24 +313,27 @@ export default function SignInPage() {
   //   }
   // }, [isGoogleScriptLoaded, renderGoogleButton]);
 
-  async function submitInteraction(uid: string, email: string, password: string) {
+  async function submitInteraction(uidVal: string, email: string, password: string) {
+    const targetUrl = `/oidc/interaction/${encodeURIComponent(uidVal)}/login`;
+
     try {
-      const response = await fetch(`/oidc/interaction/${encodeURIComponent(uid)}/login`, {
+      const response = await fetch(targetUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
         credentials: "include",
-        redirect: "manual" // Stop fetch from following the redirect
+        redirect: "manual", // ✅ CRITICAL: Prevent fetch from consuming interaction UID
       });
 
-      // Handle redirect (Same-origin 302/303 from oidc-provider)
-      // When redirect: "manual" is used, browser returns type "opaqueredirect" 
-      // If it's a redirect, we handle it by manually constructing the resume URL.
-      if (response.type === "opaqueredirect" || (response.status >= 300 && response.status < 400)) {
-        // The resume URL is standard: /oidc/auth/UID
-        const resumeUrl = `/oidc/auth/${encodeURIComponent(uid)}`;
-        console.log("[OIDC] Redirect detected. Resuming at:", resumeUrl);
-        window.location.href = resumeUrl;
+      // Handle redirect responses (302, 303)
+      if (response.status === 302 || response.status === 303 || response.type === "opaqueredirect") {
+        // Since we are same-origin, we can usually see the location, 
+        // but if opaqueredirect we fallback to manual construction
+        const locationHeader = response.headers.get("Location");
+        const nextUrl = locationHeader || `/oidc/auth/${encodeURIComponent(uidVal)}`;
+
+        console.log("[OIDC] Redirect detected. Navigating to:", nextUrl);
+        window.location.assign(nextUrl);
         return;
       }
 
@@ -339,9 +342,9 @@ export default function SignInPage() {
         throw new Error(error.message || `Login failed with status ${response.status}`);
       }
 
-      // Final URL handling for 200 OK (if applicable)
-      console.log("[OIDC] Login success. Navigating to:", response.url);
-      window.location.href = response.url;
+      // 200 Success fallback (usually oidc-provider redirects, but handling just in case)
+      console.log("[OIDC] Login success (200). Navigating to response URL:", response.url);
+      window.location.assign(response.url);
 
     } catch (error) {
       console.error("[OIDC] Interaction submit error:", error);

@@ -15,8 +15,8 @@ export default function InteractionDispatcher() {
   useEffect(() => {
     if (!uid) return;
 
-    // ✅ Same-origin redirect (accounts.evzone.app)
-    const target = `/oidc/interaction/${encodeURIComponent(uid)}`;
+    // ✅ Same-origin relative redirect
+    const target = `/oidc/interaction/${uid}`;
     window.location.replace(target);
   }, [uid]);
 
