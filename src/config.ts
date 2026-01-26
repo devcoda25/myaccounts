@@ -8,3 +8,7 @@ export const OIDC_AUTHORITY =
   (import.meta.env.PROD
     ? "https://accounts.evzone.app/oidc"
     : "http://localhost:3000/oidc");
+
+// OIDC interaction base path (relative, same-origin)
+// All OIDC interaction URLs must be same-origin under accounts.evzone.app
+export const OIDC_INTERACTION_BASE = "/oidc/interaction";

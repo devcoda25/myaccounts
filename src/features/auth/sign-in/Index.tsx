@@ -313,26 +313,47 @@ export default function SignInPage() {
   //   }
   // }, [isGoogleScriptLoaded, renderGoogleButton]);
 
- function submitInteraction(uid: string, email: string, password: string) {
-  const form = document.createElement("form");
-  form.method = "POST";
-  form.action = `/oidc/interaction/${encodeURIComponent(uid)}/login`; // SAME ORIGIN
+  async function submitInteraction(uid: string, email: string, password: string) {
+    try {
+      const response = await fetch(`/oidc/interaction/${encodeURIComponent(uid)}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+        credentials: "include", // ✅ Critical: maintain cookies
+        redirect: "manual" // ✅ Critical: intercept redirects
+      });
 
-  const e = document.createElement("input");
-  e.type = "hidden";
-  e.name = "email";
-  e.value = email;
+      // Handle redirect responses (302, 303, 307, 308)
+      // When redirect: "manual" is set, opaqueredirect type is returned
+      if (response.type === "opaqueredirect" || (response.status >= 300 && response.status < 400)) {
+        const location = response.headers.get("Location");
+        if (location) {
+          console.log("[OIDC] Redirecting to:", location);
+          window.location.href = location;
+          return;
+        }
+      }
 
-  const p = document.createElement("input");
-  p.type = "hidden";
-  p.name = "password";
-  p.value = password;
+      // Handle error responses
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ message: "Login failed" }));
+        throw new Error(error.message || `Login failed with status ${response.status}`);
+      }
 
-  form.appendChild(e);
-  form.appendChild(p);
-  document.body.appendChild(form);
-  form.submit();
-}
+      // If 200 OK, check for redirect in body (fallback)
+      const data = await response.json().catch(() => ({}));
+      if (data.redirectTo) {
+        console.log("[OIDC] Redirecting to (from body):", data.redirectTo);
+        window.location.href = data.redirectTo;
+      } else {
+        console.warn("[OIDC] No redirect received from interaction login");
+      }
+    } catch (error) {
+      console.error("[OIDC] Interaction submit error:", error);
+      throw error;
+    }
+  }
+
 
 
 
@@ -355,11 +376,18 @@ export default function SignInPage() {
     }
 
     // OIDC INTERACTION MODE
-   if (uid) {
-  setSnack({ open: true, severity: "info", msg: "Verifying credentials..." });
-  submitInteraction(uid, id, password);
-  return;
-}
+    if (uid) {
+      setSnack({ open: true, severity: "info", msg: "Verifying credentials..." });
+      try {
+        await submitInteraction(uid, id, password);
+        // If successful, submitInteraction will redirect
+      } catch (err: any) {
+        console.error("Interaction login failed:", err);
+        setBanner({ severity: "error", msg: err.message || "Login failed. Please try again." });
+        setSnack({ open: false, severity: "info", msg: "" });
+      }
+      return;
+    }
 
 
     // Start OIDC Flow
