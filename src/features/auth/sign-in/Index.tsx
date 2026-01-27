@@ -328,10 +328,23 @@ export default function SignInPage() {
       // Handle redirect responses (302, 303)
       if (response.status === 302 || response.status === 303 || response.type === "opaqueredirect") {
         const locationHeader = response.headers.get("Location");
-        // [Fix] Resumption fallback: oidc-provider resumption works via cookies.
-        // If location is missing, we must redirect back to the authorization endpoint (/oidc/auth), 
-        // NOT a /auth/UID subpath which doesn't exist.
-        const nextUrl = locationHeader || "/oidc/auth";
+
+        // [Debug] Log all headers to see what's exposed
+        console.log("[OIDC] Response Type:", response.type);
+        console.log("[OIDC] Response Headers:",
+          Object.fromEntries(Array.from(response.headers.entries())));
+
+        // [Fix] Resumption fallback: Do NOT hit /oidc/auth without parameters.
+        // If Location is missing (common with CORS), we should ideally have the server 
+        // expose the header or return it in the body.
+        // Fallback to response.url if it looks like a valid OIDC auth/resume URL.
+        let nextUrl = locationHeader || response.url;
+
+        // If we still have no URL or it's just the login URL, we are stuck.
+        if (!nextUrl || nextUrl.includes("/login")) {
+          console.warn("[OIDC] No redirect Location found. Attempting resumption via cookie...");
+          nextUrl = "/oidc/auth"; // Last resort, but will likely fail with 'missing client_id'
+        }
 
         console.log("[OIDC] Interaction Finished. Redirecting to:", nextUrl);
         window.location.assign(nextUrl);
