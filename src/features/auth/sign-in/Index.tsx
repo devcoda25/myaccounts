@@ -335,15 +335,16 @@ export default function SignInPage() {
           Object.fromEntries(Array.from(response.headers.entries())));
 
         // [Fix] Resumption fallback: Do NOT hit /oidc/auth without parameters.
-        // If Location is missing (common with CORS), we should ideally have the server 
-        // expose the header or return it in the body.
-        // Fallback to response.url if it looks like a valid OIDC auth/resume URL.
+        // Resumption in oidc-provider is handled via GET /auth/:uid.
+        // Even if Location is missing (CORS), we can deterministically resume 
+        // because we have the UID.
         let nextUrl = locationHeader || response.url;
 
-        // If we still have no URL or it's just the login URL, we are stuck.
+        // If we have no URL or it's just the login URL (interaction page itself), 
+        // manually construct the resumption path using the UID.
         if (!nextUrl || nextUrl.includes("/login")) {
-          console.warn("[OIDC] No redirect Location found. Attempting resumption via cookie...");
-          nextUrl = "/oidc/auth"; // Last resort, but will likely fail with 'missing client_id'
+          console.log("[OIDC] Manually constructing resumption URL for UID:", uidVal);
+          nextUrl = `/oidc/auth/${encodeURIComponent(uidVal)}`;
         }
 
         console.log("[OIDC] Interaction Finished. Redirecting to:", nextUrl);
