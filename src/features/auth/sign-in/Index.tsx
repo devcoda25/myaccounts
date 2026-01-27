@@ -327,14 +327,13 @@ export default function SignInPage() {
 
       // Handle redirect responses (302, 303)
       if (response.status === 302 || response.status === 303 || response.type === "opaqueredirect") {
-        // Since we are same-origin, we can usually see the location, 
-        // but if opaqueredirect we fallback to manual construction
         const locationHeader = response.headers.get("Location");
-        const nextUrl = locationHeader || `/oidc/auth/${encodeURIComponent(uidVal)}`;
+        // [Fix] Resumption fallback: oidc-provider resumption works via cookies.
+        // If location is missing, we must redirect back to the authorization endpoint (/oidc/auth), 
+        // NOT a /auth/UID subpath which doesn't exist.
+        const nextUrl = locationHeader || "/oidc/auth";
 
-        console.log("[OIDC] Interaction Finished. Headers:",
-          Array.from(response.headers.entries()).map(([k, v]) => `${k}: ${v}`).join(', '));
-        console.log("[OIDC] Redirecting to:", nextUrl);
+        console.log("[OIDC] Interaction Finished. Redirecting to:", nextUrl);
         window.location.assign(nextUrl);
         return;
       }
