@@ -39,7 +39,7 @@ export function useSocialLogin() {
         }
     }, [isGoogleScriptLoaded]);
 
-    const initGoogleLogin = () => {
+    const initGoogleLogin = (uid?: string) => {
 
 
         if (!window.google) {
@@ -55,7 +55,7 @@ export function useSocialLogin() {
                 callback: async (response: any) => {
                     // console.log('[useSocialLogin] Google callback received', response);
                     try {
-                        await socialLogin('google', response.credential);
+                        await socialLogin('google', response.credential, uid);
                     } catch (err) {
                         console.error('Google Login Error:', err);
                     } finally {
@@ -70,7 +70,7 @@ export function useSocialLogin() {
         }
     };
 
-    const initAppleLogin = async () => {
+    const initAppleLogin = async (uid?: string) => {
         if (!window.AppleID) return;
 
         setIsAppleLoading(true);
@@ -84,7 +84,7 @@ export function useSocialLogin() {
 
             const response = await window.AppleID.auth.signIn();
             if (response.authorization?.id_token) {
-                await socialLogin('apple', response.authorization.id_token);
+                await socialLogin('apple', response.authorization.id_token, uid);
             }
         } catch (err) {
             console.error('Apple Login Error:', err);
@@ -93,7 +93,7 @@ export function useSocialLogin() {
         }
     };
 
-    const renderGoogleButton = (elementId: string, text: 'signin_with' | 'signup_with' | 'continue_with' = 'signin_with') => {
+    const renderGoogleButton = (elementId: string, text: 'signin_with' | 'signup_with' | 'continue_with' = 'signin_with', uid?: string) => {
         if (!window.google) return;
 
         try {
@@ -106,7 +106,7 @@ export function useSocialLogin() {
                 use_fedcm_for_prompt: true,
                 callback: async (response: any) => {
                     try {
-                        await socialLogin('google', response.credential);
+                        await socialLogin('google', response.credential, uid);
                     } catch (err) {
                         console.error('Google Login Error:', err);
                     }
@@ -123,7 +123,7 @@ export function useSocialLogin() {
         }
     };
 
-    const initGoogleCustomLogin = (onSuccess?: (token: string) => void) => {
+    const initGoogleCustomLogin = (uid?: string, onSuccess?: (token: string) => void) => {
         if (!window.google) return;
 
         const client = window.google.accounts.oauth2.initTokenClient({
@@ -137,7 +137,7 @@ export function useSocialLogin() {
                     }
                     try {
                         setIsGoogleLoading(true);
-                        await socialLogin('google', response.access_token);
+                        await socialLogin('google', response.access_token, uid);
                     } catch (err) {
                         console.error('Google Custom Login Error:', err);
                     } finally {

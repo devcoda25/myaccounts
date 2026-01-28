@@ -417,8 +417,8 @@ export default function SignInPage() {
     }
   };
 
-  const onGoogle = () => initGoogleCustomLogin();
-  const onApple = () => initAppleLogin();
+  const onGoogle = () => initGoogleCustomLogin(uid || undefined);
+  const onApple = () => initAppleLogin(uid || undefined);
 
   const onPasskey = async () => {
     setBanner(null);

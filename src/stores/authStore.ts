@@ -9,7 +9,7 @@ interface AuthState {
   refreshUser: (token?: string) => Promise<void>;
 
   login: (identifier: string, password: string) => Promise<void>;
-  socialLogin: (provider: "google" | "apple", token: string) => Promise<void>;
+  socialLogin: (provider: "google" | "apple", token: string, uid?: string) => Promise<void>;
 
   register: (data: Record<string, unknown>) => Promise<unknown>;
 
@@ -54,14 +54,40 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  socialLogin: async (provider: "google" | "apple", token: string) => {
+  socialLogin: async (provider: "google" | "apple", token: string, uid?: string) => {
     set({ isLoading: true });
     try {
-      await api(`/auth/${provider}`, {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || "/api/v1";
+      const response = await fetch(`${baseUrl}/auth/${provider}`, {
         method: "POST",
-        body: { token }, // ✅ object
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, uid }),
+        credentials: "include",
+        redirect: "manual",
       });
+
+      // If we got a redirect (from provider.interactionFinished), follow it
+      if (response.status === 302 || response.status === 303 || response.type === "opaqueredirect") {
+        const locationHeader = response.headers.get("Location");
+        let nextUrl = locationHeader || (uid ? `/oidc/auth/${uid}` : "");
+
+        if (nextUrl) {
+          console.log("[AuthStore] Social login OIDC redirect:", nextUrl);
+          window.location.assign(nextUrl);
+          return;
+        }
+      }
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.message || "Social login failed");
+      }
+
       await get().refreshUser();
+    } catch (err) {
+      console.error("[AuthStore] socialLogin error:", err);
+      set({ user: null });
+      throw err;
     } finally {
       set({ isLoading: false });
     }

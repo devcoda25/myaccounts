@@ -45,15 +45,20 @@ function AuthSync() {
   const { refreshUser } = useAuthStore();
 
   useEffect(() => {
-    // console.log(`[AuthSync] Check: isLoading=${auth.isLoading}, isAuthenticated=${auth.isAuthenticated}, hasToken=${!!auth.user?.access_token}`);
+    // [Phase 25] Resilient Session Check
+    // If OIDC is still loading, wait.
+    if (auth.isLoading) return;
 
-    if (auth.isLoading) return; // Wait for OIDC check
-
+    // 1. If OIDC identified a session, use it to refresh user details
     if (auth.isAuthenticated && auth.user?.access_token) {
       refreshUser(auth.user.access_token);
     } else {
-      // Not authenticated, stop loading state
-      useAuthStore.setState({ isLoading: false });
+      // 2. Fallback: If OIDC found no session, check for legacy/social API cookie
+      // refreshUser() will check /users/me using the browser's cookies.
+      // If no cookie exists, it will correctly set user to null and stop the loading spinner.
+      refreshUser().catch(() => {
+        useAuthStore.setState({ isLoading: false });
+      });
     }
   }, [auth.isLoading, auth.isAuthenticated, auth.user?.access_token, refreshUser]);
 
