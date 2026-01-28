@@ -6,6 +6,7 @@ import { useAuthStore } from './stores/authStore';
 import { useIdleTimer } from './hooks/useIdleTimer';
 import { AuthProvider, useAuth } from 'react-oidc-context';
 import { oidcConfig, userManager } from './auth/oidcConfig';
+import { NotificationProvider } from './context/NotificationContext';
 
 export default function App() {
   // Auto-logout after 30 minutes of inactivity
@@ -13,11 +14,13 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <AuthProviderWrapper>
-        <AppThemeProvider>
-          <AppRouter />
-        </AppThemeProvider>
-      </AuthProviderWrapper>
+      <NotificationProvider>
+        <AuthProviderWrapper>
+          <AppThemeProvider>
+            <AppRouter />
+          </AppThemeProvider>
+        </AuthProviderWrapper>
+      </NotificationProvider>
     </BrowserRouter>
   );
 }

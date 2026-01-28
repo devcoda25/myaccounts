@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import { api } from "@/utils/api";
 import { EVZONE } from "@/theme/evzone";
+import { useNotification } from '@/context/NotificationContext';
 
 interface AppMember {
     id: string;
@@ -66,7 +67,7 @@ export default function AppDetail() {
     const [app, setApp] = useState<AppRecord | null>(null);
     const [members, setMembers] = useState<AppMember[]>([]);
     const [loading, setLoading] = useState(true);
-    const [snack, setSnack] = useState({ open: false, msg: '', severity: 'success' as 'success' | 'error' });
+    const { showNotification } = useNotification();
 
     // Invite Modal State
     const [inviteOpen, setInviteOpen] = useState(false);
@@ -92,7 +93,11 @@ export default function AppDetail() {
             setMembers(membersRes);
         } catch (err) {
             console.error(err);
-            setSnack({ open: true, msg: 'Failed to load app data', severity: 'error' });
+            showNotification({
+                type: 'error',
+                title: 'Load Failed',
+                message: 'Failed to load app data'
+            });
         } finally {
             setLoading(false);
         }
@@ -108,23 +113,46 @@ export default function AppDetail() {
                 method: 'POST',
                 body: JSON.stringify(inviteData)
             });
-            setSnack({ open: true, msg: 'Member invited successfully', severity: 'success' });
+            showNotification({
+                type: 'success',
+                title: 'Member Invited',
+                message: 'Team member has been invited successfully'
+            });
             setInviteOpen(false);
             fetchDetails(); // Refresh list
         } catch (err: any) {
-            setSnack({ open: true, msg: err.message || 'Invitation failed', severity: 'error' });
+            showNotification({
+                type: 'error',
+                title: 'Invite Failed',
+                message: err.message || 'Invitation failed'
+            });
         }
     };
 
     const handleRemoveMember = async (memberId: string) => {
-        if (!window.confirm('Remove this member?')) return;
-        try {
-            await api(`/admin/apps/members/${memberId}`, { method: 'DELETE' });
-            setSnack({ open: true, msg: 'Member removed', severity: 'success' });
-            fetchDetails();
-        } catch (err: any) {
-            setSnack({ open: true, msg: 'Failed to remove member', severity: 'error' });
-        }
+        showNotification({
+            type: 'warning',
+            title: 'Remove Member',
+            message: 'Are you sure you want to remove this member from the app team?',
+            actionText: 'Confirm Removal',
+            onAction: async () => {
+                try {
+                    await api(`/admin/apps/members/${memberId}`, { method: 'DELETE' });
+                    showNotification({
+                        type: 'success',
+                        title: 'Member Removed',
+                        message: 'App team member has been removed.'
+                    });
+                    fetchDetails();
+                } catch (err: any) {
+                    showNotification({
+                        type: 'error',
+                        title: 'Error',
+                        message: 'Failed to remove member'
+                    });
+                }
+            }
+        });
     };
 
     if (loading && !app) return <Box sx={{ p: 4, display: 'flex', justifyContent: 'center' }}><CircularProgress /></Box>;
@@ -251,10 +279,6 @@ export default function AppDetail() {
                     <Button variant="contained" onClick={handleInvite}>Invite</Button>
                 </DialogActions>
             </Dialog>
-
-            <Snackbar open={snack.open} autoHideDuration={4000} onClose={() => setSnack({ ...snack, open: false })}>
-                <Alert severity={snack.severity as any}>{snack.msg}</Alert>
-            </Snackbar>
         </Box>
     );
 }

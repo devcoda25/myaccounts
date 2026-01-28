@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { EVZONE } from "@/theme/evzone";
 import { AdminRole } from '@/types';
+import { useNotification } from '@/context/NotificationContext';
 
 interface AdminMember {
     id: string;
@@ -55,6 +56,7 @@ export default function Administrators() {
     const [openInvite, setOpenInvite] = useState(false);
     const [inviteEmail, setInviteEmail] = useState('');
     const [inviteRole, setInviteRole] = useState<AdminRole>('Admin');
+    const { showNotification } = useNotification();
 
     const fetchAdmins = async () => {
         try {
@@ -77,20 +79,39 @@ export default function Administrators() {
             fetchAdmins();
         } catch (error) {
             const msg = error instanceof Error ? error.message : "Unknown error";
-            alert("Failed to invite admin: " + msg);
+            showNotification({
+                type: 'error',
+                title: 'Invite Failed',
+                message: msg
+            });
         }
     };
 
     const handleDelete = async (id: string) => {
-        if (window.confirm("Are you sure you want to remove this admin?")) {
-            try {
-                await api.delete(`/admin/members/${id}`);
-                fetchAdmins();
-            } catch (error) {
-                const msg = error instanceof Error ? error.message : "Unknown error";
-                alert("Failed to remove admin: " + msg);
+        showNotification({
+            type: 'warning',
+            title: 'Remove Administrator',
+            message: 'Are you sure you want to remove this administrator? They will lose access to the portal immediately.',
+            actionText: 'Remove',
+            onAction: async () => {
+                try {
+                    await api.delete(`/admin/members/${id}`);
+                    showNotification({
+                        type: 'success',
+                        title: 'Admin Removed',
+                        message: 'The administrator has been successfully removed.'
+                    });
+                    fetchAdmins();
+                } catch (error) {
+                    const msg = error instanceof Error ? error.message : "Unknown error";
+                    showNotification({
+                        type: 'error',
+                        title: 'Removal Failed',
+                        message: msg
+                    });
+                }
             }
-        }
+        });
     };
 
     const orangeContained = {

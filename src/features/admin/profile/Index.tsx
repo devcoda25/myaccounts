@@ -56,12 +56,14 @@ function TabPanel(props: TabPanelProps) {
 import { api } from "@/utils/api";
 import { useAdminAuthStore } from "@/stores/adminAuthStore";
 import { ISession, ILoginEvent } from "@/types";
+import { useNotification } from '@/context/NotificationContext';
 
 export default function AdminProfile() {
     const theme = useTheme();
     const { user } = useAdminAuthStore();
     const [tabValue, setTabValue] = useState(0);
     const [showPassword, setShowPassword] = useState(false);
+    const { showNotification } = useNotification();
 
     // Data States
     const [sessions, setSessions] = useState<ISession[]>([]);
@@ -89,11 +91,19 @@ export default function AdminProfile() {
     const handleUpdatePw = async () => {
         try {
             await api.post('/auth/change-password', { currentPassword: oldPw, newPassword: newPw });
-            alert("Password updated successfully");
+            showNotification({
+                type: 'success',
+                title: 'Password Updated',
+                message: 'Your admin password has been changed successfully.'
+            });
             setOldPw("");
             setNewPw("");
         } catch (e: any) {
-            alert(e.message || "Failed to update password");
+            showNotification({
+                type: 'error',
+                title: 'Update Failed',
+                message: e.message || "Failed to update password"
+            });
         }
     };
 

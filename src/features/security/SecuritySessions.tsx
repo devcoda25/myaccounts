@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
@@ -8,17 +7,10 @@ import {
   CardContent,
   Chip,
   CssBaseline,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Divider,
-  IconButton,
   InputAdornment,
-  Snackbar,
   Stack,
   TextField,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
@@ -27,18 +19,15 @@ import { useThemeStore } from "@/stores/themeStore";
 import { EVZONE } from "@/theme/evzone";
 import {
   ISession,
-  IRiskTag,
-  Severity
+  IRiskTag
 } from "@/types";
 import { api } from "@/utils/api";
+import { useNotification } from "@/context/NotificationContext";
 
 /**
  * EVzone My Accounts - Active Devices & Sessions
  * Route: /app/security/sessions
  */
-
-// Types moved to global utils/types.ts
-
 
 // -----------------------------
 // Inline icons
@@ -142,16 +131,9 @@ export default function ActiveSessionsPage() {
   const { mode } = useThemeStore();
   const isDark = mode === "dark";
 
-  // const { api } = useAuth(); // Removed
+  const { showNotification } = useNotification();
   const [loading, setLoading] = useState(true);
-
-  // UI State
   const [query, setQuery] = useState("");
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [confirmMode, setConfirmMode] = useState<"one" | "others" | "all">("one");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
-
   const [sessions, setSessions] = useState<ISession[]>([]);
 
   const fetchSessions = async () => {
@@ -177,7 +159,11 @@ export default function ActiveSessionsPage() {
       setSessions(mapped);
     } catch (err) {
       console.error(err);
-      setSnack({ open: true, severity: "error", msg: "Failed to load sessions." });
+      showNotification({
+        type: "error",
+        title: "Load Failed",
+        message: "Failed to load active sessions. Please try again later."
+      });
     } finally {
       setLoading(false);
     }
@@ -221,67 +207,59 @@ export default function ActiveSessionsPage() {
   const riskyCount = useMemo(() => sessions.filter((s) => s.risk.length > 0).length, [sessions]);
   const current = useMemo(() => sessions.find((s) => s.isCurrent), [sessions]);
 
-  const openConfirmOne = (id: string) => {
-    setSelectedId(id);
-    setConfirmMode("one");
-    setConfirmOpen(true);
-  };
-
-  const openConfirmOthers = () => {
-    setSelectedId(null);
-    setConfirmMode("others");
-    setConfirmOpen(true);
-  };
-
-  const openConfirmAll = () => {
-    setSelectedId(null);
-    setConfirmMode("all");
-    setConfirmOpen(true);
-  };
-
-  const applySignOut = async () => {
+  const applySignOut = async (mode: "one" | "others" | "all", id?: string) => {
     try {
-      if (confirmMode === "one" && selectedId) {
-        await api(`/auth/sessions/${selectedId}`, { method: "DELETE" });
-        setSessions((prev) => prev.filter((x) => x.id !== selectedId));
-        setSnack({ open: true, severity: "success", msg: "Device signed out." });
-      }
-      if (confirmMode === "others") {
+      if (mode === "one" && id) {
+        await api(`/auth/sessions/${id}`, { method: "DELETE" });
+        setSessions((prev) => prev.filter((x) => x.id !== id));
+        showNotification({ type: "success", title: "Device Removed", message: "The device has been successfully signed out." });
+      } else if (mode === "others") {
         await api("/auth/sessions", { method: "DELETE" });
         setSessions((prev) => prev.filter((x) => x.isCurrent));
-        setSnack({ open: true, severity: "success", msg: "Signed out all other devices." });
-      }
-      if (confirmMode === "all") {
-        await api("/auth/sessions", { method: "DELETE" }); // revokes others
-        // Revoke current by logging out? For now just visual clear or we could call logout endpoint
+        showNotification({ type: "success", title: "Sessions Ended", message: "All other devices have been signed out." });
+      } else if (mode === "all") {
+        await api("/auth/sessions", { method: "DELETE" });
         setSessions([]);
-        setSnack({ open: true, severity: "success", msg: "Signed out active sessions." });
+        showNotification({ type: "success", title: "Signed Out", message: "All active sessions have been revoked." });
       }
     } catch (e) {
-      setSnack({ open: true, severity: "error", msg: "Action failed." });
-    } finally {
-      setConfirmOpen(false);
+      showNotification({ type: "error", title: "Action Failed", message: "Failed to sign out device. Please try again." });
     }
   };
 
-  const confirmTitle =
-    confirmMode === "one"
-      ? "Sign out device"
-      : confirmMode === "others"
-        ? "Sign out other devices"
-        : "Sign out all devices";
+  const openConfirmOne = (id: string) => {
+    showNotification({
+      type: "warning",
+      title: "Sign Out Device",
+      message: "This will end the session for the selected device. You will need to sign in again on that device.",
+      actionText: "Sign Out",
+      onAction: () => applySignOut("one", id)
+    });
+  };
 
-  const confirmBody =
-    confirmMode === "one"
-      ? "This will end the session for the selected device."
-      : confirmMode === "others"
-        ? "This will end sessions on all devices except this one."
-        : "This will end all sessions including this device.";
+  const openConfirmOthers = () => {
+    showNotification({
+      type: "warning",
+      title: "Sign Out Others",
+      message: "This will end sessions on all devices except this one. This is recommended if you suspect unauthorized access.",
+      actionText: "Sign Out Others",
+      onAction: () => applySignOut("others")
+    });
+  };
+
+  const openConfirmAll = () => {
+    showNotification({
+      type: "error",
+      title: "Sign Out All",
+      message: "This will end ALL sessions including this one. You will be signed out immediately.",
+      actionText: "Sign Out All",
+      onAction: () => applySignOut("all")
+    });
+  };
 
   return (
     <Box className="min-h-screen" sx={{ background: pageBg }}>
       <CssBaseline />
-      {/* Redundant Top bar removed */}
 
       <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
@@ -362,7 +340,7 @@ export default function ActiveSessionsPage() {
                             borderRadius: "4px",
                             display: "grid",
                             placeItems: "center",
-                            backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.18 : 0.12),
+                            backgroundColor: alpha(EVZONE.green, isDark ? 0.18 : 0.12),
                             border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
                           }}
                         >
@@ -455,30 +433,6 @@ export default function ActiveSessionsPage() {
           </Stack>
         </motion.div>
       </Box>
-
-      {/* Confirm dialog */}
-      <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: "4px", border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}>
-        <DialogTitle sx={{ fontWeight: 950 }}>{confirmTitle}</DialogTitle>
-        <DialogContent>
-          <Stack spacing={1.2}>
-            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>{confirmBody}</Typography>
-            <Alert severity={confirmMode === "all" ? "warning" : "info"} icon={<ShieldCheckIcon size={18} />} sx={{ borderRadius: "4px" }}>
-              In production, this action is audited and may require re-authentication.
-            </Alert>
-          </Stack>
-        </DialogContent>
-        <DialogActions sx={{ p: 2, pt: 0 }}>
-          <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => setConfirmOpen(false)}>Cancel</Button>
-          <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={applySignOut}>Confirm</Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Snackbar */}
-      <Snackbar open={snack.open} autoHideDuration={3200} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-        <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={mode === "dark" ? "filled" : "standard"} sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
-          {snack.msg}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 }

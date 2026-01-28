@@ -9,18 +9,15 @@ import {
   Card,
   CardContent,
   Checkbox,
-  CssBaseline,
   Divider,
   FormControlLabel,
   IconButton,
   InputAdornment,
   MenuItem,
   Select,
-  Snackbar,
   Stack,
   Switch,
   TextField,
-  Tooltip,
   Typography,
   CircularProgress
 } from "@mui/material";
@@ -30,9 +27,9 @@ import { motion } from "framer-motion";
 import AuthHeader from "@/components/layout/AuthHeader";
 import { useAuthStore } from "@/stores/authStore";
 import { useSocialLogin } from "@/hooks/useSocialLogin";
-import { ThemeMode } from "@/types";
+import { useNotification } from "@/context/NotificationContext";
+
 import {
-  IconBase,
   ArrowLeftIcon,
   ArrowRightIcon,
   UserIcon,
@@ -124,19 +121,15 @@ export default function SignUpPageV3() {
   const [inviteCode, setInviteCode] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
 
-  const [banner, setBanner] = useState<{ severity: "error" | "warning" | "info" | "success"; msg: string } | null>(null);
-  const [snack, setSnack] = useState<{ open: boolean; severity: "success" | "info" | "warning" | "error"; msg: string }>({ open: false, severity: "info", msg: "" });
+  const { showNotification } = useNotification();
 
   // Detect location
   React.useEffect(() => {
-    // Simple heuristic or fetch could go here. 
-    // For now, we'll try to guess based on timezone
     try {
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      if (tz.includes("Nairobi") || tz.includes("Kampala")) setCountryCode("+256"); // Default/Fallback
+      if (tz.includes("Nairobi") || tz.includes("Kampala")) setCountryCode("+256");
       else if (tz.includes("New_York") || tz.includes("America")) setCountryCode("+1");
       else if (tz.includes("London") || tz.includes("Europe")) setCountryCode("+44");
-      // Add more heuristics as needed or fetch from IP API
     } catch (e) {
       // ignore
     }
@@ -147,21 +140,13 @@ export default function SignUpPageV3() {
       ? "radial-gradient(1200px 600px at 12% 6%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 10%, rgba(3,205,140,0.16), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
       : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.18), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.12), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
 
-  // OIDC Integration (Same as Sign In)
+  // OIDC Integration
   const [searchParams] = useSearchParams();
   const uid = searchParams.get("uid");
   const auth = useAuth();
 
-  // If not logged in and not in interaction flow (uid), start OIDC login
-  // This ensures we have a valid secure session before creating an account
-  // If not logged in and not in interaction flow (uid), start OIDC login
-  // This ensures we have a valid secure session before creating an account
-  // [ENABLED] Auto-redirect to ensure OIDC session is initialized.
   React.useEffect(() => {
     if (!uid && !auth.isAuthenticated && !auth.isLoading && !auth.activeNavigator && !auth.error) {
-      // We start a login flow. The backend generally redirects 'login' prompt to Sign In page.
-      // But having a session is better than none. The user can navigate back to Sign Up if needed, 
-      // or we accept that 'Sign Up' usually happens after 'Sign In' attempt.
       auth.signinRedirect().catch(console.error);
     }
   }, [uid, auth]);
@@ -213,7 +198,6 @@ export default function SignUpPageV3() {
     "&:hover": { backgroundColor: alpha(EVZONE.orange, isDark ? 0.14 : 0.10) },
   } as const;
 
-  // Brand button styles
   const googleBtnSx = {
     borderColor: "#DADCE0",
     backgroundColor: "#FFFFFF",
@@ -255,7 +239,7 @@ export default function SignUpPageV3() {
   };
 
   const { register, user } = useAuthStore();
-  const { initGoogleLogin, initGoogleCustomLogin, initAppleLogin, isGoogleLoading, isAppleLoading, renderGoogleButton, isGoogleScriptLoaded } = useSocialLogin();
+  const { initGoogleCustomLogin, initAppleLogin, isGoogleLoading, isAppleLoading } = useSocialLogin();
 
   React.useEffect(() => {
     if (user) {
@@ -265,16 +249,18 @@ export default function SignUpPageV3() {
   }, [user, navigate, location]);
 
   const onContinue = async () => {
-    setBanner(null);
     const err = validate();
     if (err) {
-      setBanner({ severity: "warning", msg: err });
+      showNotification({
+        type: "warning",
+        title: "Registration Info",
+        message: err
+      });
       return;
     }
 
     try {
       const selectedCountry = COUNTRIES.find(c => c.dial === countryCode);
-      // 1. Register Account
       await register({
         firstName,
         otherNames,
@@ -286,24 +272,31 @@ export default function SignUpPageV3() {
         acceptTerms
       });
 
-      // Save email for verification page (fallback)
       localStorage.setItem('pending_verification_email', email);
 
-      // 2. Auto-Login if OIDC Interaction is active (uid)
-      // This skips the "Verify Email" screen and logs the user directly into the app (or Consent)
-    if (uid && !createWithOtp) {
-  setSnack({ open: true, severity: "info", msg: "Account created! Signing you in..." });
-  submitOidcInteractionLogin(uid, email, password);
-  return;
-}
+      if (uid && !createWithOtp) {
+        showNotification({
+          type: "success",
+          title: "Account Created",
+          message: "Account created successfully! Signing you in securely..."
+        });
+        submitOidcInteractionLogin(uid, email, password);
+        return;
+      }
 
-
-      // Fallback: Verify Email Page
-      setSnack({ open: true, severity: "success", msg: "Account created! Please verify your email." });
+      showNotification({
+        type: "success",
+        title: "Verify Your Email",
+        message: "Account created! Please check your inbox for the verification link."
+      });
       navigate("/auth/verify-email");
 
     } catch (e: any) {
-      setBanner({ severity: "error", msg: e.message || "Failed to create account. Please try again." });
+      showNotification({
+        type: "error",
+        title: "Registration Failed",
+        message: e.message || "Failed to create account. Please try again."
+      });
     }
   };
 
@@ -312,16 +305,13 @@ export default function SignUpPageV3() {
 
   return (
     <Box className="min-h-screen" sx={{ background: pageBg }}>
-      {/* Unified Auth Header */}
       <AuthHeader
         title="EVzone Accounts"
         subtitle="Create your EVzone Identity"
       />
 
-      {/* Body */}
       <Box className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">
         <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
-          {/* Left */}
           <motion.div className="hidden md:block md:col-span-5" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
             <Card>
               <CardContent className="p-5 md:p-6">
@@ -364,7 +354,6 @@ export default function SignUpPageV3() {
             </Card>
           </motion.div>
 
-          {/* Right */}
           <motion.div className="md:col-span-7" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.05 }}>
             <Card>
               <CardContent className="p-5 md:p-7">
@@ -376,27 +365,15 @@ export default function SignUpPageV3() {
                     </Typography>
                   </Stack>
 
-                  {/* Social sign-up (brand styling) */}
                   <Stack spacing={1}>
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                      {/* <div id="google-signup-btn" style={{ width: '100%', height: 44 }}></div> */}
-
                       <Button
                         fullWidth
                         variant="outlined"
                         startIcon={<GoogleGIcon size={18} />}
                         onClick={onGoogle}
                         disabled={isGoogleLoading}
-                        sx={{
-                          borderColor: "#DADCE0",
-                          backgroundColor: "#FFFFFF",
-                          color: "#3C4043",
-                          "&:hover": { backgroundColor: "#F8F9FA", borderColor: "#DADCE0" },
-                          "&:active": { backgroundColor: "#F1F3F4" },
-                          borderRadius: 14,
-                          textTransform: "none",
-                          fontWeight: 800,
-                        }}
+                        sx={{ ...googleBtnSx, borderRadius: 14, textTransform: "none", fontWeight: 800 }}
                       >
                         {isGoogleLoading ? "Loading..." : "Continue with Google"}
                       </Button>
@@ -406,24 +383,13 @@ export default function SignUpPageV3() {
                         startIcon={<AppleIcon size={18} />}
                         onClick={onApple}
                         disabled={isAppleLoading}
-                        sx={{
-                          borderColor: "#000000",
-                          backgroundColor: "#000000",
-                          color: "#FFFFFF",
-                          "&:hover": { backgroundColor: "#111111", borderColor: "#111111" },
-                          "&:active": { backgroundColor: "#1B1B1B" },
-                          borderRadius: 14,
-                          textTransform: "none",
-                          fontWeight: 800,
-                        }}
+                        sx={{ ...appleBtnSx, borderRadius: 14, textTransform: "none", fontWeight: 800 }}
                       >
                         {isAppleLoading ? "Loading..." : "Continue with Apple"}
                       </Button>
                     </Stack>
                     <Divider>or</Divider>
                   </Stack>
-
-                  {banner ? <Alert severity={banner.severity}>{banner.msg}</Alert> : null}
 
                   <Stack spacing={1.4}>
                     <Box className="grid gap-3 md:grid-cols-2">
@@ -465,11 +431,7 @@ export default function SignUpPageV3() {
                           value={countryCode}
                           onChange={(e) => setCountryCode(e.target.value)}
                           sx={{ width: 100, borderRadius: 1.5, '.MuiSelect-select': { display: 'flex', alignItems: 'center' } }}
-                          renderValue={(selected) => (
-                            <Stack direction="row" spacing={0.5} alignItems="center">
-                              <Typography variant="body2">{selected}</Typography>
-                            </Stack>
-                          )}
+                          renderValue={(selected) => <Typography variant="body2">{selected}</Typography>}
                         >
                           {COUNTRIES.map((c) => (
                             <MenuItem key={c.code} value={c.dial}>
@@ -497,7 +459,6 @@ export default function SignUpPageV3() {
                       </Box>
                     </Box>
 
-                    {/* OTP toggle */}
                     <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
                       <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ xs: "flex-start", sm: "center" }} justifyContent="space-between" spacing={1}>
                         <Box>
@@ -565,10 +526,6 @@ export default function SignUpPageV3() {
                             {pwLabel}
                           </Typography>
                         </Stack>
-
-                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                          Use 8+ chars and mixed case/numbers for a strong password.
-                        </Typography>
                       </Box>
                     ) : (
                       <Alert severity="info">You will receive an OTP to verify your account.</Alert>
@@ -580,13 +537,7 @@ export default function SignUpPageV3() {
                       label="Invite Code (Optional)"
                       placeholder="e.g. EVZ-123"
                       fullWidth
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <TicketIcon size={18} />
-                          </InputAdornment>
-                        ),
-                      }}
+                      InputProps={{ startAdornment: <InputAdornment position="start"><TicketIcon size={18} /></InputAdornment> }}
                     />
 
                     <FormControlLabel
@@ -615,7 +566,6 @@ export default function SignUpPageV3() {
           </motion.div>
         </Box>
 
-        {/* Footer */}
         <Box className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
           <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
           <Stack direction="row" spacing={1.2} alignItems="center">
@@ -624,12 +574,6 @@ export default function SignUpPageV3() {
           </Stack>
         </Box>
       </Box>
-
-      <Snackbar open={snack.open} autoHideDuration={3400} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-        <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={isDark ? "filled" : "standard"} sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: isDark ? alpha(theme.palette.background.paper, 0.92) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
-          {snack.msg}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 }

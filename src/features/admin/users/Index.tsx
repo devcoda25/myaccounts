@@ -19,7 +19,6 @@ import {
     FormControlLabel,
     InputAdornment,
     MenuItem,
-    Snackbar,
     Stack,
     Tab,
     Tabs,
@@ -55,12 +54,12 @@ import {
     Download as DownloadIcon
 } from "lucide-react";
 import { exportToCsv } from "@/utils/export";
+import { useNotification } from "@/context/NotificationContext";
 
 import { BackendUser } from '@/types';
 
 // Types
 type ThemeMode = "light" | "dark";
-type Severity = "success" | "info" | "warning" | "error";
 
 type AccountType = "User" | "Provider" | "Agent" | "Org Admin";
 type UserStatus = "Active" | "Locked" | "Disabled";
@@ -133,8 +132,7 @@ export default function AdminUsersList() {
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const { mode } = useThemeStore();
     const isDark = mode === 'dark';
-
-    const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
+    const { showNotification } = useNotification();
 
     const [q, setQ] = useState("");
     const [page, setPage] = useState(0);
@@ -159,7 +157,7 @@ export default function AdminUsersList() {
             phone: u.phoneNumber,
             type: u.role === 'SUPER_ADMIN' ? 'Org Admin' : u.role === 'ADMIN' ? 'Agent' : 'User',
             status: u.emailVerified ? 'Active' : 'Disabled',
-    
+
             currency: 'UGX',
             risk: 'Low',
             mfaEnabled: u.twoFactorEnabled,
@@ -202,7 +200,7 @@ export default function AdminUsersList() {
             }
         } catch (err: unknown) {
             console.error(err);
-            setSnack({ open: true, severity: 'error', msg: 'Failed to load users' });
+            showNotification({ type: 'error', title: 'Load Failed', message: 'Failed to load users' });
         } finally {
             setLoading(false);
         }
@@ -228,7 +226,8 @@ export default function AdminUsersList() {
             currency: 'Currency',
             risk: 'Risk Score'
         });
-        setSnack({ open: true, severity: "success", msg: "User directory exported successfully" });
+        setRows(rows); // or exportToCsv returns what it does
+        showNotification({ type: "success", title: "Export Ready", message: "User directory exported successfully" });
     };
 
     // Action dialog
@@ -265,9 +264,9 @@ export default function AdminUsersList() {
             await api('/auth/mfa/challenge/send', { method: 'POST', body: JSON.stringify({ channel: c }) });
             setCodeSent(true);
             setCooldown(30);
-            setSnack({ open: true, severity: "success", msg: `Code sent to ${mfaChannel}` });
+            showNotification({ type: "success", title: "Code Sent", message: `Code sent to ${mfaChannel}` });
         } catch (err: any) {
-            setSnack({ open: true, severity: "error", msg: err.message || "Failed to send code" });
+            showNotification({ type: "error", title: "Send Failed", message: err.message || "Failed to send code" });
         }
     };
 
@@ -350,7 +349,7 @@ export default function AdminUsersList() {
     const validateStep0 = () => {
         if (!pending) return false;
         if (reason.trim().length < 8) {
-            setSnack({ open: true, severity: "warning", msg: "Please provide a reason (at least 8 characters)." });
+            showNotification({ type: "warning", title: "Validation Error", message: "Please provide a reason (at least 8 characters)." });
             return false;
         }
         return true;
@@ -382,36 +381,36 @@ export default function AdminUsersList() {
             if (pending.kind === 'DELETE_USER') {
                 await api(`/users/${pending.userId}`, { method: 'DELETE' });
                 setRows((prev) => prev.filter((u) => u.id !== pending.userId));
-                setSnack({ open: true, severity: "success", msg: `User ${pendingUser.name} deleted.` });
+                showNotification({ type: "success", title: "User Deleted", message: `User ${pendingUser.name} deleted.` });
             } else if (pending.kind === 'LOCK') {
                 await api(`/users/${pending.userId}`, {
                     method: 'PATCH',
                     body: JSON.stringify({ emailVerified: false })
                 });
-                setSnack({ open: true, severity: "success", msg: "User locked (disabled)." });
+                showNotification({ type: "success", title: "User Locked", message: "User locked (disabled)." });
                 fetchUsers();
             } else if (pending.kind === 'UNLOCK') {
                 await api(`/users/${pending.userId}`, {
                     method: 'PATCH',
                     body: JSON.stringify({ emailVerified: true })
                 });
-                setSnack({ open: true, severity: "success", msg: "User unlocked (enabled)." });
+                showNotification({ type: "success", title: "User Unlocked", message: "User unlocked (enabled)." });
                 fetchUsers();
             } else if (pending.kind === 'FORCE_SIGNOUT') {
                 await api(`/admin/users/${pending.userId}/revoke-sessions`, { method: 'POST' });
-                setSnack({ open: true, severity: "success", msg: "User sessions revoked." });
+                showNotification({ type: "success", title: "Sessions Revoked", message: "User sessions revoked." });
             } else if (pending.kind === 'RESET_PASSWORD' && generatedTempPassword) {
                 await api(`/admin/users/${pending.userId}/reset-password`, {
                     method: 'POST',
                     body: JSON.stringify({ password: generatedTempPassword })
                 });
-                setSnack({ open: true, severity: "success", msg: "User password reset." });
+                showNotification({ type: "success", title: "Password Reset", message: "User password reset." });
             } else {
-                setSnack({ open: true, severity: "info", msg: `${actionTitle(pending.kind)} simulated (not implemented).` });
+                showNotification({ type: "info", title: "Action Simulated", message: `${actionTitle(pending.kind)} simulated (not implemented).` });
             }
         } catch (err: any) {
             console.error(err);
-            setSnack({ open: true, severity: "error", msg: (err as Error).message || "Action failed" });
+            showNotification({ type: "error", title: "Action Failed", message: (err as Error).message || "Action failed" });
         }
 
         closeAction();
@@ -419,7 +418,7 @@ export default function AdminUsersList() {
 
     const handleCreateUser = async () => {
         if (!newName.trim() || !newEmail.trim()) {
-            setSnack({ open: true, severity: "warning", msg: "Name and email are required." });
+            showNotification({ type: "warning", title: "Validation Error", message: "Name and email are required." });
             return;
         }
 
@@ -447,7 +446,7 @@ export default function AdminUsersList() {
                     acceptTerms: true
                 })
             });
-            setSnack({ open: true, severity: "success", msg: `User ${newName} created successfully.` });
+            showNotification({ type: "success", title: "User Created", message: `User ${newName} created successfully.` });
             setCreateOpen(false);
             fetchUsers(); // Refresh list
 
@@ -459,7 +458,7 @@ export default function AdminUsersList() {
 
         } catch (err: unknown) {
             console.error(err);
-            setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to create user" });
+            showNotification({ type: "error", title: "Creation Failed", message: (err as Error).message || "Failed to create user" });
         }
     };
 
@@ -888,11 +887,6 @@ export default function AdminUsersList() {
                 </DialogContent>
             </Dialog>
 
-            <Snackbar open={snack.open} autoHideDuration={3400} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-                <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={isDark ? "filled" : "standard"} sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
-                    {snack.msg}
-                </Alert>
-            </Snackbar>
-        </Box >
+        </Box>
     );
 }

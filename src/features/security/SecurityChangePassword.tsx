@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -12,10 +12,8 @@ import {
   FormControlLabel,
   IconButton,
   InputAdornment,
-  Snackbar,
   Stack,
   TextField,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
@@ -23,13 +21,12 @@ import { motion } from "framer-motion";
 import { useThemeStore } from "@/stores/themeStore";
 import { EVZONE } from "@/theme/evzone";
 import { api } from "@/utils/api";
+import { useNotification } from "@/context/NotificationContext";
 
 /**
  * EVzone My Accounts - Change Password
  * Route: /app/security/change-password
  */
-
-type Severity = "info" | "warning" | "error" | "success";
 
 // -----------------------------
 // Inline icons
@@ -117,6 +114,7 @@ export default function ChangePasswordPage() {
   const navigate = useNavigate();
   const { mode } = useThemeStore();
   const isDark = mode === "dark";
+  const { showNotification } = useNotification();
 
   const [current, setCurrent] = useState("");
   const [pw, setPw] = useState("");
@@ -128,8 +126,6 @@ export default function ChangePasswordPage() {
 
   const [logoutOthers, setLogoutOthers] = useState(true);
   const [saving, setSaving] = useState(false);
-
-  const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
   const pageBg =
     mode === "dark"
@@ -159,19 +155,19 @@ export default function ChangePasswordPage() {
 
   const submit = async () => {
     if (!current.trim()) {
-      setSnack({ open: true, severity: "warning", msg: "Enter your current password." });
+      showNotification({ type: "warning", title: "Missing Input", message: "Enter your current password." });
       return;
     }
     if (!pw) {
-      setSnack({ open: true, severity: "warning", msg: "Enter a new password." });
+      showNotification({ type: "warning", title: "Missing Input", message: "Enter a new password." });
       return;
     }
     if (s < 3) {
-      setSnack({ open: true, severity: "warning", msg: "Please strengthen your new password." });
+      showNotification({ type: "warning", title: "Weak Password", message: "Please strengthen your new password." });
       return;
     }
     if (pw !== confirm) {
-      setSnack({ open: true, severity: "warning", msg: "Passwords do not match." });
+      showNotification({ type: "warning", title: "Mismatch", message: "Passwords do not match." });
       return;
     }
 
@@ -187,14 +183,18 @@ export default function ChangePasswordPage() {
       setPw("");
       setConfirm("");
 
-      setSnack({
-        open: true,
-        severity: "success",
-        msg: "Password updated successfully.",
+      showNotification({
+        type: "success",
+        title: "Password Updated",
+        message: "Your password has been changed successfully.",
       });
-    } catch (err: unknown) {
+    } catch (err: any) {
       console.error(err);
-      setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to update password. Please check your current password." });
+      showNotification({
+        type: "error",
+        title: "Update Failed",
+        message: err.message || "Failed to update password. Please check your current password."
+      });
     } finally {
       setSaving(false);
     }
@@ -207,7 +207,6 @@ export default function ChangePasswordPage() {
       <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
           <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
-            {/* Left info */}
             <Box className="md:col-span-4">
               <Card>
                 <CardContent className="p-5">
@@ -217,9 +216,6 @@ export default function ChangePasswordPage() {
                       Use a unique password. Avoid reused passwords from other sites.
                     </Typography>
                     <Divider />
-                    <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      {/* Demo info removed */}
-                    </Typography>
                     <Alert severity="info" sx={{ borderRadius: "4px" }}>
                       Changing your password is a sensitive action. In production, we may request MFA.
                     </Alert>
@@ -231,7 +227,6 @@ export default function ChangePasswordPage() {
               </Card>
             </Box>
 
-            {/* Form */}
             <Box className="md:col-span-8">
               <Card>
                 <CardContent className="p-5 md:p-7">
@@ -311,10 +306,9 @@ export default function ChangePasswordPage() {
                       }}
                     />
 
-                    {/* Strength meter */}
                     <Stack spacing={0.8}>
                       <Stack direction="row" spacing={1.2} alignItems="center">
-                        <Box sx={{ flex: 1, height: 10, borderRadius: "4px", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.12 : 0.10), overflow: "hidden", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
+                        <Box sx={{ flex: 1, height: 10, borderRadius: "4px", backgroundColor: alpha(EVZONE.green, isDark ? 0.12 : 0.10), overflow: "hidden", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
                           <Box sx={{ width: `${(s / 5) * 100}%`, height: "100%", backgroundColor: EVZONE.orange, transition: "width 180ms ease" }} />
                         </Box>
                         <Typography variant="caption" sx={{ color: theme.palette.text.secondary, fontWeight: 900 }}>{label}</Typography>
@@ -367,12 +361,6 @@ export default function ChangePasswordPage() {
           <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
         </Box>
       </Box>
-
-      <Snackbar open={snack.open} autoHideDuration={3200} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-        <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={mode === "dark" ? "filled" : "standard"} sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
-          {snack.msg}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 }

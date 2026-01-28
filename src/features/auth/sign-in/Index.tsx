@@ -31,6 +31,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { useSocialLogin } from "@/hooks/useSocialLogin";
 import AuthHeader from "@/components/layout/AuthHeader";
 import { EVZONE } from "@/theme/evzone";
+import { useNotification } from "@/context/NotificationContext";
 
 /**
  * EVzone My Accounts - Sign In v4.1 (Passkey Outline)
@@ -159,8 +160,7 @@ export default function SignInPage() {
   const [passkeyBusy, setPasskeyBusy] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false); // [Fix] Anti-flicker guard
 
-  const [banner, setBanner] = useState<{ severity: "error" | "warning" | "info" | "success"; msg: string } | null>(null);
-  const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     if (typeof window !== "undefined") runSelfTestsOnce();
@@ -262,9 +262,10 @@ export default function SignInPage() {
     // 1. Check for interaction errors from the server (e.g. SessionNotFound)
     const interactionErr = searchParams.get("interaction_error");
     if (interactionErr) {
-      setBanner({
-        severity: "error",
-        msg: interactionErr === "session_expired" || interactionErr.includes("cookie not found")
+      showNotification({
+        type: "error",
+        title: "Session Issue",
+        message: interactionErr === "session_expired" || interactionErr.includes("cookie not found")
           ? "Your secure session has expired. Please sign in again."
           : `Authentication issue: ${interactionErr}`
       });
@@ -375,11 +376,19 @@ export default function SignInPage() {
 
     const id = identifier.trim();
     if (!id) {
-      setBanner({ severity: "warning", msg: "Enter your email or phone number." });
+      showNotification({
+        type: "warning",
+        title: "Missing Info",
+        message: "Enter your email or phone number."
+      });
       return;
     }
     if (!password) {
-      setBanner({ severity: "warning", msg: "Enter your password." });
+      showNotification({
+        type: "warning",
+        title: "Missing Password",
+        message: "Enter your password to continue."
+      });
       return;
     }
 
@@ -396,8 +405,11 @@ export default function SignInPage() {
         // If successful, submitInteraction will redirect
       } catch (err: any) {
         console.error("Interaction login failed:", err);
-        setBanner({ severity: "error", msg: err.message || "Login failed. Please try again." });
-        setSnack({ open: false, severity: "info", msg: "" });
+        showNotification({
+          type: "error",
+          title: "Sign In Failed",
+          message: err.message || "Invalid credentials. Please try again."
+        });
       }
       return;
     }
@@ -405,7 +417,6 @@ export default function SignInPage() {
 
     // Start OIDC Flow
     try {
-      setSnack({ open: true, severity: "info", msg: "Redirecting to secure sign in..." });
       await auth.signinRedirect({
         extraQueryParams: {
           login_hint: id
@@ -413,7 +424,11 @@ export default function SignInPage() {
       });
     } catch (err: any) {
       console.error("Sign in redirect error:", err);
-      setBanner({ severity: "error", msg: "Failed to start sign-in flow. Please try again." });
+      showNotification({
+        type: "error",
+        title: "System Error",
+        message: "Failed to start sign-in flow. Please try again."
+      });
     }
   };
 
@@ -421,21 +436,30 @@ export default function SignInPage() {
   const onApple = () => initAppleLogin(uid || undefined);
 
   const onPasskey = async () => {
-    setBanner(null);
-
     if (passkeySupported === false) {
-      setSnack({ open: true, severity: "warning", msg: "Passkeys are not supported on this device/browser." });
+      showNotification({
+        type: "warning",
+        title: "Unsupported",
+        message: "Passkeys are not supported on this device or browser."
+      });
       return;
     }
 
     setPasskeyBusy(true);
     try {
       const res = await tryWebAuthnGet();
-      setSnack({ open: true, severity: res.ok ? "success" : "warning", msg: res.message });
-      if (res.ok) {
-        setSnack({ open: true, severity: "info", msg: "Return to the requesting EVzone app (demo)." });
+      if (!res.ok) {
+        showNotification({
+          type: "info",
+          title: "Passkey Info",
+          message: "If passkeys are not available here, use password, OTP, or Google/Apple."
+        });
       } else {
-        setBanner({ severity: "info", msg: "If passkeys are not available here, use password, OTP, or Google/Apple." });
+        showNotification({
+          type: "success",
+          title: "Passkey Verified",
+          message: "Redirecting to your dashboard..."
+        });
       }
     } finally {
       setPasskeyBusy(false);
@@ -677,7 +701,12 @@ export default function SignInPage() {
                       </Stack>
                       {useOtpInstead ? (
                         <Box sx={{ mt: 1.2 }}>
-                          <Button fullWidth variant="contained" onClick={() => setSnack({ open: true, severity: "info", msg: "OTP sign-in coming soon." })} sx={orangeContainedSx}>
+                          <Button
+                            fullWidth
+                            variant="contained"
+                            onClick={() => showNotification({ type: 'info', title: 'Coming Soon', message: 'One-time code sign-in is being integrated.' })}
+                            sx={orangeContainedSx}
+                          >
                             Send Code
                           </Button>
                         </Box>
@@ -709,22 +738,6 @@ export default function SignInPage() {
           </Stack>
         </Box>
       </Box>
-
-      <Snackbar open={snack.open} autoHideDuration={3400} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-        <Alert
-          onClose={() => setSnack((s) => ({ ...s, open: false }))}
-          severity={snack.severity}
-          variant={isDark ? "filled" : "standard"}
-          sx={{
-            borderRadius: 16,
-            border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`,
-            backgroundColor: isDark ? alpha(theme.palette.background.paper, 0.92) : alpha(theme.palette.background.paper, 0.96),
-            color: theme.palette.text.primary,
-          }}
-        >
-          {snack.msg}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 }
