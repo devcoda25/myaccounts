@@ -2,6 +2,7 @@ import { describe, it, afterEach, vi, beforeAll } from 'vitest'
 import React from 'react'
 import { cleanup, render } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
+import { NotificationProvider } from '../context/NotificationContext'
 
 // Mock localStorage
 const localStorageMock = (function () {
@@ -184,7 +185,9 @@ describe('EVzone My Accounts pages', () => {
   it.each(PAGES)('%s renders without crashing', (_route, Comp) => {
     render(
       <MemoryRouter>
-        <Comp />
+        <NotificationProvider>
+          <Comp />
+        </NotificationProvider>
       </MemoryRouter>
     )
   })
