@@ -343,8 +343,8 @@ export default function SignInPage() {
         // manually construct the resumption path using the provider's expected format
         if (!nextUrl || nextUrl.includes("/login")) {
           console.log("[OIDC] Manually constructing resumption URL for UID:", uidVal);
-          // Use /auth/UID (not /oidc/auth/UID) to match provider's returnTo
-          nextUrl = `/auth/${encodeURIComponent(uidVal)}`;
+          // Use /oidc/auth/UID to match provider's issuer-relative path
+          nextUrl = `/oidc/auth/${encodeURIComponent(uidVal)}`;
         }
 
         console.log("[OIDC] Interaction Finished. Redirecting to:", nextUrl);
