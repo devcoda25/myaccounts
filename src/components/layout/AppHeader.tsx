@@ -27,6 +27,7 @@ import {
     Globe,
     Shield
 } from 'lucide-react';
+import { useAuth } from 'react-oidc-context';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { EVZONE } from '../../theme/evzone';
 import NotificationsPopover from './NotificationsPopover';
@@ -47,7 +48,19 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
     const isDark = theme.palette.mode === 'dark';
 
     // Use store
-    const { user, logout } = useAuthStore();
+    const { user, logout: storeLogout } = useAuthStore();
+    const auth = useAuth();
+
+    const logout = async () => {
+        try {
+            await storeLogout().catch(err => console.error("API Logout failed (non-critical)", err));
+            await auth.signoutRedirect();
+        } catch (e) {
+            console.error("Logout redirect failed", e);
+            await auth.removeUser();
+            window.location.href = "/auth/signed-out";
+        }
+    };
 
     const notifRef = useRef<HTMLButtonElement>(null);
     const [openNotif, setOpenNotif] = useState(false);

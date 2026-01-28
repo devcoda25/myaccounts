@@ -28,7 +28,7 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
-  isLoading: false,
+  isLoading: true,
 
   refreshUser: async (token?: string) => {
     set({ isLoading: true });
@@ -122,7 +122,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ isLoading: true });
     try {
       // ignore errors on logout (session may already be gone)
-      await api("/auth/logout", { method: "POST" }).catch(() => {});
+      await api("/auth/logout", { method: "POST" }).catch(() => { });
     } finally {
       set({ user: null, isLoading: false });
     }

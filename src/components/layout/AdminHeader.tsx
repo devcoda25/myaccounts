@@ -24,6 +24,7 @@ import {
     Settings,
     LogOut
 } from 'lucide-react';
+import { useAuth } from 'react-oidc-context';
 import { useNavigate } from 'react-router-dom';
 import { EVZONE } from '../../theme/evzone';
 import { useAdminAuthStore } from '../../stores/adminAuthStore';
@@ -40,7 +41,25 @@ export default function AdminHeader({ onDrawerToggle, showMobileToggle = false }
     const theme = useTheme();
     const navigate = useNavigate();
     const { mode, toggleMode } = useThemeStore();
-    const { user, logout } = useAdminAuthStore();
+    const { user, logout: storeLogout } = useAdminAuthStore();
+    const auth = useAuth();
+
+    const logout = async () => {
+        try {
+            await storeLogout().catch(err => console.error("Admin Logout failed", err));
+            // Trigger OIDC global signout if available
+            if (auth.isAuthenticated) {
+                await auth.signoutRedirect();
+            } else {
+                navigate('/auth/sign-in');
+            }
+        } catch (e) {
+            console.error("Logout redirect failed", e);
+            await auth.removeUser();
+            window.location.href = "/auth/signed-out";
+        }
+    };
+
     const isDark = mode === 'dark';
 
     const notifRef = useRef<HTMLButtonElement>(null);
