@@ -557,7 +557,7 @@ export default function LinkedAccountsPage() {
         // Link Action
         closeReauth(); // Close dialog to show popup
         if (pendingAction.provider === 'google') {
-          initGoogleCustomLogin(async (token) => {
+          initGoogleCustomLogin(undefined, async (token: string) => {
             try {
               await api('/auth/link/google', { method: 'POST', body: JSON.stringify({ token }) });
               setSnack({ open: true, severity: "success", msg: "Account linked successfully." });
