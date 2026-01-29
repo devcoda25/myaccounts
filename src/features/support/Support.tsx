@@ -42,7 +42,12 @@ import {
   WalletIcon,
 } from "@/components/icons";
 import { api } from "@/utils/api";
-import { validateFileUpload, validateMaxLength, sanitizeInput, MAX_LENGTHS } from "@/utils/validation";
+import {
+  validateFileUpload,
+  validateMaxLength,
+  sanitizeInput,
+  MAX_LENGTHS,
+} from "@/utils/validation";
 
 /**
  * EVzone My Accounts - Help & Support Center
