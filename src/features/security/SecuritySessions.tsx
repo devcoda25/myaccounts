@@ -139,7 +139,8 @@ export default function ActiveSessionsPage() {
   const fetchSessions = async () => {
     try {
       setLoading(true);
-      const data = await api<ISession[]>("/auth/sessions");
+      const response = await api<{ data: ISession[]; total: number }>("/sessions");
+      const data = response.data || [];
       const mapped: ISession[] = (Array.isArray(data) ? data : []).map((s) => ({
         id: s.id,
         isCurrent: s.isCurrent,
@@ -210,17 +211,17 @@ export default function ActiveSessionsPage() {
   const applySignOut = async (mode: "one" | "others" | "all", id?: string) => {
     try {
       if (mode === "one" && id) {
-        await api(`/auth/sessions/${id}`, { method: "DELETE" });
+        await api(`/sessions/${id}`, { method: "DELETE" });
         setSessions((prev) => prev.filter((x) => x.id !== id));
         showNotification({ type: "success", title: "Device Removed", message: "The device has been successfully signed out." });
       } else if (mode === "others") {
-        await api("/auth/sessions", { method: "DELETE" });
+        const response = await api<{ revokedCount: number }>("/sessions", { method: "DELETE" });
         setSessions((prev) => prev.filter((x) => x.isCurrent));
-        showNotification({ type: "success", title: "Sessions Ended", message: "All other devices have been signed out." });
+        showNotification({ type: "success", title: "Sessions Ended", message: `All other devices have been signed out (${response.revokedCount || 0} sessions).` });
       } else if (mode === "all") {
-        await api("/auth/sessions", { method: "DELETE" });
+        const response = await api<{ revokedCount: number }>("/sessions", { method: "DELETE" });
         setSessions([]);
-        showNotification({ type: "success", title: "Signed Out", message: "All active sessions have been revoked." });
+        showNotification({ type: "success", title: "Signed Out", message: `All active sessions have been revoked (${response.revokedCount || 0} sessions).` });
       }
     } catch (e) {
       showNotification({ type: "error", title: "Action Failed", message: "Failed to sign out device. Please try again." });
