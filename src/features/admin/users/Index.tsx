@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { api } from "@/utils/api";
 import { formatUserId } from "@/utils/format";
+import { isEmail, validateMaxLength, MAX_LENGTHS } from "@/utils/validation";
 import { useNavigate } from "react-router-dom";
 import Pagination from '@/components/ui/Pagination';
 import {
@@ -417,8 +418,27 @@ export default function AdminUsersList() {
     };
 
     const handleCreateUser = async () => {
+        // Validate inputs
         if (!newName.trim() || !newEmail.trim()) {
             showNotification({ type: "warning", title: "Validation Error", message: "Name and email are required." });
+            return;
+        }
+
+        // Validate email format
+        if (!isEmail(newEmail)) {
+            showNotification({ type: "warning", title: "Validation Error", message: "Please enter a valid email address." });
+            return;
+        }
+
+        // Validate field lengths
+        const nameValidation = validateMaxLength(newName.trim(), MAX_LENGTHS.firstName + MAX_LENGTHS.otherNames);
+        if (!nameValidation.valid) {
+            showNotification({ type: "warning", title: "Validation Error", message: nameValidation.error });
+            return;
+        }
+
+        if (newPhone && !validateMaxLength(newPhone, MAX_LENGTHS.phone).valid) {
+            showNotification({ type: "warning", title: "Validation Error", message: "Phone number too long." });
             return;
         }
 

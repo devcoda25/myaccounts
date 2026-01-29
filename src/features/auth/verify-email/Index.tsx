@@ -38,6 +38,7 @@ import {
 import { motion } from "framer-motion";
 import AuthHeader from "@/components/layout/AuthHeader";
 import { useAuthStore } from "@/stores/authStore";
+import { validateEmail, maskEmail } from "@/utils/validation";
 
 
 /**
@@ -129,18 +130,6 @@ function buildTheme(mode: ThemeMode) {
       },
     },
   });
-}
-
-function isEmail(v: string) {
-  return /.+@.+\..+/.test(v);
-}
-
-function maskEmail(email: string) {
-  const e = email.trim();
-  if (!e || !isEmail(e)) return e;
-  const [u, d] = e.split("@");
-  const safeU = u.length <= 2 ? u[0] + "*" : u.slice(0, 2) + "***";
-  return `${safeU}@${d}`;
 }
 
 export default function VerifyEmailPage() {
@@ -292,8 +281,10 @@ export default function VerifyEmailPage() {
   const saveEmailChange = async () => {
     setBanner(null);
     const e = newEmail.trim();
-    if (!isEmail(e)) {
-      setBanner({ severity: "warning", msg: "Please enter a valid email address." });
+
+    const emailValidation = validateEmail(e);
+    if (!emailValidation.valid) {
+      setBanner({ severity: "warning", msg: emailValidation.error });
       return;
     }
 

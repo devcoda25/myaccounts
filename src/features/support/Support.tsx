@@ -42,6 +42,7 @@ import {
   WalletIcon,
 } from "@/components/icons";
 import { api } from "@/utils/api";
+import { validateFileUpload, validateMaxLength, sanitizeInput, MAX_LENGTHS } from "@/utils/validation";
 
 /**
  * EVzone My Accounts - Help & Support Center
@@ -193,6 +194,12 @@ export default function SupportCenterPage() {
     if (!files?.length) return;
     const next: Attachment[] = [];
     for (const f of Array.from(files)) {
+      // Validate file type and size
+      const validation = validateFileUpload(f);
+      if (!validation.valid) {
+        setSnack({ open: true, severity: "error", msg: validation.error });
+        continue;
+      }
       next.push({ id: mkId("ATT"), name: f.name, size: f.size, type: f.type || "unknown" });
     }
     setAttachments((p) => [...p, ...next]);
@@ -202,6 +209,20 @@ export default function SupportCenterPage() {
   const removeAttachment = (id: string) => setAttachments((p) => p.filter((a) => a.id !== id));
 
   const submit = async () => {
+    // Validate subject length
+    const subjectValidation = validateMaxLength(subject, MAX_LENGTHS.subject);
+    if (subject && !subjectValidation.valid) {
+      setSnack({ open: true, severity: "warning", msg: subjectValidation.error });
+      return;
+    }
+
+    // Validate message length and content
+    const messageValidation = validateMaxLength(message, MAX_LENGTHS.description);
+    if (!messageValidation.valid) {
+      setSnack({ open: true, severity: "warning", msg: messageValidation.error });
+      return;
+    }
+
     if (message.trim().length < 10) {
       setSnack({ open: true, severity: "warning", msg: "Please include details (at least 10 characters)." });
       return;
@@ -217,12 +238,16 @@ export default function SupportCenterPage() {
       else if (category === "Wallet & Payments") cat = "PAYMENTS";
       else if (category === "Technical") cat = "TECHNICAL";
 
+      // Sanitize user input to prevent XSS
+      const sanitizedSubject = sanitizeInput(subject || category);
+      const sanitizedMessage = sanitizeInput(message);
+
       await api.post('/support/tickets', {
         category: cat,
-        subject: subject || category,
-        description: message,
+        subject: sanitizedSubject,
+        description: sanitizedMessage,
         metadata: {
-          attachments: attachments.map(a => ({ name: a.name, size: a.size, type: a.type }))
+          attachments: attachments.map(a => ({ name: sanitizeInput(a.name), size: a.size, type: a.type }))
         }
       });
 
