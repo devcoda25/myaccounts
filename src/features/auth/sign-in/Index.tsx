@@ -160,6 +160,8 @@ export default function SignInPage() {
   const [passkeyBusy, setPasskeyBusy] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false); // [Fix] Anti-flicker guard
 
+  const [banner, setBanner] = useState<{ severity: "error" | "warning" | "info" | "success"; msg: string } | null>(null);
+
   const { showNotification } = useNotification();
 
   useEffect(() => {
@@ -399,7 +401,7 @@ export default function SignInPage() {
 
     // OIDC INTERACTION MODE
     if (uid) {
-      setSnack({ open: true, severity: "info", msg: "Verifying credentials..." });
+      showNotification({ type: "info", title: "Verifying", message: "Verifying credentials..." });
       try {
         await submitInteraction(uid, id, password);
         // If successful, submitInteraction will redirect
