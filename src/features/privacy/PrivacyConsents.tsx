@@ -273,320 +273,322 @@ function runSelfTestsOnce() {
 }
 
 export default function PrivacyConsentsPage() {
-  const { t } = useTranslation("common"); {
-  const navigate = useNavigate();
-  const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
-  const theme = useMemo(() => buildTheme(mode), [mode]);
-  const isDark = mode === "dark";
+  const { t } = useTranslation("common");
+  {
+    const navigate = useNavigate();
+    const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
+    const theme = useMemo(() => buildTheme(mode), [mode]);
+    const isDark = mode === "dark";
 
-  const [tab, setTab] = useState<0 | 1 | 2>(0);
+    const [tab, setTab] = useState<0 | 1 | 2>(0);
 
-  const [records] = useState<ConsentRecord[]>(() => {
-    const now = Date.now();
-    return [
-      {
-        id: "c1",
-        kind: "Terms",
-        title: "EVzone Terms of Service",
-        version: "v2.1",
-        acceptedAt: now - 1000 * 60 * 60 * 24 * 32,
-        channel: "Web",
-        ipMasked: maskIp("197.157.10.20"),
-      },
-      {
-        id: "c2",
-        kind: "Privacy",
-        title: "EVzone Privacy Policy",
-        version: "v1.9",
-        acceptedAt: now - 1000 * 60 * 60 * 24 * 32,
-        channel: "Web",
-        ipMasked: maskIp("197.157.10.20"),
-      },
-      {
-        id: "c3",
-        kind: "Cookies",
-        title: "Cookie Preferences",
-        version: "v1.2",
-        acceptedAt: now - 1000 * 60 * 60 * 24 * 6,
-        channel: "Web",
-        ipMasked: maskIp("102.90.4.18"),
-      },
-    ];
-  });
+    const [records] = useState<ConsentRecord[]>(() => {
+      const now = Date.now();
+      return [
+        {
+          id: "c1",
+          kind: "Terms",
+          title: "EVzone Terms of Service",
+          version: "v2.1",
+          acceptedAt: now - 1000 * 60 * 60 * 24 * 32,
+          channel: "Web",
+          ipMasked: maskIp("197.157.10.20"),
+        },
+        {
+          id: "c2",
+          kind: "Privacy",
+          title: "EVzone Privacy Policy",
+          version: "v1.9",
+          acceptedAt: now - 1000 * 60 * 60 * 24 * 32,
+          channel: "Web",
+          ipMasked: maskIp("197.157.10.20"),
+        },
+        {
+          id: "c3",
+          kind: "Cookies",
+          title: "Cookie Preferences",
+          version: "v1.2",
+          acceptedAt: now - 1000 * 60 * 60 * 24 * 6,
+          channel: "Web",
+          ipMasked: maskIp("102.90.4.18"),
+        },
+      ];
+    });
 
-  // Marketing
-  const [marketingEmail, setMarketingEmail] = useState(true);
-  const [marketingSms, setMarketingSms] = useState(false);
-  const [marketingWhatsapp, setMarketingWhatsapp] = useState(false);
-  const [marketingProduct, setMarketingProduct] = useState(true);
-  const [marketingPartners, setMarketingPartners] = useState(false);
+    // Marketing
+    const [marketingEmail, setMarketingEmail] = useState(true);
+    const [marketingSms, setMarketingSms] = useState(false);
+    const [marketingWhatsapp, setMarketingWhatsapp] = useState(false);
+    const [marketingProduct, setMarketingProduct] = useState(true);
+    const [marketingPartners, setMarketingPartners] = useState(false);
 
-  // Cookies
-  const [cookiesAnalytics, setCookiesAnalytics] = useState(true);
-  const [cookiesMarketing, setCookiesMarketing] = useState(false);
-  const [cookiesPersonalization, setCookiesPersonalization] = useState(true);
+    // Cookies
+    const [cookiesAnalytics, setCookiesAnalytics] = useState(true);
+    const [cookiesMarketing, setCookiesMarketing] = useState(false);
+    const [cookiesPersonalization, setCookiesPersonalization] = useState(true);
 
-  const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
+    const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
-  useEffect(() => {
-    if (typeof window !== "undefined") runSelfTestsOnce();
-  }, []);
+    useEffect(() => {
+      if (typeof window !== "undefined") runSelfTestsOnce();
+    }, []);
 
-  const toggleMode = () => {
-    const next: ThemeMode = mode === "light" ? "dark" : "light";
-    setMode(next);
-    setStoredMode(next);
-  };
+    const toggleMode = () => {
+      const next: ThemeMode = mode === "light" ? "dark" : "light";
+      setMode(next);
+      setStoredMode(next);
+    };
 
-  const pageBg =
-    mode === "dark"
-      ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
-      : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
+    const pageBg =
+      mode === "dark"
+        ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
+        : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
 
-  const orangeContained = {
-    backgroundColor: EVZONE.orange,
-    color: "#FFFFFF",
-    boxShadow: `0 18px 48px ${alpha(EVZONE.orange, mode === "dark" ? 0.28 : 0.18)}`,
-    "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
-  } as const;
+    const orangeContained = {
+      backgroundColor: EVZONE.orange,
+      color: "#FFFFFF",
+      boxShadow: `0 18px 48px ${alpha(EVZONE.orange, mode === "dark" ? 0.28 : 0.18)}`,
+      "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
+    } as const;
 
-  const orangeOutlined = {
-    borderColor: alpha(EVZONE.orange, 0.65),
-    color: EVZONE.orange,
-    backgroundColor: alpha(theme.palette.background.paper, 0.20),
-    "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
-  } as const;
+    const orangeOutlined = {
+      borderColor: alpha(EVZONE.orange, 0.65),
+      color: EVZONE.orange,
+      backgroundColor: alpha(theme.palette.background.paper, 0.20),
+      "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
+    } as const;
 
-  const saveMarketing = () => {
-    setSnack({ open: true, severity: "success", msg: "Marketing preferences saved (demo)." });
-  };
+    const saveMarketing = () => {
+      setSnack({ open: true, severity: "success", msg: "Marketing preferences saved (demo)." });
+    };
 
-  const saveCookies = () => {
-    setSnack({ open: true, severity: "success", msg: "Cookie preferences saved (demo)." });
-  };
+    const saveCookies = () => {
+      setSnack({ open: true, severity: "success", msg: "Cookie preferences saved (demo)." });
+    };
 
-  const viewDoc = (r: ConsentRecord) => {
-    setSnack({ open: true, severity: "info", msg: `View ${r.title} ${r.version} (demo).` });
-  };
+    const viewDoc = (r: ConsentRecord) => {
+      setSnack({ open: true, severity: "info", msg: `View ${r.title} ${r.version} (demo).` });
+    };
 
-  const filteredRecords = useMemo(() => {
-    if (tab === 0) return records;
-    if (tab === 1) return records.filter((r) => r.kind === "Terms" || r.kind === "Privacy");
-    return records.filter((r) => r.kind === "Cookies");
-  }, [records, tab]);
+    const filteredRecords = useMemo(() => {
+      if (tab === 0) return records;
+      if (tab === 1) return records.filter((r) => r.kind === "Terms" || r.kind === "Privacy");
+      return records.filter((r) => r.kind === "Cookies");
+    }, [records, tab]);
 
-  return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Box className="min-h-screen" sx={{ background: pageBg }}>
+    return (
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Box className="min-h-screen" sx={{ background: pageBg }}>
 
 
-        <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
-            <Stack spacing={2.2}>
-              <Card>
-                <CardContent className="p-5 md:p-7">
-                  <Stack spacing={1.2}>
-                    <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ xs: "flex-start", md: "center" }} justifyContent="space-between">
-                      <Box>
-                        <Typography variant="h5">Privacy consents</Typography>
-                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Review your legal acceptances and manage privacy preferences.
-                        </Typography>
-                      </Box>
-                      <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                        <Button variant="outlined" sx={orangeOutlined} startIcon={<DownloadIcon size={18} />} onClick={() => exportCsv(records)}>
-                          Download history
-                        </Button>
-                        <Button variant="contained" color="secondary" sx={orangeContained} startIcon={<ShieldCheckIcon size={18} />} onClick={() => navigate("/app/privacy/data-requests")}>
-                          Data requests
-                        </Button>
+          <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+              <Stack spacing={2.2}>
+                <Card>
+                  <CardContent className="p-5 md:p-7">
+                    <Stack spacing={1.2}>
+                      <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ xs: "flex-start", md: "center" }} justifyContent="space-between">
+                        <Box>
+                          <Typography variant="h5">Privacy consents</Typography>
+                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                            Review your legal acceptances and manage privacy preferences.
+                          </Typography>
+                        </Box>
+                        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                          <Button variant="outlined" sx={orangeOutlined} startIcon={<DownloadIcon size={18} />} onClick={() => exportCsv(records)}>
+                            Download history
+                          </Button>
+                          <Button variant="contained" color="secondary" sx={orangeContained} startIcon={<ShieldCheckIcon size={18} />} onClick={() => navigate("/app/privacy/data-requests")}>
+                            Data requests
+                          </Button>
+                        </Stack>
                       </Stack>
+
+                      <Divider />
+
+                      <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, overflow: "hidden", minHeight: 44, "& .MuiTab-root": { minHeight: 44, fontWeight: 900 }, "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 } }}>
+                        <Tab label="All" />
+                        <Tab label="Terms and privacy" />
+                        <Tab label="Cookies" />
+                      </Tabs>
+
+                      <Alert severity="info" icon={<ShieldCheckIcon size={18} />}>
+                        Your acceptance history is stored for compliance and auditing.
+                      </Alert>
                     </Stack>
+                  </CardContent>
+                </Card>
 
-                    <Divider />
-
-                    <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, overflow: "hidden", minHeight: 44, "& .MuiTab-root": { minHeight: 44, fontWeight: 900 }, "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 } }}>
-                      <Tab label="All" />
-                      <Tab label="Terms and privacy" />
-                      <Tab label="Cookies" />
-                    </Tabs>
-
-                    <Alert severity="info" icon={<ShieldCheckIcon size={18} />}>
-                      Your acceptance history is stored for compliance and auditing.
-                    </Alert>
-                  </Stack>
-                </CardContent>
-              </Card>
-
-              <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
-                {/* Left: history */}
-                <Box className="md:col-span-7">
-                  <Card>
-                    <CardContent className="p-5 md:p-7">
-                      <Stack spacing={1.2}>
-                        <Stack direction="row" spacing={1.2} alignItems="center" justifyContent="space-between">
-                          <Box>
-                            <Typography variant="h6">Acceptance history</Typography>
-                            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>{filteredRecords.length} record(s)</Typography>
-                          </Box>
-                          <Chip size="small" variant="outlined" label={`Latest: ${new Date(records[0].acceptedAt).toLocaleDateString()}`} />
-                        </Stack>
-
-                        <Divider />
-
+                <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
+                  {/* Left: history */}
+                  <Box className="md:col-span-7">
+                    <Card>
+                      <CardContent className="p-5 md:p-7">
                         <Stack spacing={1.2}>
-                          {filteredRecords
-                            .slice()
-                            .sort((a, b) => b.acceptedAt - a.acceptedAt)
-                            .map((r) => (
-                              <Box key={r.id} sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
-                                <Stack spacing={0.8}>
-                                  <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems={{ xs: "flex-start", sm: "center" }} justifyContent="space-between">
-                                    <Stack direction="row" spacing={1} alignItems="center">
-                                      {r.kind === "Cookies" ? <CookieIcon size={18} /> : <DocumentIcon size={18} />}
-                                      <Typography sx={{ fontWeight: 950 }}>{r.title}</Typography>
+                          <Stack direction="row" spacing={1.2} alignItems="center" justifyContent="space-between">
+                            <Box>
+                              <Typography variant="h6">Acceptance history</Typography>
+                              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>{filteredRecords.length} record(s)</Typography>
+                            </Box>
+                            <Chip size="small" variant="outlined" label={`Latest: ${new Date(records[0].acceptedAt).toLocaleDateString()}`} />
+                          </Stack>
+
+                          <Divider />
+
+                          <Stack spacing={1.2}>
+                            {filteredRecords
+                              .slice()
+                              .sort((a, b) => b.acceptedAt - a.acceptedAt)
+                              .map((r) => (
+                                <Box key={r.id} sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
+                                  <Stack spacing={0.8}>
+                                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems={{ xs: "flex-start", sm: "center" }} justifyContent="space-between">
+                                      <Stack direction="row" spacing={1} alignItems="center">
+                                        {r.kind === "Cookies" ? <CookieIcon size={18} /> : <DocumentIcon size={18} />}
+                                        <Typography sx={{ fontWeight: 950 }}>{r.title}</Typography>
+                                      </Stack>
+                                      <Chip size="small" variant="outlined" label={r.kind} />
                                     </Stack>
-                                    <Chip size="small" variant="outlined" label={r.kind} />
-                                  </Stack>
 
-                                  <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                                    <Chip size="small" variant="outlined" label={`Version ${r.version}`} />
-                                    <Chip size="small" variant="outlined" label={`Accepted ${timeAgo(r.acceptedAt)}`} />
-                                    <Chip size="small" variant="outlined" label={r.channel} />
-                                    <Chip size="small" variant="outlined" label={`IP ${r.ipMasked}`} />
-                                  </Stack>
+                                    <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                                      <Chip size="small" variant="outlined" label={`Version ${r.version}`} />
+                                      <Chip size="small" variant="outlined" label={`Accepted ${timeAgo(r.acceptedAt)}`} />
+                                      <Chip size="small" variant="outlined" label={r.channel} />
+                                      <Chip size="small" variant="outlined" label={`IP ${r.ipMasked}`} />
+                                    </Stack>
 
-                                  <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                                    <Button variant="outlined" sx={orangeOutlined} startIcon={<DocumentIcon size={18} />} onClick={() => viewDoc(r)}>
-                                      View
-                                    </Button>
-                                    <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Download PDF copy (demo)." })}>
-                                      Download
-                                    </Button>
+                                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                                      <Button variant="outlined" sx={orangeOutlined} startIcon={<DocumentIcon size={18} />} onClick={() => viewDoc(r)}>
+                                        View
+                                      </Button>
+                                      <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "Download PDF copy (demo)." })}>
+                                        Download
+                                      </Button>
+                                    </Stack>
                                   </Stack>
-                                </Stack>
-                              </Box>
-                            ))}
+                                </Box>
+                              ))}
+                          </Stack>
                         </Stack>
+                      </CardContent>
+                    </Card>
+                  </Box>
+
+                  {/* Right: preferences */}
+                  <Box className="md:col-span-5">
+                    <Stack spacing={2.2}>
+                      <Card>
+                        <CardContent className="p-5">
+                          <Stack spacing={1.2}>
+                            <Stack direction="row" spacing={1} alignItems="center">
+                              <MegaphoneIcon size={18} />
+                              <Typography variant="h6">Marketing preferences</Typography>
+                            </Stack>
+                            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                              Choose how you want to receive product updates.
+                            </Typography>
+
+                            <Divider />
+
+                            <Stack spacing={0.6}>
+                              <FormControlLabel control={<Switch checked={marketingEmail} onChange={(e) => setMarketingEmail(e.target.checked)} color="secondary" />} label={<Typography sx={{ fontWeight: 900 }}>Email marketing</Typography>} />
+                              <FormControlLabel control={<Switch checked={marketingSms} onChange={(e) => setMarketingSms(e.target.checked)} color="secondary" />} label={<Typography sx={{ fontWeight: 900 }}>SMS marketing</Typography>} />
+                              <FormControlLabel control={<Switch checked={marketingWhatsapp} onChange={(e) => setMarketingWhatsapp(e.target.checked)} color="secondary" />} label={<Typography sx={{ fontWeight: 900 }}>WhatsApp marketing</Typography>} />
+                            </Stack>
+
+                            <Divider />
+
+                            <Stack spacing={0.6}>
+                              <FormControlLabel control={<Checkbox checked={marketingProduct} onChange={(e) => setMarketingProduct(e.target.checked)} />} label={<Typography sx={{ fontWeight: 900 }}>Product updates</Typography>} />
+                              <FormControlLabel control={<Checkbox checked={marketingPartners} onChange={(e) => setMarketingPartners(e.target.checked)} />} label={<Typography sx={{ fontWeight: 900 }}>Partner offers</Typography>} />
+                            </Stack>
+
+                            <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                              <Button variant="contained" color="secondary" sx={orangeContained} startIcon={<SaveIcon size={18} />} onClick={saveMarketing}>
+                                Save
+                              </Button>
+                              <Button variant="outlined" sx={orangeOutlined} onClick={() => { setMarketingEmail(false); setMarketingSms(false); setMarketingWhatsapp(false); setMarketingProduct(false); setMarketingPartners(false); setSnack({ open: true, severity: "info", msg: "All marketing disabled (demo)." }); }}>
+                                Disable all
+                              </Button>
+                            </Stack>
+
+                            <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                              You can opt out anytime. Transactional messages are still sent.
+                            </Typography>
+                          </Stack>
+                        </CardContent>
+                      </Card>
+
+                      <Card>
+                        <CardContent className="p-5">
+                          <Stack spacing={1.2}>
+                            <Stack direction="row" spacing={1} alignItems="center">
+                              <CookieIcon size={18} />
+                              <Typography variant="h6">Cookie preferences</Typography>
+                            </Stack>
+                            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                              Control analytics, marketing, and personalization cookies.
+                            </Typography>
+
+                            <Divider />
+
+                            <Stack spacing={0.8}>
+                              <FormControlLabel control={<Switch checked disabled />} label={<Typography sx={{ fontWeight: 900 }}>Essential cookies (required)</Typography>} />
+                              <FormControlLabel control={<Switch checked={cookiesAnalytics} onChange={(e) => setCookiesAnalytics(e.target.checked)} color="secondary" />} label={<Typography sx={{ fontWeight: 900 }}>Analytics</Typography>} />
+                              <FormControlLabel control={<Switch checked={cookiesMarketing} onChange={(e) => setCookiesMarketing(e.target.checked)} color="secondary" />} label={<Typography sx={{ fontWeight: 900 }}>Marketing</Typography>} />
+                              <FormControlLabel control={<Switch checked={cookiesPersonalization} onChange={(e) => setCookiesPersonalization(e.target.checked)} color="secondary" />} label={<Typography sx={{ fontWeight: 900 }}>Personalization</Typography>} />
+                            </Stack>
+
+                            <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                              <Button variant="contained" color="secondary" sx={orangeContained} startIcon={<SaveIcon size={18} />} onClick={saveCookies}>
+                                Save
+                              </Button>
+                              <Button variant="outlined" sx={orangeOutlined} onClick={() => { setCookiesAnalytics(false); setCookiesMarketing(false); setCookiesPersonalization(false); setSnack({ open: true, severity: "info", msg: "Only essential cookies enabled (demo)." }); }}>
+                                Essential only
+                              </Button>
+                            </Stack>
+
+                            <Alert severity="info" icon={<ShieldCheckIcon size={18} />}>
+                              Some modules may rely on analytics for performance and fraud prevention.
+                            </Alert>
+                          </Stack>
+                        </CardContent>
+                      </Card>
+                    </Stack>
+                  </Box>
+                </Box>
+
+                {/* Mobile sticky */}
+                <Box className="md:hidden" sx={{ position: "sticky", bottom: 12 }}>
+                  <Card sx={{ borderRadius: 999, backgroundColor: alpha(theme.palette.background.paper, 0.85), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backdropFilter: "blur(10px)" }}>
+                    <CardContent sx={{ py: 1.1, px: 1.2 }}>
+                      <Stack direction="row" spacing={1}>
+                        <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => exportCsv(records)}>
+                          Export
+                        </Button>
+                        <Button fullWidth variant="contained" color="secondary" sx={orangeContained} onClick={() => { saveMarketing(); saveCookies(); }}>
+                          Save
+                        </Button>
                       </Stack>
                     </CardContent>
                   </Card>
                 </Box>
 
-                {/* Right: preferences */}
-                <Box className="md:col-span-5">
-                  <Stack spacing={2.2}>
-                    <Card>
-                      <CardContent className="p-5">
-                        <Stack spacing={1.2}>
-                          <Stack direction="row" spacing={1} alignItems="center">
-                            <MegaphoneIcon size={18} />
-                            <Typography variant="h6">Marketing preferences</Typography>
-                          </Stack>
-                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Choose how you want to receive product updates.
-                          </Typography>
-
-                          <Divider />
-
-                          <Stack spacing={0.6}>
-                            <FormControlLabel control={<Switch checked={marketingEmail} onChange={(e) => setMarketingEmail(e.target.checked)} color="secondary" />} label={<Typography sx={{ fontWeight: 900 }}>Email marketing</Typography>} />
-                            <FormControlLabel control={<Switch checked={marketingSms} onChange={(e) => setMarketingSms(e.target.checked)} color="secondary" />} label={<Typography sx={{ fontWeight: 900 }}>SMS marketing</Typography>} />
-                            <FormControlLabel control={<Switch checked={marketingWhatsapp} onChange={(e) => setMarketingWhatsapp(e.target.checked)} color="secondary" />} label={<Typography sx={{ fontWeight: 900 }}>WhatsApp marketing</Typography>} />
-                          </Stack>
-
-                          <Divider />
-
-                          <Stack spacing={0.6}>
-                            <FormControlLabel control={<Checkbox checked={marketingProduct} onChange={(e) => setMarketingProduct(e.target.checked)} />} label={<Typography sx={{ fontWeight: 900 }}>Product updates</Typography>} />
-                            <FormControlLabel control={<Checkbox checked={marketingPartners} onChange={(e) => setMarketingPartners(e.target.checked)} />} label={<Typography sx={{ fontWeight: 900 }}>Partner offers</Typography>} />
-                          </Stack>
-
-                          <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                            <Button variant="contained" color="secondary" sx={orangeContained} startIcon={<SaveIcon size={18} />} onClick={saveMarketing}>
-                              Save
-                            </Button>
-                            <Button variant="outlined" sx={orangeOutlined} onClick={() => { setMarketingEmail(false); setMarketingSms(false); setMarketingWhatsapp(false); setMarketingProduct(false); setMarketingPartners(false); setSnack({ open: true, severity: "info", msg: "All marketing disabled (demo)." }); }}>
-                              Disable all
-                            </Button>
-                          </Stack>
-
-                          <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                            You can opt out anytime. Transactional messages are still sent.
-                          </Typography>
-                        </Stack>
-                      </CardContent>
-                    </Card>
-
-                    <Card>
-                      <CardContent className="p-5">
-                        <Stack spacing={1.2}>
-                          <Stack direction="row" spacing={1} alignItems="center">
-                            <CookieIcon size={18} />
-                            <Typography variant="h6">Cookie preferences</Typography>
-                          </Stack>
-                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Control analytics, marketing, and personalization cookies.
-                          </Typography>
-
-                          <Divider />
-
-                          <Stack spacing={0.8}>
-                            <FormControlLabel control={<Switch checked disabled />} label={<Typography sx={{ fontWeight: 900 }}>Essential cookies (required)</Typography>} />
-                            <FormControlLabel control={<Switch checked={cookiesAnalytics} onChange={(e) => setCookiesAnalytics(e.target.checked)} color="secondary" />} label={<Typography sx={{ fontWeight: 900 }}>Analytics</Typography>} />
-                            <FormControlLabel control={<Switch checked={cookiesMarketing} onChange={(e) => setCookiesMarketing(e.target.checked)} color="secondary" />} label={<Typography sx={{ fontWeight: 900 }}>Marketing</Typography>} />
-                            <FormControlLabel control={<Switch checked={cookiesPersonalization} onChange={(e) => setCookiesPersonalization(e.target.checked)} color="secondary" />} label={<Typography sx={{ fontWeight: 900 }}>Personalization</Typography>} />
-                          </Stack>
-
-                          <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                            <Button variant="contained" color="secondary" sx={orangeContained} startIcon={<SaveIcon size={18} />} onClick={saveCookies}>
-                              Save
-                            </Button>
-                            <Button variant="outlined" sx={orangeOutlined} onClick={() => { setCookiesAnalytics(false); setCookiesMarketing(false); setCookiesPersonalization(false); setSnack({ open: true, severity: "info", msg: "Only essential cookies enabled (demo)." }); }}>
-                              Essential only
-                            </Button>
-                          </Stack>
-
-                          <Alert severity="info" icon={<ShieldCheckIcon size={18} />}>
-                            Some modules may rely on analytics for performance and fraud prevention.
-                          </Alert>
-                        </Stack>
-                      </CardContent>
-                    </Card>
-                  </Stack>
+                <Box sx={{ opacity: 0.92 }}>
+                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
                 </Box>
-              </Box>
+              </Stack>
+            </motion.div>
+          </Box>
 
-              {/* Mobile sticky */}
-              <Box className="md:hidden" sx={{ position: "sticky", bottom: 12 }}>
-                <Card sx={{ borderRadius: 999, backgroundColor: alpha(theme.palette.background.paper, 0.85), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backdropFilter: "blur(10px)" }}>
-                  <CardContent sx={{ py: 1.1, px: 1.2 }}>
-                    <Stack direction="row" spacing={1}>
-                      <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => exportCsv(records)}>
-                        Export
-                      </Button>
-                      <Button fullWidth variant="contained" color="secondary" sx={orangeContained} onClick={() => { saveMarketing(); saveCookies(); }}>
-                        Save
-                      </Button>
-                    </Stack>
-                  </CardContent>
-                </Card>
-              </Box>
-
-              <Box sx={{ opacity: 0.92 }}>
-                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
-              </Box>
-            </Stack>
-          </motion.div>
+          <Snackbar open={snack.open} autoHideDuration={3200} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+            <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={mode === "dark" ? "filled" : "standard"} sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
+              {snack.msg}
+            </Alert>
+          </Snackbar>
         </Box>
-
-        <Snackbar open={snack.open} autoHideDuration={3200} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-          <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={mode === "dark" ? "filled" : "standard"} sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
-            {snack.msg}
-          </Alert>
-        </Snackbar>
-      </Box>
-    </ThemeProvider>
-  );
+      </ThemeProvider>
+    );
+  }
 }

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { api } from "@/utils/api";
 import {
   Alert,
   Box,
@@ -229,7 +230,7 @@ function getActionLabel(action: string | null) {
 }
 
 export default function ReAuthPromptPage() {
-  const { t } = useTranslation("common"); {
+  const { t } = useTranslation("common");
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
@@ -305,16 +306,20 @@ export default function ReAuthPromptPage() {
     setStoredMode(next);
   };
 
-  const sendCode = () => {
+  const sendCode = async () => {
     if (mfaMethod === "totp") return;
-    setCodeSent(true);
-    setCooldown(30);
-    setSnack({ open: true, severity: "success", msg: mfaMethod === "sms" ? "SMS code sent." : "Email code sent." });
+    try {
+      await api.post("/auth/mfa/challenge-send", { channel: mfaMethod });
+      setCodeSent(true);
+      setCooldown(30);
+      setSnack({ open: true, severity: "success", msg: mfaMethod === "sms" ? "SMS code sent." : "Email code sent." });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to send code.";
+      setSnack({ open: true, severity: "error", msg: message });
+    }
   };
 
-  const expectedCode = mfaMethod === "totp" ? "654321" : mfaMethod === "sms" ? "222222" : "111111";
-
-  const confirm = () => {
+  const confirm = async () => {
     setBanner(null);
 
     if (promptMode === "password") {
@@ -322,12 +327,14 @@ export default function ReAuthPromptPage() {
         setBanner({ severity: "warning", msg: "Please enter your password." });
         return;
       }
-      if (password !== "EVzone123!") {
-        setBanner({ severity: "error", msg: "Incorrect password." });
-        return;
+      try {
+        await api.post("/auth/verify-password", { password });
+        setStep("success");
+        setSnack({ open: true, severity: "success", msg: "Identity confirmed." });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Incorrect password.";
+        setBanner({ severity: "error", msg: message });
       }
-      setStep("success");
-      setSnack({ open: true, severity: "success", msg: "Identity confirmed." });
       return;
     }
 
@@ -342,13 +349,14 @@ export default function ReAuthPromptPage() {
       return;
     }
 
-    if (code !== expectedCode) {
-      setBanner({ severity: "error", msg: "Incorrect code." });
-      return;
+    try {
+      await api.post("/auth/mfa/challenge/verify", { code, channel: mfaMethod });
+      setStep("success");
+      setSnack({ open: true, severity: "success", msg: "Identity confirmed." });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Incorrect code.";
+      setBanner({ severity: "error", msg: message });
     }
-
-    setStep("success");
-    setSnack({ open: true, severity: "success", msg: "Identity confirmed." });
   };
 
   const continueNext = () => {

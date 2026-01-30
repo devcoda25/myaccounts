@@ -228,464 +228,466 @@ function statusChipProps(s: LoginStatus) {
 
 // --- lightweight self-tests ---
 export default function LoginActivityPage() {
-  const { t } = useTranslation("common"); {
-  const theme = useTheme();
-  const { mode } = useThemeStore();
-  const isDark = mode === "dark";
+  const { t } = useTranslation("common");
+  {
+    const theme = useTheme();
+    const { mode } = useThemeStore();
+    const isDark = mode === "dark";
 
-  const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
-
-
-  const [events, setEvents] = useState<LoginEvent[]>([]);
-
-  const pageBg =
-    mode === "dark"
-      ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
-      : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
-
-  const evOrangeContainedSx = {
-    backgroundColor: EVZONE.orange,
-    color: "#FFFFFF",
-    boxShadow: `0 18px 48px ${alpha(EVZONE.orange, mode === "dark" ? 0.28 : 0.18)}`,
-    "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
-    "&:active": { backgroundColor: alpha(EVZONE.orange, 0.86), color: "#FFFFFF" },
-  } as const;
-
-  const evOrangeOutlinedSx = {
-    borderColor: alpha(EVZONE.orange, 0.65),
-    color: EVZONE.orange,
-    backgroundColor: alpha(theme.palette.background.paper, 0.20),
-    "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
-  } as const;
-
-  const waOutlinedSx = {
-    borderColor: alpha(WHATSAPP.green, 0.75),
-    color: WHATSAPP.green,
-    backgroundColor: alpha(theme.palette.background.paper, 0.20),
-    "&:hover": { borderColor: WHATSAPP.green, backgroundColor: WHATSAPP.green, color: "#FFFFFF" },
-  } as const;
-
-  // Filters
-  const [from, setFrom] = useState<string>("");
-  const [to, setTo] = useState<string>("");
-  const [device, setDevice] = useState<string>("all");
-  const [status, setStatus] = useState<string>("all");
-  const [search, setSearch] = useState<string>("");
+    const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
 
-  // Fetch from API
-  const [loading, setLoading] = useState(true);
+    const [events, setEvents] = useState<LoginEvent[]>([]);
 
-  useEffect(() => {
-    api<ISecurityActivityLog[]>("/security/activity")
-      .then((logs) => {
-        const mapped: LoginEvent[] = logs.map((l) => ({
-          id: l.id,
-          when: l.createdAt ? (typeof l.createdAt === 'string' ? new Date(l.createdAt).getTime() : l.createdAt) : Date.now(),
-          device: l.details?.device || "Unknown Device",
-          method: (l.action as LoginMethod) || "Password", // Fallback
-          location: typeof l.details?.location === 'object' && l.details.location
-            ? `${l.details.location.city || ''}, ${l.details.location.country || ''}`.replace(/^, |, $/g, '') || "Unknown Location"
-            : l.details?.location || "Unknown Location",
-          ip: l.ip || "Unknown IP",
-          status: (l.risk && l.risk.length > 0) ? "failure" : "success", // Simplistic mapping, refine based on 'action' if needed
-          risk: (l.risk as RiskTag[]) || [],
-        }));
-        setEvents(mapped);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setLoading(false);
-      });
-  }, []);
+    const pageBg =
+      mode === "dark"
+        ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
+        : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
 
-  const deviceOptions = useMemo(() => {
-    const set = new Set(events.map((e) => e.device));
-    return ["all", ...Array.from(set)];
-  }, [events]);
+    const evOrangeContainedSx = {
+      backgroundColor: EVZONE.orange,
+      color: "#FFFFFF",
+      boxShadow: `0 18px 48px ${alpha(EVZONE.orange, mode === "dark" ? 0.28 : 0.18)}`,
+      "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
+      "&:active": { backgroundColor: alpha(EVZONE.orange, 0.86), color: "#FFFFFF" },
+    } as const;
 
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
+    const evOrangeOutlinedSx = {
+      borderColor: alpha(EVZONE.orange, 0.65),
+      color: EVZONE.orange,
+      backgroundColor: alpha(theme.palette.background.paper, 0.20),
+      "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
+    } as const;
 
-    const fromTs = from ? new Date(from + "T00:00:00").getTime() : -Infinity;
-    const toTs = to ? new Date(to + "T23:59:59").getTime() : Infinity;
+    const waOutlinedSx = {
+      borderColor: alpha(WHATSAPP.green, 0.75),
+      color: WHATSAPP.green,
+      backgroundColor: alpha(theme.palette.background.paper, 0.20),
+      "&:hover": { borderColor: WHATSAPP.green, backgroundColor: WHATSAPP.green, color: "#FFFFFF" },
+    } as const;
 
-    return events
-      .filter((e) => e.when >= fromTs && e.when <= toTs)
-      .filter((e) => (device === "all" ? true : e.device === device))
-      .filter((e) => (status === "all" ? true : e.status === status))
-      .filter((e) =>
-        !q
-          ? true
-          : [e.device, e.location, e.ip, e.method, e.status].some((x) => String(x).toLowerCase().includes(q))
-      )
-      .sort((a, b) => b.when - a.when);
-  }, [events, from, to, device, status, search]);
+    // Filters
+    const [from, setFrom] = useState<string>("");
+    const [to, setTo] = useState<string>("");
+    const [device, setDevice] = useState<string>("all");
+    const [status, setStatus] = useState<string>("all");
+    const [search, setSearch] = useState<string>("");
 
-  const stats = useMemo(() => {
-    const now = Date.now();
-    const last24 = events.filter((x) => now - x.when < 86400000);
-    return {
-      recentCount: last24.length,
-      failures: last24.filter((x) => x.status === "failure" || x.status === "blocked").length,
-      suspicious: last24.filter((x) => x.risk.length > 0).length,
+
+    // Fetch from API
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+      api<ISecurityActivityLog[]>("/security/activity")
+        .then((logs) => {
+          const mapped: LoginEvent[] = logs.map((l) => ({
+            id: l.id,
+            when: l.createdAt ? (typeof l.createdAt === 'string' ? new Date(l.createdAt).getTime() : l.createdAt) : Date.now(),
+            device: l.details?.device || "Unknown Device",
+            method: (l.action as LoginMethod) || "Password", // Fallback
+            location: typeof l.details?.location === 'object' && l.details.location
+              ? `${l.details.location.city || ''}, ${l.details.location.country || ''}`.replace(/^, |, $/g, '') || "Unknown Location"
+              : l.details?.location || "Unknown Location",
+            ip: l.ip || "Unknown IP",
+            status: (l.risk && l.risk.length > 0) ? "failure" : "success", // Simplistic mapping, refine based on 'action' if needed
+            risk: (l.risk as RiskTag[]) || [],
+          }));
+          setEvents(mapped);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error(err);
+          setLoading(false);
+        });
+    }, []);
+
+    const deviceOptions = useMemo(() => {
+      const set = new Set(events.map((e) => e.device));
+      return ["all", ...Array.from(set)];
+    }, [events]);
+
+    const filtered = useMemo(() => {
+      const q = search.trim().toLowerCase();
+
+      const fromTs = from ? new Date(from + "T00:00:00").getTime() : -Infinity;
+      const toTs = to ? new Date(to + "T23:59:59").getTime() : Infinity;
+
+      return events
+        .filter((e) => e.when >= fromTs && e.when <= toTs)
+        .filter((e) => (device === "all" ? true : e.device === device))
+        .filter((e) => (status === "all" ? true : e.status === status))
+        .filter((e) =>
+          !q
+            ? true
+            : [e.device, e.location, e.ip, e.method, e.status].some((x) => String(x).toLowerCase().includes(q))
+        )
+        .sort((a, b) => b.when - a.when);
+    }, [events, from, to, device, status, search]);
+
+    const stats = useMemo(() => {
+      const now = Date.now();
+      const last24 = events.filter((x) => now - x.when < 86400000);
+      return {
+        recentCount: last24.length,
+        failures: last24.filter((x) => x.status === "failure" || x.status === "blocked").length,
+        suspicious: last24.filter((x) => x.risk.length > 0).length,
+      };
+    }, [events]);
+
+    // Report dialog
+    const [reportOpen, setReportOpen] = useState(false);
+    const [reportEventId, setReportEventId] = useState<string>(events[0]?.id || "");
+    const [reportMessage, setReportMessage] = useState<string>("");
+
+    useEffect(() => {
+      if (!reportEventId && events.length) setReportEventId(events[0].id);
+    }, [events, reportEventId]);
+
+    const openReport = (id?: string) => {
+      if (id) setReportEventId(id);
+      setReportMessage("");
+      setReportOpen(true);
     };
-  }, [events]);
 
-  // Report dialog
-  const [reportOpen, setReportOpen] = useState(false);
-  const [reportEventId, setReportEventId] = useState<string>(events[0]?.id || "");
-  const [reportMessage, setReportMessage] = useState<string>("");
+    const submitReport = () => {
+      setReportOpen(false);
+      setSnack({ open: true, severity: "success", msg: "Report submitted (demo). Support will review this login activity." });
+    };
 
-  useEffect(() => {
-    if (!reportEventId && events.length) setReportEventId(events[0].id);
-  }, [events, reportEventId]);
+    const timelineDotColor = (s: LoginStatus) => {
+      if (s === "success") return alpha(EVZONE.green, 0.92);
+      if (s === "blocked") return alpha("#ff3b30", 0.92);
+      return alpha(EVZONE.orange, 0.92);
+    };
 
-  const openReport = (id?: string) => {
-    if (id) setReportEventId(id);
-    setReportMessage("");
-    setReportOpen(true);
-  };
+    const methodChip = (m: LoginMethod) => {
+      if (m === "WhatsApp") {
+        return (
+          <Chip
+            size="small"
+            icon={<WhatsAppIcon size={16} />}
+            label="WhatsApp"
+            sx={{
+              border: `1px solid ${alpha(WHATSAPP.green, 0.6)}`,
+              color: WHATSAPP.green,
+              backgroundColor: alpha(WHATSAPP.green, 0.10),
+              "& .MuiChip-icon": { color: "inherit" },
+            }}
+          />
+        );
+      }
+      return <Chip size="small" variant="outlined" label={m} />;
+    };
 
-  const submitReport = () => {
-    setReportOpen(false);
-    setSnack({ open: true, severity: "success", msg: "Report submitted (demo). Support will review this login activity." });
-  };
+    return (
+      <Box className="min-h-screen" sx={{ background: pageBg }}>
 
-  const timelineDotColor = (s: LoginStatus) => {
-    if (s === "success") return alpha(EVZONE.green, 0.92);
-    if (s === "blocked") return alpha("#ff3b30", 0.92);
-    return alpha(EVZONE.orange, 0.92);
-  };
-
-  const methodChip = (m: LoginMethod) => {
-    if (m === "WhatsApp") {
-      return (
-        <Chip
-          size="small"
-          icon={<WhatsAppIcon size={16} />}
-          label="WhatsApp"
-          sx={{
-            border: `1px solid ${alpha(WHATSAPP.green, 0.6)}`,
-            color: WHATSAPP.green,
-            backgroundColor: alpha(WHATSAPP.green, 0.10),
-            "& .MuiChip-icon": { color: "inherit" },
-          }}
-        />
-      );
-    }
-    return <Chip size="small" variant="outlined" label={m} />;
-  };
-
-  return (
-    <Box className="min-h-screen" sx={{ background: pageBg }}>
-
-      {/* Body */}
-      <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
-          <Stack spacing={2.2}>
-            <Card>
-              <CardContent className="p-5 md:p-7">
-                <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ xs: "flex-start", md: "center" }} justifyContent="space-between">
-                  <Box>
-                    <Typography variant="h5">Login activity</Typography>
-                    <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      Review login attempts. Report anything suspicious.
-                    </Typography>
-                  </Box>
-
-                  <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ width: { xs: "100%", md: "auto" } }}>
-                    <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<FlagIcon size={18} />} onClick={() => openReport()}>
-                      Report suspicious activity
-                    </Button>
-                    <Button variant="contained" color="secondary" sx={evOrangeContainedSx} startIcon={<ShieldCheckIcon size={18} />} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/security/sessions (demo)." })}>
-                      Review devices
-                    </Button>
-                  </Stack>
-                </Stack>
-
-                <Divider sx={{ my: 2 }} />
-
-                <Box className="grid gap-3 md:grid-cols-3">
-                  <Box sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
-                    <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Last 24 hours</Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 950 }}>{stats.recentCount}</Typography>
-                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Total attempts</Typography>
-                  </Box>
-                  <Box sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
-                    <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Failures/blocked</Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 950 }}>{stats.failures}</Typography>
-                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Needs review</Typography>
-                  </Box>
-                  <Box sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
-                    <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Suspicious</Typography>
-                    <Typography variant="h6" sx={{ fontWeight: 950 }}>{stats.suspicious}</Typography>
-                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Flagged by risk engine</Typography>
-                  </Box>
-                </Box>
-
-                <Divider sx={{ my: 2 }} />
-
-                <Stack spacing={1.2}>
-                  <Stack direction={{ xs: "column", md: "row" }} spacing={1.2}>
-                    <TextField
-                      type="date"
-                      label="From"
-                      value={from}
-                      onChange={(e) => setFrom(e.target.value)}
-                      InputLabelProps={{ shrink: true }}
-                      fullWidth
-                      InputProps={{ startAdornment: (<InputAdornment position="start"><FilterIcon size={18} /></InputAdornment>) }}
-                    />
-                    <TextField
-                      type="date"
-                      label="To"
-                      value={to}
-                      onChange={(e) => setTo(e.target.value)}
-                      InputLabelProps={{ shrink: true }}
-                      fullWidth
-                      InputProps={{ startAdornment: (<InputAdornment position="start"><FilterIcon size={18} /></InputAdornment>) }}
-                    />
-                    <TextField
-                      select
-                      label="Device"
-                      value={device}
-                      onChange={(e) => setDevice(e.target.value)}
-                      fullWidth
-                      InputProps={{ startAdornment: (<InputAdornment position="start"><FilterIcon size={18} /></InputAdornment>) }}
-                    >
-                      {deviceOptions.map((d) => (
-                        <MenuItem key={d} value={d}>
-                          {d === "all" ? "All devices" : d}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                    <TextField
-                      select
-                      label="Status"
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value)}
-                      fullWidth
-                      InputProps={{ startAdornment: (<InputAdornment position="start"><FilterIcon size={18} /></InputAdornment>) }}
-                    >
-                      <MenuItem value="all">All</MenuItem>
-                      <MenuItem value="success">Success</MenuItem>
-                      <MenuItem value="failure">Failure</MenuItem>
-                      <MenuItem value="blocked">Blocked</MenuItem>
-                    </TextField>
-                  </Stack>
-
-                  <TextField
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    label="Search"
-                    placeholder="Search by device, location, IP, method"
-                    fullWidth
-                    InputProps={{ startAdornment: (<InputAdornment position="start"><SearchIcon size={18} /></InputAdornment>) }}
-                  />
-                </Stack>
-              </CardContent>
-            </Card>
-
-            {/* Timeline */}
-            <Card>
-              <CardContent className="p-5 md:p-7">
-                <Stack spacing={1.2}>
+        {/* Body */}
+        <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+            <Stack spacing={2.2}>
+              <Card>
+                <CardContent className="p-5 md:p-7">
                   <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ xs: "flex-start", md: "center" }} justifyContent="space-between">
                     <Box>
-                      <Typography variant="h6">Timeline</Typography>
+                      <Typography variant="h5">Login activity</Typography>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        {filtered.length} result(s)
+                        Review login attempts. Report anything suspicious.
                       </Typography>
                     </Box>
-                    <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<ShieldCheckIcon size={18} />} onClick={() => setSnack({ open: true, severity: "info", msg: "Export report (demo)." })}>
-                      Export
-                    </Button>
+
+                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ width: { xs: "100%", md: "auto" } }}>
+                      <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<FlagIcon size={18} />} onClick={() => openReport()}>
+                        Report suspicious activity
+                      </Button>
+                      <Button variant="contained" color="secondary" sx={evOrangeContainedSx} startIcon={<ShieldCheckIcon size={18} />} onClick={() => setSnack({ open: true, severity: "info", msg: "Navigate to /app/security/sessions (demo)." })}>
+                        Review devices
+                      </Button>
+                    </Stack>
                   </Stack>
 
-                  <Divider />
+                  <Divider sx={{ my: 2 }} />
 
-                  <Box sx={{ display: "flex", flexDirection: "column", gap: 1.2 }}>
-                    {filtered.map((e, idx) => {
-                      const st = statusChipProps(e.status);
-                      const risky = e.risk.length > 0;
-                      return (
-                        <Box
-                          key={e.id}
-                          sx={{
-                            borderRadius: "4px",
-                            border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
-                            backgroundColor: alpha(theme.palette.background.paper, 0.45),
-                            p: 1.4,
-                            position: "relative",
-                            overflow: "hidden",
-                          }}
-                        >
-                          {/* left timeline bar */}
-                          <Box
-                            sx={{
-                              position: "absolute",
-                              left: 18,
-                              top: 0,
-                              bottom: 0,
-                              width: 2,
-                              backgroundColor: alpha(theme.palette.text.primary, 0.10),
-                            }}
-                          />
-                          <Box
-                            sx={{
-                              position: "absolute",
-                              left: 10,
-                              top: 22,
-                              width: 18,
-                              height: 18,
-                              borderRadius: 999,
-                              backgroundColor: timelineDotColor(e.status),
-                              border: `2px solid ${alpha(theme.palette.background.paper, 0.95)}`,
-                            }}
-                          />
-
-                          <Stack spacing={1.0} sx={{ pl: 4 }}>
-                            <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems={{ xs: "flex-start", sm: "center" }} justifyContent="space-between">
-                              <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-                                <Chip size="small" label={st.label} color={st.color} />
-                                {methodChip(e.method)}
-                                <Chip size="small" variant="outlined" icon={<ClockIcon size={16} />} label={timeAgo(e.when)} sx={{ "& .MuiChip-icon": { color: "inherit" } }} />
-                              </Stack>
-
-                              <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ width: { xs: "100%", sm: "auto" } }}>
-                                <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<FlagIcon size={18} />} onClick={() => openReport(e.id)}>
-                                  Report
-                                </Button>
-                              </Stack>
-                            </Stack>
-
-                            <Typography sx={{ fontWeight: 950 }}>{e.device}</Typography>
-                            <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems={{ xs: "flex-start", sm: "center" }} flexWrap="wrap" useFlexGap>
-                              <Chip size="small" variant="outlined" icon={<MapPinIcon size={16} />} label={e.location} sx={{ "& .MuiChip-icon": { color: "inherit" } }} />
-                              <Chip size="small" variant="outlined" label={`IP: ${maskIp(e.ip)}`} />
-                            </Stack>
-
-                            {risky ? (
-                              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                                {e.risk.map((r) => {
-                                  const c = riskChip(r);
-                                  const sx =
-                                    r === "suspicious"
-                                      ? undefined
-                                      : r === "new_location"
-                                        ? undefined
-                                        : r === "impossible_travel"
-                                          ? undefined
-                                          : undefined;
-                                  return (
-                                    <Chip
-                                      key={r}
-                                      size="small"
-                                      icon={c.icon}
-                                      label={c.label}
-                                      color={c.color}
-                                      sx={{
-                                        ...(sx || {}),
-                                        "& .MuiChip-icon": { color: "inherit" },
-                                      }}
-                                    />
-                                  );
-                                })}
-                              </Stack>
-                            ) : (
-                              <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                                No risk signals.
-                              </Typography>
-                            )}
-
-                            {e.risk.includes("suspicious") ? (
-                              <Alert severity="error" icon={<AlertTriangleIcon size={18} />}>
-                                This attempt looks suspicious. Consider changing your password and reviewing devices.
-                              </Alert>
-                            ) : null}
-                          </Stack>
-                        </Box>
-                      );
-                    })}
+                  <Box className="grid gap-3 md:grid-cols-3">
+                    <Box sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
+                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Last 24 hours</Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 950 }}>{stats.recentCount}</Typography>
+                      <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Total attempts</Typography>
+                    </Box>
+                    <Box sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
+                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Failures/blocked</Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 950 }}>{stats.failures}</Typography>
+                      <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Needs review</Typography>
+                    </Box>
+                    <Box sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
+                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Suspicious</Typography>
+                      <Typography variant="h6" sx={{ fontWeight: 950 }}>{stats.suspicious}</Typography>
+                      <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Flagged by risk engine</Typography>
+                    </Box>
                   </Box>
-                </Stack>
-              </CardContent>
-            </Card>
 
-            <Box sx={{ opacity: 0.92 }}>
-              <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
-            </Box>
-          </Stack>
-        </motion.div>
+                  <Divider sx={{ my: 2 }} />
+
+                  <Stack spacing={1.2}>
+                    <Stack direction={{ xs: "column", md: "row" }} spacing={1.2}>
+                      <TextField
+                        type="date"
+                        label="From"
+                        value={from}
+                        onChange={(e) => setFrom(e.target.value)}
+                        InputLabelProps={{ shrink: true }}
+                        fullWidth
+                        InputProps={{ startAdornment: (<InputAdornment position="start"><FilterIcon size={18} /></InputAdornment>) }}
+                      />
+                      <TextField
+                        type="date"
+                        label="To"
+                        value={to}
+                        onChange={(e) => setTo(e.target.value)}
+                        InputLabelProps={{ shrink: true }}
+                        fullWidth
+                        InputProps={{ startAdornment: (<InputAdornment position="start"><FilterIcon size={18} /></InputAdornment>) }}
+                      />
+                      <TextField
+                        select
+                        label="Device"
+                        value={device}
+                        onChange={(e) => setDevice(e.target.value)}
+                        fullWidth
+                        InputProps={{ startAdornment: (<InputAdornment position="start"><FilterIcon size={18} /></InputAdornment>) }}
+                      >
+                        {deviceOptions.map((d) => (
+                          <MenuItem key={d} value={d}>
+                            {d === "all" ? "All devices" : d}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                      <TextField
+                        select
+                        label="Status"
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value)}
+                        fullWidth
+                        InputProps={{ startAdornment: (<InputAdornment position="start"><FilterIcon size={18} /></InputAdornment>) }}
+                      >
+                        <MenuItem value="all">All</MenuItem>
+                        <MenuItem value="success">Success</MenuItem>
+                        <MenuItem value="failure">Failure</MenuItem>
+                        <MenuItem value="blocked">Blocked</MenuItem>
+                      </TextField>
+                    </Stack>
+
+                    <TextField
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      label="Search"
+                      placeholder="Search by device, location, IP, method"
+                      fullWidth
+                      InputProps={{ startAdornment: (<InputAdornment position="start"><SearchIcon size={18} /></InputAdornment>) }}
+                    />
+                  </Stack>
+                </CardContent>
+              </Card>
+
+              {/* Timeline */}
+              <Card>
+                <CardContent className="p-5 md:p-7">
+                  <Stack spacing={1.2}>
+                    <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ xs: "flex-start", md: "center" }} justifyContent="space-between">
+                      <Box>
+                        <Typography variant="h6">Timeline</Typography>
+                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                          {filtered.length} result(s)
+                        </Typography>
+                      </Box>
+                      <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<ShieldCheckIcon size={18} />} onClick={() => setSnack({ open: true, severity: "info", msg: "Export report (demo)." })}>
+                        Export
+                      </Button>
+                    </Stack>
+
+                    <Divider />
+
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1.2 }}>
+                      {filtered.map((e, idx) => {
+                        const st = statusChipProps(e.status);
+                        const risky = e.risk.length > 0;
+                        return (
+                          <Box
+                            key={e.id}
+                            sx={{
+                              borderRadius: "4px",
+                              border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
+                              backgroundColor: alpha(theme.palette.background.paper, 0.45),
+                              p: 1.4,
+                              position: "relative",
+                              overflow: "hidden",
+                            }}
+                          >
+                            {/* left timeline bar */}
+                            <Box
+                              sx={{
+                                position: "absolute",
+                                left: 18,
+                                top: 0,
+                                bottom: 0,
+                                width: 2,
+                                backgroundColor: alpha(theme.palette.text.primary, 0.10),
+                              }}
+                            />
+                            <Box
+                              sx={{
+                                position: "absolute",
+                                left: 10,
+                                top: 22,
+                                width: 18,
+                                height: 18,
+                                borderRadius: 999,
+                                backgroundColor: timelineDotColor(e.status),
+                                border: `2px solid ${alpha(theme.palette.background.paper, 0.95)}`,
+                              }}
+                            />
+
+                            <Stack spacing={1.0} sx={{ pl: 4 }}>
+                              <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems={{ xs: "flex-start", sm: "center" }} justifyContent="space-between">
+                                <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+                                  <Chip size="small" label={st.label} color={st.color} />
+                                  {methodChip(e.method)}
+                                  <Chip size="small" variant="outlined" icon={<ClockIcon size={16} />} label={timeAgo(e.when)} sx={{ "& .MuiChip-icon": { color: "inherit" } }} />
+                                </Stack>
+
+                                <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ width: { xs: "100%", sm: "auto" } }}>
+                                  <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<FlagIcon size={18} />} onClick={() => openReport(e.id)}>
+                                    Report
+                                  </Button>
+                                </Stack>
+                              </Stack>
+
+                              <Typography sx={{ fontWeight: 950 }}>{e.device}</Typography>
+                              <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems={{ xs: "flex-start", sm: "center" }} flexWrap="wrap" useFlexGap>
+                                <Chip size="small" variant="outlined" icon={<MapPinIcon size={16} />} label={e.location} sx={{ "& .MuiChip-icon": { color: "inherit" } }} />
+                                <Chip size="small" variant="outlined" label={`IP: ${maskIp(e.ip)}`} />
+                              </Stack>
+
+                              {risky ? (
+                                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                                  {e.risk.map((r) => {
+                                    const c = riskChip(r);
+                                    const sx =
+                                      r === "suspicious"
+                                        ? undefined
+                                        : r === "new_location"
+                                          ? undefined
+                                          : r === "impossible_travel"
+                                            ? undefined
+                                            : undefined;
+                                    return (
+                                      <Chip
+                                        key={r}
+                                        size="small"
+                                        icon={c.icon}
+                                        label={c.label}
+                                        color={c.color}
+                                        sx={{
+                                          ...(sx || {}),
+                                          "& .MuiChip-icon": { color: "inherit" },
+                                        }}
+                                      />
+                                    );
+                                  })}
+                                </Stack>
+                              ) : (
+                                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                                  No risk signals.
+                                </Typography>
+                              )}
+
+                              {e.risk.includes("suspicious") ? (
+                                <Alert severity="error" icon={<AlertTriangleIcon size={18} />}>
+                                  This attempt looks suspicious. Consider changing your password and reviewing devices.
+                                </Alert>
+                              ) : null}
+                            </Stack>
+                          </Box>
+                        );
+                      })}
+                    </Box>
+                  </Stack>
+                </CardContent>
+              </Card>
+
+              <Box sx={{ opacity: 0.92 }}>
+                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
+              </Box>
+            </Stack>
+          </motion.div>
+        </Box>
+
+        {/* Report dialog */}
+        <Dialog open={reportOpen} onClose={() => setReportOpen(false)} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: "4px", border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}>
+          <DialogTitle sx={{ fontWeight: 950 }}>Report suspicious activity</DialogTitle>
+          <DialogContent>
+            <Stack spacing={1.2}>
+              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                Tell us what looks suspicious. Our team will review and may contact you.
+              </Typography>
+
+              <TextField
+                select
+                label="Login attempt"
+                value={reportEventId}
+                onChange={(e) => setReportEventId(e.target.value)}
+                fullWidth
+              >
+                {events
+                  .slice()
+                  .sort((a, b) => b.when - a.when)
+                  .map((e) => (
+                    <MenuItem key={e.id} value={e.id}>
+                      {new Date(e.when).toLocaleString()} • {e.device} • {e.location}
+                    </MenuItem>
+                  ))}
+              </TextField>
+
+              <TextField
+                value={reportMessage}
+                onChange={(e) => setReportMessage(e.target.value)}
+                label="What happened?"
+                placeholder="Example: I did not attempt this login."
+                multiline
+                minRows={3}
+                fullWidth
+              />
+
+              <Alert severity="info" icon={<ShieldCheckIcon size={18} />}>
+                We recommend: 1) sign out unknown devices, 2) change password, 3) enable 2FA.
+              </Alert>
+            </Stack>
+          </DialogContent>
+          <DialogActions sx={{ p: 2, pt: 0 }}>
+            <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => setReportOpen(false)}>{t("auth.common.cancel")}</Button>
+            <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={submitReport}>
+              Submit report
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Snackbar */}
+        <Snackbar open={snack.open} autoHideDuration={3200} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+          <Alert
+            onClose={() => setSnack((s) => ({ ...s, open: false }))}
+            severity={snack.severity}
+            variant={mode === "dark" ? "filled" : "standard"}
+            sx={{
+              borderRadius: 16,
+              border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`,
+              backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96),
+              color: theme.palette.text.primary,
+            }}
+          >
+            {snack.msg}
+          </Alert>
+        </Snackbar>
       </Box>
-
-      {/* Report dialog */}
-      <Dialog open={reportOpen} onClose={() => setReportOpen(false)} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: "4px", border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}>
-        <DialogTitle sx={{ fontWeight: 950 }}>Report suspicious activity</DialogTitle>
-        <DialogContent>
-          <Stack spacing={1.2}>
-            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-              Tell us what looks suspicious. Our team will review and may contact you.
-            </Typography>
-
-            <TextField
-              select
-              label="Login attempt"
-              value={reportEventId}
-              onChange={(e) => setReportEventId(e.target.value)}
-              fullWidth
-            >
-              {events
-                .slice()
-                .sort((a, b) => b.when - a.when)
-                .map((e) => (
-                  <MenuItem key={e.id} value={e.id}>
-                    {new Date(e.when).toLocaleString()} • {e.device} • {e.location}
-                  </MenuItem>
-                ))}
-            </TextField>
-
-            <TextField
-              value={reportMessage}
-              onChange={(e) => setReportMessage(e.target.value)}
-              label="What happened?"
-              placeholder="Example: I did not attempt this login."
-              multiline
-              minRows={3}
-              fullWidth
-            />
-
-            <Alert severity="info" icon={<ShieldCheckIcon size={18} />}>
-              We recommend: 1) sign out unknown devices, 2) change password, 3) enable 2FA.
-            </Alert>
-          </Stack>
-        </DialogContent>
-        <DialogActions sx={{ p: 2, pt: 0 }}>
-          <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => setReportOpen(false)}>{t("auth.common.cancel")}<//Button>
-          <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={submitReport}>
-            Submit report
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Snackbar */}
-      <Snackbar open={snack.open} autoHideDuration={3200} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-        <Alert
-          onClose={() => setSnack((s) => ({ ...s, open: false }))}
-          severity={snack.severity}
-          variant={mode === "dark" ? "filled" : "standard"}
-          sx={{
-            borderRadius: 16,
-            border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`,
-            backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96),
-            color: theme.palette.text.primary,
-          }}
-        >
-          {snack.msg}
-        </Alert>
-      </Snackbar>
-    </Box>
-  );
+    );
+  }
 }

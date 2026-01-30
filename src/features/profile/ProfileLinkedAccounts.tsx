@@ -372,600 +372,602 @@ function maskEmail(email?: string) {
 // [Removed] mfaCodeFor (was mock)
 
 export default function LinkedAccountsPage() {
-  const { t } = useTranslation("common"); {
-  const { mode } = useThemeStore();
-  const theme = useTheme();
-  const navigate = useNavigate();
-  const isDark = mode === "dark";
+  const { t } = useTranslation("common");
+  {
+    const { mode } = useThemeStore();
+    const theme = useTheme();
+    const navigate = useNavigate();
+    const isDark = mode === "dark";
 
-  const [providers, setProviders] = useState<Provider[]>([
-    {
-      key: "google",
-      name: "Google",
-      connected: false,
-      lastUsedAt: undefined,
-      lastLoginMethod: undefined,
-    },
-    {
-      key: "apple",
-      name: "Apple",
-      connected: false,
-      lastUsedAt: undefined,
-      lastLoginMethod: undefined,
-    },
-  ]);
+    const [providers, setProviders] = useState<Provider[]>([
+      {
+        key: "google",
+        name: "Google",
+        connected: false,
+        lastUsedAt: undefined,
+        lastLoginMethod: undefined,
+      },
+      {
+        key: "apple",
+        name: "Apple",
+        connected: false,
+        lastUsedAt: undefined,
+        lastLoginMethod: undefined,
+      },
+    ]);
 
-  const { initGoogleCustomLogin, initAppleLogin } = useSocialLogin(); // Hook usage
+    const { initGoogleCustomLogin, initAppleLogin } = useSocialLogin(); // Hook usage
 
-  useEffect(() => {
-    // Load Connections
-    reloadProviders();
-  }, []);
+    useEffect(() => {
+      // Load Connections
+      reloadProviders();
+    }, []);
 
-  const reloadProviders = () => {
-    api<IUser>('/users/me')
-      .then((user) => {
-        if (user && user.credentials) {
-          setProviders(prev => prev.map(p => {
-            const cred = user.credentials?.find((c) => c.providerType === p.key);
-            if (cred) {
-              return {
-                ...p,
-                connected: true,
-                connectedEmail: cred.providerId.includes('@') ? cred.providerId : undefined, // providerId often stores sub, but for display we might need email from metadata or just show Connected
-                connectedAt: Date.now(),
-                lastUsedAt: Date.now()
-              };
-            }
-            return { ...p, connected: false };
-          }));
-        }
-      })
-      .catch(err => console.error(err));
-  };
+    const reloadProviders = () => {
+      api<IUser>('/users/me')
+        .then((user) => {
+          if (user && user.credentials) {
+            setProviders(prev => prev.map(p => {
+              const cred = user.credentials?.find((c) => c.providerType === p.key);
+              if (cred) {
+                return {
+                  ...p,
+                  connected: true,
+                  connectedEmail: cred.providerId.includes('@') ? cred.providerId : undefined, // providerId often stores sub, but for display we might need email from metadata or just show Connected
+                  connectedAt: Date.now(),
+                  lastUsedAt: Date.now()
+                };
+              }
+              return { ...p, connected: false };
+            }));
+          }
+        })
+        .catch(err => console.error(err));
+    };
 
-  const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({
-    open: false,
-    severity: "info",
-    msg: "",
-  });
+    const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({
+      open: false,
+      severity: "info",
+      msg: "",
+    });
 
-  const [reauthOpen, setReauthOpen] = useState(false);
-  const [reauthMode, setReauthMode] = useState<ReAuthMode>("password");
-  const [reauthPassword, setReauthPassword] = useState("");
-  const [mfaChannel, setMfaChannel] = useState<MfaChannel>("Authenticator");
-  const [otp, setOtp] = useState("");
-  const [pendingAction, setPendingAction] = useState<null | { provider: ProviderKey; action: "unlink" | "link" }>(null);
-  const [codeSent, setCodeSent] = useState(false);
-  const [cooldown, setCooldown] = useState(0);
+    const [reauthOpen, setReauthOpen] = useState(false);
+    const [reauthMode, setReauthMode] = useState<ReAuthMode>("password");
+    const [reauthPassword, setReauthPassword] = useState("");
+    const [mfaChannel, setMfaChannel] = useState<MfaChannel>("Authenticator");
+    const [otp, setOtp] = useState("");
+    const [pendingAction, setPendingAction] = useState<null | { provider: ProviderKey; action: "unlink" | "link" }>(null);
+    const [codeSent, setCodeSent] = useState(false);
+    const [cooldown, setCooldown] = useState(0);
 
-  // Cooldown effect
-  useEffect(() => {
-    if (cooldown > 0) {
-      const t = setTimeout(() => setCooldown(c => c - 1), 1000);
-      return () => clearTimeout(t);
-    }
-  }, [cooldown]);
+    // Cooldown effect
+    useEffect(() => {
+      if (cooldown > 0) {
+        const t = setTimeout(() => setCooldown(c => c - 1), 1000);
+        return () => clearTimeout(t);
+      }
+    }, [cooldown]);
 
-  const requestChallenge = async () => {
-    try {
-      const channelMap: Record<string, 'sms' | 'whatsapp' | 'email'> = {
-        'SMS': 'sms',
-        'WhatsApp': 'whatsapp',
-        'Email': 'email'
-      };
-      const c = channelMap[mfaChannel];
-      if (!c) return;
-
-      await api('/auth/mfa/challenge/send', { method: 'POST', body: JSON.stringify({ channel: c }) });
-      setCodeSent(true);
-      setCooldown(30);
-      setSnack({ open: true, severity: "success", msg: `Code sent to ${mfaChannel}` });
-    } catch (err: any) {
-      setSnack({ open: true, severity: "error", msg: err.message || "Failed to send code" });
-    }
-  };
-
-  // redundant code removed
-
-  const pageBg =
-    mode === "dark"
-      ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
-      : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
-
-  const evOrangeContainedSx = {
-    backgroundColor: EVZONE.orange,
-    color: "#FFFFFF",
-    boxShadow: `0 18px 48px ${alpha(EVZONE.orange, mode === "dark" ? 0.28 : 0.18)}`,
-    "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
-    "&:active": { backgroundColor: alpha(EVZONE.orange, 0.86), color: "#FFFFFF" },
-  } as const;
-
-  const evOrangeOutlinedSx = {
-    borderColor: alpha(EVZONE.orange, 0.65),
-    color: EVZONE.orange,
-    backgroundColor: alpha(theme.palette.background.paper, 0.20),
-    "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
-  } as const;
-
-  const googleBtnSx = {
-    borderColor: "#DADCE0",
-    backgroundColor: "#FFFFFF",
-    color: "#3C4043",
-    "&:hover": { backgroundColor: "#F8F9FA", borderColor: "#DADCE0" },
-    "&:active": { backgroundColor: "#F1F3F4" },
-  } as const;
-
-  const appleBtnSx = {
-    borderColor: "#000000",
-    backgroundColor: "#000000",
-    color: "#FFFFFF",
-    "&:hover": { backgroundColor: "#111111", borderColor: "#111111" },
-    "&:active": { backgroundColor: "#1B1B1B" },
-  } as const;
-
-  const openReauth = (provider: ProviderKey, action: "unlink" | "link") => {
-    setPendingAction({ provider, action });
-    setReauthOpen(true);
-    setReauthMode("password");
-    setReauthPassword("");
-    setMfaChannel("Authenticator");
-    setOtp("");
-    setCodeSent(false);
-    setCooldown(0);
-  };
-
-  const closeReauth = () => {
-    setReauthOpen(false);
-    setPendingAction(null);
-  };
-
-  const applyAction = async () => {
-    if (!pendingAction) return;
-
-    // 1. Re-authenticate
-    try {
-      if (reauthMode === "password") {
-        await api('/auth/verify-password', { method: 'POST', body: JSON.stringify({ password: reauthPassword }) });
-      } else {
-        // MFA Verification
-        const channelMap: Record<string, 'authenticator' | 'sms' | 'whatsapp' | 'email'> = {
-          'Authenticator': 'authenticator',
+    const requestChallenge = async () => {
+      try {
+        const channelMap: Record<string, 'sms' | 'whatsapp' | 'email'> = {
           'SMS': 'sms',
           'WhatsApp': 'whatsapp',
           'Email': 'email'
         };
         const c = channelMap[mfaChannel];
-        await api('/auth/mfa/challenge/verify', {
-          method: 'POST', body: JSON.stringify({
-            code: otp,
-            channel: c
-          })
-        });
-      }
-    } catch (err) {
-      setSnack({ open: true, severity: "error", msg: "Re-authentication failed. Incorrect credentials." });
-      return;
-    }
+        if (!c) return;
 
-    // 2. Perform Action
-    try {
-      if (pendingAction.action === "unlink") {
-        await api(`/users/me/credentials/${pendingAction.provider}`, { method: 'DELETE' });
-        setSnack({ open: true, severity: "success", msg: "Account unlinked successfully." });
-        reloadProviders();
-        closeReauth();
-      } else {
-        // Link Action
-        closeReauth(); // Close dialog to show popup
-        if (pendingAction.provider === 'google') {
-          initGoogleCustomLogin(undefined, async (token: string) => {
-            try {
-              await api('/auth/link/google', { method: 'POST', body: JSON.stringify({ token }) });
-              setSnack({ open: true, severity: "success", msg: "Account linked successfully." });
-              reloadProviders();
-            } catch (lErr: unknown) {
-              console.error(lErr);
-              setSnack({ open: true, severity: "error", msg: (lErr as Error).message || "Failed to link account." });
-            }
-          });
+        await api('/auth/mfa/challenge/send', { method: 'POST', body: JSON.stringify({ channel: c }) });
+        setCodeSent(true);
+        setCooldown(30);
+        setSnack({ open: true, severity: "success", msg: `Code sent to ${mfaChannel}` });
+      } catch (err: any) {
+        setSnack({ open: true, severity: "error", msg: err.message || "Failed to send code" });
+      }
+    };
+
+    // redundant code removed
+
+    const pageBg =
+      mode === "dark"
+        ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
+        : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
+
+    const evOrangeContainedSx = {
+      backgroundColor: EVZONE.orange,
+      color: "#FFFFFF",
+      boxShadow: `0 18px 48px ${alpha(EVZONE.orange, mode === "dark" ? 0.28 : 0.18)}`,
+      "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
+      "&:active": { backgroundColor: alpha(EVZONE.orange, 0.86), color: "#FFFFFF" },
+    } as const;
+
+    const evOrangeOutlinedSx = {
+      borderColor: alpha(EVZONE.orange, 0.65),
+      color: EVZONE.orange,
+      backgroundColor: alpha(theme.palette.background.paper, 0.20),
+      "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
+    } as const;
+
+    const googleBtnSx = {
+      borderColor: "#DADCE0",
+      backgroundColor: "#FFFFFF",
+      color: "#3C4043",
+      "&:hover": { backgroundColor: "#F8F9FA", borderColor: "#DADCE0" },
+      "&:active": { backgroundColor: "#F1F3F4" },
+    } as const;
+
+    const appleBtnSx = {
+      borderColor: "#000000",
+      backgroundColor: "#000000",
+      color: "#FFFFFF",
+      "&:hover": { backgroundColor: "#111111", borderColor: "#111111" },
+      "&:active": { backgroundColor: "#1B1B1B" },
+    } as const;
+
+    const openReauth = (provider: ProviderKey, action: "unlink" | "link") => {
+      setPendingAction({ provider, action });
+      setReauthOpen(true);
+      setReauthMode("password");
+      setReauthPassword("");
+      setMfaChannel("Authenticator");
+      setOtp("");
+      setCodeSent(false);
+      setCooldown(0);
+    };
+
+    const closeReauth = () => {
+      setReauthOpen(false);
+      setPendingAction(null);
+    };
+
+    const applyAction = async () => {
+      if (!pendingAction) return;
+
+      // 1. Re-authenticate
+      try {
+        if (reauthMode === "password") {
+          await api('/auth/verify-password', { method: 'POST', body: JSON.stringify({ password: reauthPassword }) });
         } else {
-          // Apple Link
-          // TODO: Update useSocialLogin to support Apple Link callback or implement here
-          // Using stub for now as Apple Link requires specific JS structure
-          setSnack({ open: true, severity: "info", msg: "Apple linking coming soon." });
+          // MFA Verification
+          const channelMap: Record<string, 'authenticator' | 'sms' | 'whatsapp' | 'email'> = {
+            'Authenticator': 'authenticator',
+            'SMS': 'sms',
+            'WhatsApp': 'whatsapp',
+            'Email': 'email'
+          };
+          const c = channelMap[mfaChannel];
+          await api('/auth/mfa/challenge/verify', {
+            method: 'POST', body: JSON.stringify({
+              code: otp,
+              channel: c
+            })
+          });
         }
+      } catch (err) {
+        setSnack({ open: true, severity: "error", msg: "Re-authentication failed. Incorrect credentials." });
+        return;
       }
-    } catch (err: any) {
-      console.error(err);
-      setSnack({ open: true, severity: "error", msg: err.message || "Action failed." });
-    }
-  };
 
-  const lastLogin = useMemo(() => {
-    const p = providers
-      .filter((x) => x.connected)
-      .sort((a, b) => (b.lastUsedAt || 0) - (a.lastUsedAt || 0))[0];
-    return p?.lastLoginMethod || "Password";
-  }, [providers]);
+      // 2. Perform Action
+      try {
+        if (pendingAction.action === "unlink") {
+          await api(`/users/me/credentials/${pendingAction.provider}`, { method: 'DELETE' });
+          setSnack({ open: true, severity: "success", msg: "Account unlinked successfully." });
+          reloadProviders();
+          closeReauth();
+        } else {
+          // Link Action
+          closeReauth(); // Close dialog to show popup
+          if (pendingAction.provider === 'google') {
+            initGoogleCustomLogin(undefined, async (token: string) => {
+              try {
+                await api('/auth/link/google', { method: 'POST', body: JSON.stringify({ token }) });
+                setSnack({ open: true, severity: "success", msg: "Account linked successfully." });
+                reloadProviders();
+              } catch (lErr: unknown) {
+                console.error(lErr);
+                setSnack({ open: true, severity: "error", msg: (lErr as Error).message || "Failed to link account." });
+              }
+            });
+          } else {
+            // Apple Link
+            // TODO: Update useSocialLogin to support Apple Link callback or implement here
+            // Using stub for now as Apple Link requires specific JS structure
+            setSnack({ open: true, severity: "info", msg: "Apple linking coming soon." });
+          }
+        }
+      } catch (err: any) {
+        console.error(err);
+        setSnack({ open: true, severity: "error", msg: err.message || "Action failed." });
+      }
+    };
 
-  const ProviderAvatar = ({ provider }: { provider: Provider }) => {
-    if (provider.key === "google") {
+    const lastLogin = useMemo(() => {
+      const p = providers
+        .filter((x) => x.connected)
+        .sort((a, b) => (b.lastUsedAt || 0) - (a.lastUsedAt || 0))[0];
+      return p?.lastLoginMethod || "Password";
+    }, [providers]);
+
+    const ProviderAvatar = ({ provider }: { provider: Provider }) => {
+      if (provider.key === "google") {
+        return (
+          <Avatar sx={{ bgcolor: alpha("#FFFFFF", 0.90), border: `1px solid ${alpha("#DADCE0", 1)}` }}>
+            <GoogleGIcon size={18} />
+          </Avatar>
+        );
+      }
       return (
-        <Avatar sx={{ bgcolor: alpha("#FFFFFF", 0.90), border: `1px solid ${alpha("#DADCE0", 1)}` }}>
-          <GoogleGIcon size={18} />
+        <Avatar sx={{ bgcolor: "#000", color: "#FFF" }}>
+          <AppleIcon size={18} />
         </Avatar>
       );
-    }
-    return (
-      <Avatar sx={{ bgcolor: "#000", color: "#FFF" }}>
-        <AppleIcon size={18} />
-      </Avatar>
-    );
-  };
+    };
 
-  const ProviderActionButton = ({ provider }: { provider: Provider }) => {
-    if (provider.connected) {
+    const ProviderActionButton = ({ provider }: { provider: Provider }) => {
+      if (provider.connected) {
+        return (
+          <Button
+            variant="outlined"
+            sx={evOrangeOutlinedSx}
+            startIcon={<UnlinkIcon size={18} />}
+            onClick={() => openReauth(provider.key, "unlink")}
+          >
+            Unlink
+          </Button>
+        );
+      }
+
+      const brandSx = provider.key === "google" ? googleBtnSx : appleBtnSx;
+      const brandVariant = provider.key === "google" ? ("outlined" as const) : ("contained" as const);
+      const brandIcon = provider.key === "google" ? <GoogleGIcon size={18} /> : <AppleIcon size={18} />;
+
       return (
         <Button
-          variant="outlined"
-          sx={evOrangeOutlinedSx}
-          startIcon={<UnlinkIcon size={18} />}
-          onClick={() => openReauth(provider.key, "unlink")}
+          variant={brandVariant}
+          startIcon={brandIcon}
+          onClick={() => openReauth(provider.key, "link")}
+          sx={{ ...brandSx, borderRadius: 14, fontWeight: 900 }}
         >
-          Unlink
+          Link {provider.name}
         </Button>
       );
-    }
-
-    const brandSx = provider.key === "google" ? googleBtnSx : appleBtnSx;
-    const brandVariant = provider.key === "google" ? ("outlined" as const) : ("contained" as const);
-    const brandIcon = provider.key === "google" ? <GoogleGIcon size={18} /> : <AppleIcon size={18} />;
+    };
 
     return (
-      <Button
-        variant={brandVariant}
-        startIcon={brandIcon}
-        onClick={() => openReauth(provider.key, "link")}
-        sx={{ ...brandSx, borderRadius: 14, fontWeight: 900 }}
-      >
-        Link {provider.name}
-      </Button>
-    );
-  };
+      <>
+        <CssBaseline />
 
-  return (
-    <>
-      <CssBaseline />
+        <Box className="min-h-screen" sx={{ background: pageBg }}>
+          {/* Body */}
+          <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+              <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
+                {/* Sidebar */}
+                <Box className="hidden md:col-span-3 md:block">
+                  <ProfileSidebar />
+                </Box>
 
-      <Box className="min-h-screen" sx={{ background: pageBg }}>
-        {/* Body */}
-        <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
-            <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
-              {/* Sidebar */}
-              <Box className="hidden md:col-span-3 md:block">
-                <ProfileSidebar />
-              </Box>
+                {/* Main */}
+                <Box className="md:col-span-9">
+                  <Stack spacing={2.2}>
+                    <Card>
+                      <CardContent className="p-5 md:p-7">
+                        <Stack spacing={2.0}>
+                          <Stack
+                            direction={{ xs: "column", md: "row" }}
+                            spacing={2}
+                            alignItems={{ xs: "flex-start", md: "center" }}
+                            justifyContent="space-between"
+                          >
+                            <Box>
+                              <Typography variant="h5">Linked accounts</Typography>
+                              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                                Connect trusted providers to sign in faster. Linking and unlinking requires re-authentication.
+                              </Typography>
+                            </Box>
 
-              {/* Main */}
-              <Box className="md:col-span-9">
-                <Stack spacing={2.2}>
-                  <Card>
-                    <CardContent className="p-5 md:p-7">
-                      <Stack spacing={2.0}>
-                        <Stack
-                          direction={{ xs: "column", md: "row" }}
-                          spacing={2}
-                          alignItems={{ xs: "flex-start", md: "center" }}
-                          justifyContent="space-between"
-                        >
-                          <Box>
-                            <Typography variant="h5">Linked accounts</Typography>
-                            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                              Connect trusted providers to sign in faster. Linking and unlinking requires re-authentication.
-                            </Typography>
-                          </Box>
+                            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                              <Chip
+                                icon={<ClockIcon size={16} />}
+                                label={`Last sign-in: ${lastLogin}`}
+                                variant="outlined"
+                                sx={{ fontWeight: 900 }}
+                              />
+                            </Box>
+                          </Stack>
 
-                          <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                            <Chip
-                              icon={<ClockIcon size={16} />}
-                              label={`Last sign-in: ${lastLogin}`}
-                              variant="outlined"
-                              sx={{ fontWeight: 900 }}
-                            />
-                          </Box>
-                        </Stack>
+                          <Divider />
 
-                        <Divider />
+                          <Alert severity="info">
+                            Security tip: Keep at least one backup sign-in method (password or another provider) so you do not get locked out.
+                          </Alert>
 
-                        <Alert severity="info">
-                          Security tip: Keep at least one backup sign-in method (password or another provider) so you do not get locked out.
-                        </Alert>
-
-                        <Stack spacing={1.4}>
-                          {providers.map((p) => (
-                            <Box
-                              key={p.key}
-                              sx={{
-                                borderRadius: 20,
-                                border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
-                                backgroundColor: alpha(theme.palette.background.paper, 0.45),
-                                p: 1.4,
-                              }}
-                            >
-                              <Stack
-                                direction={{ xs: "column", sm: "row" }}
-                                spacing={1.4}
-                                alignItems={{ xs: "flex-start", sm: "center" }}
+                          <Stack spacing={1.4}>
+                            {providers.map((p) => (
+                              <Box
+                                key={p.key}
+                                sx={{
+                                  borderRadius: 20,
+                                  border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
+                                  backgroundColor: alpha(theme.palette.background.paper, 0.45),
+                                  p: 1.4,
+                                }}
                               >
-                                <Stack direction="row" spacing={1.2} alignItems="center" flex={1}>
-                                  <ProviderAvatar provider={p} />
-                                  <Box>
-                                    <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-                                      <Typography sx={{ fontWeight: 950 }}>{p.name}</Typography>
-                                      {p.connected ? (
-                                        <Chip size="small" color="success" label="Connected" />
-                                      ) : (
-                                        <Chip size="small" variant="outlined" label="Not connected" />
-                                      )}
-                                    </Stack>
-                                    <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                                      {p.connected
-                                        ? p.connectedEmail
-                                          ? maskEmail(p.connectedEmail)
-                                          : "Connected"
-                                        : "Not linked yet"}
-                                    </Typography>
-                                    <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 0.8 }}>
-                                      <Chip size="small" variant="outlined" label={`Last used: ${timeAgo(p.lastUsedAt)}`} />
-                                      <Chip size="small" variant="outlined" label={`Last login method: ${p.lastLoginMethod || "Unknown"}`} />
-                                    </Stack>
-                                  </Box>
-                                </Stack>
-
                                 <Stack
                                   direction={{ xs: "column", sm: "row" }}
-                                  spacing={1}
-                                  sx={{ width: { xs: "100%", sm: "auto" } }}
+                                  spacing={1.4}
+                                  alignItems={{ xs: "flex-start", sm: "center" }}
                                 >
-                                  <ProviderActionButton provider={p} />
+                                  <Stack direction="row" spacing={1.2} alignItems="center" flex={1}>
+                                    <ProviderAvatar provider={p} />
+                                    <Box>
+                                      <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+                                        <Typography sx={{ fontWeight: 950 }}>{p.name}</Typography>
+                                        {p.connected ? (
+                                          <Chip size="small" color="success" label="Connected" />
+                                        ) : (
+                                          <Chip size="small" variant="outlined" label="Not connected" />
+                                        )}
+                                      </Stack>
+                                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                                        {p.connected
+                                          ? p.connectedEmail
+                                            ? maskEmail(p.connectedEmail)
+                                            : "Connected"
+                                          : "Not linked yet"}
+                                      </Typography>
+                                      <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 0.8 }}>
+                                        <Chip size="small" variant="outlined" label={`Last used: ${timeAgo(p.lastUsedAt)}`} />
+                                        <Chip size="small" variant="outlined" label={`Last login method: ${p.lastLoginMethod || "Unknown"}`} />
+                                      </Stack>
+                                    </Box>
+                                  </Stack>
+
+                                  <Stack
+                                    direction={{ xs: "column", sm: "row" }}
+                                    spacing={1}
+                                    sx={{ width: { xs: "100%", sm: "auto" } }}
+                                  >
+                                    <ProviderActionButton provider={p} />
+                                  </Stack>
                                 </Stack>
-                              </Stack>
-                            </Box>
-                          ))}
-                        </Stack>
+                              </Box>
+                            ))}
+                          </Stack>
 
-                        <Divider />
+                          <Divider />
 
-                        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                          <Button
-                            variant="contained"
-                            color="secondary"
-                            sx={evOrangeContainedSx}
-                            startIcon={<ShieldCheckIcon size={18} />}
-                            onClick={() => navigate('/app/security')}
-                          >
-                            Security overview
-                          </Button>
-                          <Button
-                            variant="outlined"
-                            sx={evOrangeOutlinedSx}
-                            startIcon={<HelpCircleIcon size={18} />}
-                            onClick={() => navigate('/app/support')}
-                          >
-                            Support
-                          </Button>
-                        </Stack>
+                          <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                            <Button
+                              variant="contained"
+                              color="secondary"
+                              sx={evOrangeContainedSx}
+                              startIcon={<ShieldCheckIcon size={18} />}
+                              onClick={() => navigate('/app/security')}
+                            >
+                              Security overview
+                            </Button>
+                            <Button
+                              variant="outlined"
+                              sx={evOrangeOutlinedSx}
+                              startIcon={<HelpCircleIcon size={18} />}
+                              onClick={() => navigate('/app/support')}
+                            >
+                              Support
+                            </Button>
+                          </Stack>
 
-                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                          Linking providers may share basic profile information. You can revoke access anytime.
-                        </Typography>
-                      </Stack>
-                    </CardContent>
-                  </Card>
-
-                  {/* Mobile quick actions */}
-                  <Box className="md:hidden">
-                    <Card
-                      sx={{
-                        borderRadius: 22,
-                        border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
-                        backgroundColor: alpha(theme.palette.background.paper, 0.70),
-                        backdropFilter: "blur(10px)",
-                      }}
-                    >
-                      <CardContent>
-                        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                          <Button
-                            fullWidth
-                            variant="outlined"
-                            sx={evOrangeOutlinedSx}
-                            onClick={() => navigate('/app/profile')}
-                            startIcon={<ArrowLeftIcon size={18} />}
-                          >
-                            Profile
-                          </Button>
-                          <Button
-                            fullWidth
-                            variant="contained"
-                            color="secondary"
-                            sx={evOrangeContainedSx}
-                            onClick={() => navigate('/app/security')}
-                          >
-                            Security
-                          </Button>
+                          <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                            Linking providers may share basic profile information. You can revoke access anytime.
+                          </Typography>
                         </Stack>
                       </CardContent>
                     </Card>
-                  </Box>
 
-                  <Box className="mt-2" sx={{ opacity: 0.92 }}>
-                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      © {new Date().getFullYear()} EVzone Group
-                    </Typography>
-                  </Box>
-                </Stack>
-              </Box>
-            </Box>
-          </motion.div>
-        </Box>
-      </Box>
-
-      {/* Re-auth dialog */}
-      <Dialog
-        open={reauthOpen}
-        onClose={closeReauth}
-        fullWidth
-        maxWidth="sm"
-        PaperProps={{ sx: { borderRadius: 20, border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}
-      >
-        <DialogTitle sx={{ fontWeight: 950 }}>Confirm it’s you</DialogTitle>
-        <DialogContent>
-          <Stack spacing={1.4}>
-            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-              For your security, please re-authenticate to continue.
-            </Typography>
-
-            <Tabs
-              value={reauthMode === "password" ? 0 : 1}
-              onChange={(_, v) => setReauthMode(v === 0 ? "password" : "mfa")}
-              variant="fullWidth"
-              sx={{
-                borderRadius: 16,
-                border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
-                overflow: "hidden",
-                minHeight: 44,
-                "& .MuiTab-root": { minHeight: 44, fontWeight: 900 },
-                "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 },
-              }}
-            >
-              <Tab icon={<LockIcon size={16} />} iconPosition="start" label="Password" />
-              <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label="MFA" />
-            </Tabs>
-
-            {reauthMode === "password" ? (
-              <TextField
-                value={reauthPassword}
-                onChange={(e) => setReauthPassword(e.target.value)}
-                label="Password"
-                type="password"
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockIcon size={18} />
-                    </InputAdornment>
-                  ),
-                }}
-                helperText="Demo password: EVzone123!"
-              />
-            ) : (
-              <>
-                <Typography sx={{ fontWeight: 950 }}>Choose a channel</Typography>
-                <Box className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  {([
-                    { c: "Authenticator" as const, icon: <KeypadIcon size={18} />, color: EVZONE.orange },
-                    { c: "SMS" as const, icon: <SmsIcon size={18} />, color: EVZONE.orange },
-                    { c: "WhatsApp" as const, icon: <WhatsAppIcon size={18} />, color: WHATSAPP.green },
-                    { c: "Email" as const, icon: <MailIcon size={18} />, color: EVZONE.orange },
-                  ] as const).map((it) => {
-                    const selected = mfaChannel === it.c;
-                    const base = it.color;
-                    return (
-                      <Button
-                        key={it.c}
-                        variant={selected ? "contained" : "outlined"}
-                        startIcon={it.icon}
-                        onClick={() => { setMfaChannel(it.c); setCodeSent(false); setOtp(""); }}
-                        sx={
-                          selected
-                            ? ({
-                              borderRadius: 14,
-                              backgroundColor: base,
-                              color: "#FFFFFF",
-                              "&:hover": { backgroundColor: alpha(base, 0.92) },
-                            } as const)
-                            : ({
-                              borderRadius: 14,
-                              borderColor: alpha(base, 0.65),
-                              color: base,
-                              backgroundColor: alpha(theme.palette.background.paper, 0.25),
-                              "&:hover": { borderColor: base, backgroundColor: base, color: "#FFFFFF" },
-                            } as const)
-                        }
-                        fullWidth
+                    {/* Mobile quick actions */}
+                    <Box className="md:hidden">
+                      <Card
+                        sx={{
+                          borderRadius: 22,
+                          border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
+                          backgroundColor: alpha(theme.palette.background.paper, 0.70),
+                          backdropFilter: "blur(10px)",
+                        }}
                       >
-                        {it.c}
-                      </Button>
-                    );
-                  })}
+                        <CardContent>
+                          <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                            <Button
+                              fullWidth
+                              variant="outlined"
+                              sx={evOrangeOutlinedSx}
+                              onClick={() => navigate('/app/profile')}
+                              startIcon={<ArrowLeftIcon size={18} />}
+                            >
+                              Profile
+                            </Button>
+                            <Button
+                              fullWidth
+                              variant="contained"
+                              color="secondary"
+                              sx={evOrangeContainedSx}
+                              onClick={() => navigate('/app/security')}
+                            >
+                              Security
+                            </Button>
+                          </Stack>
+                        </CardContent>
+                      </Card>
+                    </Box>
+
+                    <Box className="mt-2" sx={{ opacity: 0.92 }}>
+                      <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                        © {new Date().getFullYear()} EVzone Group
+                      </Typography>
+                    </Box>
+                  </Stack>
                 </Box>
+              </Box>
+            </motion.div>
+          </Box>
+        </Box>
 
-                {mfaChannel !== "Authenticator" && (
-                  <Button
-                    disabled={cooldown > 0}
-                    onClick={requestChallenge}
-                    fullWidth
-                    variant="outlined"
-                    sx={{ borderRadius: 12, borderColor: theme.palette.divider }}
-                  >
-                    {cooldown > 0 ? `Resend in ${cooldown}s` : codeSent ? "Resend Code" : "Send Code"}
-                  </Button>
-                )}
+        {/* Re-auth dialog */}
+        <Dialog
+          open={reauthOpen}
+          onClose={closeReauth}
+          fullWidth
+          maxWidth="sm"
+          PaperProps={{ sx: { borderRadius: 20, border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}
+        >
+          <DialogTitle sx={{ fontWeight: 950 }}>Confirm it’s you</DialogTitle>
+          <DialogContent>
+            <Stack spacing={1.4}>
+              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                For your security, please re-authenticate to continue.
+              </Typography>
 
+              <Tabs
+                value={reauthMode === "password" ? 0 : 1}
+                onChange={(_, v) => setReauthMode(v === 0 ? "password" : "mfa")}
+                variant="fullWidth"
+                sx={{
+                  borderRadius: 16,
+                  border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
+                  overflow: "hidden",
+                  minHeight: 44,
+                  "& .MuiTab-root": { minHeight: 44, fontWeight: 900 },
+                  "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 },
+                }}
+              >
+                <Tab icon={<LockIcon size={16} />} iconPosition="start" label="Password" />
+                <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label="MFA" />
+              </Tabs>
+
+              {reauthMode === "password" ? (
                 <TextField
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                  label="6-digit code"
-                  placeholder="123456"
+                  value={reauthPassword}
+                  onChange={(e) => setReauthPassword(e.target.value)}
+                  label="Password"
+                  type="password"
                   fullWidth
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <KeypadIcon size={18} />
+                        <LockIcon size={18} />
                       </InputAdornment>
                     ),
                   }}
-                  helperText={mfaChannel === "Authenticator" ? "Open your Authenticator app" : codeSent ? "Code sent to your contact method" : "Request a code first"}
+                  helperText="Demo password: EVzone123!"
                 />
-              </>
-            )}
+              ) : (
+                <>
+                  <Typography sx={{ fontWeight: 950 }}>Choose a channel</Typography>
+                  <Box className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {([
+                      { c: "Authenticator" as const, icon: <KeypadIcon size={18} />, color: EVZONE.orange },
+                      { c: "SMS" as const, icon: <SmsIcon size={18} />, color: EVZONE.orange },
+                      { c: "WhatsApp" as const, icon: <WhatsAppIcon size={18} />, color: WHATSAPP.green },
+                      { c: "Email" as const, icon: <MailIcon size={18} />, color: EVZONE.orange },
+                    ] as const).map((it) => {
+                      const selected = mfaChannel === it.c;
+                      const base = it.color;
+                      return (
+                        <Button
+                          key={it.c}
+                          variant={selected ? "contained" : "outlined"}
+                          startIcon={it.icon}
+                          onClick={() => { setMfaChannel(it.c); setCodeSent(false); setOtp(""); }}
+                          sx={
+                            selected
+                              ? ({
+                                borderRadius: 14,
+                                backgroundColor: base,
+                                color: "#FFFFFF",
+                                "&:hover": { backgroundColor: alpha(base, 0.92) },
+                              } as const)
+                              : ({
+                                borderRadius: 14,
+                                borderColor: alpha(base, 0.65),
+                                color: base,
+                                backgroundColor: alpha(theme.palette.background.paper, 0.25),
+                                "&:hover": { borderColor: base, backgroundColor: base, color: "#FFFFFF" },
+                              } as const)
+                          }
+                          fullWidth
+                        >
+                          {it.c}
+                        </Button>
+                      );
+                    })}
+                  </Box>
 
-            <Alert severity="info">This is a demo re-auth flow. In production, we verify via your security settings.</Alert>
-          </Stack>
-        </DialogContent>
-        <DialogActions sx={{ p: 2, pt: 0 }}>
-          <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={closeReauth}>
-            Cancel
-          </Button>
-          <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={applyAction}>
-            Continue
-          </Button>
-        </DialogActions>
-      </Dialog>
+                  {mfaChannel !== "Authenticator" && (
+                    <Button
+                      disabled={cooldown > 0}
+                      onClick={requestChallenge}
+                      fullWidth
+                      variant="outlined"
+                      sx={{ borderRadius: 12, borderColor: theme.palette.divider }}
+                    >
+                      {cooldown > 0 ? `Resend in ${cooldown}s` : codeSent ? "Resend Code" : "Send Code"}
+                    </Button>
+                  )}
 
-      {/* Snackbar */}
-      <Snackbar
-        open={snack.open}
-        autoHideDuration={3400}
-        onClose={() => setSnack((s) => ({ ...s, open: false }))}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
+                  <TextField
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    label="6-digit code"
+                    placeholder="123456"
+                    fullWidth
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <KeypadIcon size={18} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    helperText={mfaChannel === "Authenticator" ? "Open your Authenticator app" : codeSent ? "Code sent to your contact method" : "Request a code first"}
+                  />
+                </>
+              )}
+
+              <Alert severity="info">This is a demo re-auth flow. In production, we verify via your security settings.</Alert>
+            </Stack>
+          </DialogContent>
+          <DialogActions sx={{ p: 2, pt: 0 }}>
+            <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={closeReauth}>
+              Cancel
+            </Button>
+            <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={applyAction}>
+              Continue
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Snackbar */}
+        <Snackbar
+          open={snack.open}
+          autoHideDuration={3400}
           onClose={() => setSnack((s) => ({ ...s, open: false }))}
-          severity={snack.severity}
-          variant={mode === "dark" ? "filled" : "standard"}
-          sx={{
-            borderRadius: 16,
-            border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`,
-            backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96),
-            color: theme.palette.text.primary,
-          }}
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         >
-          {snack.msg}
-        </Alert>
-      </Snackbar>
-    </>
-  );
+          <Alert
+            onClose={() => setSnack((s) => ({ ...s, open: false }))}
+            severity={snack.severity}
+            variant={mode === "dark" ? "filled" : "standard"}
+            sx={{
+              borderRadius: 16,
+              border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`,
+              backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96),
+              color: theme.palette.text.primary,
+            }}
+          >
+            {snack.msg}
+          </Alert>
+        </Snackbar>
+      </>
+    );
+  }
 }

@@ -199,7 +199,8 @@ function timeAgo(ts?: number) {
 // [Removed] mfaCodeFor mock
 
 export default function Manage2FAPage() {
-  const { t } = useTranslation("common"); {
+  const { t } = useTranslation("common");
+  {
   const theme = useTheme();
   const navigate = useNavigate();
   const { mode } = useThemeStore();
@@ -785,4 +786,5 @@ export default function Manage2FAPage() {
       </Snackbar>
     </Box >
   );
+}
 }

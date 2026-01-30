@@ -379,434 +379,436 @@ function OtpInput({ value, onChange, autoFocus = false }: { value: string[]; onC
 }
 
 export default function TwoFASetupPageV2() {
-  const { t } = useTranslation("common"); {
-  const theme = useTheme();
-  const navigate = useNavigate();
-  const { mode } = useThemeStore();
-  const isDark = mode === "dark";
+  const { t } = useTranslation("common");
+  {
+    const theme = useTheme();
+    const navigate = useNavigate();
+    const { mode } = useThemeStore();
+    const isDark = mode === "dark";
 
-  const [activeStep, setActiveStep] = useState(0);
-  const [method, setMethod] = useState<TwoFAMethod>("authenticator");
+    const [activeStep, setActiveStep] = useState(0);
+    const [method, setMethod] = useState<TwoFAMethod>("authenticator");
 
-  const [phone, setPhone] = useState("");
-  const [loading, setLoading] = useState(false);
+    const [phone, setPhone] = useState("");
+    const [loading, setLoading] = useState(false);
 
-  const [secret, setSecret] = useState("");
-  const [qrCodeUrl, setQrCodeUrl] = useState("");
-  const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
-  const [showBackup, setShowBackup] = useState(false);
+    const [secret, setSecret] = useState("");
+    const [qrCodeUrl, setQrCodeUrl] = useState("");
+    const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
+    const [showBackup, setShowBackup] = useState(false);
 
-  const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
+    const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
 
-  const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
+    const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
-  useEffect(() => {
-    // Optional deep link: /app/security/2fa/setup?method=whatsapp
-    try {
-      const qs = new URLSearchParams(window.location.search);
-      const m = qs.get("method");
-      if (m === "authenticator" || m === "sms" || m === "whatsapp") {
-        setMethod(m as TwoFAMethod);
-        setActiveStep(1);
-        setOtp(["", "", "", "", "", ""]);
+    useEffect(() => {
+      // Optional deep link: /app/security/2fa/setup?method=whatsapp
+      try {
+        const qs = new URLSearchParams(window.location.search);
+        const m = qs.get("method");
+        if (m === "authenticator" || m === "sms" || m === "whatsapp") {
+          setMethod(m as TwoFAMethod);
+          setActiveStep(1);
+          setOtp(["", "", "", "", "", ""]);
+        }
+      } catch {
+        // ignore
       }
-    } catch {
-      // ignore
-    }
-  }, []);
+    }, []);
 
-  // Fetch setup params for Authenticator
-  useEffect(() => {
-    if (activeStep === 1 && method === "authenticator") {
+    // Fetch setup params for Authenticator
+    useEffect(() => {
+      if (activeStep === 1 && method === "authenticator") {
+        setLoading(true);
+        api.post<{ secret: string; qrCodeUrl: string }>("/auth/mfa/setup/start")
+          .then((res) => {
+            setSecret(res.secret);
+            setQrCodeUrl(res.qrCodeUrl);
+            setLoading(false);
+          })
+          .catch((e) => {
+            console.error(e);
+            setLoading(false);
+          });
+      }
+    }, [activeStep, method]);
+
+    const steps = ["Choose method", "Set up", "Verify", "Success"];
+
+    const pageBg =
+      mode === "dark"
+        ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
+        : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
+
+    const evOrangeContainedSx = {
+      backgroundColor: EVZONE.orange,
+      color: "#FFFFFF",
+      boxShadow: `0 18px 48px ${alpha(EVZONE.orange, mode === "dark" ? 0.28 : 0.18)}`,
+      "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
+      "&:active": { backgroundColor: alpha(EVZONE.orange, 0.86), color: "#FFFFFF" },
+    } as const;
+
+    const evOrangeOutlinedSx = {
+      borderColor: alpha(EVZONE.orange, 0.65),
+      color: EVZONE.orange,
+      backgroundColor: alpha(theme.palette.background.paper, 0.25),
+      "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
+    } as const;
+
+    const waContainedSx = {
+      backgroundColor: WHATSAPP.green,
+      color: "#FFFFFF",
+      boxShadow: `0 18px 48px ${alpha(WHATSAPP.green, mode === "dark" ? 0.26 : 0.18)}`,
+      "&:hover": { backgroundColor: alpha(WHATSAPP.green, 0.92), color: "#FFFFFF" },
+      "&:active": { backgroundColor: alpha(WHATSAPP.green, 0.86), color: "#FFFFFF" },
+    } as const;
+
+    const waOutlinedSx = {
+      borderColor: alpha(WHATSAPP.green, 0.75),
+      color: WHATSAPP.green,
+      backgroundColor: alpha(theme.palette.background.paper, 0.25),
+      "&:hover": { borderColor: WHATSAPP.green, backgroundColor: WHATSAPP.green, color: "#FFFFFF" },
+    } as const;
+
+    // toggleMode removed
+
+    const start = (m: TwoFAMethod) => {
+      setMethod(m);
+      setActiveStep(1);
+      setOtp(["", "", "", "", "", ""]);
+      if (m === "authenticator") setSecret(randomBase32(16));
+    };
+
+    // expectedCode removed
+
+    const sendCode = async () => {
+      if (method === "authenticator") {
+        setSnack({ open: true, severity: "info", msg: "Open your authenticator app and enter the current code." });
+        return;
+      }
+
       setLoading(true);
-      api.post<{ secret: string; qrCodeUrl: string }>("/auth/mfa/setup/start")
-        .then((res) => {
-          setSecret(res.secret);
-          setQrCodeUrl(res.qrCodeUrl);
-          setLoading(false);
-        })
-        .catch((e) => {
-          console.error(e);
-          setLoading(false);
-        });
-    }
-  }, [activeStep, method]);
+      try {
+        await api.post("/auth/mfa/setup/sms/send", { phone });
+        setSnack({ open: true, severity: "success", msg: "Code sent successfully." });
+        setActiveStep(2); // Auto-advance to verification
+      } catch (err: unknown) {
+        console.error(err);
+        const msg = err instanceof Error ? err.message : "Failed to send code.";
+        setSnack({ open: true, severity: "error", msg });
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const steps = ["Choose method", "Set up", "Verify", "Success"];
+    const verify = async () => {
+      const code = otp.join("");
+      if (code.length < 6) return setSnack({ open: true, severity: "warning", msg: "Enter the 6-digit code." });
 
-  const pageBg =
-    mode === "dark"
-      ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
-      : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
+      setLoading(true);
+      try {
+        const payload: Record<string, string> = { token: code, method };
+        if (method === "authenticator") payload.secret = secret;
+        if (method === "sms" || method === "whatsapp") payload.phone = phone;
 
-  const evOrangeContainedSx = {
-    backgroundColor: EVZONE.orange,
-    color: "#FFFFFF",
-    boxShadow: `0 18px 48px ${alpha(EVZONE.orange, mode === "dark" ? 0.28 : 0.18)}`,
-    "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
-    "&:active": { backgroundColor: alpha(EVZONE.orange, 0.86), color: "#FFFFFF" },
-  } as const;
+        const res = await api.post<{ success: boolean; recoveryCodes?: string[] }>("/auth/mfa/setup/verify", payload);
+        setLoading(false);
 
-  const evOrangeOutlinedSx = {
-    borderColor: alpha(EVZONE.orange, 0.65),
-    color: EVZONE.orange,
-    backgroundColor: alpha(theme.palette.background.paper, 0.25),
-    "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
-  } as const;
-
-  const waContainedSx = {
-    backgroundColor: WHATSAPP.green,
-    color: "#FFFFFF",
-    boxShadow: `0 18px 48px ${alpha(WHATSAPP.green, mode === "dark" ? 0.26 : 0.18)}`,
-    "&:hover": { backgroundColor: alpha(WHATSAPP.green, 0.92), color: "#FFFFFF" },
-    "&:active": { backgroundColor: alpha(WHATSAPP.green, 0.86), color: "#FFFFFF" },
-  } as const;
-
-  const waOutlinedSx = {
-    borderColor: alpha(WHATSAPP.green, 0.75),
-    color: WHATSAPP.green,
-    backgroundColor: alpha(theme.palette.background.paper, 0.25),
-    "&:hover": { borderColor: WHATSAPP.green, backgroundColor: WHATSAPP.green, color: "#FFFFFF" },
-  } as const;
-
-  // toggleMode removed
-
-  const start = (m: TwoFAMethod) => {
-    setMethod(m);
-    setActiveStep(1);
-    setOtp(["", "", "", "", "", ""]);
-    if (m === "authenticator") setSecret(randomBase32(16));
-  };
-
-  // expectedCode removed
-
-  const sendCode = async () => {
-    if (method === "authenticator") {
-      setSnack({ open: true, severity: "info", msg: "Open your authenticator app and enter the current code." });
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await api.post("/auth/mfa/setup/sms/send", { phone });
-      setSnack({ open: true, severity: "success", msg: "Code sent successfully." });
-      setActiveStep(2); // Auto-advance to verification
-    } catch (err: unknown) {
-      console.error(err);
-      const msg = err instanceof Error ? err.message : "Failed to send code.";
-      setSnack({ open: true, severity: "error", msg });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const verify = async () => {
-    const code = otp.join("");
-    if (code.length < 6) return setSnack({ open: true, severity: "warning", msg: "Enter the 6-digit code." });
-
-    setLoading(true);
-    try {
-      const payload: Record<string, string> = { token: code, method };
-      if (method === "authenticator") payload.secret = secret;
-      if (method === "sms" || method === "whatsapp") payload.phone = phone;
-
-      const res = await api.post<{ success: boolean; recoveryCodes?: string[] }>("/auth/mfa/setup/verify", payload);
-      setLoading(false);
-
-      if (res.success) {
-        setRecoveryCodes(res.recoveryCodes || []);
-        setSnack({ open: true, severity: "success", msg: "2FA enabled successfully." });
-        setShowBackup(true);
-        setActiveStep(3);
-      } else {
+        if (res.success) {
+          setRecoveryCodes(res.recoveryCodes || []);
+          setSnack({ open: true, severity: "success", msg: "2FA enabled successfully." });
+          setShowBackup(true);
+          setActiveStep(3);
+        } else {
+          setSnack({ open: true, severity: "error", msg: "Verification failed. Code invalid." });
+          setOtp(["", "", "", "", "", ""]);
+        }
+      } catch (err) {
+        setLoading(false);
         setSnack({ open: true, severity: "error", msg: "Verification failed. Code invalid." });
         setOtp(["", "", "", "", "", ""]);
       }
-    } catch (err) {
-      setLoading(false);
-      setSnack({ open: true, severity: "error", msg: "Verification failed. Code invalid." });
-      setOtp(["", "", "", "", "", ""]);
-    }
-  };
+    };
 
-  const downloadCodesTxt = () => {
-    const content = recoveryCodes.join("\n");
-    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "evzone-recovery-codes.txt";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
+    const downloadCodesTxt = () => {
+      const content = recoveryCodes.join("\n");
+      const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "evzone-recovery-codes.txt";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
 
-  const cardSx = {
-    borderRadius: "4px",
-    border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
-    backgroundColor: alpha(theme.palette.background.paper, 0.45),
-  } as const;
+    const cardSx = {
+      borderRadius: "4px",
+      border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
+      backgroundColor: alpha(theme.palette.background.paper, 0.45),
+    } as const;
 
-  return (
-    <Box className="min-h-screen" sx={{ background: pageBg }}>
+    return (
+      <Box className="min-h-screen" sx={{ background: pageBg }}>
 
-      <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
-          <Stack spacing={2.2}>
-            <Card>
-              <CardContent className="p-5 md:p-7">
-                <Stack spacing={1.2}>
-                  <Typography variant="h5">Two-factor authentication setup</Typography>
-                  <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                    Add an extra layer of security to protect your account and wallet.
-                  </Typography>
-                  <Stepper activeStep={activeStep} alternativeLabel sx={{ mt: 1.5 }}>
-                    {steps.map((s) => (
-                      <Step key={s}>
-                        <StepLabel>{s}</StepLabel>
-                      </Step>
-                    ))}
-                  </Stepper>
-                </Stack>
-              </CardContent>
-            </Card>
-
-            {activeStep === 0 ? (
+        <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+            <Stack spacing={2.2}>
               <Card>
                 <CardContent className="p-5 md:p-7">
-                  <Stack spacing={2}>
-                    <Stack spacing={0.6}>
-                      <Typography variant="h6">Choose your method</Typography>
-                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        Authenticator is recommended. SMS and WhatsApp are convenient options.
-                      </Typography>
-                    </Stack>
-
-                    <Box className="grid gap-4 md:grid-cols-3">
-                      <Box sx={cardSx}>
-                        <CardContent className="p-5">
-                          <Stack spacing={1.2}>
-                            <Stack direction="row" spacing={1.2} alignItems="center">
-                              <Box sx={{ width: 40, height: 40, borderRadius: "4px", display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.18 : 0.12), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
-                                <KeypadIcon size={18} />
-                              </Box>
-                              <Box>
-                                <Typography sx={{ fontWeight: 950 }}>Authenticator</Typography>
-                                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Best security, works offline.</Typography>
-                              </Box>
-                            </Stack>
-                            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                              <Chip size="small" color="success" label="Recommended" />
-                              <Chip size="small" variant="outlined" label="Phishing-resistant" />
-                            </Stack>
-                            <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={() => start("authenticator")}>
-                              Continue
-                            </Button>
-                          </Stack>
-                        </CardContent>
-                      </Box>
-
-                      <Box sx={cardSx}>
-                        <CardContent className="p-5">
-                          <Stack spacing={1.2}>
-                            <Stack direction="row" spacing={1.2} alignItems="center">
-                              <Box sx={{ width: 40, height: 40, borderRadius: "4px", display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.18 : 0.12), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
-                                <PhoneIcon size={18} />
-                              </Box>
-                              <Box>
-                                <Typography sx={{ fontWeight: 950 }}>SMS</Typography>
-                                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Code sent to your phone number.</Typography>
-                              </Box>
-                            </Stack>
-                            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                              <Chip size="small" color="info" label="Simple" />
-                              <Chip size="small" variant="outlined" label="Requires network" />
-                            </Stack>
-                            <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={() => start("sms")}>
-                              Continue
-                            </Button>
-                          </Stack>
-                        </CardContent>
-                      </Box>
-
-                      <Box sx={cardSx}>
-                        <CardContent className="p-5">
-                          <Stack spacing={1.2}>
-                            <Stack direction="row" spacing={1.2} alignItems="center">
-                              <Box sx={{ width: 40, height: 40, borderRadius: "4px", display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.18 : 0.12), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
-                                <WhatsAppIcon size={18} />
-                              </Box>
-                              <Box>
-                                <Typography sx={{ fontWeight: 950 }}>WhatsApp</Typography>
-                                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Code delivered via WhatsApp.</Typography>
-                              </Box>
-                            </Stack>
-                            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                              <Chip size="small" label="Fast" sx={{ border: `1px solid ${alpha(WHATSAPP.green, 0.6)}`, color: WHATSAPP.green, backgroundColor: alpha(WHATSAPP.green, 0.10) }} />
-                              <Chip size="small" variant="outlined" label="Requires WhatsApp" />
-                            </Stack>
-                            <Button variant="contained" sx={waContainedSx} onClick={() => start("whatsapp")}>
-                              Continue
-                            </Button>
-                          </Stack>
-                        </CardContent>
-                      </Box>
-                    </Box>
-
-                    <Divider />
-
-                    <Alert severity="info" icon={<ShieldCheckIcon size={18} />}>
-                      You will get backup codes after setup. Store them safely.
-                    </Alert>
+                  <Stack spacing={1.2}>
+                    <Typography variant="h5">Two-factor authentication setup</Typography>
+                    <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                      Add an extra layer of security to protect your account and wallet.
+                    </Typography>
+                    <Stepper activeStep={activeStep} alternativeLabel sx={{ mt: 1.5 }}>
+                      {steps.map((s) => (
+                        <Step key={s}>
+                          <StepLabel>{s}</StepLabel>
+                        </Step>
+                      ))}
+                    </Stepper>
                   </Stack>
                 </CardContent>
               </Card>
-            ) : null}
 
-            {activeStep === 1 ? (
-              <Card>
-                <CardContent className="p-5 md:p-7">
-                  <Stack spacing={2}>
-                    <Stack spacing={0.6}>
-                      <Typography variant="h6">Set up {method === "authenticator" ? "Authenticator" : method === "sms" ? "SMS" : "WhatsApp"}</Typography>
-                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Follow the steps below, then verify the code.</Typography>
-                    </Stack>
+              {activeStep === 0 ? (
+                <Card>
+                  <CardContent className="p-5 md:p-7">
+                    <Stack spacing={2}>
+                      <Stack spacing={0.6}>
+                        <Typography variant="h6">Choose your method</Typography>
+                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                          Authenticator is recommended. SMS and WhatsApp are convenient options.
+                        </Typography>
+                      </Stack>
 
-                    {method === "authenticator" ? (
-                      <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
-                        <Box className="md:col-span-5">
-                          <Stack spacing={1.2}>
-                            <Typography sx={{ fontWeight: 950 }}>1) Scan the QR code</Typography>
-                            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Use Google Authenticator or any TOTP app.</Typography>
-                            {qrCodeUrl ? <img src={qrCodeUrl} alt="QR Code" style={{ borderRadius: "4px", width: 220, height: 220 }} /> : <PseudoQr seed={secret} />}
-                          </Stack>
-                        </Box>
-                        <Box className="md:col-span-7">
-                          <Stack spacing={1.2}>
-                            <Typography sx={{ fontWeight: 950 }}>2) Or enter the secret</Typography>
-                            <TextField
-                              value={secret}
-                              label="Secret key"
-                              fullWidth
-                              InputProps={{
-                                readOnly: true,
-                                startAdornment: (<InputAdornment position="start"><KeypadIcon size={18} /></InputAdornment>),
-                                endAdornment: (
-                                  <InputAdornment position="end">
-                                    <IconButton size="small" onClick={async () => { const ok = await copyToClipboard(secret); setSnack({ open: true, severity: ok ? "success" : "warning", msg: ok ? "Copied secret." : "Copy failed." }); }} sx={{ color: EVZONE.orange }}>
-                                      <CopyIcon size={18} />
-                                    </IconButton>
-                                  </InputAdornment>
-                                ),
-                              }}
-                              helperText="Keep this key private."
-                            />
-                            <Alert severity="info">Use your authenticator app to get the code.</Alert>
-                            <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                              <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<ArrowLeftIcon size={18} />} onClick={() => setActiveStep(0)}>{t("auth.common.back")}<//Button>
-                              <Button variant="contained" color="secondary" sx={evOrangeContainedSx} endIcon={<ArrowRightIcon size={18} />} onClick={() => setActiveStep(2)}>Verify code</Button>
+                      <Box className="grid gap-4 md:grid-cols-3">
+                        <Box sx={cardSx}>
+                          <CardContent className="p-5">
+                            <Stack spacing={1.2}>
+                              <Stack direction="row" spacing={1.2} alignItems="center">
+                                <Box sx={{ width: 40, height: 40, borderRadius: "4px", display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.18 : 0.12), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
+                                  <KeypadIcon size={18} />
+                                </Box>
+                                <Box>
+                                  <Typography sx={{ fontWeight: 950 }}>Authenticator</Typography>
+                                  <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Best security, works offline.</Typography>
+                                </Box>
+                              </Stack>
+                              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                                <Chip size="small" color="success" label="Recommended" />
+                                <Chip size="small" variant="outlined" label="Phishing-resistant" />
+                              </Stack>
+                              <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={() => start("authenticator")}>
+                                Continue
+                              </Button>
                             </Stack>
-                          </Stack>
+                          </CardContent>
+                        </Box>
+
+                        <Box sx={cardSx}>
+                          <CardContent className="p-5">
+                            <Stack spacing={1.2}>
+                              <Stack direction="row" spacing={1.2} alignItems="center">
+                                <Box sx={{ width: 40, height: 40, borderRadius: "4px", display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.18 : 0.12), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
+                                  <PhoneIcon size={18} />
+                                </Box>
+                                <Box>
+                                  <Typography sx={{ fontWeight: 950 }}>SMS</Typography>
+                                  <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Code sent to your phone number.</Typography>
+                                </Box>
+                              </Stack>
+                              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                                <Chip size="small" color="info" label="Simple" />
+                                <Chip size="small" variant="outlined" label="Requires network" />
+                              </Stack>
+                              <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={() => start("sms")}>
+                                Continue
+                              </Button>
+                            </Stack>
+                          </CardContent>
+                        </Box>
+
+                        <Box sx={cardSx}>
+                          <CardContent className="p-5">
+                            <Stack spacing={1.2}>
+                              <Stack direction="row" spacing={1.2} alignItems="center">
+                                <Box sx={{ width: 40, height: 40, borderRadius: "4px", display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.18 : 0.12), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
+                                  <WhatsAppIcon size={18} />
+                                </Box>
+                                <Box>
+                                  <Typography sx={{ fontWeight: 950 }}>WhatsApp</Typography>
+                                  <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Code delivered via WhatsApp.</Typography>
+                                </Box>
+                              </Stack>
+                              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                                <Chip size="small" label="Fast" sx={{ border: `1px solid ${alpha(WHATSAPP.green, 0.6)}`, color: WHATSAPP.green, backgroundColor: alpha(WHATSAPP.green, 0.10) }} />
+                                <Chip size="small" variant="outlined" label="Requires WhatsApp" />
+                              </Stack>
+                              <Button variant="contained" sx={waContainedSx} onClick={() => start("whatsapp")}>
+                                Continue
+                              </Button>
+                            </Stack>
+                          </CardContent>
                         </Box>
                       </Box>
-                    ) : (
-                      <Stack spacing={1.4}>
-                        <Typography sx={{ fontWeight: 950 }}>1) Confirm phone number</Typography>
-                        <TextField
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value)}
-                          label="Phone number"
-                          fullWidth
-                          InputProps={{ startAdornment: (<InputAdornment position="start"><PhoneIcon size={18} /></InputAdornment>) }}
-                          helperText={method === "sms" ? "A code will be sent by SMS." : "A code will be sent via WhatsApp."}
-                        />
-                        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                          <Button variant="contained" color="secondary" sx={method === "whatsapp" ? waContainedSx : evOrangeContainedSx} onClick={sendCode}>Send & Verify</Button>
-                          <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<ArrowLeftIcon size={18} />} onClick={() => setActiveStep(0)}>{t("auth.common.back")}<//Button>
-                        </Stack>
-                        <Alert severity="info">We'll send a code to <b>{phone}</b>.</Alert>
-                      </Stack>
-                    )}
-                  </Stack>
-                </CardContent>
-              </Card>
-            ) : null}
 
-            {activeStep === 2 ? (
-              <Card>
-                <CardContent className="p-5 md:p-7">
-                  <Stack spacing={2}>
-                    <Stack spacing={0.6}>
-                      <Typography variant="h6">Verify your code</Typography>
-                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Enter the 6-digit code from {method === "authenticator" ? "your authenticator app" : method === "sms" ? "SMS" : "WhatsApp"}.</Typography>
-                    </Stack>
-                    <OtpInput value={otp} onChange={setOtp} autoFocus />
-                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                      <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<ArrowLeftIcon size={18} />} onClick={() => setActiveStep(1)}>{t("auth.common.back")}<//Button>
-                      <Button variant="outlined" sx={method === "whatsapp" ? waOutlinedSx : evOrangeOutlinedSx} onClick={sendCode}>Resend</Button>
-                      <Button variant="contained" color="secondary" sx={evOrangeContainedSx} endIcon={<ArrowRightIcon size={18} />} onClick={verify}>{t("auth.common.verify")}<//Button>
-                    </Stack>
-                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Please enter the code you received.</Typography>
-                  </Stack>
-                </CardContent>
-              </Card>
-            ) : null}
+                      <Divider />
 
-            {activeStep === 3 ? (
-              <Card>
-                <CardContent className="p-5 md:p-7">
-                  <Stack spacing={2}>
-                    <Stack direction="row" spacing={1.2} alignItems="center">
-                      <Box sx={{ color: EVZONE.green }}><CheckCircleIcon size={22} /></Box>
-                      <Box>
-                        <Typography variant="h6">2FA is enabled</Typography>
-                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Save your recovery codes. You will need them if you lose access.</Typography>
-                      </Box>
+                      <Alert severity="info" icon={<ShieldCheckIcon size={18} />}>
+                        You will get backup codes after setup. Store them safely.
+                      </Alert>
                     </Stack>
-                    <Divider />
-                    <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
-                      <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} alignItems={{ xs: "flex-start", sm: "center" }} justifyContent="space-between">
-                        <Typography sx={{ fontWeight: 950 }}>Recovery codes</Typography>
-                        <Stack direction="row" spacing={1}>
-                          <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<CopyIcon size={18} />} onClick={async () => { const ok = await copyToClipboard(recoveryCodes.join("\n")); setSnack({ open: true, severity: ok ? "success" : "warning", msg: ok ? "Copied codes." : "Copy failed." }); }}>Copy</Button>
-                          <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<DownloadIcon size={18} />} onClick={downloadCodesTxt}>Download</Button>
-                        </Stack>
+                  </CardContent>
+                </Card>
+              ) : null}
+
+              {activeStep === 1 ? (
+                <Card>
+                  <CardContent className="p-5 md:p-7">
+                    <Stack spacing={2}>
+                      <Stack spacing={0.6}>
+                        <Typography variant="h6">Set up {method === "authenticator" ? "Authenticator" : method === "sms" ? "SMS" : "WhatsApp"}</Typography>
+                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Follow the steps below, then verify the code.</Typography>
                       </Stack>
-                      <Divider sx={{ my: 1.2 }} />
-                      <Box className="grid gap-2 sm:grid-cols-2">
-                        {recoveryCodes.map((c) => (
-                          <Box key={c} sx={{ borderRadius: 14, border: `1px dashed ${alpha(theme.palette.text.primary, 0.18)}`, p: 1.1, backgroundColor: alpha(theme.palette.background.paper, 0.35) }}>
-                            <Typography sx={{ fontWeight: 950, letterSpacing: 0.6 }}>{showBackup ? c : "••••-••••"}</Typography>
+
+                      {method === "authenticator" ? (
+                        <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
+                          <Box className="md:col-span-5">
+                            <Stack spacing={1.2}>
+                              <Typography sx={{ fontWeight: 950 }}>1) Scan the QR code</Typography>
+                              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Use Google Authenticator or any TOTP app.</Typography>
+                              {qrCodeUrl ? <img src={qrCodeUrl} alt="QR Code" style={{ borderRadius: "4px", width: 220, height: 220 }} /> : <PseudoQr seed={secret} />}
+                            </Stack>
                           </Box>
-                        ))}
-                      </Box>
-                      <Button variant="text" sx={{ mt: 1.2, color: EVZONE.orange, fontWeight: 900, "&:hover": { backgroundColor: alpha(EVZONE.orange, mode === "dark" ? 0.14 : 0.10) } }} onClick={() => setShowBackup((v) => !v)}>
-                        {showBackup ? "Hide codes" : "Reveal codes"}
-                      </Button>
-                    </Box>
-                    <Alert severity="info">We recommend saving these in a password manager. Do not share them.</Alert>
-                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                      <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={() => navigate("/app/security/2fa")}>Go to Manage 2FA</Button>
-                      <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => navigate("/app/security")}>Back to Security</Button>
+                          <Box className="md:col-span-7">
+                            <Stack spacing={1.2}>
+                              <Typography sx={{ fontWeight: 950 }}>2) Or enter the secret</Typography>
+                              <TextField
+                                value={secret}
+                                label="Secret key"
+                                fullWidth
+                                InputProps={{
+                                  readOnly: true,
+                                  startAdornment: (<InputAdornment position="start"><KeypadIcon size={18} /></InputAdornment>),
+                                  endAdornment: (
+                                    <InputAdornment position="end">
+                                      <IconButton size="small" onClick={async () => { const ok = await copyToClipboard(secret); setSnack({ open: true, severity: ok ? "success" : "warning", msg: ok ? "Copied secret." : "Copy failed." }); }} sx={{ color: EVZONE.orange }}>
+                                        <CopyIcon size={18} />
+                                      </IconButton>
+                                    </InputAdornment>
+                                  ),
+                                }}
+                                helperText="Keep this key private."
+                              />
+                              <Alert severity="info">Use your authenticator app to get the code.</Alert>
+                              <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                                <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<ArrowLeftIcon size={18} />} onClick={() => setActiveStep(0)}>{t("auth.common.back")}</Button>
+                                <Button variant="contained" color="secondary" sx={evOrangeContainedSx} endIcon={<ArrowRightIcon size={18} />} onClick={() => setActiveStep(2)}>Verify code</Button>
+                              </Stack>
+                            </Stack>
+                          </Box>
+                        </Box>
+                      ) : (
+                        <Stack spacing={1.4}>
+                          <Typography sx={{ fontWeight: 950 }}>1) Confirm phone number</Typography>
+                          <TextField
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            label="Phone number"
+                            fullWidth
+                            InputProps={{ startAdornment: (<InputAdornment position="start"><PhoneIcon size={18} /></InputAdornment>) }}
+                            helperText={method === "sms" ? "A code will be sent by SMS." : "A code will be sent via WhatsApp."}
+                          />
+                          <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                            <Button variant="contained" color="secondary" sx={method === "whatsapp" ? waContainedSx : evOrangeContainedSx} onClick={sendCode}>Send & Verify</Button>
+                            <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<ArrowLeftIcon size={18} />} onClick={() => setActiveStep(0)}>{t("auth.common.back")}</Button>
+                          </Stack>
+                          <Alert severity="info">We'll send a code to <b>{phone}</b>.</Alert>
+                        </Stack>
+                      )}
                     </Stack>
-                  </Stack>
-                </CardContent>
-              </Card>
-            ) : null}
+                  </CardContent>
+                </Card>
+              ) : null}
 
-            <Box sx={{ opacity: 0.92 }}>
-              <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
-            </Box>
-          </Stack>
-        </motion.div>
+              {activeStep === 2 ? (
+                <Card>
+                  <CardContent className="p-5 md:p-7">
+                    <Stack spacing={2}>
+                      <Stack spacing={0.6}>
+                        <Typography variant="h6">Verify your code</Typography>
+                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Enter the 6-digit code from {method === "authenticator" ? "your authenticator app" : method === "sms" ? "SMS" : "WhatsApp"}.</Typography>
+                      </Stack>
+                      <OtpInput value={otp} onChange={setOtp} autoFocus />
+                      <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                        <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<ArrowLeftIcon size={18} />} onClick={() => setActiveStep(1)}>{t("auth.common.back")}</Button>
+                        <Button variant="outlined" sx={method === "whatsapp" ? waOutlinedSx : evOrangeOutlinedSx} onClick={sendCode}>Resend</Button>
+                        <Button variant="contained" color="secondary" sx={evOrangeContainedSx} endIcon={<ArrowRightIcon size={18} />} onClick={verify}>{t("auth.common.verify")}</Button>
+                      </Stack>
+                      <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Please enter the code you received.</Typography>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              ) : null}
+
+              {activeStep === 3 ? (
+                <Card>
+                  <CardContent className="p-5 md:p-7">
+                    <Stack spacing={2}>
+                      <Stack direction="row" spacing={1.2} alignItems="center">
+                        <Box sx={{ color: EVZONE.green }}><CheckCircleIcon size={22} /></Box>
+                        <Box>
+                          <Typography variant="h6">2FA is enabled</Typography>
+                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>Save your recovery codes. You will need them if you lose access.</Typography>
+                        </Box>
+                      </Stack>
+                      <Divider />
+                      <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
+                        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} alignItems={{ xs: "flex-start", sm: "center" }} justifyContent="space-between">
+                          <Typography sx={{ fontWeight: 950 }}>Recovery codes</Typography>
+                          <Stack direction="row" spacing={1}>
+                            <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<CopyIcon size={18} />} onClick={async () => { const ok = await copyToClipboard(recoveryCodes.join("\n")); setSnack({ open: true, severity: ok ? "success" : "warning", msg: ok ? "Copied codes." : "Copy failed." }); }}>Copy</Button>
+                            <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<DownloadIcon size={18} />} onClick={downloadCodesTxt}>Download</Button>
+                          </Stack>
+                        </Stack>
+                        <Divider sx={{ my: 1.2 }} />
+                        <Box className="grid gap-2 sm:grid-cols-2">
+                          {recoveryCodes.map((c) => (
+                            <Box key={c} sx={{ borderRadius: 14, border: `1px dashed ${alpha(theme.palette.text.primary, 0.18)}`, p: 1.1, backgroundColor: alpha(theme.palette.background.paper, 0.35) }}>
+                              <Typography sx={{ fontWeight: 950, letterSpacing: 0.6 }}>{showBackup ? c : "••••-••••"}</Typography>
+                            </Box>
+                          ))}
+                        </Box>
+                        <Button variant="text" sx={{ mt: 1.2, color: EVZONE.orange, fontWeight: 900, "&:hover": { backgroundColor: alpha(EVZONE.orange, mode === "dark" ? 0.14 : 0.10) } }} onClick={() => setShowBackup((v) => !v)}>
+                          {showBackup ? "Hide codes" : "Reveal codes"}
+                        </Button>
+                      </Box>
+                      <Alert severity="info">We recommend saving these in a password manager. Do not share them.</Alert>
+                      <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                        <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={() => navigate("/app/security/2fa")}>Go to Manage 2FA</Button>
+                        <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => navigate("/app/security")}>Back to Security</Button>
+                      </Stack>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              ) : null}
+
+              <Box sx={{ opacity: 0.92 }}>
+                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
+              </Box>
+            </Stack>
+          </motion.div>
+        </Box>
+
+        <Snackbar open={snack.open} autoHideDuration={3400} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+          <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={mode === "dark" ? "filled" : "standard"} sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
+            {snack.msg}
+          </Alert>
+        </Snackbar>
       </Box>
-
-      <Snackbar open={snack.open} autoHideDuration={3400} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-        <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={mode === "dark" ? "filled" : "standard"} sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
-          {snack.msg}
-        </Alert>
-      </Snackbar>
-    </Box>
-  );
+    );
+  }
 }

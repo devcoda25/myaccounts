@@ -293,457 +293,459 @@ function runSelfTestsOnce() {
 }
 
 export default function DeleteDeactivateAccountPage() {
-  const { t } = useTranslation("common"); {
-  const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
-  const theme = useMemo(() => buildTheme(mode), [mode]);
-  const navigate = useNavigate();
-  const isDark = mode === "dark";
+  const { t } = useTranslation("common");
+  {
+    const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
+    const theme = useMemo(() => buildTheme(mode), [mode]);
+    const navigate = useNavigate();
+    const isDark = mode === "dark";
 
-  const [flow, setFlow] = useState<FlowState>("form");
-  const [action, setAction] = useState<ActionType>("deactivate");
-  const [coolingDays, setCoolingDays] = useState<number>(14);
+    const [flow, setFlow] = useState<FlowState>("form");
+    const [action, setAction] = useState<ActionType>("deactivate");
+    const [coolingDays, setCoolingDays] = useState<number>(14);
 
-  // confirmations
-  const [ackDataLoss, setAckDataLoss] = useState(false);
-  const [ackWallet, setAckWallet] = useState(false);
-  const [ackOrgs, setAckOrgs] = useState(false);
+    // confirmations
+    const [ackDataLoss, setAckDataLoss] = useState(false);
+    const [ackWallet, setAckWallet] = useState(false);
+    const [ackOrgs, setAckOrgs] = useState(false);
 
-  // re-auth dialog
-  const [reauthOpen, setReauthOpen] = useState(false);
-  const [reauthMode, setReauthMode] = useState<ReAuthMode>("password");
-  const [password, setPassword] = useState("");
-  const [mfaChannel, setMfaChannel] = useState<MfaChannel>("SMS");
-  const [otp, setOtp] = useState("");
+    // re-auth dialog
+    const [reauthOpen, setReauthOpen] = useState(false);
+    const [reauthMode, setReauthMode] = useState<ReAuthMode>("password");
+    const [password, setPassword] = useState("");
+    const [mfaChannel, setMfaChannel] = useState<MfaChannel>("SMS");
+    const [otp, setOtp] = useState("");
 
-  const [schedule, setSchedule] = useState<Schedule | null>(null);
+    const [schedule, setSchedule] = useState<Schedule | null>(null);
 
-  const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
+    const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
-  useEffect(() => {
-    if (typeof window !== "undefined") runSelfTestsOnce();
-  }, []);
+    useEffect(() => {
+      if (typeof window !== "undefined") runSelfTestsOnce();
+    }, []);
 
-  const toggleMode = () => {
-    const next: ThemeMode = mode === "light" ? "dark" : "light";
-    setMode(next);
-    setStoredMode(next);
-  };
+    const toggleMode = () => {
+      const next: ThemeMode = mode === "light" ? "dark" : "light";
+      setMode(next);
+      setStoredMode(next);
+    };
 
-  const pageBg =
-    mode === "dark"
-      ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
-      : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
+    const pageBg =
+      mode === "dark"
+        ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
+        : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
 
-  const orangeContained = {
-    backgroundColor: EVZONE.orange,
-    color: "#FFFFFF",
-    boxShadow: `0 18px 48px ${alpha(EVZONE.orange, mode === "dark" ? 0.28 : 0.18)}`,
-    "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
-  } as const;
+    const orangeContained = {
+      backgroundColor: EVZONE.orange,
+      color: "#FFFFFF",
+      boxShadow: `0 18px 48px ${alpha(EVZONE.orange, mode === "dark" ? 0.28 : 0.18)}`,
+      "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
+    } as const;
 
-  const orangeOutlined = {
-    borderColor: alpha(EVZONE.orange, 0.65),
-    color: EVZONE.orange,
-    backgroundColor: alpha(theme.palette.background.paper, 0.20),
-    "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
-  } as const;
+    const orangeOutlined = {
+      borderColor: alpha(EVZONE.orange, 0.65),
+      color: EVZONE.orange,
+      backgroundColor: alpha(theme.palette.background.paper, 0.20),
+      "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
+    } as const;
 
-  const dangerContained = {
-    backgroundColor: "#B42318",
-    color: "#FFFFFF",
-    boxShadow: `0 18px 48px ${alpha("#B42318", mode === "dark" ? 0.35 : 0.18)}`,
-    "&:hover": { backgroundColor: alpha("#B42318", 0.92), color: "#FFFFFF" },
-  } as const;
+    const dangerContained = {
+      backgroundColor: "#B42318",
+      color: "#FFFFFF",
+      boxShadow: `0 18px 48px ${alpha("#B42318", mode === "dark" ? 0.35 : 0.18)}`,
+      "&:hover": { backgroundColor: alpha("#B42318", 0.92), color: "#FFFFFF" },
+    } as const;
 
-  const canProceed = useMemo(() => {
-    if (action === "deactivate") return ackDataLoss && ackWallet;
-    return ackDataLoss && ackWallet && ackOrgs;
-  }, [action, ackDataLoss, ackWallet, ackOrgs]);
+    const canProceed = useMemo(() => {
+      if (action === "deactivate") return ackDataLoss && ackWallet;
+      return ackDataLoss && ackWallet && ackOrgs;
+    }, [action, ackDataLoss, ackWallet, ackOrgs]);
 
-  const openReauth = () => {
-    if (!canProceed) {
-      setSnack({ open: true, severity: "warning", msg: "Please confirm the impact checkboxes first." });
-      return;
-    }
-    setPassword("");
-    setOtp("");
-    setReauthMode("password");
-    setMfaChannel("SMS");
-    setReauthOpen(true);
-  };
-
-  const closeReauth = () => setReauthOpen(false);
-
-  const submit = () => {
-    // validate reauth
-    if (reauthMode === "password") {
-      if (password !== "EVzone123!") {
-        setSnack({ open: true, severity: "error", msg: "Re-auth failed. Incorrect password." });
+    const openReauth = () => {
+      if (!canProceed) {
+        setSnack({ open: true, severity: "warning", msg: "Please confirm the impact checkboxes first." });
         return;
       }
-    } else {
-      if (otp.trim() !== mfaCodeFor(mfaChannel)) {
-        setSnack({ open: true, severity: "error", msg: "Re-auth failed. Incorrect code." });
-        return;
+      setPassword("");
+      setOtp("");
+      setReauthMode("password");
+      setMfaChannel("SMS");
+      setReauthOpen(true);
+    };
+
+    const closeReauth = () => setReauthOpen(false);
+
+    const submit = () => {
+      // validate reauth
+      if (reauthMode === "password") {
+        if (password !== "EVzone123!") {
+          setSnack({ open: true, severity: "error", msg: "Re-auth failed. Incorrect password." });
+          return;
+        }
+      } else {
+        if (otp.trim() !== mfaCodeFor(mfaChannel)) {
+          setSnack({ open: true, severity: "error", msg: "Re-auth failed. Incorrect code." });
+          return;
+        }
       }
-    }
 
-    const now = Date.now();
-    const effectiveAt = action === "deactivate" ? now : addDays(now, coolingDays);
-    setSchedule({ action, requestedAt: now, effectiveAt, coolingDays });
-    setFlow("submitted");
-    setReauthOpen(false);
+      const now = Date.now();
+      const effectiveAt = action === "deactivate" ? now : addDays(now, coolingDays);
+      setSchedule({ action, requestedAt: now, effectiveAt, coolingDays });
+      setFlow("submitted");
+      setReauthOpen(false);
 
-    setSnack({ open: true, severity: "success", msg: action === "deactivate" ? "Account deactivated (demo)." : "Deletion scheduled (demo)." });
-  };
+      setSnack({ open: true, severity: "success", msg: action === "deactivate" ? "Account deactivated (demo)." : "Deletion scheduled (demo)." });
+    };
 
-  const cancelDeletion = () => {
-    setFlow("cancelled");
-    setSnack({ open: true, severity: "success", msg: "Deletion request cancelled (demo)." });
-  };
+    const cancelDeletion = () => {
+      setFlow("cancelled");
+      setSnack({ open: true, severity: "success", msg: "Deletion request cancelled (demo)." });
+    };
 
-  const impacts = [
-    { t: "Sign-in", d: "You may lose access to EVzone apps on this account." },
-    { t: "Wallet", d: "Withdraw funds and settle disputes before deleting." },
-    { t: "Charging", d: "History and receipts may be removed or anonymized." },
-    { t: "Marketplace", d: "Orders, returns, and seller records may be impacted." },
-    { t: "Organizations", d: "You may be removed from organizations and roles." },
-  ];
+    const impacts = [
+      { t: "Sign-in", d: "You may lose access to EVzone apps on this account." },
+      { t: "Wallet", d: "Withdraw funds and settle disputes before deleting." },
+      { t: "Charging", d: "History and receipts may be removed or anonymized." },
+      { t: "Marketplace", d: "Orders, returns, and seller records may be impacted." },
+      { t: "Organizations", d: "You may be removed from organizations and roles." },
+    ];
 
-  const statusCard = () => {
-    if (!schedule) return null;
+    const statusCard = () => {
+      if (!schedule) return null;
 
-    if (flow === "cancelled") {
+      if (flow === "cancelled") {
+        return (
+          <Card>
+            <CardContent className="p-5 md:p-7">
+              <Stack spacing={1.2}>
+                <Typography variant="h6">Request cancelled</Typography>
+                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                  No further account changes are scheduled.
+                </Typography>
+                <Divider />
+                <Button variant="contained" sx={orangeContained} onClick={() => setFlow("form")}>{t("auth.common.back")}</Button>
+              </Stack>
+            </CardContent>
+          </Card>
+        );
+      }
+
+      if (schedule.action === "deactivate") {
+        return (
+          <Card>
+            <CardContent className="p-5 md:p-7">
+              <Stack spacing={1.2}>
+                <Typography variant="h6">Account deactivated</Typography>
+                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                  Effective immediately: {fmt(schedule.effectiveAt)}
+                </Typography>
+                <Divider />
+                <Alert severity="info" icon={<ShieldIcon size={18} />}>
+                  You can reactivate by signing in again (demo behavior).
+                </Alert>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                  <Button variant="contained" sx={orangeContained} onClick={() => navigate('/auth/sign-in')}>
+                    Reactivate by sign-in
+                  </Button>
+                  <Button variant="outlined" sx={orangeOutlined} onClick={() => setFlow("form")}>
+                    Back to settings
+                  </Button>
+                </Stack>
+              </Stack>
+            </CardContent>
+          </Card>
+        );
+      }
+
+      // delete
       return (
         <Card>
           <CardContent className="p-5 md:p-7">
             <Stack spacing={1.2}>
-              <Typography variant="h6">Request cancelled</Typography>
+              <Typography variant="h6">Deletion scheduled</Typography>
               <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                No further account changes are scheduled.
+                Requested: {fmt(schedule.requestedAt)}
               </Typography>
-              <Divider />
-              <Button variant="contained" sx={orangeContained} onClick={() => setFlow("form")}>{t("auth.common.back")}<//Button>
-            </Stack>
-          </CardContent>
-        </Card>
-      );
-    }
+              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                Deletion date: {fmt(schedule.effectiveAt)} (cooling-off: {schedule.coolingDays} days)
+              </Typography>
 
-    if (schedule.action === "deactivate") {
-      return (
-        <Card>
-          <CardContent className="p-5 md:p-7">
-            <Stack spacing={1.2}>
-              <Typography variant="h6">Account deactivated</Typography>
-              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                Effective immediately: {fmt(schedule.effectiveAt)}
-              </Typography>
               <Divider />
-              <Alert severity="info" icon={<ShieldIcon size={18} />}>
-                You can reactivate by signing in again (demo behavior).
+
+              <Alert severity="warning" icon={<AlertTriangleIcon size={18} />}>
+                You can cancel within the cooling-off period.
               </Alert>
+
               <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                <Button variant="contained" sx={orangeContained} onClick={() => navigate('/auth/sign-in')}>
-                  Reactivate by sign-in
+                <Button variant="contained" sx={dangerContained} onClick={cancelDeletion}>
+                  Cancel deletion
                 </Button>
-                <Button variant="outlined" sx={orangeOutlined} onClick={() => setFlow("form")}>
-                  Back to settings
+                <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate('/app/privacy/download')}>
+                  Download my data
                 </Button>
               </Stack>
+
+              <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                This is a demo UI. Real deletion requires backend workflows and legal compliance.
+              </Typography>
             </Stack>
           </CardContent>
         </Card>
       );
-    }
+    };
 
-    // delete
-    return (
-      <Card>
-        <CardContent className="p-5 md:p-7">
-          <Stack spacing={1.2}>
-            <Typography variant="h6">Deletion scheduled</Typography>
-            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-              Requested: {fmt(schedule.requestedAt)}
-            </Typography>
-            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-              Deletion date: {fmt(schedule.effectiveAt)} (cooling-off: {schedule.coolingDays} days)
-            </Typography>
-
-            <Divider />
-
-            <Alert severity="warning" icon={<AlertTriangleIcon size={18} />}>
-              You can cancel within the cooling-off period.
-            </Alert>
-
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-              <Button variant="contained" sx={dangerContained} onClick={cancelDeletion}>
-                Cancel deletion
-              </Button>
-              <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate('/app/privacy/download')}>
-                Download my data
-              </Button>
-            </Stack>
-
-            <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-              This is a demo UI. Real deletion requires backend workflows and legal compliance.
-            </Typography>
-          </Stack>
-        </CardContent>
-      </Card>
+    const banner = (
+      <Alert severity="warning" icon={<AlertTriangleIcon size={18} />}>
+        Deleting or deactivating affects all EVzone apps. Read the impact carefully.
+      </Alert>
     );
-  };
 
-  const banner = (
-    <Alert severity="warning" icon={<AlertTriangleIcon size={18} />}>
-      Deleting or deactivating affects all EVzone apps. Read the impact carefully.
-    </Alert>
-  );
+    return (
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
 
-  return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-
-      <Box className="min-h-screen" sx={{ background: pageBg }}>
+        <Box className="min-h-screen" sx={{ background: pageBg }}>
 
 
-        {/* Body */}
-        <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
-            <Stack spacing={2.2}>
-              <Card>
-                <CardContent className="p-5 md:p-7">
-                  <Stack spacing={1.2}>
-                    <Typography variant="h5">Delete or deactivate account</Typography>
-                    <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      Choose what to do with your EVzone account. Deactivate is reversible. Delete is permanent after cooling-off.
-                    </Typography>
-                    {banner}
-                  </Stack>
-                </CardContent>
-              </Card>
+          {/* Body */}
+          <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+              <Stack spacing={2.2}>
+                <Card>
+                  <CardContent className="p-5 md:p-7">
+                    <Stack spacing={1.2}>
+                      <Typography variant="h5">Delete or deactivate account</Typography>
+                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                        Choose what to do with your EVzone account. Deactivate is reversible. Delete is permanent after cooling-off.
+                      </Typography>
+                      {banner}
+                    </Stack>
+                  </CardContent>
+                </Card>
 
-              {flow !== "form" ? statusCard() : (
-                <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
-                  <Box className="md:col-span-7">
-                    <Card>
-                      <CardContent className="p-5 md:p-7">
-                        <Stack spacing={1.4}>
-                          <Typography variant="h6">Choose an option</Typography>
-                          <Divider />
+                {flow !== "form" ? statusCard() : (
+                  <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
+                    <Box className="md:col-span-7">
+                      <Card>
+                        <CardContent className="p-5 md:p-7">
+                          <Stack spacing={1.4}>
+                            <Typography variant="h6">Choose an option</Typography>
+                            <Divider />
 
-                          <Tabs
-                            value={action === "deactivate" ? 0 : 1}
-                            onChange={(_, v) => setAction(v === 0 ? "deactivate" : "delete")}
-                            variant="fullWidth"
-                            sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, overflow: "hidden", minHeight: 44, "& .MuiTab-root": { minHeight: 44, fontWeight: 900 }, "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 } }}
-                          >
-                            <Tab icon={<PauseIcon size={16} />} iconPosition="start" label="Deactivate" />
-                            <Tab icon={<TrashIcon size={16} />} iconPosition="start" label="Delete" />
-                          </Tabs>
-
-                          {action === "deactivate" ? (
-                            <Alert severity="info" icon={<ShieldIcon size={18} />}>
-                              Deactivation temporarily disables sign-in. You can reactivate later.
-                            </Alert>
-                          ) : (
-                            <Alert severity="warning" icon={<AlertTriangleIcon size={18} />}>
-                              Deletion removes your account across EVzone apps after the cooling-off period.
-                            </Alert>
-                          )}
-
-                          {action === "delete" ? (
-                            <TextField
-                              select
-                              label="Cooling-off period"
-                              value={coolingDays}
-                              onChange={(e) => setCoolingDays(Number(e.target.value))}
-                              fullWidth
-                              helperText="You can cancel within this period."
+                            <Tabs
+                              value={action === "deactivate" ? 0 : 1}
+                              onChange={(_, v) => setAction(v === 0 ? "deactivate" : "delete")}
+                              variant="fullWidth"
+                              sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, overflow: "hidden", minHeight: 44, "& .MuiTab-root": { minHeight: 44, fontWeight: 900 }, "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 } }}
                             >
-                              <MenuItem value={7}>7 days</MenuItem>
-                              <MenuItem value={14}>14 days</MenuItem>
-                            </TextField>
-                          ) : null}
+                              <Tab icon={<PauseIcon size={16} />} iconPosition="start" label="Deactivate" />
+                              <Tab icon={<TrashIcon size={16} />} iconPosition="start" label="Delete" />
+                            </Tabs>
 
-                          <Divider />
+                            {action === "deactivate" ? (
+                              <Alert severity="info" icon={<ShieldIcon size={18} />}>
+                                Deactivation temporarily disables sign-in. You can reactivate later.
+                              </Alert>
+                            ) : (
+                              <Alert severity="warning" icon={<AlertTriangleIcon size={18} />}>
+                                Deletion removes your account across EVzone apps after the cooling-off period.
+                              </Alert>
+                            )}
 
-                          <Typography sx={{ fontWeight: 950 }}>Confirm impact</Typography>
-                          <FormControlLabel
-                            control={<Checkbox checked={ackDataLoss} onChange={(e) => setAckDataLoss(e.target.checked)} />}
-                            label={<Typography sx={{ fontWeight: 900 }}>I understand this affects all EVzone apps</Typography>}
-                          />
-                          <FormControlLabel
-                            control={<Checkbox checked={ackWallet} onChange={(e) => setAckWallet(e.target.checked)} />}
-                            label={<Typography sx={{ fontWeight: 900 }}>I checked wallet balance and pending disputes</Typography>}
-                          />
-                          {action === "delete" ? (
+                            {action === "delete" ? (
+                              <TextField
+                                select
+                                label="Cooling-off period"
+                                value={coolingDays}
+                                onChange={(e) => setCoolingDays(Number(e.target.value))}
+                                fullWidth
+                                helperText="You can cancel within this period."
+                              >
+                                <MenuItem value={7}>7 days</MenuItem>
+                                <MenuItem value={14}>14 days</MenuItem>
+                              </TextField>
+                            ) : null}
+
+                            <Divider />
+
+                            <Typography sx={{ fontWeight: 950 }}>Confirm impact</Typography>
                             <FormControlLabel
-                              control={<Checkbox checked={ackOrgs} onChange={(e) => setAckOrgs(e.target.checked)} />}
-                              label={<Typography sx={{ fontWeight: 900 }}>I understand organizations and roles may be removed</Typography>}
+                              control={<Checkbox checked={ackDataLoss} onChange={(e) => setAckDataLoss(e.target.checked)} />}
+                              label={<Typography sx={{ fontWeight: 900 }}>I understand this affects all EVzone apps</Typography>}
                             />
-                          ) : null}
+                            <FormControlLabel
+                              control={<Checkbox checked={ackWallet} onChange={(e) => setAckWallet(e.target.checked)} />}
+                              label={<Typography sx={{ fontWeight: 900 }}>I checked wallet balance and pending disputes</Typography>}
+                            />
+                            {action === "delete" ? (
+                              <FormControlLabel
+                                control={<Checkbox checked={ackOrgs} onChange={(e) => setAckOrgs(e.target.checked)} />}
+                                label={<Typography sx={{ fontWeight: 900 }}>I understand organizations and roles may be removed</Typography>}
+                              />
+                            ) : null}
 
-                          <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                            <Button variant="contained" sx={dangerContained} startIcon={<LockIcon size={18} />} onClick={openReauth}>
-                              Continue (re-auth)
-                            </Button>
-                            <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate('/app/privacy/download')}>
-                              Download my data
+                            <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                              <Button variant="contained" sx={dangerContained} startIcon={<LockIcon size={18} />} onClick={openReauth}>
+                                Continue (re-auth)
+                              </Button>
+                              <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate('/app/privacy/download')}>
+                                Download my data
+                              </Button>
+                            </Stack>
+
+                            <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                              This is a demo page. Real flows must comply with local regulations.
+                            </Typography>
+                          </Stack>
+                        </CardContent>
+                      </Card>
+                    </Box>
+
+                    <Box className="md:col-span-5">
+                      <Card>
+                        <CardContent className="p-5 md:p-7">
+                          <Stack spacing={1.2}>
+                            <Typography variant="h6">What will be impacted</Typography>
+                            <Divider />
+                            <Stack spacing={1.0}>
+                              {impacts.map((x) => (
+                                <Box key={x.t} sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.1 }}>
+                                  <Typography sx={{ fontWeight: 950 }}>{x.t}</Typography>
+                                  <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>{x.d}</Typography>
+                                </Box>
+                              ))}
+                            </Stack>
+                            <Divider />
+                            <Alert severity="info" icon={<ShieldIcon size={18} />}>
+                              Need help? Contact support before deleting.
+                            </Alert>
+                            <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate('/app/support')}>
+                              Contact support
                             </Button>
                           </Stack>
-
-                          <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                            This is a demo page. Real flows must comply with local regulations.
-                          </Typography>
-                        </Stack>
-                      </CardContent>
-                    </Card>
+                        </CardContent>
+                      </Card>
+                    </Box>
                   </Box>
+                )}
 
-                  <Box className="md:col-span-5">
-                    <Card>
-                      <CardContent className="p-5 md:p-7">
-                        <Stack spacing={1.2}>
-                          <Typography variant="h6">What will be impacted</Typography>
-                          <Divider />
-                          <Stack spacing={1.0}>
-                            {impacts.map((x) => (
-                              <Box key={x.t} sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.1 }}>
-                                <Typography sx={{ fontWeight: 950 }}>{x.t}</Typography>
-                                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>{x.d}</Typography>
-                              </Box>
-                            ))}
-                          </Stack>
-                          <Divider />
-                          <Alert severity="info" icon={<ShieldIcon size={18} />}>
-                            Need help? Contact support before deleting.
-                          </Alert>
-                          <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate('/app/support')}>
-                            Contact support
+                {/* Mobile sticky */}
+                {flow === "form" ? (
+                  <Box className="md:hidden" sx={{ position: "sticky", bottom: 12 }}>
+                    <Card sx={{ borderRadius: 999, backgroundColor: alpha(theme.palette.background.paper, 0.86), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backdropFilter: "blur(10px)" }}>
+                      <CardContent sx={{ py: 1.1, px: 1.2 }}>
+                        <Stack direction="row" spacing={1}>
+                          <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => navigate('/app/privacy/download')}>
+                            Data
+                          </Button>
+                          <Button fullWidth variant="contained" sx={dangerContained} onClick={openReauth}>
+                            Continue
                           </Button>
                         </Stack>
                       </CardContent>
                     </Card>
                   </Box>
+                ) : null}
+
+                <Box sx={{ opacity: 0.92 }}>
+                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
                 </Box>
-              )}
+              </Stack>
+            </motion.div>
+          </Box>
 
-              {/* Mobile sticky */}
-              {flow === "form" ? (
-                <Box className="md:hidden" sx={{ position: "sticky", bottom: 12 }}>
-                  <Card sx={{ borderRadius: 999, backgroundColor: alpha(theme.palette.background.paper, 0.86), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backdropFilter: "blur(10px)" }}>
-                    <CardContent sx={{ py: 1.1, px: 1.2 }}>
-                      <Stack direction="row" spacing={1}>
-                        <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => navigate('/app/privacy/download')}>
-                          Data
-                        </Button>
-                        <Button fullWidth variant="contained" sx={dangerContained} onClick={openReauth}>
-                          Continue
-                        </Button>
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                </Box>
-              ) : null}
+          {/* Re-auth dialog */}
+          <Dialog open={reauthOpen} onClose={closeReauth} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: 20, border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}>
+            <DialogTitle sx={{ fontWeight: 950 }}>Confirm it’s you</DialogTitle>
+            <DialogContent>
+              <Stack spacing={1.2}>
+                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                  This is a sensitive action. Please re-authenticate.
+                </Typography>
 
-              <Box sx={{ opacity: 0.92 }}>
-                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
-              </Box>
-            </Stack>
-          </motion.div>
-        </Box>
+                <Tabs
+                  value={reauthMode === "password" ? 0 : 1}
+                  onChange={(_, v) => setReauthMode(v === 0 ? "password" : "mfa")}
+                  variant="fullWidth"
+                  sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, overflow: "hidden", minHeight: 44, "& .MuiTab-root": { minHeight: 44, fontWeight: 900 }, "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 } }}
+                >
+                  <Tab icon={<LockIcon size={16} />} iconPosition="start" label="Password" />
+                  <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label="MFA" />
+                </Tabs>
 
-        {/* Re-auth dialog */}
-        <Dialog open={reauthOpen} onClose={closeReauth} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: 20, border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}>
-          <DialogTitle sx={{ fontWeight: 950 }}>Confirm it’s you</DialogTitle>
-          <DialogContent>
-            <Stack spacing={1.2}>
-              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                This is a sensitive action. Please re-authenticate.
-              </Typography>
-
-              <Tabs
-                value={reauthMode === "password" ? 0 : 1}
-                onChange={(_, v) => setReauthMode(v === 0 ? "password" : "mfa")}
-                variant="fullWidth"
-                sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, overflow: "hidden", minHeight: 44, "& .MuiTab-root": { minHeight: 44, fontWeight: 900 }, "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 } }}
-              >
-                <Tab icon={<LockIcon size={16} />} iconPosition="start" label="Password" />
-                <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label="MFA" />
-              </Tabs>
-
-              {reauthMode === "password" ? (
-                <TextField
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  label="Password"
-                  type="password"
-                  fullWidth
-                  InputProps={{ startAdornment: (<InputAdornment position="start"><LockIcon size={18} /></InputAdornment>) }}
-                  helperText="Demo password: EVzone123!"
-                />
-              ) : (
-                <>
-                  <Typography sx={{ fontWeight: 950 }}>Choose a channel</Typography>
-                  <Box className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                    {([
-                      { c: "Authenticator" as const, icon: <KeypadIcon size={18} />, color: EVZONE.orange },
-                      { c: "SMS" as const, icon: <SmsIcon size={18} />, color: EVZONE.orange },
-                      { c: "WhatsApp" as const, icon: <WhatsAppIcon size={18} />, color: WHATSAPP.green },
-                      { c: "Email" as const, icon: <MailIcon size={18} />, color: EVZONE.orange },
-                    ] as const).map((it) => {
-                      const selected = mfaChannel === it.c;
-                      const base = it.color;
-                      return (
-                        <Button
-                          key={it.c}
-                          variant={selected ? "contained" : "outlined"}
-                          startIcon={it.icon}
-                          onClick={() => setMfaChannel(it.c)}
-                          sx={
-                            selected
-                              ? ({ borderRadius: 14, backgroundColor: base, color: "#FFFFFF", "&:hover": { backgroundColor: alpha(base, 0.92) } } as const)
-                              : ({ borderRadius: 14, borderColor: alpha(base, 0.65), color: base, backgroundColor: alpha(theme.palette.background.paper, 0.25), "&:hover": { borderColor: base, backgroundColor: base, color: "#FFFFFF" } } as const)
-                          }
-                          fullWidth
-                        >
-                          {it.c}
-                        </Button>
-                      );
-                    })}
-                  </Box>
-
+                {reauthMode === "password" ? (
                   <TextField
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                    label="6-digit code"
-                    placeholder="123456"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    label="Password"
+                    type="password"
                     fullWidth
-                    InputProps={{ startAdornment: (<InputAdornment position="start"><KeypadIcon size={18} /></InputAdornment>) }}
-                    helperText={`Demo code for ${mfaChannel}: ${mfaCodeFor(mfaChannel)}`}
+                    InputProps={{ startAdornment: (<InputAdornment position="start"><LockIcon size={18} /></InputAdornment>) }}
+                    helperText="Demo password: EVzone123!"
                   />
-                </>
-              )}
+                ) : (
+                  <>
+                    <Typography sx={{ fontWeight: 950 }}>Choose a channel</Typography>
+                    <Box className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                      {([
+                        { c: "Authenticator" as const, icon: <KeypadIcon size={18} />, color: EVZONE.orange },
+                        { c: "SMS" as const, icon: <SmsIcon size={18} />, color: EVZONE.orange },
+                        { c: "WhatsApp" as const, icon: <WhatsAppIcon size={18} />, color: WHATSAPP.green },
+                        { c: "Email" as const, icon: <MailIcon size={18} />, color: EVZONE.orange },
+                      ] as const).map((it) => {
+                        const selected = mfaChannel === it.c;
+                        const base = it.color;
+                        return (
+                          <Button
+                            key={it.c}
+                            variant={selected ? "contained" : "outlined"}
+                            startIcon={it.icon}
+                            onClick={() => setMfaChannel(it.c)}
+                            sx={
+                              selected
+                                ? ({ borderRadius: 14, backgroundColor: base, color: "#FFFFFF", "&:hover": { backgroundColor: alpha(base, 0.92) } } as const)
+                                : ({ borderRadius: 14, borderColor: alpha(base, 0.65), color: base, backgroundColor: alpha(theme.palette.background.paper, 0.25), "&:hover": { borderColor: base, backgroundColor: base, color: "#FFFFFF" } } as const)
+                            }
+                            fullWidth
+                          >
+                            {it.c}
+                          </Button>
+                        );
+                      })}
+                    </Box>
 
-              <Alert severity="info" icon={<ShieldIcon size={18} />}>
-                This is a demo re-auth flow.
-              </Alert>
-            </Stack>
-          </DialogContent>
-          <DialogActions sx={{ p: 2, pt: 0 }}>
-            <Button variant="outlined" sx={orangeOutlined} onClick={closeReauth}>{t("auth.common.cancel")}<//Button>
-            <Button variant="contained" sx={dangerContained} onClick={submit}>Confirm</Button>
-          </DialogActions>
-        </Dialog>
+                    <TextField
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                      label="6-digit code"
+                      placeholder="123456"
+                      fullWidth
+                      InputProps={{ startAdornment: (<InputAdornment position="start"><KeypadIcon size={18} /></InputAdornment>) }}
+                      helperText={`Demo code for ${mfaChannel}: ${mfaCodeFor(mfaChannel)}`}
+                    />
+                  </>
+                )}
 
-        {/* Snackbar */}
-        <Snackbar open={snack.open} autoHideDuration={3400} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-          <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={mode === "dark" ? "filled" : "standard"} sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
-            {snack.msg}
-          </Alert>
-        </Snackbar>
-      </Box>
-    </ThemeProvider>
-  );
+                <Alert severity="info" icon={<ShieldIcon size={18} />}>
+                  This is a demo re-auth flow.
+                </Alert>
+              </Stack>
+            </DialogContent>
+            <DialogActions sx={{ p: 2, pt: 0 }}>
+              <Button variant="outlined" sx={orangeOutlined} onClick={closeReauth}>{t("auth.common.cancel")}</Button>
+              <Button variant="contained" sx={dangerContained} onClick={submit}>Confirm</Button>
+            </DialogActions>
+          </Dialog>
+
+          {/* Snackbar */}
+          <Snackbar open={snack.open} autoHideDuration={3400} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+            <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={mode === "dark" ? "filled" : "standard"} sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
+              {snack.msg}
+            </Alert>
+          </Snackbar>
+        </Box>
+      </ThemeProvider>
+    );
+  }
 }

@@ -53,7 +53,7 @@ interface OAuthApp {
 }
 
 export default function AdminApps() {
-  const { t } = useTranslation("common"); {
+    const { t } = useTranslation("common");
     const theme = useTheme();
     const isDark = theme.palette.mode === 'dark';
     const navigate = useNavigate();
@@ -306,7 +306,7 @@ export default function AdminApps() {
                     </Stack>
                 </DialogContent>
                 <DialogActions sx={{ p: 3 }}>
-                    <Button onClick={() => setModalOpen(false)} sx={{ color: 'text.secondary' }}>{t("auth.common.cancel")}<//Button>
+                    <Button onClick={() => setModalOpen(false)} sx={{ color: 'text.secondary' }}>{t("auth.common.cancel")}</Button>
                     <Button variant="contained" sx={orangeContained} onClick={handleSave}>Save App</Button>
                 </DialogActions>
             </Dialog>
@@ -353,7 +353,7 @@ export default function AdminApps() {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions sx={{ p: 3 }}>
-                    <Button onClick={() => setDeleteConfirmOpen(false)} sx={{ color: 'text.secondary' }}>{t("auth.common.cancel")}<//Button>
+                    <Button onClick={() => setDeleteConfirmOpen(false)} sx={{ color: 'text.secondary' }}>{t("auth.common.cancel")}</Button>
                     <Button variant="contained" color="error" onClick={confirmDelete} sx={{ borderRadius: 3, fontWeight: 700 }}>Delete App</Button>
                 </DialogActions>
             </Dialog>
@@ -369,7 +369,7 @@ export default function AdminApps() {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions sx={{ p: 3 }}>
-                    <Button onClick={() => setRegenerateConfirmOpen(false)} sx={{ color: 'text.secondary' }}>{t("auth.common.cancel")}<//Button>
+                    <Button onClick={() => setRegenerateConfirmOpen(false)} sx={{ color: 'text.secondary' }}>{t("auth.common.cancel")}</Button>
                     <Button variant="contained" color="warning" onClick={handleRegenerateSecret} sx={{ borderRadius: 3, fontWeight: 700 }}>Yes, Regenerate</Button>
                 </DialogActions>
             </Dialog>

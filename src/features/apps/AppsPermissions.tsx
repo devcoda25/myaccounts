@@ -190,365 +190,367 @@ function mfaCodeFor(channel: MfaChannel) {
 // Self-tests removed
 
 export default function AppsPermissionsPage() {
-  const { t } = useTranslation("common"); {
-  const theme = useTheme();
-  const navigate = useNavigate();
-  const { mode } = useThemeStore();
-  const isDark = mode === "dark";
+  const { t } = useTranslation("common");
+  {
+    const theme = useTheme();
+    const navigate = useNavigate();
+    const { mode } = useThemeStore();
+    const isDark = mode === "dark";
 
-  const [apps, setApps] = useState<AppPerm[]>([]);
-  const [loading, setLoading] = useState(true);
+    const [apps, setApps] = useState<AppPerm[]>([]);
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchPerms = async () => {
-      try {
-        setLoading(true);
-        const data = await api.get<AppPerm[]>("/apps/permissions");
-        setApps(data);
-      } catch (err: unknown) {
-        console.error(err);
-        setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to load permissions" });
-      } finally {
-        setLoading(false);
-      }
+    useEffect(() => {
+      const fetchPerms = async () => {
+        try {
+          setLoading(true);
+          const data = await api.get<AppPerm[]>("/apps/permissions");
+          setApps(data);
+        } catch (err: unknown) {
+          console.error(err);
+          setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to load permissions" });
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchPerms();
+    }, []);
+
+    const [tab, setTab] = useState<0 | 1 | 2>(0);
+    const [search, setSearch] = useState("");
+
+    const [reauthOpen, setReauthOpen] = useState(false);
+    const [reauthMode, setReauthMode] = useState<ReAuthMode>("password");
+    const [reauthPassword, setReauthPassword] = useState("");
+    const [mfaChannel, setMfaChannel] = useState<MfaChannel>("Authenticator");
+    const [otp, setOtp] = useState("");
+    const [pendingRevoke, setPendingRevoke] = useState<string | null>(null);
+
+    const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
+
+    // Self-tests effect removed
+
+
+    const pageBg =
+      mode === "dark"
+        ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
+        : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
+
+    const orangeContained = {
+      backgroundColor: EVZONE.orange,
+      color: "#FFFFFF",
+      boxShadow: `0 4px 14px ${alpha(EVZONE.orange, 0.4)}`, // Standardized shadow
+      borderRadius: "4px", // Standardized to 4px
+      "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
+    } as const;
+
+    const orangeOutlined = {
+      borderColor: alpha(EVZONE.orange, 0.65),
+      color: EVZONE.orange,
+      backgroundColor: alpha(theme.palette.background.paper, 0.20),
+      borderRadius: "4px", // Standardized to 4px
+      "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
+    } as const;
+
+    const waOutlined = {
+      borderColor: alpha(WHATSAPP.green, 0.75),
+      color: WHATSAPP.green,
+      backgroundColor: alpha(theme.palette.background.paper, 0.20),
+      borderRadius: "4px", // Standardized to 4px
+      "&:hover": { borderColor: WHATSAPP.green, backgroundColor: WHATSAPP.green, color: "#FFFFFF" },
+    } as const;
+
+    const filtered = useMemo(() => {
+      const q = search.trim().toLowerCase();
+      return apps
+        .filter((a) => (!q ? true : [a.name, a.kind, a.scopes.join(" ")].some((x) => x.toLowerCase().includes(q))))
+        .filter((a) => {
+          if (tab === 0) return true;
+          if (tab === 1) return !a.revoked;
+          return a.revoked;
+        })
+        .sort((a, b) => (b.lastUsedAt || 0) - (a.lastUsedAt || 0));
+    }, [apps, search, tab]);
+
+    const openReauthForRevoke = (id: string) => {
+      setPendingRevoke(id);
+      setReauthMode("password");
+      setReauthPassword("");
+      setMfaChannel("Authenticator");
+      setOtp("");
+      setReauthOpen(true);
     };
-    fetchPerms();
-  }, []);
 
-  const [tab, setTab] = useState<0 | 1 | 2>(0);
-  const [search, setSearch] = useState("");
+    const closeReauth = () => {
+      setReauthOpen(false);
+      setPendingRevoke(null);
+    };
 
-  const [reauthOpen, setReauthOpen] = useState(false);
-  const [reauthMode, setReauthMode] = useState<ReAuthMode>("password");
-  const [reauthPassword, setReauthPassword] = useState("");
-  const [mfaChannel, setMfaChannel] = useState<MfaChannel>("Authenticator");
-  const [otp, setOtp] = useState("");
-  const [pendingRevoke, setPendingRevoke] = useState<string | null>(null);
+    const validateReauth = () => {
+      if (reauthMode === "password") {
+        if (reauthPassword !== "EVzone123!") {
+          setSnack({ open: true, severity: "error", msg: "Re-auth failed. Incorrect password." });
+          return false;
+        }
+        return true;
+      }
 
-  const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
-
-  // Self-tests effect removed
-
-
-  const pageBg =
-    mode === "dark"
-      ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
-      : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
-
-  const orangeContained = {
-    backgroundColor: EVZONE.orange,
-    color: "#FFFFFF",
-    boxShadow: `0 4px 14px ${alpha(EVZONE.orange, 0.4)}`, // Standardized shadow
-    borderRadius: "4px", // Standardized to 4px
-    "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
-  } as const;
-
-  const orangeOutlined = {
-    borderColor: alpha(EVZONE.orange, 0.65),
-    color: EVZONE.orange,
-    backgroundColor: alpha(theme.palette.background.paper, 0.20),
-    borderRadius: "4px", // Standardized to 4px
-    "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
-  } as const;
-
-  const waOutlined = {
-    borderColor: alpha(WHATSAPP.green, 0.75),
-    color: WHATSAPP.green,
-    backgroundColor: alpha(theme.palette.background.paper, 0.20),
-    borderRadius: "4px", // Standardized to 4px
-    "&:hover": { borderColor: WHATSAPP.green, backgroundColor: WHATSAPP.green, color: "#FFFFFF" },
-  } as const;
-
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    return apps
-      .filter((a) => (!q ? true : [a.name, a.kind, a.scopes.join(" ")].some((x) => x.toLowerCase().includes(q))))
-      .filter((a) => {
-        if (tab === 0) return true;
-        if (tab === 1) return !a.revoked;
-        return a.revoked;
-      })
-      .sort((a, b) => (b.lastUsedAt || 0) - (a.lastUsedAt || 0));
-  }, [apps, search, tab]);
-
-  const openReauthForRevoke = (id: string) => {
-    setPendingRevoke(id);
-    setReauthMode("password");
-    setReauthPassword("");
-    setMfaChannel("Authenticator");
-    setOtp("");
-    setReauthOpen(true);
-  };
-
-  const closeReauth = () => {
-    setReauthOpen(false);
-    setPendingRevoke(null);
-  };
-
-  const validateReauth = () => {
-    if (reauthMode === "password") {
-      if (reauthPassword !== "EVzone123!") {
-        setSnack({ open: true, severity: "error", msg: "Re-auth failed. Incorrect password." });
+      if (otp.trim() !== mfaCodeFor(mfaChannel)) {
+        setSnack({ open: true, severity: "error", msg: "Re-auth failed. Incorrect code." });
         return false;
       }
       return true;
-    }
+    };
 
-    if (otp.trim() !== mfaCodeFor(mfaChannel)) {
-      setSnack({ open: true, severity: "error", msg: "Re-auth failed. Incorrect code." });
-      return false;
-    }
-    return true;
-  };
+    const revoke = async () => {
+      if (!pendingRevoke) return;
+      if (!validateReauth()) return;
 
-  const revoke = async () => {
-    if (!pendingRevoke) return;
-    if (!validateReauth()) return;
+      try {
+        await api.post<void>(`/apps/${pendingRevoke}/revoke`);
 
-    try {
-      await api.post<void>(`/apps/${pendingRevoke}/revoke`);
+        // Update local state to show as revoked
+        setApps((prev) => prev.map((a) => (a.id === pendingRevoke ? { ...a, revoked: true } : a)));
+        setSnack({ open: true, severity: "success", msg: "Access revoked. You will be logged out of that service." });
+        closeReauth();
+      } catch (err: unknown) {
+        setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to revoke access." });
+      }
+    };
 
-      // Update local state to show as revoked
-      setApps((prev) => prev.map((a) => (a.id === pendingRevoke ? { ...a, revoked: true } : a)));
-      setSnack({ open: true, severity: "success", msg: "Access revoked. You will be logged out of that service." });
-      closeReauth();
-    } catch (err: unknown) {
-      setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to revoke access." });
-    }
-  };
+    const restore = (id: string) => {
+      setApps((prev) => prev.map((a) => (a.id === id ? { ...a, revoked: false, lastUsedAt: Date.now() } : a)));
+      setSnack({ open: true, severity: "success", msg: "Access restored (demo)." });
+    };
 
-  const restore = (id: string) => {
-    setApps((prev) => prev.map((a) => (a.id === id ? { ...a, revoked: false, lastUsedAt: Date.now() } : a)));
-    setSnack({ open: true, severity: "success", msg: "Access restored (demo)." });
-  };
+    const avatarFor = (kind: AppKind) => {
+      return kind === "EVzone" ? (
+        <Avatar sx={{ bgcolor: alpha(EVZONE.green, 0.18), color: theme.palette.text.primary, borderRadius: "4px" }}>
+          <AppsIcon size={18} />
+        </Avatar>
+      ) : (
+        <Avatar sx={{ bgcolor: alpha(EVZONE.orange, 0.12), color: EVZONE.orange, borderRadius: "4px", border: `1px solid ${alpha(EVZONE.orange, 0.25)}` }}>
+          <ShieldIcon size={18} />
+        </Avatar>
+      );
+    };
 
-  const avatarFor = (kind: AppKind) => {
-    return kind === "EVzone" ? (
-      <Avatar sx={{ bgcolor: alpha(EVZONE.green, 0.18), color: theme.palette.text.primary, borderRadius: "4px" }}>
-        <AppsIcon size={18} />
-      </Avatar>
-    ) : (
-      <Avatar sx={{ bgcolor: alpha(EVZONE.orange, 0.12), color: EVZONE.orange, borderRadius: "4px", border: `1px solid ${alpha(EVZONE.orange, 0.25)}` }}>
-        <ShieldIcon size={18} />
-      </Avatar>
-    );
-  };
-
-  return (
-    <Box className="min-h-screen" sx={{ background: pageBg }}>
+    return (
+      <Box className="min-h-screen" sx={{ background: pageBg }}>
 
 
-      {/* Body */}
-      <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
-          <Stack spacing={2.2}>
-            <Card>
-              <CardContent className="p-5 md:p-7">
-                <Stack spacing={1.2}>
-                  <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ xs: "flex-start", md: "center" }} justifyContent="space-between">
-                    <Box>
-                      <Typography variant="h5">Authorized apps and scopes</Typography>
-                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        Review and revoke access granted to apps. Revoking logs you out of that service.
-                      </Typography>
-                    </Box>
-                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                      <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/app/apps")}>
-                        Back to apps
-                      </Button>
-                      <Button variant="contained" color="secondary" sx={orangeContained} startIcon={<ShieldCheckIcon size={18} />} onClick={() => setSnack({ open: true, severity: "info", msg: "Review security settings (demo)." })}>
-                        Security
-                      </Button>
-                    </Stack>
-                  </Stack>
-
-                  <Divider />
-
-                  <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, overflow: "hidden", minHeight: 44, "& .MuiTab-root": { minHeight: 44, fontWeight: 900 }, "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 } }}>
-                    <Tab label="All" />
-                    <Tab label="Active" />
-                    <Tab label="Revoked" />
-                  </Tabs>
-
-                  <TextField
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    label="Search apps or scopes"
-                    placeholder="Search by app name or scope"
-                    fullWidth
-                    InputProps={{ startAdornment: (<InputAdornment position="start"><SearchIcon size={18} /></InputAdornment>) }}
-                  />
-
-                  <Alert severity="info" icon={<ShieldCheckIcon size={18} />}>
-                    Tip: If you see unknown apps, revoke access immediately and review login activity.
-                  </Alert>
-                </Stack>
-              </CardContent>
-            </Card>
-
-            <Box className="grid gap-4 md:grid-cols-2">
-              {filtered.map((a) => (
-                <Card key={a.id}>
-                  <CardContent className="p-5">
-                    <Stack spacing={1.2}>
-                      <Stack direction="row" spacing={1.2} alignItems="center">
-                        {avatarFor(a.kind)}
-                        <Box flex={1}>
-                          <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
-                            <Typography sx={{ fontWeight: 950 }}>{a.name}</Typography>
-                            <Chip size="small" variant="outlined" label={a.kind} />
-                            {a.revoked ? <Chip size="small" color="error" label="Revoked" /> : <Chip size="small" color="success" label="Active" />}
-                          </Stack>
-                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Last used: {timeAgo(a.lastUsedAt)}
-                          </Typography>
-                        </Box>
-                      </Stack>
-
-                      <Divider />
-
-                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontWeight: 900 }}>Scopes</Typography>
-                      <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                        {a.scopes.slice(0, 8).map((s) => (
-                          <Chip key={s} size="small" variant="outlined" label={s} />
-                        ))}
-                        {a.scopes.length > 8 ? <Chip size="small" variant="outlined" label={`+${a.scopes.length - 8} more`} /> : null}
+        {/* Body */}
+        <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+            <Stack spacing={2.2}>
+              <Card>
+                <CardContent className="p-5 md:p-7">
+                  <Stack spacing={1.2}>
+                    <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ xs: "flex-start", md: "center" }} justifyContent="space-between">
+                      <Box>
+                        <Typography variant="h5">Authorized apps and scopes</Typography>
+                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                          Review and revoke access granted to apps. Revoking logs you out of that service.
+                        </Typography>
                       </Box>
-
-                      <Divider />
-
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                        {!a.revoked ? (
-                          <Button variant="contained" color="secondary" sx={orangeContained} startIcon={<TrashIcon size={18} />} onClick={() => openReauthForRevoke(a.id)}>
-                            Revoke access
-                          </Button>
-                        ) : (
-                          <Button variant="contained" color="secondary" sx={orangeContained} onClick={() => restore(a.id)}>
-                            Restore
-                          </Button>
-                        )}
-                        <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "View app details (demo)." })}>
-                          Details
+                        <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/app/apps")}>
+                          Back to apps
+                        </Button>
+                        <Button variant="contained" color="secondary" sx={orangeContained} startIcon={<ShieldCheckIcon size={18} />} onClick={() => setSnack({ open: true, severity: "info", msg: "Review security settings (demo)." })}>
+                          Security
                         </Button>
                       </Stack>
-
-                      <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                        Security note: revoking access invalidates refresh tokens and may log you out.
-                      </Typography>
                     </Stack>
-                  </CardContent>
-                </Card>
-              ))}
-            </Box>
 
-            {/* Mobile sticky actions */}
-            <Box className="md:hidden" sx={{ position: "sticky", bottom: 12 }}>
-              <Card sx={{ borderRadius: 999, backgroundColor: alpha(theme.palette.background.paper, 0.85), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backdropFilter: "blur(10px)" }}>
-                <CardContent sx={{ py: 1.1, px: 1.2 }}>
-                  <Stack direction="row" spacing={1}>
-                    <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => navigate("/app/apps")}>
-                      Apps
-                    </Button>
-                    <Button fullWidth variant="contained" color="secondary" sx={orangeContained} onClick={() => setSnack({ open: true, severity: "info", msg: "Review login activity (demo)." })}>
-                      Activity
-                    </Button>
+                    <Divider />
+
+                    <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, overflow: "hidden", minHeight: 44, "& .MuiTab-root": { minHeight: 44, fontWeight: 900 }, "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 } }}>
+                      <Tab label="All" />
+                      <Tab label="Active" />
+                      <Tab label="Revoked" />
+                    </Tabs>
+
+                    <TextField
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      label="Search apps or scopes"
+                      placeholder="Search by app name or scope"
+                      fullWidth
+                      InputProps={{ startAdornment: (<InputAdornment position="start"><SearchIcon size={18} /></InputAdornment>) }}
+                    />
+
+                    <Alert severity="info" icon={<ShieldCheckIcon size={18} />}>
+                      Tip: If you see unknown apps, revoke access immediately and review login activity.
+                    </Alert>
                   </Stack>
                 </CardContent>
               </Card>
-            </Box>
 
-            <Box sx={{ opacity: 0.92 }}>
-              <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
-            </Box>
-          </Stack>
-        </motion.div>
-      </Box>
+              <Box className="grid gap-4 md:grid-cols-2">
+                {filtered.map((a) => (
+                  <Card key={a.id}>
+                    <CardContent className="p-5">
+                      <Stack spacing={1.2}>
+                        <Stack direction="row" spacing={1.2} alignItems="center">
+                          {avatarFor(a.kind)}
+                          <Box flex={1}>
+                            <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
+                              <Typography sx={{ fontWeight: 950 }}>{a.name}</Typography>
+                              <Chip size="small" variant="outlined" label={a.kind} />
+                              {a.revoked ? <Chip size="small" color="error" label="Revoked" /> : <Chip size="small" color="success" label="Active" />}
+                            </Stack>
+                            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                              Last used: {timeAgo(a.lastUsedAt)}
+                            </Typography>
+                          </Box>
+                        </Stack>
 
-      {/* Re-auth */}
-      <Dialog open={reauthOpen} onClose={closeReauth} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: "4px", border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}>
-        <DialogTitle sx={{ fontWeight: 950 }}>Confirm it’s you</DialogTitle>
-        <DialogContent>
-          <Stack spacing={1.4}>
-            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-              For your security, please re-authenticate to revoke app access.
-            </Typography>
+                        <Divider />
 
-            <Tabs value={reauthMode === "password" ? 0 : 1} onChange={(_, v) => setReauthMode(v === 0 ? "password" : "mfa")} variant="fullWidth" sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, overflow: "hidden", minHeight: 44, "& .MuiTab-root": { minHeight: 44, fontWeight: 900 }, "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 } }}>
-              <Tab icon={<LockIcon size={16} />} iconPosition="start" label="Password" />
-              <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label="MFA" />
-            </Tabs>
+                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontWeight: 900 }}>Scopes</Typography>
+                        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                          {a.scopes.slice(0, 8).map((s) => (
+                            <Chip key={s} size="small" variant="outlined" label={s} />
+                          ))}
+                          {a.scopes.length > 8 ? <Chip size="small" variant="outlined" label={`+${a.scopes.length - 8} more`} /> : null}
+                        </Box>
 
-            {reauthMode === "password" ? (
-              <TextField
-                value={reauthPassword}
-                onChange={(e) => setReauthPassword(e.target.value)}
-                label="Password"
-                type="password"
-                fullWidth
-                InputProps={{ startAdornment: (<InputAdornment position="start"><LockIcon size={18} /></InputAdornment>) }}
-                helperText="Demo password: EVzone123!"
-              />
-            ) : (
-              <>
-                <Typography sx={{ fontWeight: 950 }}>Choose a channel</Typography>
-                <Box className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  {([
-                    { c: "Authenticator" as const, icon: <KeypadIcon size={18} />, color: EVZONE.orange },
-                    { c: "SMS" as const, icon: <SmsIcon size={18} />, color: EVZONE.orange },
-                    { c: "WhatsApp" as const, icon: <WhatsAppIcon size={18} />, color: WHATSAPP.green },
-                    { c: "Email" as const, icon: <MailIcon size={18} />, color: EVZONE.orange },
-                  ] as const).map((it) => {
-                    const selected = mfaChannel === it.c;
-                    const base = it.color;
-                    const outlined = it.c === "WhatsApp" ? waOutlined : orangeOutlined;
-                    return (
-                      <Button
-                        key={it.c}
-                        variant={selected ? "contained" : "outlined"}
-                        startIcon={it.icon}
-                        onClick={() => setMfaChannel(it.c)}
-                        sx={
-                          selected
-                            ? ({ borderRadius: "4px", backgroundColor: base, color: "#FFFFFF", "&:hover": { backgroundColor: alpha(base, 0.92) } } as const)
-                            : ({ ...outlined, borderRadius: "4px" } as const)
-                        }
-                        fullWidth
-                      >
-                        {it.c}
+                        <Divider />
+
+                        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                          {!a.revoked ? (
+                            <Button variant="contained" color="secondary" sx={orangeContained} startIcon={<TrashIcon size={18} />} onClick={() => openReauthForRevoke(a.id)}>
+                              Revoke access
+                            </Button>
+                          ) : (
+                            <Button variant="contained" color="secondary" sx={orangeContained} onClick={() => restore(a.id)}>
+                              Restore
+                            </Button>
+                          )}
+                          <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "View app details (demo)." })}>
+                            Details
+                          </Button>
+                        </Stack>
+
+                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                          Security note: revoking access invalidates refresh tokens and may log you out.
+                        </Typography>
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                ))}
+              </Box>
+
+              {/* Mobile sticky actions */}
+              <Box className="md:hidden" sx={{ position: "sticky", bottom: 12 }}>
+                <Card sx={{ borderRadius: 999, backgroundColor: alpha(theme.palette.background.paper, 0.85), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backdropFilter: "blur(10px)" }}>
+                  <CardContent sx={{ py: 1.1, px: 1.2 }}>
+                    <Stack direction="row" spacing={1}>
+                      <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => navigate("/app/apps")}>
+                        Apps
                       </Button>
-                    );
-                  })}
-                </Box>
+                      <Button fullWidth variant="contained" color="secondary" sx={orangeContained} onClick={() => setSnack({ open: true, severity: "info", msg: "Review login activity (demo)." })}>
+                        Activity
+                      </Button>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              </Box>
 
+              <Box sx={{ opacity: 0.92 }}>
+                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
+              </Box>
+            </Stack>
+          </motion.div>
+        </Box>
+
+        {/* Re-auth */}
+        <Dialog open={reauthOpen} onClose={closeReauth} fullWidth maxWidth="sm" PaperProps={{ sx: { borderRadius: "4px", border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}>
+          <DialogTitle sx={{ fontWeight: 950 }}>Confirm it’s you</DialogTitle>
+          <DialogContent>
+            <Stack spacing={1.4}>
+              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                For your security, please re-authenticate to revoke app access.
+              </Typography>
+
+              <Tabs value={reauthMode === "password" ? 0 : 1} onChange={(_, v) => setReauthMode(v === 0 ? "password" : "mfa")} variant="fullWidth" sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, overflow: "hidden", minHeight: 44, "& .MuiTab-root": { minHeight: 44, fontWeight: 900 }, "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 } }}>
+                <Tab icon={<LockIcon size={16} />} iconPosition="start" label="Password" />
+                <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label="MFA" />
+              </Tabs>
+
+              {reauthMode === "password" ? (
                 <TextField
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                  label="6-digit code"
-                  placeholder="123456"
+                  value={reauthPassword}
+                  onChange={(e) => setReauthPassword(e.target.value)}
+                  label="Password"
+                  type="password"
                   fullWidth
-                  InputProps={{ startAdornment: (<InputAdornment position="start"><KeypadIcon size={18} /></InputAdornment>) }}
-                  helperText={`Demo code for ${mfaChannel}: ${mfaCodeFor(mfaChannel)}`}
+                  InputProps={{ startAdornment: (<InputAdornment position="start"><LockIcon size={18} /></InputAdornment>) }}
+                  helperText="Demo password: EVzone123!"
                 />
-              </>
-            )}
+              ) : (
+                <>
+                  <Typography sx={{ fontWeight: 950 }}>Choose a channel</Typography>
+                  <Box className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {([
+                      { c: "Authenticator" as const, icon: <KeypadIcon size={18} />, color: EVZONE.orange },
+                      { c: "SMS" as const, icon: <SmsIcon size={18} />, color: EVZONE.orange },
+                      { c: "WhatsApp" as const, icon: <WhatsAppIcon size={18} />, color: WHATSAPP.green },
+                      { c: "Email" as const, icon: <MailIcon size={18} />, color: EVZONE.orange },
+                    ] as const).map((it) => {
+                      const selected = mfaChannel === it.c;
+                      const base = it.color;
+                      const outlined = it.c === "WhatsApp" ? waOutlined : orangeOutlined;
+                      return (
+                        <Button
+                          key={it.c}
+                          variant={selected ? "contained" : "outlined"}
+                          startIcon={it.icon}
+                          onClick={() => setMfaChannel(it.c)}
+                          sx={
+                            selected
+                              ? ({ borderRadius: "4px", backgroundColor: base, color: "#FFFFFF", "&:hover": { backgroundColor: alpha(base, 0.92) } } as const)
+                              : ({ ...outlined, borderRadius: "4px" } as const)
+                          }
+                          fullWidth
+                        >
+                          {it.c}
+                        </Button>
+                      );
+                    })}
+                  </Box>
 
-            <Alert severity="info" icon={<ShieldCheckIcon size={18} />}>
-              This is a demo re-auth flow.
-            </Alert>
-          </Stack>
-        </DialogContent>
-        <DialogActions sx={{ p: 2, pt: 0 }}>
-          <Button variant="outlined" sx={orangeOutlined} onClick={closeReauth}>{t("auth.common.cancel")}<//Button>
-          <Button variant="contained" color="secondary" sx={orangeContained} onClick={revoke}>{t("auth.common.continue")}<//Button>
-        </DialogActions>
-      </Dialog>
+                  <TextField
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    label="6-digit code"
+                    placeholder="123456"
+                    fullWidth
+                    InputProps={{ startAdornment: (<InputAdornment position="start"><KeypadIcon size={18} /></InputAdornment>) }}
+                    helperText={`Demo code for ${mfaChannel}: ${mfaCodeFor(mfaChannel)}`}
+                  />
+                </>
+              )}
 
-      {/* Snackbar */}
-      <Snackbar open={snack.open} autoHideDuration={3400} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-        <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={mode === "dark" ? "filled" : "standard"} sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
-          {snack.msg}
-        </Alert>
-      </Snackbar>
-    </Box>
-  );
+              <Alert severity="info" icon={<ShieldCheckIcon size={18} />}>
+                This is a demo re-auth flow.
+              </Alert>
+            </Stack>
+          </DialogContent>
+          <DialogActions sx={{ p: 2, pt: 0 }}>
+            <Button variant="outlined" sx={orangeOutlined} onClick={closeReauth}>{t("auth.common.cancel")}</Button>
+            <Button variant="contained" color="secondary" sx={orangeContained} onClick={revoke}>{t("auth.common.continue")}</Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Snackbar */}
+        <Snackbar open={snack.open} autoHideDuration={3400} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+          <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={mode === "dark" ? "filled" : "standard"} sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
+            {snack.msg}
+          </Alert>
+        </Snackbar>
+      </Box>
+    );
+  }
 }

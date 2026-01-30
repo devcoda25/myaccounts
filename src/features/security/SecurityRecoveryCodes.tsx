@@ -194,311 +194,313 @@ async function copyToClipboard(text: string) {
 // Mock helper removed
 
 export default function RecoveryCodesPage() {
-  const { t } = useTranslation("common"); {
-  const theme = useTheme();
-  const navigate = useNavigate();
-  const { mode } = useThemeStore();
-  const isDark = mode === "dark";
+  const { t } = useTranslation("common");
+  {
+    const theme = useTheme();
+    const navigate = useNavigate();
+    const { mode } = useThemeStore();
+    const isDark = mode === "dark";
 
-  const [authed, setAuthed] = useState(false);
-  const [reauthMode, setReauthMode] = useState<ReAuthMode>("password");
-  const [reauthPassword, setReauthPassword] = useState("");
-  const [mfaChannel, setMfaChannel] = useState<MfaChannel>("Authenticator");
-  const [otp, setOtp] = useState("");
+    const [authed, setAuthed] = useState(false);
+    const [reauthMode, setReauthMode] = useState<ReAuthMode>("password");
+    const [reauthPassword, setReauthPassword] = useState("");
+    const [mfaChannel, setMfaChannel] = useState<MfaChannel>("Authenticator");
+    const [otp, setOtp] = useState("");
 
-  const [codes, setCodes] = useState<string[]>([]);
-  const [revealed, setRevealed] = useState(false);
-  const [lastGeneratedAt, setLastGeneratedAt] = useState<number | null>(null);
+    const [codes, setCodes] = useState<string[]>([]);
+    const [revealed, setRevealed] = useState(false);
+    const [lastGeneratedAt, setLastGeneratedAt] = useState<number | null>(null);
 
-  const [confirmRegenOpen, setConfirmRegenOpen] = useState(false);
-  const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
-  const [loading, setLoading] = useState(false);
+    const [confirmRegenOpen, setConfirmRegenOpen] = useState(false);
+    const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
+    const [loading, setLoading] = useState(false);
 
-  const pageBg =
-    mode === "dark"
-      ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
-      : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
+    const pageBg =
+      mode === "dark"
+        ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
+        : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
 
-  const evOrangeContainedSx = {
-    backgroundColor: EVZONE.orange,
-    color: "#FFFFFF",
-    boxShadow: `0 18px 48px ${alpha(EVZONE.orange, mode === "dark" ? 0.28 : 0.18)}`,
-    "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
-    "&:active": { backgroundColor: alpha(EVZONE.orange, 0.86), color: "#FFFFFF" },
-  } as const;
+    const evOrangeContainedSx = {
+      backgroundColor: EVZONE.orange,
+      color: "#FFFFFF",
+      boxShadow: `0 18px 48px ${alpha(EVZONE.orange, mode === "dark" ? 0.28 : 0.18)}`,
+      "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
+      "&:active": { backgroundColor: alpha(EVZONE.orange, 0.86), color: "#FFFFFF" },
+    } as const;
 
-  const evOrangeOutlinedSx = {
-    borderColor: alpha(EVZONE.orange, 0.65),
-    color: EVZONE.orange,
-    backgroundColor: alpha(theme.palette.background.paper, 0.20),
-    "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
-  } as const;
+    const evOrangeOutlinedSx = {
+      borderColor: alpha(EVZONE.orange, 0.65),
+      color: EVZONE.orange,
+      backgroundColor: alpha(theme.palette.background.paper, 0.20),
+      "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
+    } as const;
 
-  const submitReauth = async () => {
-    setSnack({ open: false, severity: "info", msg: "" });
+    const submitReauth = async () => {
+      setSnack({ open: false, severity: "info", msg: "" });
 
-    if (reauthMode === "password") {
-      if (!reauthPassword) {
-        setSnack({ open: true, severity: "warning", msg: "Enter your password." });
-        return;
-      }
-      try {
-        await api.post("/auth/verify-password", { password: reauthPassword });
-        setAuthed(true);
-        setSnack({ open: true, severity: "success", msg: "Verified. You can regenerate codes now." });
-      } catch (e: any) {
-        setSnack({ open: true, severity: "error", msg: e.message || "Incorrect password." });
-      }
-    } else {
-      // MFA
-      if (otp.length < 6) {
-        setSnack({ open: true, severity: "warning", msg: "Enter a 6-digit code." });
-        return;
-      }
-      try {
-        await api.post("/auth/mfa/challenge/verify", {
-          channel: mfaChannel.toLowerCase(),
-          code: otp
-        });
-        setAuthed(true);
-        setSnack({ open: true, severity: "success", msg: "Verified. You can regenerate codes now." });
-      } catch (e: any) {
-        setSnack({ open: true, severity: "error", msg: e.message || "Invalid code." });
-      }
-    }
-  };
-
-  const doCopy = async () => {
-    if (codes.length === 0) return;
-    const ok = await copyToClipboard(["EVzone Recovery Codes", ...codes].join("\n"));
-    setSnack({ open: true, severity: ok ? "success" : "warning", msg: ok ? "Copied codes." : "Copy failed." });
-  };
-
-  const doDownloadPdf = () => {
-    if (codes.length === 0) return;
-    const pdfBytes = buildMinimalPdf(["EVzone Recovery Codes", `Generated: ${new Date().toLocaleString()}`, "", ...codes]);
-    const blob = new Blob([pdfBytes], { type: "application/pdf" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "evzone-recovery-codes.pdf";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
-  const openRegen = () => {
-    if (!authed) {
-      setSnack({ open: true, severity: "warning", msg: "Re-authenticate first to regenerate codes." });
-      return;
-    }
-    setConfirmRegenOpen(true);
-  };
-
-  const regenerate = async () => {
-    setConfirmRegenOpen(false);
-    setLoading(true);
-    try {
-      const res = await api.post<IRecoveryCodesResponse>("/auth/mfa/recovery-codes");
-      setLoading(false);
-      if (res.codes) {
-        setCodes(res.codes);
-        setLastGeneratedAt(Date.now());
-        setRevealed(true);
-        setSnack({ open: true, severity: "success", msg: "New recovery codes generated. Old codes are invalid." });
+      if (reauthMode === "password") {
+        if (!reauthPassword) {
+          setSnack({ open: true, severity: "warning", msg: "Enter your password." });
+          return;
+        }
+        try {
+          await api.post("/auth/verify-password", { password: reauthPassword });
+          setAuthed(true);
+          setSnack({ open: true, severity: "success", msg: "Verified. You can regenerate codes now." });
+        } catch (e: any) {
+          setSnack({ open: true, severity: "error", msg: e.message || "Incorrect password." });
+        }
       } else {
+        // MFA
+        if (otp.length < 6) {
+          setSnack({ open: true, severity: "warning", msg: "Enter a 6-digit code." });
+          return;
+        }
+        try {
+          await api.post("/auth/mfa/challenge/verify", {
+            channel: mfaChannel.toLowerCase(),
+            code: otp
+          });
+          setAuthed(true);
+          setSnack({ open: true, severity: "success", msg: "Verified. You can regenerate codes now." });
+        } catch (e: any) {
+          setSnack({ open: true, severity: "error", msg: e.message || "Invalid code." });
+        }
+      }
+    };
+
+    const doCopy = async () => {
+      if (codes.length === 0) return;
+      const ok = await copyToClipboard(["EVzone Recovery Codes", ...codes].join("\n"));
+      setSnack({ open: true, severity: ok ? "success" : "warning", msg: ok ? "Copied codes." : "Copy failed." });
+    };
+
+    const doDownloadPdf = () => {
+      if (codes.length === 0) return;
+      const pdfBytes = buildMinimalPdf(["EVzone Recovery Codes", `Generated: ${new Date().toLocaleString()}`, "", ...codes]);
+      const blob = new Blob([pdfBytes], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "evzone-recovery-codes.pdf";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
+
+    const openRegen = () => {
+      if (!authed) {
+        setSnack({ open: true, severity: "warning", msg: "Re-authenticate first to regenerate codes." });
+        return;
+      }
+      setConfirmRegenOpen(true);
+    };
+
+    const regenerate = async () => {
+      setConfirmRegenOpen(false);
+      setLoading(true);
+      try {
+        const res = await api.post<IRecoveryCodesResponse>("/auth/mfa/recovery-codes");
+        setLoading(false);
+        if (res.codes) {
+          setCodes(res.codes);
+          setLastGeneratedAt(Date.now());
+          setRevealed(true);
+          setSnack({ open: true, severity: "success", msg: "New recovery codes generated. Old codes are invalid." });
+        } else {
+          setSnack({ open: true, severity: "error", msg: "Failed to generate codes." });
+        }
+      } catch (e) {
+        setLoading(false);
         setSnack({ open: true, severity: "error", msg: "Failed to generate codes." });
       }
-    } catch (e) {
-      setLoading(false);
-      setSnack({ open: true, severity: "error", msg: "Failed to generate codes." });
-    }
-  };
+    };
 
-  return (
-    <Box className="min-h-screen" sx={{ background: pageBg }}>
-      <CssBaseline />
-      <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
-          <Stack spacing={2.2}>
-            <Card>
-              <CardContent className="p-5 md:p-7">
-                <Stack spacing={1.2}>
-                  <Typography variant="h5">Recovery codes</Typography>
-                  <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                    Use these if you lose access to your 2FA device. Each code can be used once.
-                  </Typography>
-                  <Alert severity="info" icon={<ShieldCheckIcon size={18} />} sx={{ borderRadius: "4px" }}>
-                    Store codes securely. Do not share them.
-                  </Alert>
-                </Stack>
-              </CardContent>
-            </Card>
-
-            {!authed ? (
+    return (
+      <Box className="min-h-screen" sx={{ background: pageBg }}>
+        <CssBaseline />
+        <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+            <Stack spacing={2.2}>
               <Card>
                 <CardContent className="p-5 md:p-7">
-                  <Stack spacing={1.6}>
-                    <Typography variant="h6">Re-authenticate to continue</Typography>
+                  <Stack spacing={1.2}>
+                    <Typography variant="h5">Recovery codes</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      Viewing recovery codes is sensitive. Please confirm it’s you.
+                      Use these if you lose access to your 2FA device. Each code can be used once.
                     </Typography>
-
-                    <Tabs
-                      value={reauthMode === "password" ? 0 : 1}
-                      onChange={(_, v) => setReauthMode(v === 0 ? "password" : "mfa")}
-                      variant="fullWidth"
-                      sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, overflow: "hidden", minHeight: 44, "& .MuiTab-root": { minHeight: 44, fontWeight: 900 }, "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 } }}
-                    >
-                      <Tab icon={<LockIcon size={16} />} iconPosition="start" label="Password" />
-                      <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label="MFA" />
-                    </Tabs>
-
-                    {reauthMode === "password" ? (
-                      <TextField
-                        value={reauthPassword}
-                        onChange={(e) => setReauthPassword(e.target.value)}
-                        label="Password"
-                        type="password"
-                        fullWidth
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <LockIcon size={18} />
-                            </InputAdornment>
-                          ),
-                        }}
-                        helperText=""
-                      />
-                    ) : (
-                      <>
-                        <Typography sx={{ fontWeight: 950 }}>Choose a channel</Typography>
-                        <Box className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                          {([
-                            { c: "Authenticator" as const, icon: <KeypadIcon size={18} />, color: EVZONE.orange },
-                            { c: "SMS" as const, icon: <KeypadIcon size={18} />, color: EVZONE.orange },
-                            { c: "WhatsApp" as const, icon: <WhatsAppIcon size={18} />, color: WHATSAPP.green },
-                            { c: "Email" as const, icon: <ShieldCheckIcon size={18} />, color: EVZONE.orange },
-                          ] as const).map((it) => {
-                            const selected = mfaChannel === it.c;
-                            const base = it.color;
-                            return (
-                              <Button
-                                key={it.c}
-                                variant={selected ? "contained" : "outlined"}
-                                startIcon={it.icon}
-                                onClick={() => setMfaChannel(it.c)}
-                                sx={
-                                  selected
-                                    ? ({ borderRadius: "4px", backgroundColor: base, color: "#FFFFFF", "&:hover": { backgroundColor: alpha(base, 0.92) } } as const)
-                                    : ({ borderRadius: "4px", borderColor: alpha(base, 0.65), color: base, backgroundColor: alpha(theme.palette.background.paper, 0.25), "&:hover": { borderColor: base, backgroundColor: base, color: "#FFFFFF" } } as const)
-                                }
-                                fullWidth
-                              >
-                                {it.c}
-                              </Button>
-                            );
-                          })}
-                        </Box>
-                        <TextField
-                          value={otp}
-                          onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                          label="6-digit code"
-                          placeholder="123456"
-                          fullWidth
-                          InputProps={{ startAdornment: (<InputAdornment position="start"><KeypadIcon size={18} /></InputAdornment>) }}
-                        />
-                        <Button
-                          variant="text"
-                          size="small"
-                          onClick={async () => {
-                            try {
-                              await api.post("/auth/mfa/challenge/send", { channel: mfaChannel.toLowerCase() });
-                              setSnack({ open: true, severity: "success", msg: `Code sent via ${mfaChannel}` });
-                            } catch (e: any) {
-                              setSnack({ open: true, severity: "error", msg: e.message || "Failed to send code" });
-                            }
-                          }}
-                        >
-                          Send Code
-                        </Button>
-                      </>
-                    )}
-
-                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                      <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={submitReauth}>{t("auth.common.continue")}<//Button>
-                      <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => navigate("/app/security")}>Back to security</Button>
-                    </Stack>
+                    <Alert severity="info" icon={<ShieldCheckIcon size={18} />} sx={{ borderRadius: "4px" }}>
+                      Store codes securely. Do not share them.
+                    </Alert>
                   </Stack>
                 </CardContent>
               </Card>
-            ) : (
-              <Card>
-                <CardContent className="p-5 md:p-7">
-                  <Stack spacing={1.6}>
-                    <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ xs: "flex-start", md: "center" }} justifyContent="space-between">
-                      <Box>
-                        <Typography variant="h6">Your recovery codes</Typography>
-                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Last generated: {lastGeneratedAt ? new Date(lastGeneratedAt).toLocaleString() : "Unknown"}
-                        </Typography>
-                      </Box>
-                      <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ width: { xs: "100%", md: "auto" } }}>
-                        <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={revealed ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />} onClick={() => setRevealed((v) => !v)}>{revealed ? "Hide" : "Reveal"}</Button>
-                        <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<CopyIcon size={18} />} onClick={doCopy} disabled={codes.length === 0}>Copy</Button>
-                        <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<DownloadIcon size={18} />} onClick={doDownloadPdf} disabled={codes.length === 0}>Download PDF</Button>
+
+              {!authed ? (
+                <Card>
+                  <CardContent className="p-5 md:p-7">
+                    <Stack spacing={1.6}>
+                      <Typography variant="h6">Re-authenticate to continue</Typography>
+                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                        Viewing recovery codes is sensitive. Please confirm it’s you.
+                      </Typography>
+
+                      <Tabs
+                        value={reauthMode === "password" ? 0 : 1}
+                        onChange={(_, v) => setReauthMode(v === 0 ? "password" : "mfa")}
+                        variant="fullWidth"
+                        sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, overflow: "hidden", minHeight: 44, "& .MuiTab-root": { minHeight: 44, fontWeight: 900 }, "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 } }}
+                      >
+                        <Tab icon={<LockIcon size={16} />} iconPosition="start" label="Password" />
+                        <Tab icon={<KeypadIcon size={16} />} iconPosition="start" label="MFA" />
+                      </Tabs>
+
+                      {reauthMode === "password" ? (
+                        <TextField
+                          value={reauthPassword}
+                          onChange={(e) => setReauthPassword(e.target.value)}
+                          label="Password"
+                          type="password"
+                          fullWidth
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <LockIcon size={18} />
+                              </InputAdornment>
+                            ),
+                          }}
+                          helperText=""
+                        />
+                      ) : (
+                        <>
+                          <Typography sx={{ fontWeight: 950 }}>Choose a channel</Typography>
+                          <Box className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                            {([
+                              { c: "Authenticator" as const, icon: <KeypadIcon size={18} />, color: EVZONE.orange },
+                              { c: "SMS" as const, icon: <KeypadIcon size={18} />, color: EVZONE.orange },
+                              { c: "WhatsApp" as const, icon: <WhatsAppIcon size={18} />, color: WHATSAPP.green },
+                              { c: "Email" as const, icon: <ShieldCheckIcon size={18} />, color: EVZONE.orange },
+                            ] as const).map((it) => {
+                              const selected = mfaChannel === it.c;
+                              const base = it.color;
+                              return (
+                                <Button
+                                  key={it.c}
+                                  variant={selected ? "contained" : "outlined"}
+                                  startIcon={it.icon}
+                                  onClick={() => setMfaChannel(it.c)}
+                                  sx={
+                                    selected
+                                      ? ({ borderRadius: "4px", backgroundColor: base, color: "#FFFFFF", "&:hover": { backgroundColor: alpha(base, 0.92) } } as const)
+                                      : ({ borderRadius: "4px", borderColor: alpha(base, 0.65), color: base, backgroundColor: alpha(theme.palette.background.paper, 0.25), "&:hover": { borderColor: base, backgroundColor: base, color: "#FFFFFF" } } as const)
+                                  }
+                                  fullWidth
+                                >
+                                  {it.c}
+                                </Button>
+                              );
+                            })}
+                          </Box>
+                          <TextField
+                            value={otp}
+                            onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                            label="6-digit code"
+                            placeholder="123456"
+                            fullWidth
+                            InputProps={{ startAdornment: (<InputAdornment position="start"><KeypadIcon size={18} /></InputAdornment>) }}
+                          />
+                          <Button
+                            variant="text"
+                            size="small"
+                            onClick={async () => {
+                              try {
+                                await api.post("/auth/mfa/challenge/send", { channel: mfaChannel.toLowerCase() });
+                                setSnack({ open: true, severity: "success", msg: `Code sent via ${mfaChannel}` });
+                              } catch (e: any) {
+                                setSnack({ open: true, severity: "error", msg: e.message || "Failed to send code" });
+                              }
+                            }}
+                          >
+                            Send Code
+                          </Button>
+                        </>
+                      )}
+
+                      <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                        <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={submitReauth}>{t("auth.common.continue")}</Button>
+                        <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => navigate("/app/security")}>Back to security</Button>
                       </Stack>
                     </Stack>
-                    <Divider />
-                    <Box className="grid gap-2 sm:grid-cols-2">
-                      {codes.length > 0 ? (
-                        codes.map((c) => (
-                          <Box key={c} sx={{ borderRadius: "4px", border: `1px dashed ${alpha(theme.palette.text.primary, 0.18)}`, p: 1.1, backgroundColor: alpha(theme.palette.background.paper, 0.35) }}>
-                            <Typography sx={{ fontWeight: 950, letterSpacing: 0.6 }}>{revealed ? c : "••••-••••"}</Typography>
-                          </Box>
-                        ))
-                      ) : (
-                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>No codes available. Regenerate to get new ones.</Typography>
-                      )}
-                    </Box>
-                    <Divider />
-                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                      <Button variant="contained" color="secondary" sx={evOrangeContainedSx} startIcon={<RefreshIcon size={18} />} onClick={openRegen} disabled={loading}>{loading ? "Regenerating..." : "Regenerate codes"}</Button>
-                      <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => navigate("/app/security/2fa")}>Back to Manage 2FA</Button>
+                  </CardContent>
+                </Card>
+              ) : (
+                <Card>
+                  <CardContent className="p-5 md:p-7">
+                    <Stack spacing={1.6}>
+                      <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ xs: "flex-start", md: "center" }} justifyContent="space-between">
+                        <Box>
+                          <Typography variant="h6">Your recovery codes</Typography>
+                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                            Last generated: {lastGeneratedAt ? new Date(lastGeneratedAt).toLocaleString() : "Unknown"}
+                          </Typography>
+                        </Box>
+                        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ width: { xs: "100%", md: "auto" } }}>
+                          <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={revealed ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />} onClick={() => setRevealed((v) => !v)}>{revealed ? "Hide" : "Reveal"}</Button>
+                          <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<CopyIcon size={18} />} onClick={doCopy} disabled={codes.length === 0}>Copy</Button>
+                          <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<DownloadIcon size={18} />} onClick={doDownloadPdf} disabled={codes.length === 0}>Download PDF</Button>
+                        </Stack>
+                      </Stack>
+                      <Divider />
+                      <Box className="grid gap-2 sm:grid-cols-2">
+                        {codes.length > 0 ? (
+                          codes.map((c) => (
+                            <Box key={c} sx={{ borderRadius: "4px", border: `1px dashed ${alpha(theme.palette.text.primary, 0.18)}`, p: 1.1, backgroundColor: alpha(theme.palette.background.paper, 0.35) }}>
+                              <Typography sx={{ fontWeight: 950, letterSpacing: 0.6 }}>{revealed ? c : "••••-••••"}</Typography>
+                            </Box>
+                          ))
+                        ) : (
+                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>No codes available. Regenerate to get new ones.</Typography>
+                        )}
+                      </Box>
+                      <Divider />
+                      <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                        <Button variant="contained" color="secondary" sx={evOrangeContainedSx} startIcon={<RefreshIcon size={18} />} onClick={openRegen} disabled={loading}>{loading ? "Regenerating..." : "Regenerate codes"}</Button>
+                        <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => navigate("/app/security/2fa")}>Back to Manage 2FA</Button>
+                      </Stack>
+                      <Alert severity="warning" sx={{ borderRadius: "4px" }}>Regenerating codes invalidates all previous codes immediately.</Alert>
                     </Stack>
-                    <Alert severity="warning" sx={{ borderRadius: "4px" }}>Regenerating codes invalidates all previous codes immediately.</Alert>
-                  </Stack>
-                </CardContent>
-              </Card>
-            )}
+                  </CardContent>
+                </Card>
+              )}
 
-            <Box sx={{ opacity: 0.92 }}>
-              <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
-            </Box>
-          </Stack>
-        </motion.div>
+              <Box sx={{ opacity: 0.92 }}>
+                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
+              </Box>
+            </Stack>
+          </motion.div>
+        </Box>
+
+        <Dialog open={confirmRegenOpen} onClose={() => setConfirmRegenOpen(false)} PaperProps={{ sx: { borderRadius: "4px", border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}>
+          <DialogTitle sx={{ fontWeight: 950 }}>Regenerate recovery codes</DialogTitle>
+          <DialogContent>
+            <Stack spacing={1.2}>
+              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>This will invalidate all previous recovery codes.</Typography>
+              <Alert severity="warning" sx={{ borderRadius: "4px" }}>Proceed only if your codes were exposed or lost.</Alert>
+            </Stack>
+          </DialogContent>
+          <DialogActions sx={{ p: 2, pt: 0 }}>
+            <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => setConfirmRegenOpen(false)}>{t("auth.common.cancel")}</Button>
+            <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={regenerate}>Regenerate</Button>
+          </DialogActions>
+        </Dialog>
+
+        <Snackbar open={snack.open} autoHideDuration={3400} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+          <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={isDark ? "filled" : "standard"} sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: isDark ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
+            {snack.msg}
+          </Alert>
+        </Snackbar>
       </Box>
-
-      <Dialog open={confirmRegenOpen} onClose={() => setConfirmRegenOpen(false)} PaperProps={{ sx: { borderRadius: "4px", border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}>
-        <DialogTitle sx={{ fontWeight: 950 }}>Regenerate recovery codes</DialogTitle>
-        <DialogContent>
-          <Stack spacing={1.2}>
-            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>This will invalidate all previous recovery codes.</Typography>
-            <Alert severity="warning" sx={{ borderRadius: "4px" }}>Proceed only if your codes were exposed or lost.</Alert>
-          </Stack>
-        </DialogContent>
-        <DialogActions sx={{ p: 2, pt: 0 }}>
-          <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => setConfirmRegenOpen(false)}>{t("auth.common.cancel")}<//Button>
-          <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={regenerate}>Regenerate</Button>
-        </DialogActions>
-      </Dialog>
-
-      <Snackbar open={snack.open} autoHideDuration={3400} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-        <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={isDark ? "filled" : "standard"} sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: isDark ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
-          {snack.msg}
-        </Alert>
-      </Snackbar>
-    </Box>
-  );
+    );
+  }
 }

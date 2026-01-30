@@ -282,296 +282,298 @@ function runSelfTestsOnce() {
 }
 
 export default function DownloadMyDataPage() {
-  const { t } = useTranslation("common"); {
-  const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
-  const theme = useMemo(() => buildTheme(mode), [mode]);
-  const isDark = mode === "dark";
+  const { t } = useTranslation("common");
+  {
+    const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
+    const theme = useMemo(() => buildTheme(mode), [mode]);
+    const isDark = mode === "dark";
 
-  const [now, setNow] = useState(() => Date.now());
-  const tickRef = useRef<number | null>(null);
+    const [now, setNow] = useState(() => Date.now());
+    const tickRef = useRef<number | null>(null);
 
-  const [jobs, setJobs] = useState<ExportJob[]>(() => {
-    const existing: ExportJob[] = [];
-    return existing;
-  });
+    const [jobs, setJobs] = useState<ExportJob[]>(() => {
+      const existing: ExportJob[] = [];
+      return existing;
+    });
 
-  const current = jobs[0] || ({ id: "-", requestedAt: 0, status: "idle", progress: 0 } as ExportJob);
+    const current = jobs[0] || ({ id: "-", requestedAt: 0, status: "idle", progress: 0 } as ExportJob);
 
-  const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({
-    open: false,
-    severity: "info",
-    msg: "",
-  });
+    const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({
+      open: false,
+      severity: "info",
+      msg: "",
+    });
 
-  useEffect(() => {
-    if (typeof window !== "undefined") runSelfTestsOnce();
-  }, []);
+    useEffect(() => {
+      if (typeof window !== "undefined") runSelfTestsOnce();
+    }, []);
 
-  useEffect(() => {
-    tickRef.current = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => {
-      if (tickRef.current) window.clearInterval(tickRef.current);
+    useEffect(() => {
+      tickRef.current = window.setInterval(() => setNow(Date.now()), 1000);
+      return () => {
+        if (tickRef.current) window.clearInterval(tickRef.current);
+      };
+    }, []);
+
+    useEffect(() => {
+      // expire job if needed
+      if (current.status === "ready" && current.expiresAt && now > current.expiresAt) {
+        setJobs((prev) =>
+          prev.map((j, idx) =>
+            idx === 0
+              ? {
+                ...j,
+                status: "expired",
+                progress: 100,
+              }
+              : j
+          )
+        );
+      }
+    }, [now, current.status, current.expiresAt]);
+
+    const toggleMode = () => {
+      const next: ThemeMode = mode === "light" ? "dark" : "light";
+      setMode(next);
+      setStoredMode(next);
     };
-  }, []);
 
-  useEffect(() => {
-    // expire job if needed
-    if (current.status === "ready" && current.expiresAt && now > current.expiresAt) {
-      setJobs((prev) =>
-        prev.map((j, idx) =>
-          idx === 0
-            ? {
-              ...j,
-              status: "expired",
-              progress: 100,
-            }
-            : j
-        )
-      );
-    }
-  }, [now, current.status, current.expiresAt]);
+    const pageBg =
+      mode === "dark"
+        ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
+        : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
 
-  const toggleMode = () => {
-    const next: ThemeMode = mode === "light" ? "dark" : "light";
-    setMode(next);
-    setStoredMode(next);
-  };
+    const orangeContained = {
+      backgroundColor: EVZONE.orange,
+      color: "#FFFFFF",
+      boxShadow: `0 18px 48px ${alpha(EVZONE.orange, mode === "dark" ? 0.28 : 0.18)}`,
+      "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
+    } as const;
 
-  const pageBg =
-    mode === "dark"
-      ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
-      : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
+    const orangeOutlined = {
+      borderColor: alpha(EVZONE.orange, 0.65),
+      color: EVZONE.orange,
+      backgroundColor: alpha(theme.palette.background.paper, 0.20),
+      "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
+    } as const;
 
-  const orangeContained = {
-    backgroundColor: EVZONE.orange,
-    color: "#FFFFFF",
-    boxShadow: `0 18px 48px ${alpha(EVZONE.orange, mode === "dark" ? 0.28 : 0.18)}`,
-    "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
-  } as const;
+    const greenContained = {
+      backgroundColor: EVZONE.green,
+      color: "#FFFFFF",
+      boxShadow: `0 18px 48px ${alpha(EVZONE.green, mode === "dark" ? 0.24 : 0.16)}`,
+      "&:hover": { backgroundColor: alpha(EVZONE.green, 0.92), color: "#FFFFFF" },
+    } as const;
 
-  const orangeOutlined = {
-    borderColor: alpha(EVZONE.orange, 0.65),
-    color: EVZONE.orange,
-    backgroundColor: alpha(theme.palette.background.paper, 0.20),
-    "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
-  } as const;
+    const requestExport = async () => {
+      setSnack({ open: true, severity: "info", msg: "Requesting your data..." });
 
-  const greenContained = {
-    backgroundColor: EVZONE.green,
-    color: "#FFFFFF",
-    boxShadow: `0 18px 48px ${alpha(EVZONE.green, mode === "dark" ? 0.24 : 0.16)}`,
-    "&:hover": { backgroundColor: alpha(EVZONE.green, 0.92), color: "#FFFFFF" },
-  } as const;
+      try {
+        const data = await api.post<any>('/privacy/export', {});
 
-  const requestExport = async () => {
-    setSnack({ open: true, severity: "info", msg: "Requesting your data..." });
+        const id = mkId("EXP");
+        const requestedAt = Date.now();
+        const readyAt = Date.now();
+        const expiresAt = readyAt + 15 * 60 * 1000;
 
-    try {
-      const data = await api.post<any>('/privacy/export', {});
+        const job: ExportJob = { id, requestedAt, status: "ready", progress: 100, readyAt, expiresAt };
+        setJobs((prev) => [job, ...prev].slice(0, 8));
 
-      const id = mkId("EXP");
-      const requestedAt = Date.now();
-      const readyAt = Date.now();
-      const expiresAt = readyAt + 15 * 60 * 1000;
+        downloadJson(`evzone-my-data-${id}.json`, data);
+        setSnack({ open: true, severity: "success", msg: "Export ready and download started." });
+      } catch (e) {
+        setSnack({ open: true, severity: "error", msg: "Failed to export data." });
+      }
+    };
 
-      const job: ExportJob = { id, requestedAt, status: "ready", progress: 100, readyAt, expiresAt };
-      setJobs((prev) => [job, ...prev].slice(0, 8));
+    const download = () => {
+      if (current.status !== "ready") {
+        setSnack({ open: true, severity: "warning", msg: "No ready export to download." });
+        return;
+      }
+      if (current.expiresAt && now > current.expiresAt) {
+        setSnack({ open: true, severity: "warning", msg: "Export link expired. Request a new export." });
+        return;
+      }
 
-      downloadJson(`evzone-my-data-${id}.json`, data);
-      setSnack({ open: true, severity: "success", msg: "Export ready and download started." });
-    } catch (e) {
-      setSnack({ open: true, severity: "error", msg: "Failed to export data." });
-    }
-  };
+      downloadJson(`evzone-my-data-${current.id}.json`, exportPayload(current));
+      setSnack({ open: true, severity: "success", msg: "Download started." });
+    };
 
-  const download = () => {
-    if (current.status !== "ready") {
-      setSnack({ open: true, severity: "warning", msg: "No ready export to download." });
-      return;
-    }
-    if (current.expiresAt && now > current.expiresAt) {
-      setSnack({ open: true, severity: "warning", msg: "Export link expired. Request a new export." });
-      return;
-    }
+    const statusChip = (s: ExportStatus) => {
+      if (s === "idle") return <Chip size="small" variant="outlined" label="No active export" />;
+      if (s === "queued") return <Chip size="small" color="warning" label="Queued" />;
+      if (s === "processing") return <Chip size="small" color="warning" label="Processing" />;
+      if (s === "ready") return <Chip size="small" color="success" label="Ready" />;
+      if (s === "expired") return <Chip size="small" color="error" label="Expired" />;
+      return <Chip size="small" color="error" label="Failed" />;
+    };
 
-    downloadJson(`evzone-my-data-${current.id}.json`, exportPayload(current));
-    setSnack({ open: true, severity: "success", msg: "Download started." });
-  };
+    const timeRemainingMs = current.expiresAt ? current.expiresAt - now : 0;
+    const timeRemaining = current.status === "ready" ? fmtCountdown(timeRemainingMs) : "-";
 
-  const statusChip = (s: ExportStatus) => {
-    if (s === "idle") return <Chip size="small" variant="outlined" label="No active export" />;
-    if (s === "queued") return <Chip size="small" color="warning" label="Queued" />;
-    if (s === "processing") return <Chip size="small" color="warning" label="Processing" />;
-    if (s === "ready") return <Chip size="small" color="success" label="Ready" />;
-    if (s === "expired") return <Chip size="small" color="error" label="Expired" />;
-    return <Chip size="small" color="error" label="Failed" />;
-  };
+    const included = [
+      { k: "Account profile", v: "Basic profile and contacts" },
+      { k: "Wallet", v: "Balances and transaction references" },
+      { k: "Security", v: "Login activity summaries" },
+      { k: "Consents", v: "Terms and marketing consents" },
+    ];
 
-  const timeRemainingMs = current.expiresAt ? current.expiresAt - now : 0;
-  const timeRemaining = current.status === "ready" ? fmtCountdown(timeRemainingMs) : "-";
+    return (
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
 
-  const included = [
-    { k: "Account profile", v: "Basic profile and contacts" },
-    { k: "Wallet", v: "Balances and transaction references" },
-    { k: "Security", v: "Login activity summaries" },
-    { k: "Consents", v: "Terms and marketing consents" },
-  ];
-
-  return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-
-      <Box className="min-h-screen" sx={{ background: pageBg }}>
+        <Box className="min-h-screen" sx={{ background: pageBg }}>
 
 
-        {/* Body */}
-        <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
-            <Stack spacing={2.2}>
-              <Card>
-                <CardContent className="p-5 md:p-7">
-                  <Stack spacing={1.2}>
-                    <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ xs: "flex-start", md: "center" }} justifyContent="space-between">
-                      <Box>
-                        <Typography variant="h5">Download my data</Typography>
-                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Request an export of your account data. The download link is time-limited.
-                        </Typography>
-                        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 1 }}>
-                          {statusChip(current.status)}
-                          {current.status === "ready" ? <Chip size="small" variant="outlined" icon={<ClockIcon size={16} />} label={`Expires in: ${timeRemaining}`} sx={{ "& .MuiChip-icon": { color: "inherit" }, fontWeight: 900 }} /> : null}
+          {/* Body */}
+          <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+              <Stack spacing={2.2}>
+                <Card>
+                  <CardContent className="p-5 md:p-7">
+                    <Stack spacing={1.2}>
+                      <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ xs: "flex-start", md: "center" }} justifyContent="space-between">
+                        <Box>
+                          <Typography variant="h5">Download my data</Typography>
+                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                            Request an export of your account data. The download link is time-limited.
+                          </Typography>
+                          <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 1 }}>
+                            {statusChip(current.status)}
+                            {current.status === "ready" ? <Chip size="small" variant="outlined" icon={<ClockIcon size={16} />} label={`Expires in: ${timeRemaining}`} sx={{ "& .MuiChip-icon": { color: "inherit" }, fontWeight: 900 }} /> : null}
+                          </Stack>
+                        </Box>
+
+                        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ width: { xs: "100%", md: "auto" } }}>
+                          <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "You will be notified when your data is ready." })}>
+                            Request data copy
+                          </Button>
+                          <Button variant="contained" sx={greenContained} startIcon={<DownloadIcon size={18} />} onClick={download} disabled={current.status !== "ready"}>
+                            Download
+                          </Button>
                         </Stack>
-                      </Box>
-
-                      <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ width: { xs: "100%", md: "auto" } }}>
-                        <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "You will be notified when your data is ready." })}>
-                          Request data copy
-                        </Button>
-                        <Button variant="contained" sx={greenContained} startIcon={<DownloadIcon size={18} />} onClick={download} disabled={current.status !== "ready"}>
-                          Download
-                        </Button>
                       </Stack>
-                    </Stack>
 
-                    <Divider />
+                      <Divider />
 
-                    <Alert severity="info" icon={<ShieldIcon size={18} />}>
-                      For your security, exports may exclude some sensitive values. Raw card details are never included.
-                    </Alert>
+                      <Alert severity="info" icon={<ShieldIcon size={18} />}>
+                        For your security, exports may exclude some sensitive values. Raw card details are never included.
+                      </Alert>
 
-                    {current.status === "queued" || current.status === "processing" ? (
-                      <Box>
-                        <LinearProgress variant="determinate" value={Math.min(100, Math.max(2, current.progress))} />
-                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                          Preparing export… {Math.min(100, Math.max(2, current.progress))}%
-                        </Typography>
-                      </Box>
-                    ) : null}
+                      {current.status === "queued" || current.status === "processing" ? (
+                        <Box>
+                          <LinearProgress variant="determinate" value={Math.min(100, Math.max(2, current.progress))} />
+                          <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                            Preparing export… {Math.min(100, Math.max(2, current.progress))}%
+                          </Typography>
+                        </Box>
+                      ) : null}
 
-                    {current.status === "expired" ? <Alert severity="warning">Export expired. Request a new export to download again.</Alert> : null}
-                    {current.status === "failed" ? <Alert severity="error">Export failed. Please try again.</Alert> : null}
-                  </Stack>
-                </CardContent>
-              </Card>
-
-              <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
-                <Box className="md:col-span-5">
-                  <Card>
-                    <CardContent className="p-5 md:p-7">
-                      <Stack spacing={1.2}>
-                        <Typography variant="h6">What’s included</Typography>
-                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          This is a preview list. Backend can include more items.
-                        </Typography>
-                        <Divider />
-                        <Stack spacing={0.9}>
-                          {included.map((x) => (
-                            <Box key={x.k} sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.1 }}>
-                              <Typography sx={{ fontWeight: 950 }}>{x.k}</Typography>
-                              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>{x.v}</Typography>
-                            </Box>
-                          ))}
-                        </Stack>
-                        <Divider />
-                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                          Export format: JSON. ZIP and PDF reports can be added later.
-                        </Typography>
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                </Box>
-
-                <Box className="md:col-span-7">
-                  <Card>
-                    <CardContent className="p-5 md:p-7">
-                      <Stack spacing={1.2}>
-                        <Typography variant="h6">Export history</Typography>
-                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Latest exports are shown here.
-                        </Typography>
-                        <Divider />
-
-                        <TableContainer sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, overflow: "hidden" }}>
-                          <Table size="small" sx={{ minWidth: 800 }}>
-                            <TableHead>
-                              <TableRow sx={{ backgroundColor: alpha(theme.palette.background.paper, 0.55) }}>
-                                <TableCell sx={{ fontWeight: 950 }}>Export ID</TableCell>
-                                <TableCell sx={{ fontWeight: 950 }}>Requested</TableCell>
-                                <TableCell sx={{ fontWeight: 950 }}>Status</TableCell>
-                                <TableCell sx={{ fontWeight: 950 }}>Expires</TableCell>
-                              </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              {(jobs.length ? jobs : [{ id: "-", requestedAt: 0, status: "idle" as ExportStatus, progress: 0 }]).map((j) => (
-                                <TableRow key={j.id} hover>
-                                  <TableCell sx={{ fontWeight: 950 }}>{j.id}</TableCell>
-                                  <TableCell>{j.requestedAt ? fmtDateTime(j.requestedAt) : "-"}</TableCell>
-                                  <TableCell>{statusChip(j.status)}</TableCell>
-                                  <TableCell>{j.expiresAt ? fmtDateTime(j.expiresAt) : "-"}</TableCell>
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        </TableContainer>
-
-                        <Alert severity="info" icon={<ClockIcon size={18} />}>
-                          Exports expire for safety. Request a new export any time.
-                        </Alert>
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                </Box>
-              </Box>
-
-              {/* Mobile sticky actions */}
-              <Box className="md:hidden" sx={{ position: "sticky", bottom: 12 }}>
-                <Card sx={{ borderRadius: 999, backgroundColor: alpha(theme.palette.background.paper, 0.86), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backdropFilter: "blur(10px)" }}>
-                  <CardContent sx={{ py: 1.1, px: 1.2 }}>
-                    <Stack direction="row" spacing={1}>
-                      <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={requestExport}>
-                        Request
-                      </Button>
-                      <Button fullWidth variant="contained" sx={greenContained} onClick={download} disabled={current.status !== "ready"}>
-                        Download
-                      </Button>
+                      {current.status === "expired" ? <Alert severity="warning">Export expired. Request a new export to download again.</Alert> : null}
+                      {current.status === "failed" ? <Alert severity="error">Export failed. Please try again.</Alert> : null}
                     </Stack>
                   </CardContent>
                 </Card>
-              </Box>
 
-              <Box sx={{ opacity: 0.92 }}>
-                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
-              </Box>
-            </Stack>
-          </motion.div>
+                <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
+                  <Box className="md:col-span-5">
+                    <Card>
+                      <CardContent className="p-5 md:p-7">
+                        <Stack spacing={1.2}>
+                          <Typography variant="h6">What’s included</Typography>
+                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                            This is a preview list. Backend can include more items.
+                          </Typography>
+                          <Divider />
+                          <Stack spacing={0.9}>
+                            {included.map((x) => (
+                              <Box key={x.k} sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.1 }}>
+                                <Typography sx={{ fontWeight: 950 }}>{x.k}</Typography>
+                                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>{x.v}</Typography>
+                              </Box>
+                            ))}
+                          </Stack>
+                          <Divider />
+                          <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                            Export format: JSON. ZIP and PDF reports can be added later.
+                          </Typography>
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  </Box>
+
+                  <Box className="md:col-span-7">
+                    <Card>
+                      <CardContent className="p-5 md:p-7">
+                        <Stack spacing={1.2}>
+                          <Typography variant="h6">Export history</Typography>
+                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                            Latest exports are shown here.
+                          </Typography>
+                          <Divider />
+
+                          <TableContainer sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, overflow: "hidden" }}>
+                            <Table size="small" sx={{ minWidth: 800 }}>
+                              <TableHead>
+                                <TableRow sx={{ backgroundColor: alpha(theme.palette.background.paper, 0.55) }}>
+                                  <TableCell sx={{ fontWeight: 950 }}>Export ID</TableCell>
+                                  <TableCell sx={{ fontWeight: 950 }}>Requested</TableCell>
+                                  <TableCell sx={{ fontWeight: 950 }}>Status</TableCell>
+                                  <TableCell sx={{ fontWeight: 950 }}>Expires</TableCell>
+                                </TableRow>
+                              </TableHead>
+                              <TableBody>
+                                {(jobs.length ? jobs : [{ id: "-", requestedAt: 0, status: "idle" as ExportStatus, progress: 0 }]).map((j) => (
+                                  <TableRow key={j.id} hover>
+                                    <TableCell sx={{ fontWeight: 950 }}>{j.id}</TableCell>
+                                    <TableCell>{j.requestedAt ? fmtDateTime(j.requestedAt) : "-"}</TableCell>
+                                    <TableCell>{statusChip(j.status)}</TableCell>
+                                    <TableCell>{j.expiresAt ? fmtDateTime(j.expiresAt) : "-"}</TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </TableContainer>
+
+                          <Alert severity="info" icon={<ClockIcon size={18} />}>
+                            Exports expire for safety. Request a new export any time.
+                          </Alert>
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  </Box>
+                </Box>
+
+                {/* Mobile sticky actions */}
+                <Box className="md:hidden" sx={{ position: "sticky", bottom: 12 }}>
+                  <Card sx={{ borderRadius: 999, backgroundColor: alpha(theme.palette.background.paper, 0.86), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backdropFilter: "blur(10px)" }}>
+                    <CardContent sx={{ py: 1.1, px: 1.2 }}>
+                      <Stack direction="row" spacing={1}>
+                        <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={requestExport}>
+                          Request
+                        </Button>
+                        <Button fullWidth variant="contained" sx={greenContained} onClick={download} disabled={current.status !== "ready"}>
+                          Download
+                        </Button>
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                </Box>
+
+                <Box sx={{ opacity: 0.92 }}>
+                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
+                </Box>
+              </Stack>
+            </motion.div>
+          </Box>
+
+          <Snackbar open={snack.open} autoHideDuration={3400} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+            <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={mode === "dark" ? "filled" : "standard"} sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
+              {snack.msg}
+            </Alert>
+          </Snackbar>
         </Box>
-
-        <Snackbar open={snack.open} autoHideDuration={3400} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-          <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={mode === "dark" ? "filled" : "standard"} sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
-            {snack.msg}
-          </Alert>
-        </Snackbar>
-      </Box>
-    </ThemeProvider>
-  );
+      </ThemeProvider>
+    );
+  }
 }

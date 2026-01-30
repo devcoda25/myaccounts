@@ -111,258 +111,260 @@ function reqs(pw: string) {
 }
 
 export default function ChangePasswordPage() {
-  const { t } = useTranslation("common"); {
-  const theme = useTheme();
-  const navigate = useNavigate();
-  const { mode } = useThemeStore();
-  const isDark = mode === "dark";
-  const { showNotification } = useNotification();
+  const { t } = useTranslation("common");
+  {
+    const theme = useTheme();
+    const navigate = useNavigate();
+    const { mode } = useThemeStore();
+    const isDark = mode === "dark";
+    const { showNotification } = useNotification();
 
-  const [current, setCurrent] = useState("");
-  const [pw, setPw] = useState("");
-  const [confirm, setConfirm] = useState("");
+    const [current, setCurrent] = useState("");
+    const [pw, setPw] = useState("");
+    const [confirm, setConfirm] = useState("");
 
-  const [showCurrent, setShowCurrent] = useState(false);
-  const [showPw, setShowPw] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
+    const [showCurrent, setShowCurrent] = useState(false);
+    const [showPw, setShowPw] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
 
-  const [logoutOthers, setLogoutOthers] = useState(true);
-  const [saving, setSaving] = useState(false);
+    const [logoutOthers, setLogoutOthers] = useState(true);
+    const [saving, setSaving] = useState(false);
 
-  const pageBg =
-    mode === "dark"
-      ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
-      : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
+    const pageBg =
+      mode === "dark"
+        ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
+        : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
 
-  const evOrangeContainedSx = {
-    backgroundColor: EVZONE.orange,
-    color: "#FFFFFF",
-    boxShadow: `0 18px 48px ${alpha(EVZONE.orange, mode === "dark" ? 0.28 : 0.18)}`,
-    "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
-    "&:active": { backgroundColor: alpha(EVZONE.orange, 0.86), color: "#FFFFFF" },
-  } as const;
+    const evOrangeContainedSx = {
+      backgroundColor: EVZONE.orange,
+      color: "#FFFFFF",
+      boxShadow: `0 18px 48px ${alpha(EVZONE.orange, mode === "dark" ? 0.28 : 0.18)}`,
+      "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
+      "&:active": { backgroundColor: alpha(EVZONE.orange, 0.86), color: "#FFFFFF" },
+    } as const;
 
-  const evOrangeOutlinedSx = {
-    borderColor: alpha(EVZONE.orange, 0.65),
-    color: EVZONE.orange,
-    backgroundColor: alpha(theme.palette.background.paper, 0.20),
-    "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
-  } as const;
+    const evOrangeOutlinedSx = {
+      borderColor: alpha(EVZONE.orange, 0.65),
+      color: EVZONE.orange,
+      backgroundColor: alpha(theme.palette.background.paper, 0.20),
+      "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
+    } as const;
 
-  const s = strengthScore(pw);
-  const label = s <= 1 ? "Weak" : s === 2 ? "Fair" : s === 3 ? "Good" : s === 4 ? "Strong" : "Very strong";
-  const r = reqs(pw);
+    const s = strengthScore(pw);
+    const label = s <= 1 ? "Weak" : s === 2 ? "Fair" : s === 3 ? "Good" : s === 4 ? "Strong" : "Very strong";
+    const r = reqs(pw);
 
-  const canSubmit = current.trim() && s >= 3 && pw === confirm;
+    const canSubmit = current.trim() && s >= 3 && pw === confirm;
 
-  const submit = async () => {
-    if (!current.trim()) {
-      showNotification({ type: "warning", title: "Missing Input", message: "Enter your current password." });
-      return;
-    }
-    if (!pw) {
-      showNotification({ type: "warning", title: "Missing Input", message: "Enter a new password." });
-      return;
-    }
-    if (s < 3) {
-      showNotification({ type: "warning", title: "Weak Password", message: "Please strengthen your new password." });
-      return;
-    }
-    if (pw !== confirm) {
-      showNotification({ type: "warning", title: "Mismatch", message: "Passwords do not match." });
-      return;
-    }
+    const submit = async () => {
+      if (!current.trim()) {
+        showNotification({ type: "warning", title: "Missing Input", message: "Enter your current password." });
+        return;
+      }
+      if (!pw) {
+        showNotification({ type: "warning", title: "Missing Input", message: "Enter a new password." });
+        return;
+      }
+      if (s < 3) {
+        showNotification({ type: "warning", title: "Weak Password", message: "Please strengthen your new password." });
+        return;
+      }
+      if (pw !== confirm) {
+        showNotification({ type: "warning", title: "Mismatch", message: "Passwords do not match." });
+        return;
+      }
 
-    setSaving(true);
-    try {
-      await api.post("/auth/change-password", {
-        currentPassword: current,
-        newPassword: pw,
-        logoutOthers,
-      });
+      setSaving(true);
+      try {
+        await api.post("/auth/change-password", {
+          currentPassword: current,
+          newPassword: pw,
+          logoutOthers,
+        });
 
-      setCurrent("");
-      setPw("");
-      setConfirm("");
+        setCurrent("");
+        setPw("");
+        setConfirm("");
 
-      showNotification({
-        type: "success",
-        title: "Password Updated",
-        message: "Your password has been changed successfully.",
-      });
-    } catch (err: any) {
-      console.error(err);
-      showNotification({
-        type: "error",
-        title: "Update Failed",
-        message: err.message || "Failed to update password. Please check your current password."
-      });
-    } finally {
-      setSaving(false);
-    }
-  };
+        showNotification({
+          type: "success",
+          title: "Password Updated",
+          message: "Your password has been changed successfully.",
+        });
+      } catch (err: any) {
+        console.error(err);
+        showNotification({
+          type: "error",
+          title: "Update Failed",
+          message: err.message || "Failed to update password. Please check your current password."
+        });
+      } finally {
+        setSaving(false);
+      }
+    };
 
-  return (
-    <Box className="min-h-screen" sx={{ background: pageBg }}>
-      <CssBaseline />
+    return (
+      <Box className="min-h-screen" sx={{ background: pageBg }}>
+        <CssBaseline />
 
-      <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
-          <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
-            <Box className="md:col-span-4">
-              <Card>
-                <CardContent className="p-5">
-                  <Stack spacing={1.2}>
-                    <Typography variant="h6">Password guidance</Typography>
-                    <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      Use a unique password. Avoid reused passwords from other sites.
-                    </Typography>
-                    <Divider />
-                    <Alert severity="info" sx={{ borderRadius: "4px" }}>
-                      Changing your password is a sensitive action. In production, we may request MFA.
-                    </Alert>
-                    <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<ArrowLeftIcon size={18} />} onClick={() => navigate("/app/security")}>
-                      Back to security
-                    </Button>
-                  </Stack>
-                </CardContent>
-              </Card>
-            </Box>
-
-            <Box className="md:col-span-8">
-              <Card>
-                <CardContent className="p-5 md:p-7">
-                  <Stack spacing={2.0}>
-                    <Stack spacing={0.6}>
-                      <Typography variant="h5">Change password</Typography>
+        <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+            <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
+              <Box className="md:col-span-4">
+                <Card>
+                  <CardContent className="p-5">
+                    <Stack spacing={1.2}>
+                      <Typography variant="h6">Password guidance</Typography>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        Update your password and optionally sign out other devices.
+                        Use a unique password. Avoid reused passwords from other sites.
                       </Typography>
+                      <Divider />
+                      <Alert severity="info" sx={{ borderRadius: "4px" }}>
+                        Changing your password is a sensitive action. In production, we may request MFA.
+                      </Alert>
+                      <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<ArrowLeftIcon size={18} />} onClick={() => navigate("/app/security")}>
+                        Back to security
+                      </Button>
                     </Stack>
+                  </CardContent>
+                </Card>
+              </Box>
 
-                    <Divider />
-
-                    <TextField
-                      value={current}
-                      onChange={(e) => setCurrent(e.target.value)}
-                      label="Current password"
-                      type={showCurrent ? "text" : "password"}
-                      fullWidth
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <LockIcon size={18} />
-                          </InputAdornment>
-                        ),
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton size="small" onClick={() => setShowCurrent((v) => !v)} sx={{ color: EVZONE.orange }}>
-                              {showCurrent ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-
-                    <TextField
-                      value={pw}
-                      onChange={(e) => setPw(e.target.value)}
-                      label="New password"
-                      type={showPw ? "text" : "password"}
-                      fullWidth
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <LockIcon size={18} />
-                          </InputAdornment>
-                        ),
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton size="small" onClick={() => setShowPw((v) => !v)} sx={{ color: EVZONE.orange }}>
-                              {showPw ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-
-                    <TextField
-                      value={confirm}
-                      onChange={(e) => setConfirm(e.target.value)}
-                      label="Confirm new password"
-                      type={showConfirm ? "text" : "password"}
-                      fullWidth
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <LockIcon size={18} />
-                          </InputAdornment>
-                        ),
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton size="small" onClick={() => setShowConfirm((v) => !v)} sx={{ color: EVZONE.orange }}>
-                              {showConfirm ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-
-                    <Stack spacing={0.8}>
-                      <Stack direction="row" spacing={1.2} alignItems="center">
-                        <Box sx={{ flex: 1, height: 10, borderRadius: "4px", backgroundColor: alpha(EVZONE.green, isDark ? 0.12 : 0.10), overflow: "hidden", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
-                          <Box sx={{ width: `${(s / 5) * 100}%`, height: "100%", backgroundColor: EVZONE.orange, transition: "width 180ms ease" }} />
-                        </Box>
-                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary, fontWeight: 900 }}>{label}</Typography>
+              <Box className="md:col-span-8">
+                <Card>
+                  <CardContent className="p-5 md:p-7">
+                    <Stack spacing={2.0}>
+                      <Stack spacing={0.6}>
+                        <Typography variant="h5">Change password</Typography>
+                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                          Update your password and optionally sign out other devices.
+                        </Typography>
                       </Stack>
 
-                      <Box sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.2 }}>
-                        <Typography sx={{ fontWeight: 950, mb: 0.8 }}>Requirements</Typography>
-                        <Stack spacing={0.5}>
-                          {[
-                            { ok: r.len, text: "At least 8 characters" },
-                            { ok: r.upper, text: "One uppercase letter" },
-                            { ok: r.lower, text: "One lowercase letter" },
-                            { ok: r.num, text: "One number" },
-                            { ok: r.sym, text: "One symbol" },
-                            { ok: pw && pw === confirm, text: "Passwords match" },
-                          ].map((it, idx) => (
-                            <Typography key={idx} variant="body2" sx={{ color: it.ok ? theme.palette.text.primary : theme.palette.text.secondary, fontWeight: it.ok ? 900 : 700 }}>
-                              • {it.text}
-                            </Typography>
-                          ))}
+                      <Divider />
+
+                      <TextField
+                        value={current}
+                        onChange={(e) => setCurrent(e.target.value)}
+                        label="Current password"
+                        type={showCurrent ? "text" : "password"}
+                        fullWidth
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <LockIcon size={18} />
+                            </InputAdornment>
+                          ),
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton size="small" onClick={() => setShowCurrent((v) => !v)} sx={{ color: EVZONE.orange }}>
+                                {showCurrent ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
+                              </IconButton>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+
+                      <TextField
+                        value={pw}
+                        onChange={(e) => setPw(e.target.value)}
+                        label="New password"
+                        type={showPw ? "text" : "password"}
+                        fullWidth
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <LockIcon size={18} />
+                            </InputAdornment>
+                          ),
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton size="small" onClick={() => setShowPw((v) => !v)} sx={{ color: EVZONE.orange }}>
+                                {showPw ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
+                              </IconButton>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+
+                      <TextField
+                        value={confirm}
+                        onChange={(e) => setConfirm(e.target.value)}
+                        label="Confirm new password"
+                        type={showConfirm ? "text" : "password"}
+                        fullWidth
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <LockIcon size={18} />
+                            </InputAdornment>
+                          ),
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton size="small" onClick={() => setShowConfirm((v) => !v)} sx={{ color: EVZONE.orange }}>
+                                {showConfirm ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
+                              </IconButton>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+
+                      <Stack spacing={0.8}>
+                        <Stack direction="row" spacing={1.2} alignItems="center">
+                          <Box sx={{ flex: 1, height: 10, borderRadius: "4px", backgroundColor: alpha(EVZONE.green, isDark ? 0.12 : 0.10), overflow: "hidden", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
+                            <Box sx={{ width: `${(s / 5) * 100}%`, height: "100%", backgroundColor: EVZONE.orange, transition: "width 180ms ease" }} />
+                          </Box>
+                          <Typography variant="caption" sx={{ color: theme.palette.text.secondary, fontWeight: 900 }}>{label}</Typography>
                         </Stack>
-                      </Box>
+
+                        <Box sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.2 }}>
+                          <Typography sx={{ fontWeight: 950, mb: 0.8 }}>Requirements</Typography>
+                          <Stack spacing={0.5}>
+                            {[
+                              { ok: r.len, text: "At least 8 characters" },
+                              { ok: r.upper, text: "One uppercase letter" },
+                              { ok: r.lower, text: "One lowercase letter" },
+                              { ok: r.num, text: "One number" },
+                              { ok: r.sym, text: "One symbol" },
+                              { ok: pw && pw === confirm, text: "Passwords match" },
+                            ].map((it, idx) => (
+                              <Typography key={idx} variant="body2" sx={{ color: it.ok ? theme.palette.text.primary : theme.palette.text.secondary, fontWeight: it.ok ? 900 : 700 }}>
+                                • {it.text}
+                              </Typography>
+                            ))}
+                          </Stack>
+                        </Box>
+                      </Stack>
+
+                      <FormControlLabel
+                        control={<Checkbox checked={logoutOthers} onChange={(e) => setLogoutOthers(e.target.checked)} sx={{ color: alpha(EVZONE.orange, 0.7), "&.Mui-checked": { color: EVZONE.orange } }} />}
+                        label={<Typography variant="body2">Log out other devices</Typography>}
+                      />
+
+                      <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                        <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={submit} disabled={!canSubmit || saving} endIcon={<ArrowRightIcon size={18} />}>
+                          {saving ? "Updating..." : "Update password"}
+                        </Button>
+                        <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => navigate("/app/security")}>
+                          Cancel
+                        </Button>
+                      </Stack>
+
+                      <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                        Tip: Use a password manager to generate and store strong passwords.
+                      </Typography>
                     </Stack>
-
-                    <FormControlLabel
-                      control={<Checkbox checked={logoutOthers} onChange={(e) => setLogoutOthers(e.target.checked)} sx={{ color: alpha(EVZONE.orange, 0.7), "&.Mui-checked": { color: EVZONE.orange } }} />}
-                      label={<Typography variant="body2">Log out other devices</Typography>}
-                    />
-
-                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                      <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={submit} disabled={!canSubmit || saving} endIcon={<ArrowRightIcon size={18} />}>
-                        {saving ? "Updating..." : "Update password"}
-                      </Button>
-                      <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => navigate("/app/security")}>
-                        Cancel
-                      </Button>
-                    </Stack>
-
-                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      Tip: Use a password manager to generate and store strong passwords.
-                    </Typography>
-                  </Stack>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </Box>
             </Box>
-          </Box>
-        </motion.div>
+          </motion.div>
 
-        <Box className="mt-6" sx={{ opacity: 0.92 }}>
-          <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
+          <Box className="mt-6" sx={{ opacity: 0.92 }}>
+            <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
+          </Box>
         </Box>
       </Box>
-    </Box>
-  );
+    );
+  }
 }

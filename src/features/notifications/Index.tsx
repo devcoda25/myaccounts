@@ -161,480 +161,482 @@ function countEnabled(c: Channels) {
 }
 
 export default function NotificationPreferencesPage() {
-  const { t } = useTranslation("common"); {
-  const { mode } = useThemeStore();
-  const theme = useTheme();
-  const isDark = mode === "dark";
+  const { t } = useTranslation("common");
+  {
+    const { mode } = useThemeStore();
+    const theme = useTheme();
+    const isDark = mode === "dark";
 
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<IUser | null>(null);
-  const [prefs, setPrefs] = useState<NotifPrefs>(RECOMMENDED);
-  const [dirty, setDirty] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState<IUser | null>(null);
+    const [prefs, setPrefs] = useState<NotifPrefs>(RECOMMENDED);
+    const [dirty, setDirty] = useState(false);
 
-  const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
+    const [snack, setSnack] = useState<{ open: boolean; severity: Severity; msg: string }>({ open: false, severity: "info", msg: "" });
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const u = await api<IUser>('/users/me');
-        setUser(u);
-        if (u.preferences?.notifications) {
-          setPrefs({
-            ...RECOMMENDED,
-            ...u.preferences.notifications,
-            security: { ...RECOMMENDED.security, ...(u.preferences.notifications.security || {}) },
-            product: { ...RECOMMENDED.product, ...(u.preferences.notifications.product || {}) },
-            marketing: { ...RECOMMENDED.marketing, ...(u.preferences.notifications.marketing || {}) },
-          });
+    useEffect(() => {
+      async function load() {
+        try {
+          const u = await api<IUser>('/users/me');
+          setUser(u);
+          if (u.preferences?.notifications) {
+            setPrefs({
+              ...RECOMMENDED,
+              ...u.preferences.notifications,
+              security: { ...RECOMMENDED.security, ...(u.preferences.notifications.security || {}) },
+              product: { ...RECOMMENDED.product, ...(u.preferences.notifications.product || {}) },
+              marketing: { ...RECOMMENDED.marketing, ...(u.preferences.notifications.marketing || {}) },
+            });
+          }
+        } catch (err) {
+          console.error("Failed to load prefs", err);
+          setSnack({ open: true, severity: "error", msg: "Failed to load preferences." });
+        } finally {
+          setLoading(false);
         }
+      }
+      load();
+    }, []);
+
+    const pageBg =
+      mode === "dark"
+        ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
+        : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
+
+    const orangeContained = {
+      backgroundColor: EVZONE.orange,
+      color: "#FFFFFF",
+      borderRadius: "4px",
+      boxShadow: `0 4px 12px ${alpha(EVZONE.orange, mode === "dark" ? 0.28 : 0.18)}`,
+      "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
+    } as const;
+
+    const orangeOutlined = {
+      borderColor: alpha(EVZONE.orange, 0.65),
+      color: EVZONE.orange,
+      borderRadius: "4px",
+      backgroundColor: alpha(theme.palette.background.paper, 0.20),
+      "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
+    } as const;
+
+    const setChannel = (key: keyof NotifPrefs, channel: keyof Channels, value: boolean) => {
+      setPrefs((prev: NotifPrefs) => {
+        const next = { ...prev, [key]: { ...(prev as any)[key], [channel]: value } } as NotifPrefs;
+
+        // Security alerts: always on, require at least one channel (push is disabled)
+        if (key === "security") {
+          const channels = next.security;
+          const enforced = { ...channels, push: false };
+          if (!enforced.email && !enforced.sms) {
+            // Keep email on by default
+            enforced.email = true;
+            setSnack({ open: true, severity: "warning", msg: "Security alerts require at least one channel." });
+          }
+          next.security = enforced;
+        }
+
+        return next;
+      });
+      setDirty(true);
+    };
+
+    const setDigest = (key: "productDigest" | "marketingDigest", value: Digest) => {
+      setPrefs((p: NotifPrefs) => ({ ...p, [key]: value }));
+      setDirty(true);
+    };
+
+    const saveNow = async () => {
+      if (!user) return;
+      setLoading(true);
+      try {
+        const nextSettings = {
+          ...user.preferences,
+          notifications: prefs
+        };
+        await api('/users/me/settings', {
+          method: 'PATCH',
+          body: JSON.stringify(nextSettings)
+        });
+        setDirty(false);
+        setSnack({ open: true, severity: "success", msg: "Notification preferences saved." });
       } catch (err) {
-        console.error("Failed to load prefs", err);
-        setSnack({ open: true, severity: "error", msg: "Failed to load preferences." });
+        console.error("Failed to save prefs", err);
+        setSnack({ open: true, severity: "error", msg: "Failed to save preferences." });
       } finally {
         setLoading(false);
       }
-    }
-    load();
-  }, []);
+    };
 
-  const pageBg =
-    mode === "dark"
-      ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
-      : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
+    const resetRecommended = () => {
+      setPrefs(RECOMMENDED);
+      setDirty(true);
+      setSnack({ open: true, severity: "info", msg: "Applied recommended settings." });
+    };
 
-  const orangeContained = {
-    backgroundColor: EVZONE.orange,
-    color: "#FFFFFF",
-    borderRadius: "4px",
-    boxShadow: `0 4px 12px ${alpha(EVZONE.orange, mode === "dark" ? 0.28 : 0.18)}`,
-    "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
-  } as const;
+    const securitySummary = `${prefs.security.email ? "Email" : ""}${prefs.security.email && prefs.security.sms ? ", " : ""}${prefs.security.sms ? "SMS" : ""}` || "Email";
 
-  const orangeOutlined = {
-    borderColor: alpha(EVZONE.orange, 0.65),
-    color: EVZONE.orange,
-    borderRadius: "4px",
-    backgroundColor: alpha(theme.palette.background.paper, 0.20),
-    "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
-  } as const;
-
-  const setChannel = (key: keyof NotifPrefs, channel: keyof Channels, value: boolean) => {
-    setPrefs((prev: NotifPrefs) => {
-      const next = { ...prev, [key]: { ...(prev as any)[key], [channel]: value } } as NotifPrefs;
-
-      // Security alerts: always on, require at least one channel (push is disabled)
-      if (key === "security") {
-        const channels = next.security;
-        const enforced = { ...channels, push: false };
-        if (!enforced.email && !enforced.sms) {
-          // Keep email on by default
-          enforced.email = true;
-          setSnack({ open: true, severity: "warning", msg: "Security alerts require at least one channel." });
-        }
-        next.security = enforced;
-      }
-
-      return next;
-    });
-    setDirty(true);
-  };
-
-  const setDigest = (key: "productDigest" | "marketingDigest", value: Digest) => {
-    setPrefs((p: NotifPrefs) => ({ ...p, [key]: value }));
-    setDirty(true);
-  };
-
-  const saveNow = async () => {
-    if (!user) return;
-    setLoading(true);
-    try {
-      const nextSettings = {
-        ...user.preferences,
-        notifications: prefs
-      };
-      await api('/users/me/settings', {
-        method: 'PATCH',
-        body: JSON.stringify(nextSettings)
-      });
-      setDirty(false);
-      setSnack({ open: true, severity: "success", msg: "Notification preferences saved." });
-    } catch (err) {
-      console.error("Failed to save prefs", err);
-      setSnack({ open: true, severity: "error", msg: "Failed to save preferences." });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const resetRecommended = () => {
-    setPrefs(RECOMMENDED);
-    setDirty(true);
-    setSnack({ open: true, severity: "info", msg: "Applied recommended settings." });
-  };
-
-  const securitySummary = `${prefs.security.email ? "Email" : ""}${prefs.security.email && prefs.security.sms ? ", " : ""}${prefs.security.sms ? "SMS" : ""}` || "Email";
-
-  const banner = (
-    <Alert severity="info" icon={<ShieldIcon size={18} />}>
-      Security alerts are recommended always on. Push notifications will be available later.
-    </Alert>
-  );
-
-  const ChannelRow = ({
-    label,
-    desc,
-    icon,
-    value,
-    onChange,
-    disabled,
-    suffix,
-  }: {
-    label: string;
-    desc: string;
-    icon: React.ReactNode;
-    value: boolean;
-    onChange: (v: boolean) => void;
-    disabled?: boolean;
-    suffix?: React.ReactNode;
-  }) => {
-    return (
-      <Box
-        sx={{
-          borderRadius: "4px",
-          border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
-          backgroundColor: alpha(theme.palette.background.paper, 0.45),
-          p: 1.2,
-        }}
-      >
-        <Stack direction="row" spacing={1.2} alignItems="center" justifyContent="space-between">
-          <Stack direction="row" spacing={1.1} alignItems="center">
-            <Box
-              sx={{
-                width: 40,
-                height: 40,
-                borderRadius: "4px",
-                display: "grid",
-                placeItems: "center",
-                backgroundColor: alpha(EVZONE.green, 0.12),
-                border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
-              }}
-            >
-              {icon}
-            </Box>
-            <Box>
-              <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
-                <Typography sx={{ fontWeight: 800 }}>{label}</Typography>
-                {suffix}
-              </Stack>
-              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                {desc}
-              </Typography>
-            </Box>
-          </Stack>
-
-          <Switch checked={value} onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.checked)} disabled={!!disabled} color="primary" />
-        </Stack>
-      </Box>
+    const banner = (
+      <Alert severity="info" icon={<ShieldIcon size={18} />}>
+        Security alerts are recommended always on. Push notifications will be available later.
+      </Alert>
     );
-  };
 
-  return (
-    <>
-      <Box className="min-h-screen" sx={{ background: pageBg }}>
-
-
-        {/* Body */}
-        <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
-            <Stack spacing={2.2}>
-              <Card sx={{ borderRadius: "4px" }}>
-                <CardContent className="p-5 md:p-7">
-                  <Stack spacing={1.2}>
-                    <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ xs: "flex-start", md: "center" }} justifyContent="space-between">
-                      <Box>
-                        <Typography variant="h5">Notification preferences</Typography>
-                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Choose what you receive and how. Security alerts are recommended always on.
-                        </Typography>
-                        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 1 }}>
-                          <Chip size="small" icon={<ShieldIcon size={16} />} label={`Security: ${securitySummary}`} variant="outlined" sx={{ borderRadius: "4px", "& .MuiChip-icon": { color: "inherit" } }} />
-                          <Chip size="small" icon={<SparklesIcon size={16} />} label={`Product: ${countEnabled(prefs.product) ? "On" : "Off"}`} variant="outlined" sx={{ borderRadius: "4px", "& .MuiChip-icon": { color: "inherit" } }} />
-                          <Chip size="small" icon={<BellIcon size={16} />} label={`Marketing: ${countEnabled(prefs.marketing) ? "On" : "Off"}`} variant="outlined" sx={{ borderRadius: "4px", "& .MuiChip-icon": { color: "inherit" } }} />
-                          {dirty ? <Chip size="small" color="warning" label="Unsaved changes" sx={{ borderRadius: "4px" }} /> : <Chip size="small" color="success" label="Saved" sx={{ borderRadius: "4px" }} />}
-                        </Stack>
-                      </Box>
-
-                      <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ width: { xs: "100%", md: "auto" } }}>
-                        <Button variant="outlined" sx={orangeOutlined} onClick={resetRecommended}>
-                          Reset to recommended
-                        </Button>
-                        <Button variant="contained" sx={orangeContained} onClick={saveNow}>
-                          Save
-                        </Button>
-                      </Stack>
-                    </Stack>
-
-                    <Divider />
-
-                    {banner}
-                  </Stack>
-                </CardContent>
-              </Card>
-
-              <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
-                {/* Security */}
-                <Box className="md:col-span-6">
-                  <Card sx={{ borderRadius: "4px" }}>
-                    <CardContent className="p-5 md:p-7">
-                      <Stack spacing={1.4}>
-                        <Stack direction="row" spacing={1} alignItems="center">
-                          <ShieldIcon size={18} />
-                          <Typography variant="h6">Security alerts</Typography>
-                          <Chip size="small" color="success" label="Always on" sx={{ borderRadius: "4px" }} />
-                        </Stack>
-                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Suspicious login, password changes, new device sign-in.
-                        </Typography>
-                        <Divider />
-
-                        <ChannelRow
-                          label="Email"
-                          desc="Recommended for detailed alerts."
-                          icon={<MailIcon size={18} />}
-                          value={prefs.security.email}
-                          onChange={(v) => setChannel("security", "email", v)}
-                        />
-                        <ChannelRow
-                          label="SMS"
-                          desc="Fast alerts for urgent security events."
-                          icon={<SmsIcon size={18} />}
-                          value={prefs.security.sms}
-                          onChange={(v) => setChannel("security", "sms", v)}
-                        />
-                        <ChannelRow
-                          label="Push"
-                          desc="Mobile push notifications (coming soon)."
-                          icon={<PhoneIcon size={18} />}
-                          value={false}
-                          onChange={() => { }}
-                          disabled
-                          suffix={<Chip size="small" variant="outlined" label="Later" sx={{ borderRadius: "4px" }} />}
-                        />
-
-                        <Alert severity="info" icon={<ShieldIcon size={18} />}>
-                          Minimum one channel required.
-                        </Alert>
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                </Box>
-
-                {/* Product */}
-                <Box className="md:col-span-6">
-                  <Card sx={{ borderRadius: "4px" }}>
-                    <CardContent className="p-5 md:p-7">
-                      <Stack spacing={1.4}>
-                        <Stack direction="row" spacing={1} alignItems="center">
-                          <SparklesIcon size={18} />
-                          <Typography variant="h6">Product updates</Typography>
-                        </Stack>
-                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          New features, release notes, service upgrades.
-                        </Typography>
-                        <Divider />
-
-                        <ChannelRow
-                          label="Email"
-                          desc="Release notes and product announcements."
-                          icon={<MailIcon size={18} />}
-                          value={prefs.product.email}
-                          onChange={(v: boolean) => {
-                            setPrefs((p: NotifPrefs) => ({ ...p, product: { ...p.product, email: v, push: false } }));
-                            setDirty(true);
-                          }}
-                        />
-                        <ChannelRow
-                          label="SMS"
-                          desc="Short important updates only."
-                          icon={<SmsIcon size={18} />}
-                          value={prefs.product.sms}
-                          onChange={(v: boolean) => {
-                            setPrefs((p: NotifPrefs) => ({ ...p, product: { ...p.product, sms: v, push: false } }));
-                            setDirty(true);
-                          }}
-                        />
-                        <ChannelRow
-                          label="Push"
-                          desc="Mobile push notifications (coming soon)."
-                          icon={<PhoneIcon size={18} />}
-                          value={false}
-                          onChange={() => { }}
-                          disabled
-                          suffix={<Chip size="small" variant="outlined" label="Later" sx={{ borderRadius: "4px" }} />}
-                        />
-
-                        <TextField select label="Delivery" value={prefs.productDigest} onChange={(e) => setDigest("productDigest", e.target.value as Digest)} fullWidth>
-                          {(["Instant", "Daily", "Weekly"] as Digest[]).map((d) => (
-                            <MenuItem key={d} value={d}>
-                              {d}
-                            </MenuItem>
-                          ))}
-                        </TextField>
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                </Box>
-
-                {/* Marketing */}
-                <Box className="md:col-span-7">
-                  <Card sx={{ borderRadius: "4px" }}>
-                    <CardContent className="p-5 md:p-7">
-                      <Stack spacing={1.4}>
-                        <Stack direction="row" spacing={1} alignItems="center">
-                          <BellIcon size={18} />
-                          <Typography variant="h6">Marketing</Typography>
-                        </Stack>
-                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Promotions, partner offers, events. You can opt out anytime.
-                        </Typography>
-                        <Divider />
-
-                        <ChannelRow
-                          label="Email"
-                          desc="Offers and announcements (recommended off by default)."
-                          icon={<MailIcon size={18} />}
-                          value={prefs.marketing.email}
-                          onChange={(v: boolean) => {
-                            setPrefs((p: NotifPrefs) => ({ ...p, marketing: { ...p.marketing, email: v, push: false } }));
-                            setDirty(true);
-                          }}
-                        />
-                        <ChannelRow
-                          label="SMS"
-                          desc="Limited promotions only."
-                          icon={<SmsIcon size={18} />}
-                          value={prefs.marketing.sms}
-                          onChange={(v: boolean) => {
-                            setPrefs((p: NotifPrefs) => ({ ...p, marketing: { ...p.marketing, sms: v, push: false } }));
-                            setDirty(true);
-                          }}
-                        />
-                        <ChannelRow
-                          label="Push"
-                          desc="Mobile push notifications (coming soon)."
-                          icon={<PhoneIcon size={18} />}
-                          value={false}
-                          onChange={() => { }}
-                          disabled
-                          suffix={<Chip size="small" variant="outlined" label="Later" sx={{ borderRadius: "4px" }} />}
-                        />
-
-                        <TextField select label="Delivery" value={prefs.marketingDigest} onChange={(e) => setDigest("marketingDigest", e.target.value as Digest)} fullWidth>
-                          {(["Instant", "Daily", "Weekly"] as Digest[]).map((d) => (
-                            <MenuItem key={d} value={d}>
-                              {d}
-                            </MenuItem>
-                          ))}
-                        </TextField>
-
-                        <Alert severity="info">Transaction and security messages are always delivered.</Alert>
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                </Box>
-
-                {/* Quiet hours */}
-                <Box className="md:col-span-5">
-                  <Card sx={{ borderRadius: "4px" }}>
-                    <CardContent className="p-5 md:p-7">
-                      <Stack spacing={1.2}>
-                        <Stack direction="row" spacing={1} alignItems="center">
-                          <ClockIcon size={18} />
-                          <Typography variant="h6">Quiet hours</Typography>
-                        </Stack>
-                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Reduce non-urgent messages during your preferred hours.
-                        </Typography>
-                        <Divider />
-
-                        <FormControlLabel
-                          control={
-                            <Switch
-                              checked={prefs.quietHoursEnabled}
-                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                setPrefs((p: NotifPrefs) => ({ ...p, quietHoursEnabled: e.target.checked }));
-                                setDirty(true);
-                              }}
-                            />
-                          }
-                          label={<Typography sx={{ fontWeight: 800 }}>Enable quiet hours</Typography>}
-                        />
-
-                        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                          <TextField
-                            type="time"
-                            label="Start"
-                            value={prefs.quietStart}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                              setPrefs((p) => ({ ...p, quietStart: e.target.value }));
-                              setDirty(true);
-                            }}
-                            InputLabelProps={{ shrink: true }}
-                            fullWidth
-                            disabled={!prefs.quietHoursEnabled}
-                          />
-                          <TextField
-                            type="time"
-                            label="End"
-                            value={prefs.quietEnd}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                              setPrefs((p) => ({ ...p, quietEnd: e.target.value }));
-                              setDirty(true);
-                            }}
-                            InputLabelProps={{ shrink: true }}
-                            fullWidth
-                            disabled={!prefs.quietHoursEnabled}
-                          />
-                        </Stack>
-
-                        <Alert severity="info" icon={<ClockIcon size={18} />}>
-                          Security alerts still come through.
-                        </Alert>
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                </Box>
+    const ChannelRow = ({
+      label,
+      desc,
+      icon,
+      value,
+      onChange,
+      disabled,
+      suffix,
+    }: {
+      label: string;
+      desc: string;
+      icon: React.ReactNode;
+      value: boolean;
+      onChange: (v: boolean) => void;
+      disabled?: boolean;
+      suffix?: React.ReactNode;
+    }) => {
+      return (
+        <Box
+          sx={{
+            borderRadius: "4px",
+            border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
+            backgroundColor: alpha(theme.palette.background.paper, 0.45),
+            p: 1.2,
+          }}
+        >
+          <Stack direction="row" spacing={1.2} alignItems="center" justifyContent="space-between">
+            <Stack direction="row" spacing={1.1} alignItems="center">
+              <Box
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: "4px",
+                  display: "grid",
+                  placeItems: "center",
+                  backgroundColor: alpha(EVZONE.green, 0.12),
+                  border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`,
+                }}
+              >
+                {icon}
               </Box>
+              <Box>
+                <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
+                  <Typography sx={{ fontWeight: 800 }}>{label}</Typography>
+                  {suffix}
+                </Stack>
+                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                  {desc}
+                </Typography>
+              </Box>
+            </Stack>
 
-              {/* Mobile sticky */}
-              <Box className="md:hidden" sx={{ position: "sticky", bottom: 12 }}>
-                <Card sx={{ borderRadius: 999, backgroundColor: alpha(theme.palette.background.paper, 0.86), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backdropFilter: "blur(10px)" }}>
-                  <CardContent sx={{ py: 1.1, px: 1.2 }}>
-                    <Stack direction="row" spacing={1}>
-                      <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={resetRecommended}>
-                        Reset
-                      </Button>
-                      <Button fullWidth variant="contained" sx={orangeContained} onClick={saveNow}>
-                        Save
-                      </Button>
+            <Switch checked={value} onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.checked)} disabled={!!disabled} color="primary" />
+          </Stack>
+        </Box>
+      );
+    };
+
+    return (
+      <>
+        <Box className="min-h-screen" sx={{ background: pageBg }}>
+
+
+          {/* Body */}
+          <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+              <Stack spacing={2.2}>
+                <Card sx={{ borderRadius: "4px" }}>
+                  <CardContent className="p-5 md:p-7">
+                    <Stack spacing={1.2}>
+                      <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ xs: "flex-start", md: "center" }} justifyContent="space-between">
+                        <Box>
+                          <Typography variant="h5">Notification preferences</Typography>
+                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                            Choose what you receive and how. Security alerts are recommended always on.
+                          </Typography>
+                          <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 1 }}>
+                            <Chip size="small" icon={<ShieldIcon size={16} />} label={`Security: ${securitySummary}`} variant="outlined" sx={{ borderRadius: "4px", "& .MuiChip-icon": { color: "inherit" } }} />
+                            <Chip size="small" icon={<SparklesIcon size={16} />} label={`Product: ${countEnabled(prefs.product) ? "On" : "Off"}`} variant="outlined" sx={{ borderRadius: "4px", "& .MuiChip-icon": { color: "inherit" } }} />
+                            <Chip size="small" icon={<BellIcon size={16} />} label={`Marketing: ${countEnabled(prefs.marketing) ? "On" : "Off"}`} variant="outlined" sx={{ borderRadius: "4px", "& .MuiChip-icon": { color: "inherit" } }} />
+                            {dirty ? <Chip size="small" color="warning" label="Unsaved changes" sx={{ borderRadius: "4px" }} /> : <Chip size="small" color="success" label="Saved" sx={{ borderRadius: "4px" }} />}
+                          </Stack>
+                        </Box>
+
+                        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ width: { xs: "100%", md: "auto" } }}>
+                          <Button variant="outlined" sx={orangeOutlined} onClick={resetRecommended}>
+                            Reset to recommended
+                          </Button>
+                          <Button variant="contained" sx={orangeContained} onClick={saveNow}>
+                            Save
+                          </Button>
+                        </Stack>
+                      </Stack>
+
+                      <Divider />
+
+                      {banner}
                     </Stack>
                   </CardContent>
                 </Card>
-              </Box>
 
-              <Box sx={{ opacity: 0.92 }}>
-                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
-              </Box>
-            </Stack>
-          </motion.div>
+                <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
+                  {/* Security */}
+                  <Box className="md:col-span-6">
+                    <Card sx={{ borderRadius: "4px" }}>
+                      <CardContent className="p-5 md:p-7">
+                        <Stack spacing={1.4}>
+                          <Stack direction="row" spacing={1} alignItems="center">
+                            <ShieldIcon size={18} />
+                            <Typography variant="h6">Security alerts</Typography>
+                            <Chip size="small" color="success" label="Always on" sx={{ borderRadius: "4px" }} />
+                          </Stack>
+                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                            Suspicious login, password changes, new device sign-in.
+                          </Typography>
+                          <Divider />
+
+                          <ChannelRow
+                            label="Email"
+                            desc="Recommended for detailed alerts."
+                            icon={<MailIcon size={18} />}
+                            value={prefs.security.email}
+                            onChange={(v) => setChannel("security", "email", v)}
+                          />
+                          <ChannelRow
+                            label="SMS"
+                            desc="Fast alerts for urgent security events."
+                            icon={<SmsIcon size={18} />}
+                            value={prefs.security.sms}
+                            onChange={(v) => setChannel("security", "sms", v)}
+                          />
+                          <ChannelRow
+                            label="Push"
+                            desc="Mobile push notifications (coming soon)."
+                            icon={<PhoneIcon size={18} />}
+                            value={false}
+                            onChange={() => { }}
+                            disabled
+                            suffix={<Chip size="small" variant="outlined" label="Later" sx={{ borderRadius: "4px" }} />}
+                          />
+
+                          <Alert severity="info" icon={<ShieldIcon size={18} />}>
+                            Minimum one channel required.
+                          </Alert>
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  </Box>
+
+                  {/* Product */}
+                  <Box className="md:col-span-6">
+                    <Card sx={{ borderRadius: "4px" }}>
+                      <CardContent className="p-5 md:p-7">
+                        <Stack spacing={1.4}>
+                          <Stack direction="row" spacing={1} alignItems="center">
+                            <SparklesIcon size={18} />
+                            <Typography variant="h6">Product updates</Typography>
+                          </Stack>
+                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                            New features, release notes, service upgrades.
+                          </Typography>
+                          <Divider />
+
+                          <ChannelRow
+                            label="Email"
+                            desc="Release notes and product announcements."
+                            icon={<MailIcon size={18} />}
+                            value={prefs.product.email}
+                            onChange={(v: boolean) => {
+                              setPrefs((p: NotifPrefs) => ({ ...p, product: { ...p.product, email: v, push: false } }));
+                              setDirty(true);
+                            }}
+                          />
+                          <ChannelRow
+                            label="SMS"
+                            desc="Short important updates only."
+                            icon={<SmsIcon size={18} />}
+                            value={prefs.product.sms}
+                            onChange={(v: boolean) => {
+                              setPrefs((p: NotifPrefs) => ({ ...p, product: { ...p.product, sms: v, push: false } }));
+                              setDirty(true);
+                            }}
+                          />
+                          <ChannelRow
+                            label="Push"
+                            desc="Mobile push notifications (coming soon)."
+                            icon={<PhoneIcon size={18} />}
+                            value={false}
+                            onChange={() => { }}
+                            disabled
+                            suffix={<Chip size="small" variant="outlined" label="Later" sx={{ borderRadius: "4px" }} />}
+                          />
+
+                          <TextField select label="Delivery" value={prefs.productDigest} onChange={(e) => setDigest("productDigest", e.target.value as Digest)} fullWidth>
+                            {(["Instant", "Daily", "Weekly"] as Digest[]).map((d) => (
+                              <MenuItem key={d} value={d}>
+                                {d}
+                              </MenuItem>
+                            ))}
+                          </TextField>
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  </Box>
+
+                  {/* Marketing */}
+                  <Box className="md:col-span-7">
+                    <Card sx={{ borderRadius: "4px" }}>
+                      <CardContent className="p-5 md:p-7">
+                        <Stack spacing={1.4}>
+                          <Stack direction="row" spacing={1} alignItems="center">
+                            <BellIcon size={18} />
+                            <Typography variant="h6">Marketing</Typography>
+                          </Stack>
+                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                            Promotions, partner offers, events. You can opt out anytime.
+                          </Typography>
+                          <Divider />
+
+                          <ChannelRow
+                            label="Email"
+                            desc="Offers and announcements (recommended off by default)."
+                            icon={<MailIcon size={18} />}
+                            value={prefs.marketing.email}
+                            onChange={(v: boolean) => {
+                              setPrefs((p: NotifPrefs) => ({ ...p, marketing: { ...p.marketing, email: v, push: false } }));
+                              setDirty(true);
+                            }}
+                          />
+                          <ChannelRow
+                            label="SMS"
+                            desc="Limited promotions only."
+                            icon={<SmsIcon size={18} />}
+                            value={prefs.marketing.sms}
+                            onChange={(v: boolean) => {
+                              setPrefs((p: NotifPrefs) => ({ ...p, marketing: { ...p.marketing, sms: v, push: false } }));
+                              setDirty(true);
+                            }}
+                          />
+                          <ChannelRow
+                            label="Push"
+                            desc="Mobile push notifications (coming soon)."
+                            icon={<PhoneIcon size={18} />}
+                            value={false}
+                            onChange={() => { }}
+                            disabled
+                            suffix={<Chip size="small" variant="outlined" label="Later" sx={{ borderRadius: "4px" }} />}
+                          />
+
+                          <TextField select label="Delivery" value={prefs.marketingDigest} onChange={(e) => setDigest("marketingDigest", e.target.value as Digest)} fullWidth>
+                            {(["Instant", "Daily", "Weekly"] as Digest[]).map((d) => (
+                              <MenuItem key={d} value={d}>
+                                {d}
+                              </MenuItem>
+                            ))}
+                          </TextField>
+
+                          <Alert severity="info">Transaction and security messages are always delivered.</Alert>
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  </Box>
+
+                  {/* Quiet hours */}
+                  <Box className="md:col-span-5">
+                    <Card sx={{ borderRadius: "4px" }}>
+                      <CardContent className="p-5 md:p-7">
+                        <Stack spacing={1.2}>
+                          <Stack direction="row" spacing={1} alignItems="center">
+                            <ClockIcon size={18} />
+                            <Typography variant="h6">Quiet hours</Typography>
+                          </Stack>
+                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                            Reduce non-urgent messages during your preferred hours.
+                          </Typography>
+                          <Divider />
+
+                          <FormControlLabel
+                            control={
+                              <Switch
+                                checked={prefs.quietHoursEnabled}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                  setPrefs((p: NotifPrefs) => ({ ...p, quietHoursEnabled: e.target.checked }));
+                                  setDirty(true);
+                                }}
+                              />
+                            }
+                            label={<Typography sx={{ fontWeight: 800 }}>Enable quiet hours</Typography>}
+                          />
+
+                          <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                            <TextField
+                              type="time"
+                              label="Start"
+                              value={prefs.quietStart}
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                setPrefs((p) => ({ ...p, quietStart: e.target.value }));
+                                setDirty(true);
+                              }}
+                              InputLabelProps={{ shrink: true }}
+                              fullWidth
+                              disabled={!prefs.quietHoursEnabled}
+                            />
+                            <TextField
+                              type="time"
+                              label="End"
+                              value={prefs.quietEnd}
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                setPrefs((p) => ({ ...p, quietEnd: e.target.value }));
+                                setDirty(true);
+                              }}
+                              InputLabelProps={{ shrink: true }}
+                              fullWidth
+                              disabled={!prefs.quietHoursEnabled}
+                            />
+                          </Stack>
+
+                          <Alert severity="info" icon={<ClockIcon size={18} />}>
+                            Security alerts still come through.
+                          </Alert>
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  </Box>
+                </Box>
+
+                {/* Mobile sticky */}
+                <Box className="md:hidden" sx={{ position: "sticky", bottom: 12 }}>
+                  <Card sx={{ borderRadius: 999, backgroundColor: alpha(theme.palette.background.paper, 0.86), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backdropFilter: "blur(10px)" }}>
+                    <CardContent sx={{ py: 1.1, px: 1.2 }}>
+                      <Stack direction="row" spacing={1}>
+                        <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={resetRecommended}>
+                          Reset
+                        </Button>
+                        <Button fullWidth variant="contained" sx={orangeContained} onClick={saveNow}>
+                          Save
+                        </Button>
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                </Box>
+
+                <Box sx={{ opacity: 0.92 }}>
+                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
+                </Box>
+              </Stack>
+            </motion.div>
+          </Box>
+
+          <Snackbar open={snack.open} autoHideDuration={3300} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+            <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={mode === "dark" ? "filled" : "standard"} sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
+              {snack.msg}
+            </Alert>
+          </Snackbar>
         </Box>
-
-        <Snackbar open={snack.open} autoHideDuration={3300} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-          <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={mode === "dark" ? "filled" : "standard"} sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
-            {snack.msg}
-          </Alert>
-        </Snackbar>
-      </Box>
-    </>
-  );
+      </>
+    );
+  }
 }

@@ -215,290 +215,292 @@ function appIcon(key: AppKey) {
 // Self-tests removed
 
 export default function ConnectedAppsPage() {
-  const { t } = useTranslation("common"); {
-  const navigate = useNavigate();
-  const theme = useTheme();
-  const { mode } = useThemeStore();
-  const isDark = mode === "dark";
+  const { t } = useTranslation("common");
+  {
+    const navigate = useNavigate();
+    const theme = useTheme();
+    const { mode } = useThemeStore();
+    const isDark = mode === "dark";
 
-  const [snack, setSnack] = useState<{ open: boolean; severity: "info" | "warning" | "error" | "success"; msg: string }>({ open: false, severity: "info", msg: "" });
+    const [snack, setSnack] = useState<{ open: boolean; severity: "info" | "warning" | "error" | "success"; msg: string }>({ open: false, severity: "info", msg: "" });
 
-  // Self-tests effect removed
+    // Self-tests effect removed
 
-  const [tab, setTab] = useState<0 | 1 | 2>(0);
-  const [search, setSearch] = useState("");
+    const [tab, setTab] = useState<0 | 1 | 2>(0);
+    const [search, setSearch] = useState("");
 
-  const [apps, setApps] = useState<AppTile[]>([]);
-  const [loading, setLoading] = useState(true);
+    const [apps, setApps] = useState<AppTile[]>([]);
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // In a real scenario, we use the shared axios instance
-    // import api from "@/utils/api"; 
-    // For now assuming a fetch shim or importing api if available.
-    // Let's use standard fetch with token if we don't have the api instance imported.
-    // Actually we should use the `useApi` hook if it exists, or just `api`.
-    // Let's assume `api` utility is available at `src/utils/api.ts` or similar based on previous context
-    // But since I don't see imports, I'll attempt a direct fetch with a TODO or try to find api.
-    // Wait, the project structure for frontend usually has an api.ts.
-    // Let's assume standard fetch for now to be safe or check imports.
-    // The previous code didn't import `api`.
-    // I will try to use `fetch('/api/v1/apps')` (via proxy).
+    useEffect(() => {
+      // In a real scenario, we use the shared axios instance
+      // import api from "@/utils/api"; 
+      // For now assuming a fetch shim or importing api if available.
+      // Let's use standard fetch with token if we don't have the api instance imported.
+      // Actually we should use the `useApi` hook if it exists, or just `api`.
+      // Let's assume `api` utility is available at `src/utils/api.ts` or similar based on previous context
+      // But since I don't see imports, I'll attempt a direct fetch with a TODO or try to find api.
+      // Wait, the project structure for frontend usually has an api.ts.
+      // Let's assume standard fetch for now to be safe or check imports.
+      // The previous code didn't import `api`.
+      // I will try to use `fetch('/api/v1/apps')` (via proxy).
 
-    const fetchApps = async () => {
-      try {
-        setLoading(true);
-        const data = await api.get<any[]>("/apps");
+      const fetchApps = async () => {
+        try {
+          setLoading(true);
+          const data = await api.get<any[]>("/apps");
 
-        // Transform backend data to frontend tile
-        const mapped: AppTile[] = data.map((d) => ({
-          key: d.key as AppKey,
-          name: d.name,
-          tagline: d.tagline || "EVzone Integrated App",
-          status: d.status as AccessStatus,
-          lastUsedAt: d.lastUsedAt,
-          launchUrl: d.launchUrl,
-          shortcuts: [
-            { label: "Launch", action: "launch" }
-          ]
-        }));
-        setApps(mapped);
-      } catch (err: unknown) {
-        console.error(err);
-        setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to load apps" });
-      } finally {
-        setLoading(false);
+          // Transform backend data to frontend tile
+          const mapped: AppTile[] = data.map((d) => ({
+            key: d.key as AppKey,
+            name: d.name,
+            tagline: d.tagline || "EVzone Integrated App",
+            status: d.status as AccessStatus,
+            lastUsedAt: d.lastUsedAt,
+            launchUrl: d.launchUrl,
+            shortcuts: [
+              { label: "Launch", action: "launch" }
+            ]
+          }));
+          setApps(mapped);
+        } catch (err: unknown) {
+          console.error(err);
+          setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to load apps" });
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchApps();
+    }, []);
+
+
+    const pageBg =
+      mode === "dark"
+        ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
+        : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
+
+    const orangeContained = {
+      backgroundColor: EVZONE.orange,
+      color: "#FFFFFF",
+      boxShadow: `0 4px 14px ${alpha(EVZONE.orange, 0.4)}`, // Standardized shadow
+      borderRadius: "4px", // Standardized to 4px
+      "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
+    } as const;
+
+    const orangeOutlined = {
+      borderColor: alpha(EVZONE.orange, 0.65),
+      color: EVZONE.orange,
+      backgroundColor: alpha(theme.palette.background.paper, 0.20),
+      borderRadius: "4px", // Standardized to 4px
+      "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
+    } as const;
+
+    const filtered = useMemo(() => {
+      const q = search.trim().toLowerCase();
+      return apps
+        .filter((a) => (!q ? true : [a.name, a.tagline, a.status].some((x) => x.toLowerCase().includes(q))))
+        .filter((a) => {
+          if (tab === 0) return true;
+          if (tab === 1) return a.status === "Connected";
+          return a.status !== "Connected";
+        })
+        .sort((a, b) => {
+          const ax = a.lastUsedAt || 0;
+          const bx = b.lastUsedAt || 0;
+          return bx - ax;
+        });
+    }, [apps, search, tab]);
+
+    const stats = useMemo(() => {
+      const connected = apps.filter((a) => a.status === "Connected").length;
+      const limited = apps.filter((a) => a.status === "Limited").length;
+      const disconnected = apps.filter((a) => a.status === "Disconnected").length;
+      return { connected, limited, disconnected };
+    }, [apps]);
+
+    const openApp = (a: AppTile) => {
+      // If we have a launchUrl, we redirect the user to it
+      // This starts the OIDC flow: MyAccounts -> App (with code) -> App calls Token Endpoint
+      if (a.launchUrl) {
+        // In a real SPA, this might be window.location.href = a.launchUrl
+        // For demo purposes, let's open in new tab or simulate redirect
+        setSnack({ open: true, severity: "success", msg: `Redirecting to ${a.name}...` });
+
+        // Allow a small delay for snackbar for better UX
+        setTimeout(() => {
+          window.location.href = a.launchUrl!;
+        }, 800);
+        return;
       }
+
+      if (a.status === "Disconnected") {
+        setSnack({ open: true, severity: "warning", msg: `${a.name} is not connected. Check permissions first.` });
+        return;
+      }
+      setSnack({ open: true, severity: "success", msg: `Opening ${a.name}...` });
     };
-    fetchApps();
-  }, []);
+
+    const openPermissions = (a: AppTile) => {
+      navigate("/app/apps/permissions");
+    };
+
+    const runShortcut = (a: AppTile, s: { label: string; action: string }) => {
+      setSnack({ open: true, severity: "info", msg: `${a.name}: ${s.label} (demo).` });
+    };
+
+    const requestAccess = (a: AppTile) => {
+      setApps((prev) => prev.map((x) => (x.key === a.key ? { ...x, status: "Limited" } : x)));
+      setSnack({ open: true, severity: "success", msg: `Requested access for ${a.name} (demo).` });
+    };
+
+    return (
+      <Box className="min-h-screen" sx={{ background: pageBg }}>
 
 
-  const pageBg =
-    mode === "dark"
-      ? "radial-gradient(1200px 600px at 12% 2%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 6%, rgba(3,205,140,0.14), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
-      : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
+        {/* Body */}
+        <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+            <Stack spacing={2.2}>
+              <Card>
+                <CardContent className="p-5 md:p-7">
+                  <Stack spacing={1.2}>
+                    <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ xs: "flex-start", md: "center" }} justifyContent="space-between">
+                      <Box>
+                        <Typography variant="h5">Connected EVzone apps</Typography>
+                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                          Launch modules and manage access from one place.
+                        </Typography>
+                        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 1 }}>
+                          <Chip size="small" color="success" label={`${stats.connected} connected`} />
+                          <Chip size="small" color="warning" label={`${stats.limited} limited`} />
+                          <Chip size="small" variant="outlined" label={`${stats.disconnected} disconnected`} />
+                        </Stack>
+                      </Box>
 
-  const orangeContained = {
-    backgroundColor: EVZONE.orange,
-    color: "#FFFFFF",
-    boxShadow: `0 4px 14px ${alpha(EVZONE.orange, 0.4)}`, // Standardized shadow
-    borderRadius: "4px", // Standardized to 4px
-    "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.92), color: "#FFFFFF" },
-  } as const;
-
-  const orangeOutlined = {
-    borderColor: alpha(EVZONE.orange, 0.65),
-    color: EVZONE.orange,
-    backgroundColor: alpha(theme.palette.background.paper, 0.20),
-    borderRadius: "4px", // Standardized to 4px
-    "&:hover": { borderColor: EVZONE.orange, backgroundColor: EVZONE.orange, color: "#FFFFFF" },
-  } as const;
-
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    return apps
-      .filter((a) => (!q ? true : [a.name, a.tagline, a.status].some((x) => x.toLowerCase().includes(q))))
-      .filter((a) => {
-        if (tab === 0) return true;
-        if (tab === 1) return a.status === "Connected";
-        return a.status !== "Connected";
-      })
-      .sort((a, b) => {
-        const ax = a.lastUsedAt || 0;
-        const bx = b.lastUsedAt || 0;
-        return bx - ax;
-      });
-  }, [apps, search, tab]);
-
-  const stats = useMemo(() => {
-    const connected = apps.filter((a) => a.status === "Connected").length;
-    const limited = apps.filter((a) => a.status === "Limited").length;
-    const disconnected = apps.filter((a) => a.status === "Disconnected").length;
-    return { connected, limited, disconnected };
-  }, [apps]);
-
-  const openApp = (a: AppTile) => {
-    // If we have a launchUrl, we redirect the user to it
-    // This starts the OIDC flow: MyAccounts -> App (with code) -> App calls Token Endpoint
-    if (a.launchUrl) {
-      // In a real SPA, this might be window.location.href = a.launchUrl
-      // For demo purposes, let's open in new tab or simulate redirect
-      setSnack({ open: true, severity: "success", msg: `Redirecting to ${a.name}...` });
-
-      // Allow a small delay for snackbar for better UX
-      setTimeout(() => {
-        window.location.href = a.launchUrl!;
-      }, 800);
-      return;
-    }
-
-    if (a.status === "Disconnected") {
-      setSnack({ open: true, severity: "warning", msg: `${a.name} is not connected. Check permissions first.` });
-      return;
-    }
-    setSnack({ open: true, severity: "success", msg: `Opening ${a.name}...` });
-  };
-
-  const openPermissions = (a: AppTile) => {
-    navigate("/app/apps/permissions");
-  };
-
-  const runShortcut = (a: AppTile, s: { label: string; action: string }) => {
-    setSnack({ open: true, severity: "info", msg: `${a.name}: ${s.label} (demo).` });
-  };
-
-  const requestAccess = (a: AppTile) => {
-    setApps((prev) => prev.map((x) => (x.key === a.key ? { ...x, status: "Limited" } : x)));
-    setSnack({ open: true, severity: "success", msg: `Requested access for ${a.name} (demo).` });
-  };
-
-  return (
-    <Box className="min-h-screen" sx={{ background: pageBg }}>
-
-
-      {/* Body */}
-      <Box className="mx-auto max-w-6xl px-4 py-6 md:px-6">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
-          <Stack spacing={2.2}>
-            <Card>
-              <CardContent className="p-5 md:p-7">
-                <Stack spacing={1.2}>
-                  <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ xs: "flex-start", md: "center" }} justifyContent="space-between">
-                    <Box>
-                      <Typography variant="h5">Connected EVzone apps</Typography>
-                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        Launch modules and manage access from one place.
-                      </Typography>
-                      <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 1 }}>
-                        <Chip size="small" color="success" label={`${stats.connected} connected`} />
-                        <Chip size="small" color="warning" label={`${stats.limited} limited`} />
-                        <Chip size="small" variant="outlined" label={`${stats.disconnected} disconnected`} />
+                      <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ width: { xs: "100%", md: "auto" } }}>
+                        <Button variant="outlined" sx={orangeOutlined} startIcon={<ShieldIcon size={18} />} onClick={() => navigate("/app/apps/permissions")}>
+                          Permissions
+                        </Button>
+                        <Button variant="contained" color="secondary" sx={orangeContained} startIcon={<AppsIcon size={18} />} onClick={() => setSnack({ open: true, severity: "info", msg: "Open app launcher (demo)." })}>
+                          App launcher
+                        </Button>
                       </Stack>
-                    </Box>
-
-                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ width: { xs: "100%", md: "auto" } }}>
-                      <Button variant="outlined" sx={orangeOutlined} startIcon={<ShieldIcon size={18} />} onClick={() => navigate("/app/apps/permissions")}>
-                        Permissions
-                      </Button>
-                      <Button variant="contained" color="secondary" sx={orangeContained} startIcon={<AppsIcon size={18} />} onClick={() => setSnack({ open: true, severity: "info", msg: "Open app launcher (demo)." })}>
-                        App launcher
-                      </Button>
                     </Stack>
-                  </Stack>
 
-                  <Divider />
+                    <Divider />
 
-                  <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, overflow: "hidden", minHeight: 44, "& .MuiTab-root": { minHeight: 44, fontWeight: 900 }, "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 } }}>
-                    <Tab label="All" />
-                    <Tab label="Connected" />
-                    <Tab label="Needs attention" />
-                  </Tabs>
+                    <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ borderRadius: "4px", border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, overflow: "hidden", minHeight: 44, "& .MuiTab-root": { minHeight: 44, fontWeight: 900 }, "& .MuiTabs-indicator": { backgroundColor: EVZONE.orange, height: 3 } }}>
+                      <Tab label="All" />
+                      <Tab label="Connected" />
+                      <Tab label="Needs attention" />
+                    </Tabs>
 
-                  <TextField
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    label="Search apps"
-                    placeholder="Search by module name"
-                    fullWidth
-                    InputProps={{ startAdornment: (<InputAdornment position="start"><SearchIcon size={18} /></InputAdornment>) }}
-                  />
+                    <TextField
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      label="Search apps"
+                      placeholder="Search by module name"
+                      fullWidth
+                      InputProps={{ startAdornment: (<InputAdornment position="start"><SearchIcon size={18} /></InputAdornment>) }}
+                    />
 
-                  <Alert severity="info" icon={<ShieldIcon size={18} />}>
-                    Security note: app access is scoped and can be revoked anytime in Permissions.
-                  </Alert>
-                </Stack>
-              </CardContent>
-            </Card>
-
-            <Box className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {filtered.map((a) => (
-                <Card key={a.key}>
-                  <CardContent className="p-5">
-                    <Stack spacing={1.2}>
-                      <Stack direction="row" spacing={1.2} alignItems="center">
-                        <Box sx={{ width: 44, height: 44, borderRadius: "4px", display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.18 : 0.12), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
-                          {appIcon(a.key)}
-                        </Box>
-                        <Box flex={1}>
-                          <Typography sx={{ fontWeight: 950 }}>{a.name}</Typography>
-                          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>{a.tagline}</Typography>
-                        </Box>
-                      </Stack>
-
-                      <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                        {statusChip(a.status)}
-                        <Chip size="small" icon={<ClockIcon size={16} />} label={`Last used: ${timeAgo(a.lastUsedAt)}`} variant="outlined" sx={{ "& .MuiChip-icon": { color: "inherit" } }} />
-                      </Stack>
-
-                      <Divider />
-
-                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontWeight: 900 }}>
-                        Shortcuts
-                      </Typography>
-                      <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                        {a.shortcuts.slice(0, 3).map((s) => (
-                          <Chip
-                            key={s.label}
-                            label={s.label}
-                            clickable
-                            onClick={() => runShortcut(a, s)}
-                            sx={{ cursor: "pointer", border: `1px solid ${alpha(EVZONE.orange, 0.30)}`, "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.10) } }}
-                          />
-                        ))}
-                      </Stack>
-
-                      <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                        <Button variant="contained" color="secondary" sx={orangeContained} endIcon={<ArrowRightIcon size={18} />} onClick={() => openApp(a)}>
-                          Open app
-                        </Button>
-                        <Button variant="outlined" sx={orangeOutlined} onClick={() => openPermissions(a)}>
-                          Manage access
-                        </Button>
-                      </Stack>
-
-                      {a.status === "Disconnected" ? (
-                        <Button variant="outlined" sx={orangeOutlined} onClick={() => requestAccess(a)}>
-                          Request access
-                        </Button>
-                      ) : null}
-
-                      <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                        Access may vary by role and organization.
-                      </Typography>
-                    </Stack>
-                  </CardContent>
-                </Card>
-              ))}
-            </Box>
-
-            {/* Mobile sticky actions */}
-            <Box className="md:hidden" sx={{ position: "sticky", bottom: 12 }}>
-              <Card sx={{ borderRadius: 999, backgroundColor: alpha(theme.palette.background.paper, 0.85), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backdropFilter: "blur(10px)" }}>
-                <CardContent sx={{ py: 1.1, px: 1.2 }}>
-                  <Stack direction="row" spacing={1}>
-                    <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => navigate("/app/apps/permissions")}>
-                      Permissions
-                    </Button>
-                    <Button fullWidth variant="contained" color="secondary" sx={orangeContained} onClick={() => setSnack({ open: true, severity: "info", msg: "Open app launcher (demo)." })}>
-                      Launcher
-                    </Button>
+                    <Alert severity="info" icon={<ShieldIcon size={18} />}>
+                      Security note: app access is scoped and can be revoked anytime in Permissions.
+                    </Alert>
                   </Stack>
                 </CardContent>
               </Card>
-            </Box>
 
-            <Box sx={{ opacity: 0.92 }}>
-              <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
-            </Box>
-          </Stack>
-        </motion.div>
+              <Box className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {filtered.map((a) => (
+                  <Card key={a.key}>
+                    <CardContent className="p-5">
+                      <Stack spacing={1.2}>
+                        <Stack direction="row" spacing={1.2} alignItems="center">
+                          <Box sx={{ width: 44, height: 44, borderRadius: "4px", display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.18 : 0.12), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
+                            {appIcon(a.key)}
+                          </Box>
+                          <Box flex={1}>
+                            <Typography sx={{ fontWeight: 950 }}>{a.name}</Typography>
+                            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>{a.tagline}</Typography>
+                          </Box>
+                        </Stack>
+
+                        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                          {statusChip(a.status)}
+                          <Chip size="small" icon={<ClockIcon size={16} />} label={`Last used: ${timeAgo(a.lastUsedAt)}`} variant="outlined" sx={{ "& .MuiChip-icon": { color: "inherit" } }} />
+                        </Stack>
+
+                        <Divider />
+
+                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontWeight: 900 }}>
+                          Shortcuts
+                        </Typography>
+                        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                          {a.shortcuts.slice(0, 3).map((s) => (
+                            <Chip
+                              key={s.label}
+                              label={s.label}
+                              clickable
+                              onClick={() => runShortcut(a, s)}
+                              sx={{ cursor: "pointer", border: `1px solid ${alpha(EVZONE.orange, 0.30)}`, "&:hover": { backgroundColor: alpha(EVZONE.orange, 0.10) } }}
+                            />
+                          ))}
+                        </Stack>
+
+                        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                          <Button variant="contained" color="secondary" sx={orangeContained} endIcon={<ArrowRightIcon size={18} />} onClick={() => openApp(a)}>
+                            Open app
+                          </Button>
+                          <Button variant="outlined" sx={orangeOutlined} onClick={() => openPermissions(a)}>
+                            Manage access
+                          </Button>
+                        </Stack>
+
+                        {a.status === "Disconnected" ? (
+                          <Button variant="outlined" sx={orangeOutlined} onClick={() => requestAccess(a)}>
+                            Request access
+                          </Button>
+                        ) : null}
+
+                        <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                          Access may vary by role and organization.
+                        </Typography>
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                ))}
+              </Box>
+
+              {/* Mobile sticky actions */}
+              <Box className="md:hidden" sx={{ position: "sticky", bottom: 12 }}>
+                <Card sx={{ borderRadius: 999, backgroundColor: alpha(theme.palette.background.paper, 0.85), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backdropFilter: "blur(10px)" }}>
+                  <CardContent sx={{ py: 1.1, px: 1.2 }}>
+                    <Stack direction="row" spacing={1}>
+                      <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => navigate("/app/apps/permissions")}>
+                        Permissions
+                      </Button>
+                      <Button fullWidth variant="contained" color="secondary" sx={orangeContained} onClick={() => setSnack({ open: true, severity: "info", msg: "Open app launcher (demo)." })}>
+                        Launcher
+                      </Button>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              </Box>
+
+              <Box sx={{ opacity: 0.92 }}>
+                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
+              </Box>
+            </Stack>
+          </motion.div>
+        </Box>
+
+        <Snackbar open={snack.open} autoHideDuration={3200} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+          <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={mode === "dark" ? "filled" : "standard"} sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
+            {snack.msg}
+          </Alert>
+        </Snackbar>
       </Box>
-
-      <Snackbar open={snack.open} autoHideDuration={3200} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
-        <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} variant={mode === "dark" ? "filled" : "standard"} sx={{ borderRadius: 16, border: `1px solid ${alpha(theme.palette.text.primary, 0.12)}`, backgroundColor: mode === "dark" ? alpha(theme.palette.background.paper, 0.94) : alpha(theme.palette.background.paper, 0.96), color: theme.palette.text.primary }}>
-          {snack.msg}
-        </Alert>
-      </Snackbar>
-    </Box>
-  );
+    );
+  }
 }
