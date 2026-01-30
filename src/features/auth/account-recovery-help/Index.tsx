@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -52,6 +53,7 @@ type HelpItem = {
 };
 
 export default function AccountRecoveryHelpPage() {
+  const { t } = useTranslation("common"); {
   const navigate = useNavigate();
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
@@ -139,7 +141,7 @@ export default function AccountRecoveryHelpPage() {
   return (
     <Box className="min-h-screen" sx={{ background: pageBg }}>
       {/* Unified Auth Header */}
-      <AuthHeader title="EVzone" subtitle="Account Recovery Help" />
+      <AuthHeader title={t("EVzone")} subtitle={t("Account Recovery Help")} />
 
       {/* Body */}
       <Box className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">

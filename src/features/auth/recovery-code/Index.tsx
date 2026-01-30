@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -120,6 +121,7 @@ function normalizeCode(s: string) {
 }
 
 export default function RecoveryCodeEntryPage() {
+  const { t } = useTranslation("common"); {
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);

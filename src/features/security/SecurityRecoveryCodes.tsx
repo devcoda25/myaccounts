@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -193,6 +194,7 @@ async function copyToClipboard(text: string) {
 // Mock helper removed
 
 export default function RecoveryCodesPage() {
+  const { t } = useTranslation("common"); {
   const theme = useTheme();
   const navigate = useNavigate();
   const { mode } = useThemeStore();
@@ -425,7 +427,7 @@ export default function RecoveryCodesPage() {
                     )}
 
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                      <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={submitReauth}>Continue</Button>
+                      <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={submitReauth}>{t("auth.common.continue")}<//Button>
                       <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => navigate("/app/security")}>Back to security</Button>
                     </Stack>
                   </Stack>
@@ -487,7 +489,7 @@ export default function RecoveryCodesPage() {
           </Stack>
         </DialogContent>
         <DialogActions sx={{ p: 2, pt: 0 }}>
-          <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => setConfirmRegenOpen(false)}>Cancel</Button>
+          <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => setConfirmRegenOpen(false)}>{t("auth.common.cancel")}<//Button>
           <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={regenerate}>Regenerate</Button>
         </DialogActions>
       </Dialog>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 
 import {
@@ -102,6 +103,7 @@ function submitOidcInteractionLogin(uid: string, email: string, password: string
 
 
 export default function SignUpPageV3() {
+  const { t } = useTranslation("common");
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
@@ -155,12 +157,12 @@ export default function SignUpPageV3() {
   if (auth.error) {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: pageBg, p: 4 }}>
-        <Typography variant="h5" color="error" gutterBottom>Authentication Error</Typography>
+        <Typography variant="h5" color="error" gutterBottom>{t("auth.error.title")}</Typography>
         <Typography color="text.secondary" align="center" sx={{ mb: 3, maxWidth: 400 }}>
-          {auth.error.message || "Failed to initialize secure session."}
+          {auth.error.message || t("auth.error.sessionFailed")}
         </Typography>
         <Button variant="outlined" onClick={() => window.location.reload()}>
-          Retry
+          {t("auth.error.retry")}
         </Button>
       </Box>
     );
@@ -171,7 +173,7 @@ export default function SignUpPageV3() {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: pageBg }}>
         <CircularProgress />
-        <Typography sx={{ mt: 2, color: theme.palette.text.secondary }}>Initializing secure session...</Typography>
+        <Typography sx={{ mt: 2, color: theme.palette.text.secondary }}>{t("auth.loading.session")}</Typography>
       </Box>
     );
   }
@@ -215,7 +217,7 @@ export default function SignUpPageV3() {
   } as const;
 
   const pwScore = scorePassword(password);
-  const pwLabel = pwScore <= 1 ? "Weak" : pwScore === 2 ? "Fair" : pwScore === 3 ? "Good" : pwScore === 4 ? "Strong" : "Very strong";
+  const pwLabel = pwScore <= 1 ? t("auth.password.weak") : pwScore === 2 ? t("auth.password.fair") : pwScore === 3 ? t("auth.password.good") : pwScore === 4 ? t("auth.password.strong") : t("auth.password.veryStrong");
 
   const validate = () => {
     const fn = firstName.trim();
@@ -223,16 +225,16 @@ export default function SignUpPageV3() {
     const e = email.trim();
     const p = phone.trim();
 
-    if (!fn) return "Enter your first name.";
-    if (!ln) return "Enter your other names.";
-    if (!e && !p) return "Provide at least an email or phone number.";
-    if (e && !isEmail(e)) return "Enter a valid email address.";
-    if (!acceptTerms) return "You must accept the Terms and Privacy Policy.";
+    if (!fn) return t("auth.signUp.validation.firstNameRequired");
+    if (!ln) return t("auth.signUp.validation.otherNamesRequired");
+    if (!e && !p) return t("auth.signUp.validation.emailOrPhoneRequired");
+    if (e && !isEmail(e)) return t("auth.signUp.validation.validEmailRequired");
+    if (!acceptTerms) return t("auth.signUp.validation.termsRequired");
 
     if (!createWithOtp) {
-      if (!password) return "Create a password.";
-      if (password.length < 8) return "Password must be at least 8 characters.";
-      if (password !== confirm) return "Passwords do not match.";
+      if (!password) return t("auth.signUp.validation.passwordRequired");
+      if (password.length < 8) return t("auth.signUp.validation.passwordMinLength");
+      if (password !== confirm) return t("auth.signUp.validation.passwordsDoNotMatch");
     }
 
     return null;
@@ -253,7 +255,7 @@ export default function SignUpPageV3() {
     if (err) {
       showNotification({
         type: "warning",
-        title: "Registration Info",
+        title: t("auth.notification.registrationInfo"),
         message: err
       });
       return;
@@ -277,8 +279,8 @@ export default function SignUpPageV3() {
       if (uid && !createWithOtp) {
         showNotification({
           type: "success",
-          title: "Account Created",
-          message: "Account created successfully! Signing you in securely..."
+          title: t("auth.notification.accountCreated"),
+          message: t("auth.notification.accountCreatedSuccess")
         });
         submitOidcInteractionLogin(uid, email, password);
         return;
@@ -286,16 +288,16 @@ export default function SignUpPageV3() {
 
       showNotification({
         type: "success",
-        title: "Verify Your Email",
-        message: "Account created! Please check your inbox for the verification link."
+        title: t("auth.notification.verifyEmail"),
+        message: t("auth.notification.verifyEmailSuccess")
       });
       navigate("/auth/verify-email");
 
     } catch (e: any) {
       showNotification({
         type: "error",
-        title: "Registration Failed",
-        message: e.message || "Failed to create account. Please try again."
+        title: t("auth.notification.registrationFailed"),
+        message: e.message || t("auth.notification.registrationFailedMessage")
       });
     }
   };
@@ -306,8 +308,8 @@ export default function SignUpPageV3() {
   return (
     <Box className="min-h-screen" sx={{ background: pageBg }}>
       <AuthHeader
-        title="EVzone Accounts"
-        subtitle="Create your EVzone Identity"
+        title={t("auth.header.title")}
+        subtitle={t("auth.header.subtitle")}
       />
 
       <Box className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">
@@ -316,9 +318,9 @@ export default function SignUpPageV3() {
             <Card>
               <CardContent className="p-5 md:p-6">
                 <Stack spacing={1.2}>
-                  <Typography variant="h6">Account Creation</Typography>
+                  <Typography variant="h6">{t("auth.signUp.sectionTitle")}</Typography>
                   <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                    Create your single secure ID for all EVzone services.
+                    {t("auth.signUp.sectionSubtitle")}
                   </Typography>
                   <Divider sx={{ my: 1 }} />
                   <Stack spacing={1.1}>
@@ -327,9 +329,9 @@ export default function SignUpPageV3() {
                         <ShieldCheckIcon size={18} />
                       </Box>
                       <Box>
-                        <Typography sx={{ fontWeight: 900 }}>Secure Identity</Typography>
+                        <Typography sx={{ fontWeight: 900 }}>{t("auth.signUp.secureIdentity")}</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Bank-grade security for your assets.
+                          {t("auth.signUp.secureIdentityDesc")}
                         </Typography>
                       </Box>
                     </Stack>
@@ -338,16 +340,16 @@ export default function SignUpPageV3() {
                         <InfoBadgeIcon size={18} />
                       </Box>
                       <Box>
-                        <Typography sx={{ fontWeight: 900 }}>Clear Permissions</Typography>
+                        <Typography sx={{ fontWeight: 900 }}>{t("auth.signUp.clearPermissions")}</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          You control your data sharing.
+                          {t("auth.signUp.clearPermissionsDesc")}
                         </Typography>
                       </Box>
                     </Stack>
                   </Stack>
                   <Divider sx={{ my: 1 }} />
                   <Button variant="outlined" startIcon={<ArrowLeftIcon size={18} />} sx={orangeOutlinedSx} onClick={() => navigate(uid ? `/auth/sign-in?uid=${uid}` : "/auth/sign-in")}>
-                    Back to Sign In
+                    {t("auth.signUp.backToSignIn")}
                   </Button>
                 </Stack>
               </CardContent>
@@ -359,9 +361,9 @@ export default function SignUpPageV3() {
               <CardContent className="p-5 md:p-7">
                 <Stack spacing={2.0}>
                   <Stack spacing={0.6}>
-                    <Typography variant="h6">Create Account</Typography>
+                    <Typography variant="h6">{t("auth.signUp.createAccount")}</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      Get started with EVzone
+                      {t("auth.signUp.getStarted")}
                     </Typography>
                   </Stack>
 
@@ -375,7 +377,7 @@ export default function SignUpPageV3() {
                         disabled={isGoogleLoading}
                         sx={{ ...googleBtnSx, borderRadius: 14, textTransform: "none", fontWeight: 800 }}
                       >
-                        {isGoogleLoading ? "Loading..." : "Continue with Google"}
+                        {isGoogleLoading ? t("auth.common.loading") : t("auth.signUp.continueWithGoogle")}
                       </Button>
                       <Button
                         fullWidth
@@ -385,10 +387,10 @@ export default function SignUpPageV3() {
                         disabled={isAppleLoading}
                         sx={{ ...appleBtnSx, borderRadius: 14, textTransform: "none", fontWeight: 800 }}
                       >
-                        {isAppleLoading ? "Loading..." : "Continue with Apple"}
+                        {isAppleLoading ? t("auth.common.loading") : t("auth.signUp.continueWithApple")}
                       </Button>
                     </Stack>
-                    <Divider>or</Divider>
+                    <Divider>{t("auth.common.or")}</Divider>
                   </Stack>
 
                   <Stack spacing={1.4}>
@@ -396,16 +398,16 @@ export default function SignUpPageV3() {
                       <TextField
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
-                        label="First Name"
-                        placeholder="e.g. Jane"
+                        label={t("auth.signUp.firstName")}
+                        placeholder={t("auth.signUp.firstNamePlaceholder")}
                         fullWidth
                         InputProps={{ startAdornment: <InputAdornment position="start"><UserIcon size={18} /></InputAdornment> }}
                       />
                       <TextField
                         value={otherNames}
                         onChange={(e) => setOtherNames(e.target.value)}
-                        label="Other Names"
-                        placeholder="e.g. Doe"
+                        label={t("auth.signUp.otherNames")}
+                        placeholder={t("auth.signUp.otherNamesPlaceholder")}
                         fullWidth
                         InputProps={{ startAdornment: <InputAdornment position="start"><UserIcon size={18} /></InputAdornment> }}
                       />
@@ -415,8 +417,8 @@ export default function SignUpPageV3() {
                       <TextField
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        label="Email Address"
-                        placeholder="name@example.com"
+                        label={t("auth.signUp.email")}
+                        placeholder={t("auth.signUp.emailPlaceholder")}
                         fullWidth
                         InputProps={{
                           startAdornment: (
@@ -445,8 +447,8 @@ export default function SignUpPageV3() {
                         <TextField
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
-                          label="Phone Number"
-                          placeholder="700 000 000"
+                          label={t("auth.signUp.phone")}
+                          placeholder={t("auth.signUp.phonePlaceholder")}
                           fullWidth
                           InputProps={{
                             startAdornment: (
@@ -462,9 +464,9 @@ export default function SignUpPageV3() {
                     <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
                       <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ xs: "flex-start", sm: "center" }} justifyContent="space-between" spacing={1}>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>Create with One-Time Code</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>{t("auth.signUp.createWithOtp")}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            No password required. We'll verify your phone.
+                            {t("auth.signUp.createWithOtpDesc")}
                           </Typography>
                         </Box>
                         <Switch checked={createWithOtp} onChange={(e) => setCreateWithOtp(e.target.checked)} color="secondary" />
@@ -477,7 +479,7 @@ export default function SignUpPageV3() {
                           <TextField
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            label="Create Password"
+                            label={t("auth.signUp.createPassword")}
                             type={showPw ? "text" : "password"}
                             fullWidth
                             InputProps={{
@@ -498,7 +500,7 @@ export default function SignUpPageV3() {
                           <TextField
                             value={confirm}
                             onChange={(e) => setConfirm(e.target.value)}
-                            label="Confirm Password"
+                            label={t("auth.signUp.confirmPassword")}
                             type={showConfirm ? "text" : "password"}
                             fullWidth
                             InputProps={{
@@ -528,36 +530,36 @@ export default function SignUpPageV3() {
                         </Stack>
                       </Box>
                     ) : (
-                      <Alert severity="info">You will receive an OTP to verify your account.</Alert>
+                      <Alert severity="info">{t("auth.signUp.otpInfo")}</Alert>
                     )}
 
                     <TextField
                       value={inviteCode}
                       onChange={(e) => setInviteCode(e.target.value)}
-                      label="Invite Code (Optional)"
-                      placeholder="e.g. EVZ-123"
+                      label={t("auth.signUp.inviteCode")}
+                      placeholder={t("auth.signUp.inviteCodePlaceholder")}
                       fullWidth
                       InputProps={{ startAdornment: <InputAdornment position="start"><TicketIcon size={18} /></InputAdornment> }}
                     />
 
                     <FormControlLabel
                       control={<Checkbox checked={acceptTerms} onChange={(e) => setAcceptTerms(e.target.checked)} sx={{ color: alpha(EVZONE.orange, 0.7), "&.Mui-checked": { color: EVZONE.orange } }} />}
-                      label={<Typography variant="body2">I agree to the Terms of Service and Privacy Policy.</Typography>}
+                      label={<Typography variant="body2">{t("auth.signUp.termsAgreement")}</Typography>}
                     />
 
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                       <Button fullWidth variant="contained" color="secondary" endIcon={<ArrowRightIcon size={18} />} onClick={onContinue} sx={orangeContainedSx}>
-                        Continue
+                        {t("auth.signUp.continue")}
                       </Button>
                       <Button fullWidth variant="outlined" startIcon={<ArrowLeftIcon size={18} />} onClick={() => navigate(uid ? `/auth/sign-in?uid=${uid}` : "/auth/sign-in")} sx={orangeOutlinedSx}>
-                        Switch to Sign In
+                        {t("auth.signUp.switchToSignIn")}
                       </Button>
                     </Stack>
 
                     <Divider />
 
                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      Verify your contact info in the next step.
+                      {t("auth.signUp.verifyContactInfo")}
                     </Typography>
                   </Stack>
                 </Stack>
@@ -569,8 +571,8 @@ export default function SignUpPageV3() {
         <Box className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
           <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
           <Stack direction="row" spacing={1.2} alignItems="center">
-            <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>Terms</Button>
-            <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>Privacy</Button>
+            <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>{t("auth.common.terms")}</Button>
+            <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>{t("auth.common.privacy")}</Button>
           </Stack>
         </Box>
       </Box>

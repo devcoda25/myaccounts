@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -165,6 +166,7 @@ async function safePlatformAvailable(): Promise<boolean> {
 }
 
 export default function PasskeysPage() {
+  const { t } = useTranslation("common"); {
   const theme = useTheme();
   const navigate = useNavigate();
   const { mode } = useThemeStore();
@@ -406,7 +408,7 @@ export default function PasskeysPage() {
           </Stack>
         </DialogContent>
         <DialogActions sx={{ p: 2, pt: 0 }}>
-          <Button variant="outlined" sx={orangeOutlined} onClick={() => setRemoveOpen(false)}>Cancel</Button>
+          <Button variant="outlined" sx={orangeOutlined} onClick={() => setRemoveOpen(false)}>{t("auth.common.cancel")}<//Button>
           <Button variant="contained" sx={orangeContained} onClick={confirmRemove}>Remove</Button>
         </DialogActions>
       </Dialog>

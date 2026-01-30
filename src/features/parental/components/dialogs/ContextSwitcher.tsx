@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from "react-i18next";
 import { Box, Typography, Stack, Button, Dialog, DialogTitle, DialogContent, DialogActions, Divider, Alert, useTheme, alpha } from '@mui/material';
 import { Shield as ShieldIcon } from 'lucide-react';
 import { useThemeStore } from "@/stores/themeStore";

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Avatar,
   Box,
@@ -66,6 +67,7 @@ const WHATSAPP = {
 type Purpose = keyof Prefs;
 
 export default function ContactSettings() {
+  const { t } = useTranslation("common"); {
   const { mode } = useThemeStore();
   const theme = useTheme();
   const isDark = mode === "dark";
@@ -529,8 +531,8 @@ export default function ContactSettings() {
           )}
         </DialogContent>
         <DialogActions sx={{ p: 2, pt: 0 }}>
-          <Button variant="outlined" onClick={closeEdit}>Cancel</Button>
-          {editStep === "form" && <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={startVerification}>Verify</Button>}
+          <Button variant="outlined" onClick={closeEdit}>{t("auth.common.cancel")}<//Button>
+          {editStep === "form" && <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={startVerification}>{t("auth.common.verify")}<//Button>}
           {editStep === "otp" && <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={verifyOtp}>Finish</Button>}
           {editStep === "done" && <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={closeEdit}>Done</Button>}
         </DialogActions>
@@ -549,8 +551,8 @@ export default function ContactSettings() {
           </Stack>
         </DialogContent>
         <DialogActions sx={{ p: 2, pt: 0 }}>
-          <Button variant="outlined" onClick={() => setDefaultsOpen(false)}>Cancel</Button>
-          <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={saveDefaults}>Save</Button>
+          <Button variant="outlined" onClick={() => setDefaultsOpen(false)}>{t("auth.common.cancel")}<//Button>
+          <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={saveDefaults}>{t("auth.common.save")}<//Button>
         </DialogActions>
       </Dialog>
     </Stack>

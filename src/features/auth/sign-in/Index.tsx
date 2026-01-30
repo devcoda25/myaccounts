@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
 import { API_BASE_URL } from "@/config";
@@ -32,20 +33,7 @@ import { useSocialLogin } from "@/hooks/useSocialLogin";
 import AuthHeader from "@/components/layout/AuthHeader";
 import { EVZONE } from "@/theme/evzone";
 import { useNotification } from "@/context/NotificationContext";
-
-/**
- * EVzone My Accounts - Sign In v4.1 (Passkey Outline)
- * Route: /auth/sign-in
- *
- * Update:
- * - Passkey button is outlined by default and fills orange on hover.
- * - Keeps Google + Apple brand styling.
- *
- * Global style rules:
- * - Background: green-only
- * - EVzone buttons: orange-only with white text
- * - Social buttons: brand styling (Google/Apple)
- */
+import { useTranslation } from "@/i18n";
 
 import {
   Severity
@@ -103,7 +91,7 @@ function safeRandomBytes(n: number): Uint8Array {
 async function tryWebAuthnGet(): Promise<{ ok: boolean; message: string }> {
   try {
     const nav: any = navigator as any;
-    if (!nav?.credentials?.get) return { ok: false, message: "WebAuthn is not available." };
+    if(!nav?.credentials?.get) return { ok: false, message: "WebAuthn is not available." };
 
     await nav.credentials.get({
       publicKey: {
@@ -114,7 +102,7 @@ async function tryWebAuthnGet(): Promise<{ ok: boolean; message: string }> {
     });
 
     return { ok: true, message: "Passkey verified. Signed in (demo)." };
-  } catch (e: any) {
+  } catch(e: any) {
     const name = e?.name || "Error";
     return { ok: false, message: `${name}: passkey prompt was cancelled or not allowed in this environment.` };
   }
@@ -140,6 +128,7 @@ function runSelfTestsOnce() {
 }
 
 export default function SignInPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
@@ -258,7 +247,6 @@ export default function SignInPage() {
   const auth = useAuth();
 
   // If not logged in and not in interaction flow (uid), start OIDC login
-  // If not logged in and not in interaction flow (uid), start OIDC login
   // [ENABLED] Auto-redirect to ensure OIDC session is initialized.
   useEffect(() => {
     // 1. Check for interaction errors from the server (e.g. SessionNotFound)
@@ -266,20 +254,14 @@ export default function SignInPage() {
     if (interactionErr) {
       showNotification({
         type: "error",
-        title: "Session Issue",
+        title: t('auth.session.issue'),
         message: interactionErr === "session_expired" || interactionErr.includes("cookie not found")
-          ? "Your secure session has expired. Please sign in again."
-          : `Authentication issue: ${interactionErr}`
+          ? t('auth.session.expired')
+          : `${t('auth.session.error')}: ${interactionErr}`
       });
       return; // Wait for user to react
     }
 
-    // [Fix] Nuclear Redirect Guard: 
-    // Do NOT redirect if:
-    // 1. We have an interaction UID (form should show)
-    // 2. We already have an OIDC error (loop breaker)
-    // 3. We are already authenticated (loading will handle redirect to /app)
-    // 4. Discovery found an error (interaction_error param)
     const hasInteractionError = searchParams.has('interaction_error') || searchParams.has('error');
 
     if (!uid && !auth.isAuthenticated && !auth.isLoading && !auth.activeNavigator && !auth.error && !isRedirecting && !hasInteractionError) {
@@ -290,31 +272,15 @@ export default function SignInPage() {
         setIsRedirecting(false);
       });
     }
-  }, [uid, auth, searchParams, isRedirecting]);
-
-  /*
-  useEffect(() => {
-    if (auth.isAuthenticated) {
-      // If standard login success (via callback), redirect
-      navigate("/app", { replace: true });
-    }
-  }, [auth.isAuthenticated, navigate]);
-  */
+  }, [uid, auth, searchParams, isRedirecting, t, showNotification]);
 
   // Restore redirection to App when API session is established (e.g. via Google Custom Login)
-  // This avoids the OIDC loop because it depends on the API 'user' object, which is cleared on 401.
   useEffect(() => {
     if (user) {
       const from = (location.state as any)?.from?.pathname || "/app";
       navigate(from, { replace: true });
     }
   }, [user, navigate, location]);
-
-  // React.useEffect(() => {
-  //   if (isGoogleScriptLoaded) {
-  //     renderGoogleButton('google-signin-btn');
-  //   }
-  // }, [isGoogleScriptLoaded, renderGoogleButton]);
 
   async function submitInteraction(uidVal: string, email: string, password: string) {
     const targetUrl = `/oidc/interaction/${encodeURIComponent(uidVal)}/login`;
@@ -332,21 +298,14 @@ export default function SignInPage() {
       if (response.status === 302 || response.status === 303 || response.type === "opaqueredirect") {
         const locationHeader = response.headers.get("Location");
 
-        // [Debug] Log all headers to see what's exposed
         console.log("[OIDC] Response Type:", response.type);
         console.log("[OIDC] Response Headers:",
           Object.fromEntries(Array.from(response.headers.entries())));
 
-        // [Fix] Resumption fallback: Use the provider's returnTo URL structure.
-        // The provider generates returnTo as /auth/:uid (without /oidc prefix)
-        // because the /oidc prefix is handled by routing, not in interaction URLs.
         let nextUrl = locationHeader || response.url;
 
-        // If we have no URL or it's just the login URL (interaction page itself), 
-        // manually construct the resumption path using the provider's expected format
         if (!nextUrl || nextUrl.includes("/login")) {
           console.log("[OIDC] Manually constructing resumption URL for UID:", uidVal);
-          // Use /oidc/auth/UID to match provider's issuer-relative path
           nextUrl = `/oidc/auth/${encodeURIComponent(uidVal)}`;
         }
 
@@ -360,7 +319,6 @@ export default function SignInPage() {
         throw new Error(error.message || `Login failed with status ${response.status}`);
       }
 
-      // 200 Success fallback (usually oidc-provider redirects, but handling just in case)
       console.log("[OIDC] Login success (200). Navigating to response URL:", response.url);
       window.location.assign(response.url);
 
@@ -370,9 +328,6 @@ export default function SignInPage() {
     }
   }
 
-
-
-
   const submitPasswordSignIn = async () => {
     setBanner(null);
 
@@ -380,42 +335,40 @@ export default function SignInPage() {
     if (!id) {
       showNotification({
         type: "warning",
-        title: "Missing Info",
-        message: "Enter your email or phone number."
+        title: t('common.errors.required'),
+        message: t('auth.signIn.errors.enterEmailOrPhone'),
       });
       return;
     }
     if (!password) {
       showNotification({
         type: "warning",
-        title: "Missing Password",
-        message: "Enter your password to continue."
+        title: t('auth.signIn.title'),
+        message: t('auth.signIn.errors.enterPassword'),
       });
       return;
     }
 
     if (isLocked) {
-      setBanner({ severity: "error", msg: `Locked. Retry in ${secondsLeft}s` });
+      setBanner({ severity: "error", msg: t('auth.signIn.errors.locked', { seconds: secondsLeft }) });
       return;
     }
 
     // OIDC INTERACTION MODE
     if (uid) {
-      showNotification({ type: "info", title: "Verifying", message: "Verifying credentials..." });
+      showNotification({ type: "info", title: t('auth.signIn.title'), message: t('auth.signIn.verifying') });
       try {
         await submitInteraction(uid, id, password);
-        // If successful, submitInteraction will redirect
       } catch (err: any) {
         console.error("Interaction login failed:", err);
         showNotification({
           type: "error",
-          title: "Sign In Failed",
-          message: err.message || "Invalid credentials. Please try again."
+          title: t('auth.signIn.failed'),
+          message: err.message || t('auth.signIn.errors.invalidCredentials'),
         });
       }
       return;
     }
-
 
     // Start OIDC Flow
     try {
@@ -428,8 +381,8 @@ export default function SignInPage() {
       console.error("Sign in redirect error:", err);
       showNotification({
         type: "error",
-        title: "System Error",
-        message: "Failed to start sign-in flow. Please try again."
+        title: t('auth.session.systemError'),
+        message: t('auth.session.failedStart'),
       });
     }
   };
@@ -441,8 +394,8 @@ export default function SignInPage() {
     if (passkeySupported === false) {
       showNotification({
         type: "warning",
-        title: "Unsupported",
-        message: "Passkeys are not supported on this device or browser."
+        title: t('auth.passkey.notSupported'),
+        message: t('auth.passkey.notAvailable'),
       });
       return;
     }
@@ -453,14 +406,14 @@ export default function SignInPage() {
       if (!res.ok) {
         showNotification({
           type: "info",
-          title: "Passkey Info",
-          message: "If passkeys are not available here, use password, OTP, or Google/Apple."
+          title: t('auth.passkey.title'),
+          message: res.message,
         });
       } else {
         showNotification({
           type: "success",
-          title: "Passkey Verified",
-          message: "Redirecting to your dashboard..."
+          title: t('auth.passkey.verified'),
+          message: t('auth.passkey.redirecting'),
         });
       }
     } finally {
@@ -470,35 +423,34 @@ export default function SignInPage() {
 
   const passkeyChip =
     passkeySupported === null ? (
-      <Chip size="small" variant="outlined" label="Checking..." />
+      <Chip size="small" variant="outlined" label={t('auth.signIn.checking')} />
     ) : passkeySupported ? (
       null
     ) : (
-      <Chip size="small" color="warning" label="Unavailable" />
+      <Chip size="small" color="warning" label={t('auth.signIn.unavailable')} />
     );
 
   // Error Handling: If OIDC fails, show error and allow retry
   if (auth.error) {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: pageBg, p: 4 }}>
-        <Typography variant="h5" color="error" gutterBottom>Authentication Error</Typography>
+        <Typography variant="h5" color="error" gutterBottom>{t('auth.session.systemError')}</Typography>
         <Typography color="text.secondary" align="center" sx={{ mb: 3, maxWidth: 400 }}>
-          {auth.error.message || "Failed to initialize secure session."}
+          {auth.error.message || t('auth.session.initializing')}
         </Typography>
         <Button variant="outlined" onClick={() => window.location.reload()}>
-          Retry
+          {t('common.actions.retry')}
         </Button>
       </Box>
     );
   }
 
   // Anti-Flicker: If initializing OIDC (redirecting) or already authenticated, show loading instead of form
-  // But ONLY if no error exists.
   if (!uid && !auth.error && (auth.isLoading || isRedirecting)) {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: pageBg }}>
         <CircularProgress />
-        <Typography sx={{ mt: 2, color: theme.palette.text.secondary }}>Initializing secure session...</Typography>
+        <Typography sx={{ mt: 2, color: theme.palette.text.secondary }}>{t('auth.session.initializing')}</Typography>
       </Box>
     );
   }
@@ -507,8 +459,8 @@ export default function SignInPage() {
     <Box className="min-h-screen" sx={{ background: pageBg }}>
       {/* Unified Auth Header */}
       <AuthHeader
-        title="EVzone Accounts"
-        subtitle="Manage your diverse EVzone portfolio"
+        title={t('app.name')}
+        subtitle={t('auth.signIn.subtitle')}
       />
 
       {/* Body */}
@@ -519,22 +471,22 @@ export default function SignInPage() {
             <Card>
               <CardContent className="p-5 md:p-6">
                 <Stack spacing={1.2}>
-                  <Typography variant="h6">One account for everything EVzone</Typography>
+                  <Typography variant="h6">{t('auth.signIn.left.title')}</Typography>
                   <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                    Seamlessly access Charging, Marketplace, and Pay with a single secure identity.
+                    {t('auth.signIn.left.subtitle')}
                   </Typography>
 
                   <Divider sx={{ my: 1 }} />
 
                   <Stack spacing={1.1}>
-                    <FeatureRow icon={<ShieldCheckIcon size={18} />} title="Secure Sessions" desc="Bank-grade security monitoring 24/7." bg={EVZONE.green} />
-                    <FeatureRow icon={<FingerprintIcon size={18} />} title="Passkeys & Biometrics" desc="Sign in with TouchID or FaceID." bg={EVZONE.green} />
-                    <FeatureRow icon={<LockIcon size={18} />} title="Privacy First" desc="We maximize your data privacy." bg={EVZONE.green} />
+                    <FeatureRow icon={<ShieldCheckIcon size={18} />} title={t('auth.signIn.features.secureSessions.title')} desc={t('auth.signIn.features.secureSessions.desc')} bg={EVZONE.green} />
+                    <FeatureRow icon={<FingerprintIcon size={18} />} title={t('auth.signIn.features.passkeys.title')} desc={t('auth.signIn.features.passkeys.desc')} bg={EVZONE.green} />
+                    <FeatureRow icon={<LockIcon size={18} />} title={t('auth.signIn.features.privacy.title')} desc={t('auth.signIn.features.privacy.desc')} bg={EVZONE.green} />
                   </Stack>
 
                   <Divider sx={{ my: 1 }} />
                   <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    Pre-filled for demo: example@mail.com
+                    {t('auth.signIn.left.demoNote')}
                   </Typography>
                 </Stack>
               </CardContent>
@@ -547,17 +499,15 @@ export default function SignInPage() {
               <CardContent className="p-5 md:p-7">
                 <Stack spacing={2.0}>
                   <Stack spacing={0.6}>
-                    <Typography variant="h6">Sign In</Typography>
+                    <Typography variant="h6">{t('auth.signIn.title')}</Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                      to continue to EVzone Portal
+                      {t('auth.signIn.right.subtitle')}
                     </Typography>
                   </Stack>
 
                   {/* Social + Passkeys */}
                   <Stack spacing={1}>
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                      {/* <div id="google-signin-btn" style={{ width: '100%', height: 44 }}></div> */}
-
                       <Button
                         fullWidth
                         variant="outlined"
@@ -566,7 +516,7 @@ export default function SignInPage() {
                         disabled={isGoogleLoading}
                         sx={{ ...googleBtnSx, borderRadius: 14, textTransform: "none", fontWeight: 800 }}
                       >
-                        {isGoogleLoading ? "Loading..." : "Continue with Google"}
+                        {isGoogleLoading ? t('common.loading.loading') : t('auth.socialLogin.google')}
                       </Button>
                       <Button
                         fullWidth
@@ -576,7 +526,7 @@ export default function SignInPage() {
                         disabled={isAppleLoading}
                         sx={{ ...appleBtnSx, borderRadius: 14, textTransform: "none", fontWeight: 800 }}
                       >
-                        {isAppleLoading ? "Loading..." : "Continue with Apple"}
+                        {isAppleLoading ? t('common.loading.loading') : t('auth.socialLogin.apple')}
                       </Button>
                     </Stack>
 
@@ -589,24 +539,23 @@ export default function SignInPage() {
                       disabled={passkeySupported === false || passkeyBusy}
                       sx={orangeOutlinedSx}
                     >
-                      {passkeyBusy ? "Waiting..." : "Passkey"}
+                      {passkeyBusy ? t('common.loading.loading') : t('auth.passkey.title')}
                     </Button>
 
                     <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
                       {passkeyChip}
-
                     </Stack>
 
                     {passkeyBusy ? (
                       <Box>
                         <LinearProgress />
                         <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                          Switching to password...
+                          {t('auth.signIn.switchingToPassword')}
                         </Typography>
                       </Box>
                     ) : null}
 
-                    <Divider>or</Divider>
+                    <Divider>{t('auth.signIn.or')}</Divider>
                   </Stack>
 
                   {banner ? <Alert severity={banner.severity}>{banner.msg}</Alert> : null}
@@ -615,8 +564,8 @@ export default function SignInPage() {
                     <TextField
                       value={identifier}
                       onChange={(e) => setIdentifier(e.target.value)}
-                      label="Email or Phone"
-                      placeholder="name@example.com"
+                      label={t('auth.signIn.emailOrPhone')}
+                      placeholder={t('auth.signIn.placeholders.email')}
                       fullWidth
                       InputProps={{
                         startAdornment: (
@@ -634,7 +583,7 @@ export default function SignInPage() {
                     <TextField
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      label="Password"
+                      label={t('common.labels.password')}
                       type={showPassword ? "text" : "password"}
                       fullWidth
                       InputProps={{
@@ -648,7 +597,7 @@ export default function SignInPage() {
                             <IconButton
                               size="small"
                               onClick={() => setShowPassword((v) => !v)}
-                              aria-label={showPassword ? "Hide password" : "Show password"}
+                              aria-label={showPassword ? t('auth.signIn.hidePassword') : t('auth.signIn.showPassword')}
                               sx={{ color: EVZONE.orange }}
                             >
                               {showPassword ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
@@ -667,10 +616,10 @@ export default function SignInPage() {
                             sx={{ color: alpha(EVZONE.orange, 0.7), "&.Mui-checked": { color: EVZONE.orange } }}
                           />
                         }
-                        label={<Typography variant="body2">Remember me</Typography>}
+                        label={<Typography variant="body2">{t('common.labels.rememberMe')}</Typography>}
                       />
                       <Button variant="text" sx={orangeTextSx} onClick={() => navigate("/auth/forgot-password")}>
-                        Forgot?
+                        {t('auth.signIn.forgotPassword')}
                       </Button>
                     </Stack>
 
@@ -683,10 +632,10 @@ export default function SignInPage() {
                         disabled={isLocked}
                         sx={orangeContainedSx}
                       >
-                        {isLocked ? `Locked. Retry in ${secondsLeft}s` : "Sign In"}
+                        {isLocked ? t('auth.signIn.locked', { seconds: secondsLeft }) : t('auth.signIn.submit')}
                       </Button>
                       <Button fullWidth variant="outlined" onClick={() => navigate(uid ? `/auth/sign-up?uid=${uid}` : "/auth/sign-up")} sx={orangeOutlinedSx}>
-                        Create account
+                        {t('auth.signUp.title')}
                       </Button>
                     </Stack>
 
@@ -694,9 +643,9 @@ export default function SignInPage() {
                     <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
                       <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ xs: "flex-start", sm: "center" }} justifyContent="space-between" spacing={1}>
                         <Box>
-                          <Typography sx={{ fontWeight: 900 }}>Use One-Time Code</Typography>
+                          <Typography sx={{ fontWeight: 900 }}>{t('auth.signIn.useOtpTitle')}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            No password? Use a magic code.
+                            {t('auth.signIn.useOtpSubtitle')}
                           </Typography>
                         </Box>
                         <Switch checked={useOtpInstead} onChange={(e) => setUseOtpInstead(e.target.checked)} />
@@ -706,17 +655,17 @@ export default function SignInPage() {
                           <Button
                             fullWidth
                             variant="contained"
-                            onClick={() => showNotification({ type: 'info', title: 'Coming Soon', message: 'One-time code sign-in is being integrated.' })}
+                            onClick={() => showNotification({ type: 'info', title: t('auth.signIn.comingSoon'), message: t('auth.signIn.otpComingSoon') })}
                             sx={orangeContainedSx}
                           >
-                            Send Code
+                            {t('auth.signIn.sendCode')}
                           </Button>
                         </Box>
                       ) : null}
                     </Box>
 
                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      By continuing, you agree to EVzone's Terms & Privacy.
+                      {t('auth.signIn.termsAgree')}
                     </Typography>
                   </Stack>
                 </Stack>
@@ -728,14 +677,14 @@ export default function SignInPage() {
         {/* Footer */}
         <Box className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
           <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-            © {new Date().getFullYear()} EVzone Group
+            {t('footer.copyright', { year: new Date().getFullYear() })}
           </Typography>
           <Stack direction="row" spacing={1.2} alignItems="center">
             <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
-              Terms
+              {t('footer.terms')}
             </Button>
             <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
-              Privacy
+              {t('footer.privacy')}
             </Button>
           </Stack>
         </Box>

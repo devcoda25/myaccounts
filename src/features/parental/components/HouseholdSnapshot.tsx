@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from "react-i18next";
 import { Box, Card, CardContent, Typography, Stack, Button, Chip, Divider, Alert, useTheme, alpha } from '@mui/material';
 import { Plus as PlusIcon, Shield as ShieldIcon } from 'lucide-react';
 import { useThemeStore } from "@/stores/themeStore";

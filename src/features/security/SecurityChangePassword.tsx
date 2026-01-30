@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -110,6 +111,7 @@ function reqs(pw: string) {
 }
 
 export default function ChangePasswordPage() {
+  const { t } = useTranslation("common"); {
   const theme = useTheme();
   const navigate = useNavigate();
   const { mode } = useThemeStore();

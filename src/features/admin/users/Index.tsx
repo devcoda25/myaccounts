@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api } from "@/utils/api";
 import { formatUserId } from "@/utils/format";
 import { isEmail, validateMaxLength, MAX_LENGTHS } from "@/utils/validation";
@@ -128,6 +129,7 @@ function statusTone(s: UserStatus) {
 
 
 export default function AdminUsersList() {
+  const { t } = useTranslation("common"); {
     const navigate = useNavigate();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));

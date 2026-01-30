@@ -1,0 +1,908 @@
+{
+    "app": {
+        "name": "EVzone My Accounts",
+        "tagline": "Akaunti yako moja kwa huduma zote za EVzone"
+    },
+    "common": {
+        "actions": {
+            "save": "Hifadhi",
+            "cancel": "Ghairi",
+            "delete": "Futa",
+            "edit": "Hariri",
+            "submit": "Wasilisha",
+            "close": "Funga",
+            "back": "Nyuma",
+            "next": "Mbele",
+            "confirm": "Thibitisha",
+            "search": "Tafuta",
+            "filter": "Chuja",
+            "clear": "Wazi",
+            "reset": "Weka upya",
+            "refresh": "Sasisha",
+            "retry": "Jaribu tena",
+            "continue": "Endelea",
+            "done": "Imekamilika",
+            "send": "Tuma",
+            "download": "Pakua",
+            "upload": "Pakia",
+            "copy": "Nakili",
+            "view": "Angalia",
+            "hide": "Ficha",
+            "show": "Onesha",
+            "expand": "Panua",
+            "collapse": "Kunja",
+            "select": "Chagua",
+            "selectAll": "Chagua Zote",
+            "deselectAll": "Acha Zote",
+            "add": "Ongeza",
+            "remove": "Ondoa",
+            "update": "Sasisha",
+            "create": "Unda",
+            "signIn": "Ingia",
+            "signOut": "Toka",
+            "signUp": "Jisajili",
+            "login": "Ingia",
+            "logout": "Toka",
+            "register": "Jisajili"
+        },
+        "errors": {
+            "required": "Sehemu hii inahitajika",
+            "invalidEmail": "Tafadhali ingiza anwani sahihi ya barua pepe",
+            "invalidPhone": "Tafadhali ingiza nambari sahihi ya simu",
+            "passwordTooShort": "Nenosiri lazima liwe na angalau herufi 8",
+            "passwordRequiresUppercase": "Nenosiri lazima lihusishe herufi kubwa",
+            "passwordRequiresLowercase": "Nenosiri lazima lihusishe herufi ndogo",
+            "passwordRequiresNumber": "Nenosiri lazima lihusishe nambari",
+            "passwordRequiresSpecial": "Nenosiri lazima lihusishe alama maalum",
+            "passwordsDoNotMatch": "Manenosiri hayaulingani",
+            "networkError": "Hitilafu ya mtandao. Tafadhali jaribu tena.",
+            "serverError": "Hitilafu ya seva. Tafadhali jaribu tena baada ya muda.",
+            "unknownError": "Hitilafu isiyojulikana ilitokea.",
+            "sessionExpired": "Kipindi chako kimekwisha. Tafadhali ingia tena.",
+            "invalidCredentials": "Vitambulisho havitoshi. Tafadhali jaribu tena.",
+            "tooManyAttempts": "Majaribu mengi sana. Tafadhali jaribu tena baada ya muda.",
+            "accountLocked": "Akaunti yako imefungwa.",
+            "emailAlreadyExists": "Akaunti na barua pepe hii tayari ipo.",
+            "userNotFound": "Mtumiaji haupatikani.",
+            "unauthorized": "Huna ruhusa ya kufanya hatua hii.",
+            "forbidden": "Ufutaji wa ufikivu.",
+            "notFound": "Rasilimali iliyoombwa haipatikani.",
+            "badRequest": "Ombi ni batili.",
+            "internalServerError": "Hitilafu ya ndani ya seva.",
+            "serviceUnavailable": "Huduma haipatikani kwa muda.",
+            "validationError": "Tafadhali angalia ingizo yako na jaribu tena."
+        },
+        "loading": {
+            "loading": "Inapakia...",
+            "pleaseWait": "Tafadhali subiri...",
+            "processing": "Inashughulikia...",
+            "saving": "Inahifadhi...",
+            "deleting": "Inafuta...",
+            "updating": "Inasasisha...",
+            "signingIn": "Inaingia...",
+            "signingOut": "Inatoka..."
+        },
+        "validation": {
+            "confirmDelete": "Je, una uhakika ungependa kufuta kipengee hiki?",
+            "unsavedChanges": "Una mabadiliko ambayo hayajahifadhiwa. Ungependa kuondoka?",
+            "minLength": "Lazima iwe angalau herufi {{count}}",
+            "maxLength": "Lazima iwe si zaidi ya herufi {{count}}",
+            "minValue": "Thamani lazima iwe angalau {{count}}",
+            "maxValue": "Thamani lazima isiwe zaidi ya {{count}}"
+        },
+        "placeholders": {
+            "email": "Ingiza barua pepe yako",
+            "phone": "Ingiza nambari yako ya simu",
+            "password": "Ingiza nenosiri lako",
+            "newPassword": "Ingiza nenosiri jipya",
+            "confirmPassword": "Thibitisha nenosiri lako",
+            "search": "Tafuta...",
+            "selectOption": "Chagua chaguo"
+        }
+    },
+    "loading": {
+        "session": "Inaanzilisha kipindi salama..."
+    },
+    "error": {
+        "title": "Hitilafu ya Uthibitishaji",
+        "sessionFailed": "Imeshindwa kuanzisha kipindi salama.",
+        "retry": "Jaribu tena"
+    },
+    "password": {
+        "weak": "Dhaifu",
+        "fair": "Wastani",
+        "good": "Nzuri",
+        "strong": "Imara",
+        "veryStrong": "Imara sana"
+    },
+    "header": {
+        "title": "Akaunti za EVzone",
+        "subtitle": "Unda utambulisho wako wa EVzone"
+    },
+    "auth": {
+        "common": {
+            "loading": "Inapakia...",
+            "au": "au",
+            "email": "Barua pepe",
+            "phone": "Simu",
+            "terms": "Sheria",
+            "privacy": "Faragha",
+            "help": "Msaada",
+            "signIn": "Ingia",
+            "signUp": "Jisajili",
+            "switchToLight": "Badili kwenye Mode ya Mwanga",
+            "switchToDark": "Badili kwenye Mode ya Giza",
+            "continue": "Endelea",
+            "back": "Nyuma",
+            "cancel": "Ghairi",
+            "save": "Hifadhi",
+            "submit": "Wasilisha",
+            "verify": "Thibitisha",
+            "send": "Tuma"
+        },
+        "signIn": {
+            "title": "Ingia",
+            "subtitle": "Karibu tena! Tafadhali ingia kuendelea.",
+            "emailOrPhone": "Barua pepe au Nambari ya Simu",
+            "password": "Nenosiri",
+            "forgotPassword": "Umesahau Nenosiri?",
+            "rememberMe": "Nikumbuke",
+            "submit": "Ingia",
+            "noAccount": "Huna akaunti?",
+            "signUp": "Jisajili",
+            "orContinueWith": "au endelea na",
+            "checking": "Inacheck...",
+            "unavailable": "Haipatikani",
+            "errors": {
+                "enterEmailOrPhone": "Ingiza barua pepe au nambari yako ya simu.",
+                "enterPassword": "Ingiza nenosiri lako kuendelea.",
+                "invalidCredentials": "Vitambulisho havitoshi. Tafadhali jaribu tena.",
+                "locked": "Imefungwa. Jaribu tena katika {{seconds}}s"
+            },
+            "verifying": "Inathibitisha vitambulisho...",
+            "failed": "Kuingia Imefaili",
+            "left": {
+                "title": "Akaunti moja kwa kila kitu cha EVzone",
+                "subtitle": "Fikia Charging, Marketplace, na Pay kwa urahisi na utambulisho salama mmoja.",
+                "demoNote": "Imejaa kwa demo: example@mail.com"
+            },
+            "right": {
+                "subtitle": "kuendelea kwenye EVzone Portal"
+            },
+            "features": {
+                "secureSessions": {
+                    "title": "Vipindi Salama",
+                    "desc": "Usalama wa kiwango cha benki unaofuatilia 24/7."
+                },
+                "passkeys": {
+                    "title": "Passkeys na Biometrics",
+                    "desc": "Ingia na TouchID au FaceID."
+                },
+                "privacy": {
+                    "title": "Faragha Kwanza",
+                    "desc": "TunauzaIDI faragha yako ya data."
+                }
+            },
+            "showPassword": "Onyesha nenosiri",
+            "hidePassword": "Ficha nenosiri",
+            "switchingToPassword": "Inabadili kuwa nenosiri...",
+            "placeholders": {
+                "email": "name@example.com"
+            },
+            "useOtpTitle": "Tumia Msimbo wa Muda Mmoja",
+            "useOtpSubtitle": "Huna nenosiri? Tumia msimbo wa kizazi.",
+            "comingSoon": "Inakuja Hivi Karibuni",
+            "otpComingSoon": "Uingizaji wa msimbo wa muda mmoja unaendelea.",
+            "sendCode": "Tuma Msimbo",
+            "termsAgree": "Kwa kuendelea, unakubali Sheria na Faragha za EVzone.",
+            "locked": "Imefungwa. Jaribu tena katika {{seconds}}s"
+        },
+        "signUp": {
+            "sectionTitle": "Uundaji wa Akaunti",
+            "sectionSubtitle": "Unda ID salama yako mmoja kwa huduma zote za EVzone.",
+            "secureIdentity": "Utambulisho Salama",
+            "secureIdentityDesc": "Usalama wa kiwango cha benki kwa mali yako.",
+            "clearPermissions": "Ruhusa Wazi",
+            "clearPermissionsDesc": "Unadhibiti ushiriki wako wa data.",
+            "backToSignIn": "Rudi kwa Ingia",
+            "createAccount": "Unda Akaunti",
+            "getStarted": "Anzisha na EVzone",
+            "continueWithGoogle": "Endelea na Google",
+            "continueWithApple": "Endelea na Apple",
+            "firstName": "Jina la Kwanza",
+            "firstNamePlaceholder": "mfano. Jane",
+            "otherNames": "Majina Mengine",
+            "otherNamesPlaceholder": "mfano. Doe",
+            "email": "Anwani ya Barua Pepe",
+            "emailPlaceholder": "name@example.com",
+            "phone": "Nambari ya Simu",
+            "phonePlaceholder": "700 000 000",
+            "createWithOtp": "Unda na Msimbo wa Muda Mmoja",
+            "createWithOtpDesc": "Hakuna nenosiri inahitajika. Tuta thibitisha nambari yako.",
+            "createPassword": "Unda Nenosiri",
+            "confirmPassword": "Thibitisha Nenosiri",
+            "otpInfo": "Utapokea OTP kuthibitisha akaunti yako.",
+            "inviteCode": "Msimbo wa Kimatato (Hiari)",
+            "inviteCodePlaceholder": "mfano. EVZ-123",
+            "termsAgreement": "Nakubali Sheria za Huduma na Sera ya Faragha.",
+            "continue": "Endelea",
+            "switchToSignIn": "Badili kwa Ingia",
+            "verifyContactInfo": "Thibitisha maelezo yako ya mawasiliano katika hatua ijayo.",
+            "validation": {
+                "firstNameRequired": "Ingiza jina lako la kwanza.",
+                "otherNamesRequired": "Ingiza majina yako mengine.",
+                "emailOrPhoneRequired": "Toa angalau barua pepe au nambari ya simu.",
+                "validEmailRequired": "Ingiza anwani sahihi ya barua pepe.",
+                "termsRequired": "Lazima ukubali Sheria na Sera ya Faragha.",
+                "passwordRequired": "Unda nenosiri.",
+                "passwordMinLength": "Nenosiri lazima liwe na angalau herufi 8.",
+                "passwordsDoNotMatch": "Manenosiri hayaulingani."
+            },
+            "notification": {
+                "registrationInfo": "Maelezo ya Usajili",
+                "accountCreated": "Akaunti Imetolewa",
+                "accountCreatedSuccess": "Akaunti imetolewa kwa mafanikio! Unakuwa unaingia salama...",
+                "verifyEmail": "Thibitisha Barua Pepe yako",
+                "verifyEmailSuccess": "Akaunti imetolewa! Tafadhali angalia sanduku lako la barua kwa kiungo cha uthibitishaji.",
+                "registrationFailed": "Usajili Imefaili",
+                "registrationFailedMessage": "Imeshindwa kuunda akaunti. Tafadhali jaribu tena."
+            }
+        },
+        "forgotPassword": {
+            "subtitle": "Umesahau Nenosiri",
+            "resetAccess": "Weka Upya Ufikivu",
+            "resetAccessDesc": "Pata akaunti yako kwa kutumia barua pepe au nambari yako ya simu iliyothibitishwa.",
+            "rateLimiting": "Kudhibiti Kasi",
+            "rateLimitingDesc": "Subiri 30s kati ya maombi.",
+            "secureLink": "Kiungo Salama",
+            "secureLinkDesc": "Tuma kiungo cha kizazi au msimbo.",
+            "backToSignIn": "Rudi kwa Ingia",
+            "checkContact": "Angalia {{type}} yako",
+            "instructionsSent": "Tumetumwa maagizo kwa {{mask}} kupitia {{method}}.",
+            "nextSteps": "Hatua Zijazo",
+            "nextStepsDesc": "Bonyeza kiungo au ingiza msimbo ili kuweka upya nenosiri lako.",
+            "enterResetCode": "Ingiza Msimbo wa Kuweka Upya",
+            "resendIn": "Tuma tena katika {{seconds}}s",
+            "sendAgain": "Tuma Tena",
+            "changeContactInfo": "Badilisha Maelezo ya Mawasiliano",
+            "needHelp": "Unahitaji Msaada?",
+            "title": "Umesahau Nenosiri",
+            "enterToRecover": "Ingiza barua pepe au nambari yako ya simu kupata akaunti yako.",
+            "identifierLabel": "Ingiza barua pepe au simu",
+            "identifierPlaceholder": "name@example.com",
+            "validIdentifierHint": "Ingiza barua pepe au nambari sahihi.",
+            "deliveryMethod": "Njia ya Uwasilishaji",
+            "captchaLabel": "Mimi ni mtu",
+            "captchaDesc": "Kamilisha ukaguzi wa captcha.",
+            "accountRecoveryHelp": "Msaada wa Kukopata Akaunti",
+            "spamTip": "Kidokezo: Angalia folda ya taka ukioneesha barua pepe.",
+            "confirmSend": "Thibitisha Tuma",
+            "sendTo": "Tuma maagizo ya kukopota kwa:",
+            "viaMethod": "kupitia {{method}}",
+            "invalidatePrevious": "Hii itabatilisha viungo vilivyotangulia.",
+            "sendInstructions": "Tuma Maagizo",
+            "delivery": {
+                "emailLink": "Kiungo cha Barua Pepe",
+                "emailLinkDesc": "Tuma kiungo cha kizazi kwa barua pepe yako.",
+                "smsCode": "Msimbo wa SMS",
+                "smsCodeDesc": "Tuma msimbo wa nambari 6 kwa nambari yako.",
+                "whatsappCode": "Msimbo wa WhatsApp",
+                "whatsappCodeDesc": "Tuma msimbo kupitia WhatsApp."
+            },
+            "phoneMethodsHint": "Njia za simu zinapatikana ukiingiza nambari ya simu.",
+            "validation": {
+                "enterIdentifier": "Ingiza barua pepe au simu",
+                "validIdentifier": "Ingiza barua pepe au nambari sahihi.",
+                "waitCooldown": "Tafadhali subiri {{seconds}}s",
+                "completeCaptcha": "Tafadhali kamilisha captcha."
+            },
+            "notification": {
+                "sentSuccess": "Imetumwa kwa mafanikio kupitia {{via}}.",
+                "sendFailed": "Imeshindwa kutuma ombi. Tafadhali jaribu tena."
+            }
+        },
+        "resetPassword": {
+            "subtitle": "Weka Upya Nenosiri",
+            "createNewPassword": "Unda Nenosiri Jipya",
+            "enterNewPassword": "Ingiza nenosiri jipya kwa akaunti yako.",
+            "navigateToForgot": "Nenda kwa /auth/forgot-password",
+            "backToForgotPassword": "Rudi kwa Umesahau Nenosiri",
+            "title": "Weka Upya Nenosiri",
+            "enterDetails": "Ingiza maelezo yako ili kuweka upya nenosiri lako.",
+            "tokenTab": "Token",
+            "codeTab": "Msimbo",
+            "resetToken": "Token ya Kuweka Upya",
+            "tokenPlaceholder": "Ingiza token",
+            "tokenHelperText": "Angalia barua pepe yako kwa token.",
+            "verifyToken": "Thibitisha Token",
+            "identifierLabel": "Barua Pepe au Simu",
+            "identifierPlaceholder": "Ingiza barua pepe au simu",
+            "identifierHelper": "Tutaamua njia kulingana na ingizo yako.",
+            "deliveryMethod": "Njia ya Uwasilishaji",
+            "codeSent": "Msimbo Umetumwa",
+            "sendCode": "Tuma Msimbo",
+            "resendCode": "Tuma Msimbo Tena",
+            "verifyCode": "Thibitisha Msimbo",
+            "newPassword": "Nenosiri Jipya",
+            "confirmPassword": "Thibitisha Nenosiri",
+            "requirements": "Mahitaji",
+            "signOutAll": "Toka kwenye kifaa kingine chochote",
+            "resetButton": "Weka Upya Nenosiri",
+            "passwordUpdated": "Nenosiri Lime sasishwa",
+            "passwordChangedSuccess": "Nenosiri lako limebadilishwa kwa mafanikio.",
+            "goToSignIn": "Nenda kwa Ingia",
+            "accountRecoveryHelp": "Msaada wa Kukopata Akaunti",
+            "navigateToHelp": "Nenda kwa /auth/account-recovery-help",
+            "channel": {
+                "email": "Barua Pepe",
+                "emailDesc": "Tuma kwa barua pepe",
+                "sms": "SMS",
+                "smsDesc": "Tuma kupitia SMS",
+                "whatsapp": "WhatsApp",
+                "whatsappDesc": "Tuma kupitia WhatsApp"
+            },
+            "phoneChannelsDisabled": "Njia za simu zimezimwa kwa watumiaji wa barua pepe.",
+            "req": {
+                "length": "Angalau herufi 8",
+                "uppercase": "Herufi kubwa moja",
+                "lowercase": "Herufi ndogo moja",
+                "number": "Nambari moja",
+                "special": "Alama maalum moja",
+                "match": "Manenosiri yanalingana"
+            },
+            "validation": {
+                "tokenRequired": "Tafadhali ingiza token ya kuweka upya.",
+                "identifierRequired": "Tafadhali ingiza barua pepe au simu yako.",
+                "invalidIdentifier": "Barua pepe au simu si sahihi.",
+                "codeRequired": "Tafadhali ingiza msimbo wa nambari 6.",
+                "passwordRequired": "Tafadhali ingiza nenosiri.",
+                "passwordStrength": "Nenosiri lazima liwe imara zaidi.",
+                "passwordsDoNotMatch": "Manenosiri hayaulingani."
+            },
+            "notification": {
+                "codeSentEmail": "Msimbo umetumwa kwa barua pepe.",
+                "codeSentVia": "Msimbo umetumwa kupitia {{channel}}.",
+                "sendFailed": "Imeshindwa kutuma msimbo.",
+                "resetSuccessSignedOut": "Nenosiri limewekwa upya. Umeondolewa.",
+                "resetSuccess": "Nenosiri limewekwa upya kwa mafanikio.",
+                "resetFailed": "Imeshindwa kuweka upya nenosiri. Msimbo/token si sahihi."
+            }
+        },
+        "verifyEmail": {
+            "pageTitle": "Thibitisha Anwani ya Barua Pepe",
+            "checkInbox": "Angalia Sanduku lako la Barua",
+            "codeSentTo": "Tumetumwa msimbo kwa {{email}}.",
+            "openEmailApp": "Fungua Programu ya Barua",
+            "openEmailAppDesc": "Gusa kufungua mteja wako wa barua.",
+            "resendCode": "Tuma Msimbo Tena",
+            "resendCodeDesc": "Bonyeza chini kutuma msimbo mpya.",
+            "openEmail": "Fungua Barua",
+            "changeEmail": "Badilisha Barua Pepe",
+            "emailVerified": "Barua Pepe Imethibitishwa",
+            "verificationSuccessDesc": "Umethibitisha kwa mafanikio {{email}}.",
+            "nextSteps": "Hatua Zijazo",
+            "nextStepsDesc": "Endelea kuthibitisha nambari yako ya simu.",
+            "title": "Thibitisha Anwani ya Barua Pepe",
+            "verify": "Thibitisha",
+            "resendIn": "Tuma tena katika {{seconds}}s",
+            "needHelp": "Unahitaji Msaada?",
+            "changeEmailDialog": "Badilisha Anwani ya Barua Pepe",
+            "changeEmailDesc": "Ingiza chini kupokea msimbo kwa anwani mpya ya barua pepe.",
+            "emailLabel": "Anwani ya Barua Pepe",
+            "emailPlaceholder": "name@example.com",
+            "saveAndSend": "Hifadhi na Tuma",
+            "validation": {
+                "codeRequired": "Tafadhali ingiza msimbo wa nambari 6."
+            },
+            "notification": {
+                "codeSent": "Msimbo umetumwa kwa {{email}}.",
+                "sendFailed": "Imeshindwa kutuma msimbo",
+                "openingEmail": "Inafungua programu ya barua...",
+                "verificationSuccess": "Barua pepe imethibitishwa kwa mafanikio.",
+                "invalidCode": "Msimbo si sahihi. Tafadhali jaribu tena."
+            }
+        },
+        "verifyPhone": {
+            "title": "Thibitisha Simu",
+            "subtitle": "Tafadhali ingiza msimbo wa uthibitishaji uliotumwa kwa nambari yako.",
+            "code": "Msimbo wa Uthibitishaji",
+            "submit": "Thibitisha Simu",
+            "resendCode": "Tuma Msimbo Tena",
+            "resendSuccess": "Msimbo wa uthibitishaji umetumwa",
+            "success": "Nambari imethibitishwa kwa mafanikio",
+            "successMessage": "Nambari yako ya simu imethibitishwa."
+        },
+        "mfa": {
+            "title": "Uthibitishaji wa Vipengele Viwili",
+            "subtitle": "Ingiza msimbo wa nambari 6 kutoka kwa programu yako ya uthibitishaji",
+            "code": "Msimbo wa Uthibitishaji",
+            "submit": "Thibitisha",
+            "useOtp": "Tumia msimbo wa backup badala yake",
+            "resendCode": "Tuma msimbo tena",
+            "backupCode": "Msimbo wa Backup",
+            "success": "Uthibitishaji umefaulu",
+            "setupTitle": "Pangilia Uthibitishaji wa Vipengele Viwili",
+            "scanQr": "Changanua QR code hii na programu yako ya uthibitishaji",
+            "manualEntry": "Au ingiza msimbo huu kwa mkono",
+            "enterCode": "Ingiza msimbo wa nambari 6 kutoka kwa programu yako",
+            "confirmSetup": "Thibitisha Usanidi",
+            "backupCodesTitle": "Msimbo za Backup",
+            "backupCodesDescription": "Hifadhi msimbo hizi za backup mahali salama. Zinaweza kutumika ukipoteza ufikivu wa uthibitishaji wako.",
+            "copyCodes": "Nakili Msimbo",
+            "done": "Imekamilika",
+            "invalidCode": "Msimbo si sahihi. Tafadhali jaribu tena.",
+            "tooManyAttempts": "Majaribu mengi sana yasiyo sahihi. Tafadhali jaribu tena."
+        },
+        "passkey": {
+            "title": "Uthibitishaji wa Passkey",
+            "subtitle": "Ingia na passkey yako",
+            "usePasskey": "Tumia Passkey",
+            "addPasskey": "Ongeza Passkey",
+            "removePasskey": "Ondoa Passkey",
+            "passkeyAdded": "Passkey imeongezwa kwa mafanikio",
+            "passkeyRemoved": "Passkey imeondolewa",
+            "error": "Hitilafu ya passkey imetokea"
+        },
+        "consent": {
+            "title": "Ruhusa Inahitajika",
+            "subtitle": "Programu inaomba ufikivu wa akaunti yako",
+            "permissions": "Ruhusa",
+            "approve": "Kubali",
+            "deny": "Kana",
+            "scopes": {
+                "openid": "OpenID Connect",
+                "profile": "Angalia wasifu wako",
+                "email": "Angalia anwani yako ya barua pepe",
+                "phone": "Angalia nambari yako ya simu"
+            }
+        },
+        "interaction": {
+            "title": "Uthibitishaji Unahitajika",
+            "subtitle": "Tafadhali kamilisha uthibitishaji",
+            "continue": "Endelea",
+            "cancel": "Ghairi"
+        },
+        "Callback": {
+            "processing": "Inashughulikia uthibitishaji...",
+            "success": "Uthibitishaji umefaulu",
+            "error": "Uthibitishaji umefaili"
+        },
+        "signedOut": {
+            "title": "Umeondoka",
+            "subtitle": "Umeondoka kwa mafanikio",
+            "signInAgain": "Ingia Tena",
+            "returnHome": "Rudi Nyumbani"
+        },
+        "session": {
+            "expired": "Kipindi chako kimekwisha",
+            "expiredMessage": "Tafadhali ingia tena kuendelea.",
+            "expiredAction": "Ingia"
+        }
+    },
+    "dashboard": {
+        "welcome": "Karibu tena, {{name}}!",
+        "overview": "Muhtasari wa Dashibodi",
+        "quickActions": "Vitendo Haraka",
+        "recentActivity": "Shughuli za Hivi Majuzi",
+        "notifications": "Arifa",
+        "settings": "Mipangilio",
+        "profile": "Wasifu Wangu",
+        "security": "Usalama",
+        "wallet": "Mkoba",
+        "help": "Msaada na Usaidizi"
+    },
+    "profile": {
+        "title": "Mipangilio ya Wasifu",
+        "personal": {
+            "title": "Maelezo ya Kibinafsi",
+            "firstName": "Jina la Kwanza",
+            "lastName": "Jina la Mwisho",
+            "email": "Anwani ya Barua Pepe",
+            "phone": "Nambari ya Simu",
+            "dateOfBirth": "Tarehe ya Kuzaliwa",
+            "nationality": "U nationality",
+            "save": "Hifadhi Mabadiliko"
+        },
+        "security": {
+            "title": "Usalama",
+            "password": {
+                "title": "Nenosiri",
+                "currentPassword": "Nenosiri la Sasa",
+                "newPassword": "Nenosiri Jipya",
+                "confirmPassword": "Thibitisha Nenosiri",
+                "update": "Sasisha Nenosiri",
+                "success": "Nenosiri lime sasishwa kwa mafanikio",
+                "error": "Imeshindwa kusasisha nenosiri"
+            },
+            "mfa": {
+                "title": "Uthibitishaji wa Vipengele Viwili",
+                "enabled": "Imewashwa",
+                "disabled": "Imefungwa",
+                "setup": "Pangilia MFA",
+                "disable": "Futa MFA",
+                "backupCodes": "Msimbo za Backup"
+            },
+            "sessions": {
+                "title": "Vipindi",
+                "active": "Vipindi hai",
+                "current": "Kifaa cha Sasa",
+                "revoke": "Ondoa",
+                "revokeAll": "Ondoa Zote"
+            },
+            "passkeys": {
+                "title": "Passkeys",
+                "add": "Ongeza Passkey",
+                "remove": "Ondoa Passkey"
+            }
+        },
+        "preferences": {
+            "title": "Mapendekezo",
+            "language": "Lugha",
+            "theme": "Mada",
+            "notifications": "Arifa",
+            "emailNotifications": "Arifa za Barua Pepe",
+            "smsNotifications": "Arifa za SMS",
+            "pushNotifications": "Arifa za Push"
+        },
+        "organizations": {
+            "title": "Mashirika",
+            "current": "Shirika la Sasa",
+            "switch": "Badilisha Shirika",
+            "role": "Jukumu",
+            "leave": "Ondoka Shirika"
+        }
+    },
+    "security": {
+        "title": "Usalama",
+        "password": {
+            "title": "Usimamizi wa Nenosiri",
+            "currentPassword": "Nenosiri la Sasa",
+            "newPassword": "Nenosiri Jipya",
+            "confirmPassword": "Thibitisha Nenosiri",
+            "update": "Sasisha Nenosiri",
+            "strength": "Nguvu ya Nenosiri",
+            "weak": "Dhaifu",
+            "fair": "Wastani",
+            "good": "Nzuri",
+            "strong": "Imara"
+        },
+        "mfa": {
+            "title": "Uthibitishaji wa Vipengele Viwili",
+            "status": "Hali ya MFA",
+            "enabled": "Imewashwa",
+            "disabled": "Imefungwa",
+            "setup": "Pangilia MFA",
+            "disable": "Futa MFA",
+            "methods": {
+                "authenticator": "Programu ya Uthibitishaji",
+                "sms": "SMS",
+                "email": "Barua Pepe"
+            },
+            "backupCodes": {
+                "title": "Msimbo za Backup",
+                "description": "Msimbo hizi zinaweza kutumika ukipoteza ufikivu wa njia yako ya kawaida ya MFA.",
+                "generate": "Unda Msimbo Mpya",
+                "copy": "Nakili"
+            }
+        },
+        "sessions": {
+            "title": "Vipindi",
+            "description": "Angalia na usimamie vipindi vyako vyote.",
+            "active": "Vipindi hai",
+            "current": "Kifaa cha Sasa",
+            "location": "Eneo",
+            "device": "Kifaa",
+            "lastActive": "Mwisho wa Shughuli",
+            "revoke": "Ondoa",
+            "revokeAll": "Ondoa Zote",
+            "revokeAllConfirm": "Je, una uhakika ungependa kuondoka kwenye vipindi vyote?"
+        },
+        "activity": {
+            "title": "Shughuli ya Uthibitishaji",
+            "description": "Angalia historia yako ya kuingia.",
+            "recent": "Shughuli za Hivi Majuzi",
+            "login": "Kuingia",
+            "logout": "Kutoka",
+            "failedLogin": "Kuingia Imefaili",
+            "passwordChange": "Kubadilisha Nenosiri",
+            "mfaSetup": "Usimamizi wa MFA",
+            "mfaDisable": "MFA Imefungwa"
+        }
+    },
+    "admin": {
+        "title": "Usimamizi wa Mfumo",
+        "dashboard": {
+            "title": "Dashibodi ya Usimamizi",
+            "stats": {
+                "totalUsers": "Jumla ya Watumiaji",
+                "activeUsers": "Watumiaji Hai",
+                "totalOrgs": "Jumla ya Mashirika",
+                "activeSessions": "Vipindi Hai"
+            }
+        },
+        "users": {
+            "title": "Watumiaji",
+            "add": "Ongeza Mtumiaji",
+            "edit": "Hariri Mtumiaji",
+            "delete": "Futa Mtumiaji",
+            "search": "Tafuta Watumiaji",
+            "status": "Hali",
+            "active": "Hai",
+            "inactive": "Hai hai",
+            "suspended": "Imesimamishwa",
+            "role": "Jukumu",
+            "email": "Barua Pepe",
+            "phone": "Simu",
+            "createdAt": "Imetolewa",
+            "lastLogin": "Kuingia Mwisho"
+        },
+        "organizations": {
+            "title": "Mashirika",
+            "add": "Ongeza Shirika",
+            "edit": "Hariri Shirika",
+            "delete": "Futa Shirika",
+            "name": "Jina",
+            "type": "Aina",
+            "domain": "Domaini",
+            "status": "Hali",
+            "active": "Hai",
+            "inactive": "Hai hai"
+        },
+        "audit": {
+            "title": "Ukaguzi wa Shughuli",
+            "description": "Angalia shughuli zote za mfumo.",
+            "filter": "Chuja",
+            "dateRange": "Masafa ya Tarehe",
+            "action": "Hatua",
+            "user": "Mtumiaji",
+            "timestamp": "Muda",
+            "details": "Maelezo"
+        },
+        "apps": {
+            "title": "Programu",
+            "add": "Sajili Programu",
+            "edit": "Hariri Programu",
+            "delete": "Futa Programu",
+            "name": "Jina la Programu",
+            "clientId": "Kitambulisho cha Mteja",
+            "redirectUris": "URIs za Kurudishia",
+            "type": "Aina",
+            "public": "Umma",
+            "confidential": "Usiri"
+        },
+        "settings": {
+            "title": "Mipangilio ya Usimamizi",
+            "general": "Vipengele vya Kawaida",
+            "security": "Usalama",
+            "notifications": "Arifa",
+            "branding": "Branding"
+        }
+    },
+    "wallet": {
+        "title": "Mkoba Wangu",
+        "balance": {
+            "title": "Salio",
+            "available": "Salio Inayopatikana",
+            "pending": "Salio Linalosubiri",
+            "currency": "USD"
+        },
+        "transactions": {
+            "title": "Shughuli",
+            "history": "Historia ya Shughuli",
+            "filter": "Chuja Shughuli",
+            "all": "Zote",
+            "deposit": "Utopaji",
+            "withdrawal": "Utoaji",
+            "payment": "Malipo",
+            "refund": "Rufaa",
+            "date": "Tarehe",
+            "description": "Maelezo",
+            "amount": "Kiasi",
+            "status": "Hali",
+            "pending": "Inasubiri",
+            "completed": "Imetolewa",
+            "failed": "Imefaili"
+        },
+        "paymentMethods": {
+            "title": "Njia za Malipo",
+            "add": "Ongeza Njia ya Malipo",
+            "card": "Kadi",
+            "bankAccount": "Akaunti ya Benki",
+            "mobileMoney": "Pesa za Mkononi",
+            "default": "Chaguo-msingi",
+            "remove": "Ondoa"
+        },
+        "topUp": {
+            "title": "Ongeza Salio",
+            "amount": "Kiasi",
+            "method": "Njia",
+            "submit": "Ongeza Sasa",
+            "success": "Salio limeongezwa kwa mafanikio",
+            "error": "Imeshindwa kuongeza salio"
+        },
+        "withdraw": {
+            "title": "Toa Pesa",
+            "amount": "Kiasi",
+            "method": "Njia",
+            "submit": "Toa Sasa",
+            "success": "Ombi limewasilishwa",
+            "error": "Imeshindwa kutuma ombi"
+        }
+    },
+    "notifications": {
+        "title": "Arifa",
+        "all": "Zote",
+        "unread": "Hijasomwa",
+        "read": "Zimesomwa",
+        "markAllRead": "Weka Zote kama Zimesomwa",
+        "markAsRead": "Weka kama Imesomwa",
+        "delete": "Futa",
+        "deleteAll": "Futa Zote",
+        "empty": "Hakuna arifa",
+        "types": {
+            "info": "Maelezo",
+            "success": "Mafanikio",
+            "warning": "Onyo",
+            "error": "Hitilafu"
+        },
+        "preferences": {
+            "title": "Mapendekezo ya Arifa",
+            "email": "Arifa za Barua Pepe",
+            "sms": "Arifa za SMS",
+            "push": "Arifa za Push",
+            "marketing": "Arifa za Soko"
+        }
+    },
+    "support": {
+        "title": "Msaada na Usaidizi",
+        "helpCenter": "Kituo cha Msaada",
+        "faq": "Maswali Yanayoulizwa Mara Nyingi",
+        "contact": "Wasiliana nasi",
+        "submitTicket": "Wasilisha Tiketi",
+        "subject": "Mada",
+        "message": "Ujumbe",
+        "submit": "Wasilisha",
+        "success": "Tiketi yako imetumwa",
+        "error": "Imeshindwa kutuma tiketi",
+        "liveChat": "Sisimua",
+        "phone": "Simu",
+        "email": "Barua Pepe"
+    },
+    "legal": {
+        "title": "Legal",
+        "terms": {
+            "title": "Sheria za Huduma",
+            "content": "Sheria za huduma zinawasimamia matumizi yako ya huduma zetu."
+        },
+        "privacy": {
+            "title": "Sera ya Faragha",
+            "content": "Sera yetu ya faragha inaelezea jinsi tunavyokusanya, kutumia, na kulinda data yako."
+        },
+        "cookies": {
+            "title": "Sera ya Vidakwa",
+            "content": "Tunatumia vidakwa kuboresha uzoefu wako."
+        }
+    },
+    "privacy": {
+        "title": "Usimamizi wa Faragha",
+        "data": {
+            "title": "Data Yako",
+            "download": "Pakua Data Yako",
+            "delete": "Futa Data Yako"
+        },
+        "sharing": {
+            "title": "Usirikiano wa Data",
+            "apps": "Programu zilizounganishwa",
+            "revoke": "Ondoa Ufikivu"
+        },
+        "history": {
+            "title": "Historia ya Data",
+            "access": "Ufibuzi wa Data",
+            "changes": "Mabadiliko ya Data"
+        }
+    },
+    "errors": {
+        "403": {
+            "title": "Ufikivu umekataliwa",
+            "message": "Huna ruhusa kuona ukurasa huu.",
+            "back": "Rudi Nyuma",
+            "home": "Nenda Nyumbani"
+        },
+        "404": {
+            "title": "Haipatikani",
+            "message": "Ukurasa unaoangaziwa haupatikani.",
+            "back": "Rudi Nyuma",
+            "home": "Nenda Nyumbani"
+        },
+        "429": {
+            "title": "Majaribu Mengi Sana",
+            "message": "Umefikia kikomo cha maombi. Tafadhali subiri.",
+            "back": "Rudi Nyuma",
+            "home": "Nenda Nyumbani"
+        },
+        "500": {
+            "title": "Hitilafu ya Seva",
+            "message": "Kuna hitilafu ya mfumo.",
+            "back": "Jaribu Tena",
+            "home": "Nenda Nyumbani"
+        },
+        "offline": {
+            "title": "Hakuna Muunganisho",
+            "message": "Angalia muunganisho wako wa intaneti.",
+            "retry": "Jaribu Tena"
+        }
+    },
+    "parental": {
+        "title": "Usimamizi wa Wizara",
+        "dashboard": {
+            "title": "Dashibodi ya Wizara",
+            "welcome": "Mambo {{name}}!",
+            "children": "Watoto",
+            "activities": "Shughuli",
+            "settings": "Mipangilio"
+        },
+        "children": {
+            "title": "Watoto Wangu",
+            "add": "Ongeza Mtoto",
+            "edit": "Hariri Mtoto",
+            "delete": "Futa Mtoto",
+            "name": "Jina",
+            "age": "Umri",
+            "profile": "Wasifu",
+            "status": "Hali",
+            "active": "Hai",
+            "inactive": "Hai hai"
+        },
+        "activities": {
+            "title": "Shughuli za Watoto",
+            "filter": "Chuja Shughuli",
+            "date": "Tarehe",
+            "child": "Mtoto",
+            "type": "Aina",
+            "duration": "Muda",
+            "status": "Hali",
+            "pending": "Inasubiri",
+            "approved": "Imeidhinishwa",
+            "rejected": "Imekataliwa",
+            "completed": "Imetolewa"
+        },
+        "requests": {
+            "title": "Maombi",
+            "approve": "Idhinisha",
+            "reject": "Kana",
+            "pending": "Inasubiri",
+            "history": "Historia ya Maombi"
+        },
+        "settings": {
+            "title": "Mipangilio ya Wizara",
+            "restrictions": "Vikwazo",
+            "timeLimits": "Vikomo vya Muda",
+            "contentFilters": "Chujio ya Maudhui",
+            "notifications": "Arifa"
+        },
+        "household": {
+            "title": "Kaya",
+            "members": "Wanakaaya",
+            "invite": "Alika Mwanach",
+            "remove": "Ondoa Mwanachaya",
+            "role": "Jukumu"
+        }
+    },
+    "apps": {
+        "title": "Programu Zilizounganishwa",
+        "available": "Programu Zinazopatikana",
+        "connected": "Programu Zilizounganishwa",
+        "connect": "unganisha",
+        "disconnect": "ondoka",
+        "manage": "Simamia",
+        "permissions": "Ruhusa",
+        "access": "Ufikivu"
+    },
+    "footer": {
+        "terms": "Sheria",
+        "privacy": "Faragha",
+        "help": "Msaada",
+        "contact": "Wasiliana nasi",
+        "copyright": "Haki za Kale © 2025 EVzone. Haki zote zimehifadhiwa."
+    }
+}

@@ -1,0 +1,721 @@
+{
+  "app": {
+    "name": "EVzone 내 계정",
+    "tagline": "모든 EVzone 서비스를 위한 통합 계정"
+  },
+  "common": {
+    "actions": {
+      "save": "저장",
+      "cancel": "취소",
+      "delete": "삭제",
+      "edit": "편집",
+      "submit": "제출",
+      "close": "닫기",
+      "back": "뒤로",
+      "next": "다음",
+      "confirm": "확인",
+      "search": "검색",
+      "filter": "필터",
+      "clear": "지우기",
+      "reset": "초기화",
+      "refresh": "새로고침",
+      "retry": "재시도",
+      "continue": "계속",
+      "done": "완료",
+      "send": "보내기",
+      "download": "다운로드",
+      "upload": "업로드",
+      "copy": "복사",
+      "view": "보기",
+      "hide": "숨기기",
+      "show": "표시",
+      "expand": "펼치기",
+      "collapse": "접기",
+      "select": "선택",
+      "selectAll": "선택 전체",
+      "deselectAll": "전체 선택 해제",
+      "add": "추가",
+      "remove": "제거",
+      "update": "업데이트",
+      "create": "생성",
+      "signIn": "로그인",
+      "signOut": "로그아웃",
+      "signUp": "회원가입",
+      "login": "로그인",
+      "logout": "로그아웃",
+      "register": "회원가입"
+    },
+    "errors": {
+      "required": "이 필드는 필수입니다",
+      "invalidEmail": "입력 유효한 이메일 주소",
+      "invalidPhone": "입력 유효한 전화 번호",
+      "passwordTooShort": "비밀번호는 최소 8자 이상이어야 합니다",
+      "passwordRequiresUppercase": "비밀번호 포함 대문자 문자",
+      "passwordRequiresLowercase": "비밀번호 포함 소문자 문자",
+      "passwordRequiresNumber": "비밀번호 포함 번호",
+      "passwordRequiresSpecial": "비밀번호 포함 특수 문자",
+      "passwordsDoNotMatch": "비밀번호가 일치하지 않습니다",
+      "networkError": "네트워크 오류입니다. 다시 시도하세요.",
+      "serverError": "서버 오류입니다. 나중에 다시 시도하세요.",
+      "unknownError": "예기치 않은 오류가 발생했습니다.",
+      "sessionExpired": "세션이 만료되었습니다. 다시 로그인해 주세요.",
+      "invalidCredentials": "자격 증명이 올바르지 않습니다. 다시 시도하세요.",
+      "tooManyAttempts": "시도 횟수가 너무 많습니다. 나중에 다시 시도하세요.",
+      "accountLocked": "계정이 잠겼습니다.",
+      "emailAlreadyExists": "이 이메일로 이미 계정이 존재합니다.",
+      "userNotFound": "사용자를 찾을 수 없습니다.",
+      "unauthorized": "이 작업을 수행할 권한이 없습니다.",
+      "forbidden": "접근이 거부되었습니다.",
+      "notFound": "요청한 리소스를 찾을 수 없습니다.",
+      "badRequest": "유효하지 않은 요청입니다.",
+      "internalServerError": "내부 서버 오류입니다.",
+      "serviceUnavailable": "서비스가 일시적으로 이용할 수 없습니다.",
+      "validationError": "입력을 확인한 후 다시 시도하세요."
+    },
+    "loading": {
+      "loading": "로딩 중...",
+      "pleaseWait": "잠시만 기다려 주세요...",
+      "processing": "처리 중...",
+      "saving": "저장 중...",
+      "deleting": "삭제 중...",
+      "updating": "업데이트 중...",
+      "signingIn": "로그인 중...",
+      "signingOut": "로그아웃 중..."
+    },
+    "validation": {
+      "confirmDelete": "이 항목을 삭제하시겠습니까?",
+      "unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 나가시겠습니까?",
+      "minLength": "최소 {{count}}자 이상이어야 합니다",
+      "maxLength": "최대 {{count}}자 이하여야 합니다",
+      "minValue": "값은 최소 {{count}} 이상이어야 합니다",
+      "maxValue": "값은 최대 {{count}} 이하여야 합니다"
+    },
+    "placeholders": {
+      "email": "이메일을 입력하세요",
+      "phone": "전화번호를 입력하세요",
+      "password": "입력 비밀번호",
+      "newPassword": "입력 새 비밀번호",
+      "confirmPassword": "확인 비밀번호",
+      "search": "검색...",
+      "selectOption": "옵션을 선택하세요"
+    }
+  },
+  "loading": {
+    "session": "안전한 세션 초기화 중..."
+  },
+  "error": {
+    "title": "인증 오류",
+    "sessionFailed": "안전한 세션을 초기화하지 못했습니다.",
+    "retry": "재시도"
+  },
+  "password": {
+    "weak": "약함",
+    "fair": "보통",
+    "good": "좋음",
+    "strong": "강함",
+    "veryStrong": "매우 강함"
+  },
+  "header": {
+    "title": "EVzone 계정",
+    "subtitle": "EVzone ID 생성"
+  },
+  "auth": {
+    "common": {
+      "loading": "로딩 중...",
+      "or": "또는",
+      "email": "이메일",
+      "phone": "전화",
+      "terms": "약관",
+      "privacy": "개인정보",
+      "help": "도움말",
+      "signIn": "로그인",
+      "signUp": "회원가입",
+      "switchToLight": "라이트 모드로 전환",
+      "switchToDark": "다크 모드로 전환",
+      "continue": "계속",
+      "back": "뒤로",
+      "cancel": "취소",
+      "save": "저장",
+      "submit": "제출",
+      "verify": "확인",
+      "send": "보내기"
+    },
+    "signIn": {
+      "title": "로그인",
+      "subtitle": "다시 오신 것을 환영합니다! 계속하려면 로그인해 주세요.",
+      "emailOrPhone": "이메일 전화",
+      "password": "비밀번호",
+      "forgotPassword": "비밀번호를 잊으셨나요?",
+      "rememberMe": "로그인 상태 유지",
+      "submit": "로그인",
+      "noAccount": "계정이 없으신가요?",
+      "signUp": "회원가입",
+      "orContinueWith": "또는 다음으로 계속",
+      "checking": "확인 중...",
+      "unavailable": "이용 불가",
+      "errors": {
+        "enterEmailOrPhone": "입력 이메일 전화 번호.",
+        "enterPassword": "입력 비밀번호 계속.",
+        "invalidCredentials": "자격 증명이 올바르지 않습니다. 다시 시도하세요.",
+        "locked": "잠김. {{seconds}}초 후 다시 시도하세요"
+      },
+      "verifying": "자격 증명 확인 중...",
+      "failed": "로그인 실패",
+      "left": {
+        "title": "EVzone 모든 서비스를 위한 하나의 계정",
+        "subtitle": "하나의 안전한 신원으로 충전, 마켓플레이스 및 결제를 원활하게 이용하세요.",
+        "demoNote": "데모용으로 미리 입력됨: example@mail.com"
+      },
+      "right": {
+        "subtitle": "EVzone 포털로 계속하려면"
+      },
+      "features": {
+        "secureSessions": {
+          "title": "안전한 세션",
+          "desc": "은행-급 보안 모니터링 24/7."
+        },
+        "passkeys": {
+          "title": "패스키 및 생체인증",
+          "desc": "터치ID 또는 페이스ID로 로그인하세요."
+        },
+        "privacy": {
+          "title": "개인정보 이름",
+          "desc": "데이터 개인정보 보호를 최우선으로 합니다."
+        }
+      },
+      "showPassword": "비밀번호 표시",
+      "hidePassword": "비밀번호 숨기기",
+      "switchingToPassword": "비밀번호로 전환 중...",
+      "placeholders": {
+        "email": "이름@example.com"
+      },
+      "useOtpTitle": "일회용 코드 사용",
+      "useOtpSubtitle": "비밀번호가 없나요? 매직 코드를 사용하세요.",
+      "comingSoon": "곧 제공됩니다",
+      "otpComingSoon": "일회용 코드 로그인 기능이 통합 중입니다.",
+      "sendCode": "전송 코드",
+      "termsAgree": "계속하면, 동의 EVzone's 약관 & 개인정보.",
+      "locked": "잠김. {{seconds}}초 후 다시 시도하세요"
+    },
+    "signUp": {
+      "sectionTitle": "계정 생성",
+      "sectionSubtitle": "모든 EVzone 서비스를 위한 단일하고 안전한 ID를 생성하세요.",
+      "secureIdentity": "안전한 ID",
+      "secureIdentityDesc": "은행-급 보안 자산.",
+      "clearPermissions": "지우기 권한",
+      "clearPermissionsDesc": "데이터 공유는 사용자가 제어합니다.",
+      "backToSignIn": "뒤로 로그인",
+      "createAccount": "계정 만들기",
+      "getStarted": "EVzone 시작하기",
+      "continueWithGoogle": "계속 구글",
+      "continueWithApple": "계속 애플",
+      "firstName": "이름",
+      "firstNamePlaceholder": "e.g. Jane",
+      "otherNames": "다른 이름",
+      "otherNamesPlaceholder": "e.g. Doe",
+      "email": "이메일 주소",
+      "emailPlaceholder": "이름@example.com",
+      "phone": "전화번호",
+      "phonePlaceholder": "700 000 000",
+      "createWithOtp": "생성 한-시간 코드",
+      "createWithOtpDesc": "비밀번호가 필요 없습니다. 전화번호를 인증합니다.",
+      "createPassword": "생성 비밀번호",
+      "confirmPassword": "비밀번호 확인",
+      "otpInfo": "계정 인증을 위해 OTP를 받게 됩니다.",
+      "inviteCode": "초대 코드(선택사항)",
+      "inviteCodePlaceholder": "e.g. EVZ-123",
+      "termsAgreement": "서비스 이용약관 및 개인정보처리방침에 동의합니다.",
+      "continue": "계속",
+      "switchToSignIn": "로그인으로 전환",
+      "verifyContactInfo": "다음 단계에서 연락처 정보를 확인하세요.",
+      "validation": {
+        "firstNameRequired": "이름을 입력하세요.",
+        "otherNamesRequired": "다른 이름(중간 이름 등)을 입력하세요.",
+        "emailOrPhoneRequired": "이메일 또는 전화번호를 최소 하나는 제공하세요.",
+        "validEmailRequired": "유효한 이메일 주소를 입력하세요.",
+        "termsRequired": "약관 및 개인정보처리방침에 동의해야 합니다.",
+        "passwordRequired": "생성 비밀번호.",
+        "passwordMinLength": "비밀번호 최소 8 자.",
+        "passwordsDoNotMatch": "비밀번호가 일치하지 않습니다."
+      },
+      "notification": {
+        "registrationInfo": "등록 정보",
+        "accountCreated": "계정이 생성되었습니다",
+        "accountCreatedSuccess": "계정이 성공적으로 생성되었습니다! 안전하게 로그인 중입니다...",
+        "verifyEmail": "인증 이메일",
+        "verifyEmailSuccess": "계정이 생성되었습니다! 받은편지함에서 인증 링크를 확인하세요.",
+        "registrationFailed": "등록 실패",
+        "registrationFailedMessage": "실패 생성 계정. 시도 ."
+      }
+    },
+    "forgotPassword": {
+      "subtitle": "비밀번호 찾기",
+      "resetAccess": "접근 재설정",
+      "resetAccessDesc": "인증된 이메일 또는 전화번호로 계정을 복구하세요.",
+      "rateLimiting": "속도 제한",
+      "rateLimitingDesc": "요청 간 30초를 기다리세요.",
+      "secureLink": "안전한 링크",
+      "secureLinkDesc": "전송 매직 링크 코드.",
+      "backToSignIn": "뒤로 로그인",
+      "checkContact": "{{type}}을(를) 확인하세요",
+      "instructionsSent": "{{method}}을(를) 통해 {{mask}}로 안내를 전송했습니다.",
+      "nextSteps": "다음 단계",
+      "nextStepsDesc": "링크를 클릭하거나 코드를 입력해 비밀번호를 재설정하세요.",
+      "enterResetCode": "입력 재설정 코드",
+      "resendIn": "{{seconds}}초 후 재전송",
+      "sendAgain": "다시 보내기",
+      "changeContactInfo": "변경 연락처 정보",
+      "needHelp": "도움말?",
+      "title": "비밀번호 찾기",
+      "enterToRecover": "입력 이메일 전화 복구 계정.",
+      "identifierLabel": "입력 이메일 전화",
+      "identifierPlaceholder": "이름@example.com",
+      "validIdentifierHint": "유효한 이메일 또는 전화번호를 입력하세요.",
+      "deliveryMethod": "전송 방법",
+      "captchaLabel": "저는 로봇이 아닙니다",
+      "captchaDesc": "캡차 확인을 완료하세요.",
+      "accountRecoveryHelp": "계정 복구 도움말",
+      "spamTip": "이메일이 보이지 않으면 스팸 폴더를 확인하세요.",
+      "confirmSend": "확인 전송",
+      "sendTo": "다음으로 복구 안내를 전송:",
+      "viaMethod": "{{method}}로",
+      "invalidatePrevious": "이전 링크가 무효화됩니다.",
+      "sendInstructions": "안내 전송",
+      "delivery": {
+        "emailLink": "이메일 링크",
+        "emailLinkDesc": "이메일로 매직 링크를 전송하세요.",
+        "smsCode": "SMS 코드",
+        "smsCodeDesc": "전송 6-자리 코드 전화.",
+        "whatsappCode": "왓츠앱 코드",
+        "whatsappCodeDesc": "왓츠앱으로 코드를 전송하세요."
+      },
+      "phoneMethodsHint": "전화번호를 입력하면 전화 방식이 사용 가능합니다.",
+      "validation": {
+        "enterIdentifier": "입력 이메일 전화",
+        "validIdentifier": "유효한 이메일 또는 전화번호를 입력하세요.",
+        "waitCooldown": "{{seconds}}초 기다려 주세요",
+        "completeCaptcha": "캡차를 완료하세요."
+      },
+      "notification": {
+        "sentSuccess": "{{via}}을(를) 통해 성공적으로 전송되었습니다.",
+        "sendFailed": "실패 전송 요청. 시도 ."
+      }
+    },
+    "resetPassword": {
+      "subtitle": "비밀번호 재설정",
+      "createNewPassword": "생성 새 비밀번호",
+      "enterNewPassword": "입력 새 비밀번호 계정.",
+      "navigateToForgot": "다음으로 이동: /auth/forgot-password",
+      "backToForgotPassword": "비밀번호 찾기로 돌아가기",
+      "title": "비밀번호 재설정",
+      "enterDetails": "비밀번호를 재설정하려면 정보를 입력하세요.",
+      "tokenTab": "토큰",
+      "codeTab": "코드",
+      "resetToken": "재설정 토큰",
+      "tokenPlaceholder": "입력 토큰",
+      "tokenHelperText": "이메일에서 토큰을 확인하세요.",
+      "verifyToken": "인증 토큰",
+      "identifierLabel": "이메일 전화",
+      "identifierPlaceholder": "입력 이메일 전화",
+      "identifierHelper": "입력 내용에 따라 방법을 결정합니다.",
+      "deliveryMethod": "전송 방법",
+      "codeSent": "코드 전송됨",
+      "sendCode": "전송 코드",
+      "resendCode": "코드 재전송",
+      "verifyCode": "인증 코드",
+      "newPassword": "새 비밀번호",
+      "confirmPassword": "비밀번호 확인",
+      "requirements": "요구사항",
+      "signOutAll": "다른 모든 기기에서 로그아웃",
+      "resetButton": "비밀번호 재설정",
+      "passwordUpdated": "비밀번호 업데이트됨",
+      "passwordChangedSuccess": "비밀번호가 성공적으로 변경되었습니다.",
+      "goToSignIn": "Go 로그인",
+      "accountRecoveryHelp": "계정 복구 도움말",
+      "navigateToHelp": "다음으로 이동: /auth/account-recovery-help",
+      "channel": {
+        "email": "이메일",
+        "emailDesc": "전송 이메일",
+        "sms": "SMS",
+        "smsDesc": "전송 통해 SMS",
+        "whatsapp": "왓츠앱",
+        "whatsappDesc": "왓츠앱으로 전송"
+      },
+      "phoneChannelsDisabled": "이메일 사용자에게는 전화 채널이 비활성화되어 있습니다.",
+      "req": {
+        "length": "최소 8자",
+        "uppercase": "한 대문자 문자",
+        "lowercase": "한 소문자 문자",
+        "number": "한 번호",
+        "special": "한 특수 문자",
+        "match": "비밀번호가 일치합니다"
+      },
+      "validation": {
+        "tokenRequired": "재설정 토큰을 입력하세요.",
+        "identifierRequired": "이메일 또는 전화번호를 입력하세요.",
+        "invalidIdentifier": "유효하지 않은 이메일 또는 전화번호입니다.",
+        "codeRequired": "6자리 코드를 입력하세요.",
+        "passwordRequired": "비밀번호를 입력하세요.",
+        "passwordStrength": "비밀번호가 더 강해야 합니다.",
+        "passwordsDoNotMatch": "비밀번호가 일치하지 않습니다."
+      },
+      "notification": {
+        "codeSentEmail": "코드 전송됨 이메일.",
+        "codeSentVia": "{{channel}}로 코드가 전송되었습니다.",
+        "sendFailed": "실패 전송 코드.",
+        "resetSuccessSignedOut": "비밀번호가 재설정되었습니다. 로그아웃되었습니다.",
+        "resetSuccess": "비밀번호 재설정 성공적으로.",
+        "resetFailed": "비밀번호를 재설정하지 못했습니다. 코드/토큰이 유효하지 않습니다."
+      }
+    },
+    "verifyEmail": {
+      "pageTitle": "인증 이메일 주소",
+      "checkInbox": "받은편지함을 확인하세요",
+      "codeSentTo": "{{email}}(으)로 코드를 전송했습니다.",
+      "openEmailApp": "열기 이메일 앱",
+      "openEmailAppDesc": "탭하여 메일 앱을 여세요.",
+      "resendCode": "코드 재전송",
+      "resendCodeDesc": "아래를 클릭하여 새 코드를 전송하세요.",
+      "openEmail": "열기 이메일",
+      "changeEmail": "변경 이메일",
+      "emailVerified": "이메일 인증됨",
+      "verificationSuccessDesc": "{{email}}을(를) 성공적으로 인증했습니다.",
+      "nextSteps": "다음 단계",
+      "nextStepsDesc": "계속해서 전화번호를 인증하세요.",
+      "title": "인증 이메일 주소",
+      "verify": "확인",
+      "resendIn": "{{seconds}}초 후 재전송",
+      "needHelp": "도움말?",
+      "changeEmailDialog": "변경 이메일 주소",
+      "changeEmailDesc": "아래에 입력하여 새 이메일 주소로 코드를 받으세요.",
+      "emailLabel": "이메일 주소",
+      "emailPlaceholder": "이름@example.com",
+      "saveAndSend": "저장 & 전송",
+      "validation": {
+        "codeRequired": "6자리 코드를 입력하세요."
+      },
+      "notification": {
+        "codeSent": "{{email}}(으)로 코드가 전송되었습니다.",
+        "sendFailed": "실패 전송 코드",
+        "openingEmail": "열는 중 이메일 앱...",
+        "verificationSuccess": "이메일 인증됨 성공적으로.",
+        "invalidCode": "유효하지 않은 코드입니다. 다시 시도하세요."
+      }
+    },
+    "verifyPhone": {
+      "title": "인증 전화",
+      "subtitle": "휴대폰으로 전송된 인증 코드를 입력하세요.",
+      "code": "인증 코드",
+      "submit": "인증 전화",
+      "resendCode": "코드 재전송",
+      "resendSuccess": "인증 코드 전송됨",
+      "success": "전화 인증됨 성공적으로",
+      "successMessage": "전화번호가 인증되었습니다."
+    },
+    "mfa": {
+      "title": "2단계 인증",
+      "subtitle": "인증기 앱의 6자리 코드를 입력하세요",
+      "code": "인증 코드",
+      "submit": "확인",
+      "useBackup": "대신 백업 코드 사용",
+      "resendCode": "재전송 코드",
+      "backupCode": "백업 코드",
+      "success": "인증 성공",
+      "setupTitle": "2단계 인증 설정",
+      "scanQr": "인증기 앱으로 이 QR 코드를 스캔하세요",
+      "manualEntry": "또는 이 코드를 수동으로 입력하세요",
+      "enterCode": "앱의 6자리 코드를 입력하세요",
+      "confirmSetup": "설정 확인",
+      "backupCodesTitle": "백업 코드",
+      "backupCodesDescription": "이 백업 코드를 안전한 곳에 보관하세요. 인증기 접근 권한을 잃었을 때 사용할 수 있습니다.",
+      "copyCodes": "코드 복사",
+      "done": "완료",
+      "invalidCode": "유효하지 않은 코드입니다. 다시 시도하세요.",
+      "tooManyAttempts": "잘못된 시도가 너무 많습니다. 다시 시도하세요."
+    },
+    "passkey": {
+      "title": "Passkey 인증",
+      "subtitle": "로그인 패스키",
+      "usePasskey": "패스키 사용",
+      "addPasskey": "패스키 추가",
+      "removePasskey": "패스키 제거",
+      "passkeyAdded": "패스키가 성공적으로 추가되었습니다",
+      "passkeyRemoved": "패스키가 제거되었습니다",
+      "error": "패스키 오류가 발생했습니다"
+    },
+    "consent": {
+      "title": "동의 필수",
+      "subtitle": "애플리케이션이 계정 접근을 요청합니다",
+      "permissions": "권한",
+      "approve": "승인",
+      "deny": "거부",
+      "scopes": {
+        "openid": "오픈아이디 커넥트",
+        "profile": "보기 프로필",
+        "email": "보기 이메일 주소",
+        "phone": "보기 전화 번호"
+      }
+    },
+    "interaction": {
+      "title": "인증 필요",
+      "subtitle": "완료 인증",
+      "continue": "계속",
+      "cancel": "취소"
+    },
+    "Callback": {
+      "processing": "인증 처리 중...",
+      "success": "인증 성공",
+      "error": "인증 실패"
+    },
+    "signedOut": {
+      "title": "로그아웃됨",
+      "subtitle": "성공적으로 로그아웃되었습니다",
+      "signInAgain": "로그인",
+      "returnHome": "홈으로 돌아가기"
+    },
+    "session": {
+      "expired": "세션이 만료되었습니다",
+      "expiredMessage": "계속하려면 다시 로그인해 주세요.",
+      "expiredAction": "로그인"
+    }
+  },
+  "dashboard": {
+    "welcome": "{{name}}님, 다시 오신 것을 환영합니다!",
+    "overview": "대시보드 개요",
+    "quickActions": "빠른 작업",
+    "recentActivity": "최근 활동",
+    "notifications": "알림",
+    "settings": "설정",
+    "profile": "프로필",
+    "security": "보안",
+    "wallet": "지갑",
+    "help": "도움말 & 지원"
+  },
+  "profile": {
+    "title": "프로필 설정",
+    "personal": {
+      "title": "개인정보",
+      "firstName": "이름",
+      "lastName": "성",
+      "email": "이메일 주소",
+      "phone": "전화번호",
+      "save": "저장 변경"
+    },
+    "contact": {
+      "title": "연락처 정보",
+      "address": "주소",
+      "city": "도시",
+      "country": "국가",
+      "postalCode": "우편 코드"
+    },
+    "linkedAccounts": {
+      "title": "연결된 계정",
+      "description": "연결된 계정 관리",
+      "google": "구글",
+      "apple": "애플",
+      "connect": "연결",
+      "disconnect": "연결 해제",
+      "connected": "연결됨",
+      "notConnected": "연결됨"
+    }
+  },
+  "security": {
+    "title": "보안 설정",
+    "password": {
+      "title": "비밀번호",
+      "current": "현재 비밀번호",
+      "new": "새 비밀번호",
+      "confirm": "확인 새 비밀번호",
+      "update": "업데이트 비밀번호",
+      "success": "비밀번호 업데이트됨 성공적으로",
+      "error": "실패 업데이트 비밀번호"
+    },
+    "twoFactor": {
+      "title": "2단계 인증",
+      "enabled": "활성화됨",
+      "disabled": "비활성화됨",
+      "enable": "2단계 인증 활성화",
+      "disable": "2단계 인증 비활성화",
+      "setup": "2단계 인증 설정",
+      "description": "추가 추가 계층 보안 계정"
+    },
+    "sessions": {
+      "title": "활성 세션",
+      "description": "관리 활성 세션",
+      "current": "현재 세션",
+      "other": "다른 세션",
+      "revoke": "철회",
+      "revokeAll": "다른 모든 세션 철회"
+    },
+    "activity": {
+      "title": "로그인 활동",
+      "description": "보기 최근 로그인 활동",
+      "recentLogins": "최근 로그인",
+      "location": "위치",
+      "device": "기기",
+      "time": "시간"
+    },
+    "passkeys": {
+      "title": "패스키",
+      "description": "비밀번호 없이 로그인하기 위한 패스키 관리",
+      "add": "패스키 추가",
+      "remove": "제거",
+      "lastUsed": "마지막 사용"
+    },
+    "recoveryCodes": {
+      "title": "복구 코드",
+      "description": "2FA 기기를 분실한 경우 이 코드를 사용해 계정에 접근할 수 있습니다.",
+      "generate": "새 코드 생성",
+      "copied": "코드가 클립보드에 복사되었습니다"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "관리자 대시보드",
+      "users": "전체 사용자",
+      "active": "활성 사용자",
+      "revenue": "수익",
+      "systemHealth": "시스템 상태"
+    },
+    "users": {
+      "title": "사용자 관리",
+      "search": "사용자 검색 중...",
+      "add": "추가 사용자",
+      "edit": "편집 사용자",
+      "delete": "사용자 삭제",
+      "status": "상태",
+      "active": "활성",
+      "inactive": "비활성",
+      "suspended": "정지됨"
+    },
+    "apps": {
+      "title": "애플리케이션 관리",
+      "add": "회원가입 앱",
+      "edit": "편집 앱",
+      "delete": "앱 삭제",
+      "clientId": "클라이언트 ID",
+      "redirectUris": "리디렉션 URI"
+    },
+    "audit": {
+      "title": "감사 로그",
+      "filter": "로그 필터",
+      "export": "내보내기"
+    },
+    "kyc": {
+      "title": "KYC 인증",
+      "pending": "대기 중",
+      "approved": "승인됨",
+      "rejected": "거부됨"
+    }
+  },
+  "wallet": {
+    "title": "내 지갑",
+    "balance": "잔액",
+    "currency": "USD",
+    "addFunds": "자금 추가",
+    "withdraw": "출금",
+    "transactions": "거래",
+    "history": "거래 내역",
+    "pending": "대기 중",
+    "completed": "완료됨",
+    "failed": "실패",
+    "deposit": "입금",
+    "payment": "결제",
+    "refund": "환불"
+  },
+  "support": {
+    "title": "도움말 & 지원",
+    "faq": "자주 묻는 질문",
+    "contact": "지원팀에 문의",
+    "submitTicket": "티켓 제출",
+    "myTickets": "내 티켓",
+    "openTickets": "열린 티켓",
+    "closedTickets": "닫힘 티켓",
+    "securityReport": {
+      "title": "보안 문제 신고",
+      "subtitle": "취약점을 신고하여 EVzone 보안을 강화하는 데 도움을 주세요",
+      "type": "문제 유형",
+      "url": "문제가 발견된 URL",
+      "description": "설명",
+      "steps": "재현 단계"
+    }
+  },
+  "legal": {
+    "terms": {
+      "title": "서비스 이용약관",
+      "lastUpdated": "마지막 업데이트 {{date}}",
+      "accept": "서비스 이용약관에 동의합니다"
+    },
+    "privacy": {
+      "title": "개인정보처리방침",
+      "lastUpdated": "마지막 업데이트 {{date}}"
+    },
+    "cookies": {
+      "title": "쿠키 정책",
+      "lastUpdated": "마지막 업데이트 {{date}}",
+      "description": "이 웹사이트는 사용자 경험 향상을 위해 쿠키를 사용합니다.",
+      "acceptAll": "모두 수락",
+      "rejectAll": "모두 거부",
+      "customize": "맞춤 설정"
+    },
+    "consent": {
+      "title": "개인정보 동의",
+      "description": "개인정보 설정 관리",
+      "necessary": "필요",
+      "functional": "기능",
+      "analytics": "분석",
+      "marketing": "마케팅",
+      "savePreferences": "저장 환경설정"
+    }
+  },
+  "errors": {
+    "403": {
+      "title": "접근 거부",
+      "subtitle": "이 페이지에 접근할 권한이 없습니다.",
+      "description": "이 콘텐츠를 볼 권한이 없을 수 있습니다.",
+      "action": "Go 대시보드"
+    },
+    "404": {
+      "title": "페이지 찾을 수 없음",
+      "subtitle": "찾으시는 페이지가 존재하지 않습니다.",
+      "description": "요청하신 페이지를 찾을 수 없습니다. 이동되었거나 삭제되었을 수 있습니다.",
+      "action": "홈으로 이동"
+    },
+    "429": {
+      "title": "요청이 너무 많습니다",
+      "subtitle": "잠시만 기다려 주세요",
+      "description": "짧은 시간에 요청이 너무 많습니다. 잠시 기다린 후 다시 시도하세요.",
+      "action": "시도"
+    },
+    "500": {
+      "title": "문제가 발생했습니다",
+      "subtitle": "예기치 않은 오류 발생",
+      "description": "죄송합니다. 문제가 발생했습니다. 담당 팀에 알렸습니다.",
+      "action": "Go 대시보드",
+      "support": "지원팀에 문의"
+    }
+  },
+  "footer": {
+    "copyright": "© {{year}} EVzone. 모든 권리 보유.",
+    "terms": "서비스 이용약관",
+    "privacy": "개인정보처리방침",
+    "cookies": "쿠키 정책",
+    "contact": "연락처",
+    "help": "도움말 센터",
+    "about": "EVzone 소개",
+    "careers": "채용",
+    "press": "누르기",
+    "social": "팔로우하기"
+  },
+  "accessibility": {
+    "skipToContent": "본문으로 건너뛰기",
+    "menuToggle": "메뉴 토글",
+    "closeMenu": "닫기 메뉴",
+    "openSearch": "열기 검색",
+    "closeSearch": "닫기 검색",
+    "previous": "이전",
+    "next": "다음",
+    "expandSection": "섹션 펼치기",
+    "collapseSection": "섹션 접기"
+  }
+}

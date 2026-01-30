@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Box, Button, Card, CardContent, Divider, Stack, Typography, useTheme } from "@mui/material";
 import { alpha } from "@mui/material/styles";

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from "react-i18next";
 import Pagination from '@/components/ui/Pagination';
 import {
     Box,
@@ -65,6 +66,7 @@ interface DisputeRow {
 }
 
 export default function AdminDisputesList() {
+  const { t } = useTranslation("common"); {
     const theme = useTheme();
     // const navigate = useNavigate(); // Unused
     const [q, setQ] = useState("");
@@ -385,7 +387,7 @@ export default function AdminDisputesList() {
                     )}
                 </DialogContent>
                 <DialogActions sx={{ px: 3, pb: 3 }}>
-                    <Button onClick={() => setReviewOpen(false)} disabled={processing}>Cancel</Button>
+                    <Button onClick={() => setReviewOpen(false)} disabled={processing}>{t("auth.common.cancel")}<//Button>
                 </DialogActions>
             </Dialog>
 

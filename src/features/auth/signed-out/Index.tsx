@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Alert,
@@ -30,6 +31,7 @@ import { EVZONE } from "@/theme/evzone";
  */
 
 export default function SignedOutPage() {
+  const { t } = useTranslation("common"); {
   const navigate = useNavigate();
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
@@ -94,10 +96,7 @@ export default function SignedOutPage() {
   return (
     <Box className="min-h-screen" sx={{ background: pageBg }}>
       {/* Unified Auth Header */}
-      <AuthHeader
-        title="EVzone Accounts"
-        subtitle="Successfully signed out"
-      />
+      <AuthHeader title={t("EVzone Accounts")} subtitle={t("Successfully signed out")} />
 
       {/* Body */}
       <Box className="mx-auto max-w-5xl px-4 py-12 md:px-6">

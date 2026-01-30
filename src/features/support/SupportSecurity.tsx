@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Alert,
   Box,
@@ -197,6 +198,7 @@ function mkId(prefix: string) {
 import { useNavigate } from "react-router-dom";
 
 export default function ReportSecurityIssuePage() {
+  const { t } = useTranslation("common"); {
   const { mode } = useThemeStore();
   const theme = useTheme();
   const navigate = useNavigate();

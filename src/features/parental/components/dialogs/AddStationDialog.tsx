@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from "react-i18next";
 import { Stack, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, InputAdornment, useTheme } from '@mui/material';
 import { useThemeStore } from "../../../../stores/themeStore";
 import { Zap as ZapIcon } from 'lucide-react';

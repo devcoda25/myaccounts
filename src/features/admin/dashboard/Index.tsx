@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
     Alert,
     Box,
@@ -69,6 +70,7 @@ import { IAuditLog } from '@/types';
 // Remove mkEvents
 
 export default function AdminDashboard() {
+  const { t } = useTranslation("common"); {
     const theme = useTheme();
     const navigate = useNavigate();
     const { mode } = useThemeStore();

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -189,6 +190,7 @@ function mfaCodeFor(channel: MfaChannel) {
 // Self-tests removed
 
 export default function AppsPermissionsPage() {
+  const { t } = useTranslation("common"); {
   const theme = useTheme();
   const navigate = useNavigate();
   const { mode } = useThemeStore();
@@ -536,8 +538,8 @@ export default function AppsPermissionsPage() {
           </Stack>
         </DialogContent>
         <DialogActions sx={{ p: 2, pt: 0 }}>
-          <Button variant="outlined" sx={orangeOutlined} onClick={closeReauth}>Cancel</Button>
-          <Button variant="contained" color="secondary" sx={orangeContained} onClick={revoke}>Continue</Button>
+          <Button variant="outlined" sx={orangeOutlined} onClick={closeReauth}>{t("auth.common.cancel")}<//Button>
+          <Button variant="contained" color="secondary" sx={orangeContained} onClick={revoke}>{t("auth.common.continue")}<//Button>
         </DialogActions>
       </Dialog>
 

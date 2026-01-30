@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Button,
@@ -118,6 +119,7 @@ function Section({ id, title, children }: { id: string; title: string; children:
 }
 
 export default function TermsOfServicePage() {
+  const { t } = useTranslation("common"); {
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";

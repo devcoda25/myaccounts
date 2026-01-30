@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
 import { api } from "@/utils/api";
 import { formatUserId } from "@/utils/format";
@@ -106,6 +107,7 @@ const InfoRow = ({ label, value, icon }: { label: string; value: string; icon: R
 }
 
 export default function AdminUserDetail() {
+  const { t } = useTranslation("common"); {
     const { userId } = useParams();
     const navigate = useNavigate();
     const theme = useTheme();
@@ -238,7 +240,7 @@ export default function AdminUserDetail() {
                                 </Box>
                             </Stack>
                             <Stack direction="row" spacing={1.2}>
-                                <Button variant="outlined" sx={orangeOutlined} startIcon={<ArrowLeftIcon size={18} />} onClick={() => navigate('/admin/users')}>Back</Button>
+                                <Button variant="outlined" sx={orangeOutlined} startIcon={<ArrowLeftIcon size={18} />} onClick={() => navigate('/admin/users')}>{t("auth.common.back")}<//Button>
                                 <Button variant="contained" sx={orangeContained} onClick={() => openAction(user.status === "Locked" ? "UNLOCK" : "LOCK")}>
                                     {user.status === "Locked" ? "Unlock" : "Lock"}
                                 </Button>
@@ -272,7 +274,7 @@ export default function AdminUserDetail() {
                         {step === 0 && (
                             <>
                                 <TextField label="Reason" value={reason} onChange={(e) => setReason(e.target.value)} fullWidth multiline minRows={3} />
-                                <Button variant="contained" sx={orangeContained} onClick={() => setStep(1)}>Continue</Button>
+                                <Button variant="contained" sx={orangeContained} onClick={() => setStep(1)}>{t("auth.common.continue")}<//Button>
                             </>
                         )}
                         {step === 1 && (

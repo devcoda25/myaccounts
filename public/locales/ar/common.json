@@ -1,0 +1,908 @@
+{
+    "app": {
+        "name": "EVzone حساباتي",
+        "tagline": "حسابك الموحد لجميع خدمات EVzone"
+    },
+    "common": {
+        "actions": {
+            "save": "حفظ",
+            "cancel": "إلغاء",
+            "delete": "حذف",
+            "edit": "تعديل",
+            "submit": "إرسال",
+            "close": "إغلاق",
+            "back": "رجوع",
+            "next": "التالي",
+            "confirm": "تأكيد",
+            "search": "بحث",
+            "filter": "تصفية",
+            "clear": "مسح",
+            "reset": "إعادة تعيين",
+            "refresh": "تحديث",
+            "retry": "إعادة المحاولة",
+            "continue": "متابعة",
+            "done": "تم",
+            "send": "إرسال",
+            "download": "تحميل",
+            "upload": "رفع",
+            "copy": "نسخ",
+            "view": "عرض",
+            "hide": "إخفاء",
+            "show": "إظهار",
+            "expand": "توسيع",
+            "collapse": "طي",
+            "select": "اختيار",
+            "selectAll": "اختيار الكل",
+            "deselectAll": "إلغاء اختيار الكل",
+            "add": "إضافة",
+            "remove": "إزالة",
+            "update": "تحديث",
+            "create": "إنشاء",
+            "signIn": "تسجيل الدخول",
+            "signOut": "تسجيل الخروج",
+            "signUp": "التسجيل",
+            "login": "تسجيل الدخول",
+            "logout": "تسجيل الخروج",
+            "register": "التسجيل"
+        },
+        "errors": {
+            "required": "هذا الحقل مطلوب",
+            "invalidEmail": "الرجاء إدخال عنوان بريد إلكتروني صالح",
+            "invalidPhone": "الرجاء إدخال رقم هاتف صالح",
+            "passwordTooShort": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+            "passwordRequiresUppercase": "يجب أن تحتوي كلمة المرور على حرف كبير",
+            "passwordRequiresLowercase": "يجب أن تحتوي كلمة المرور على حرف صغير",
+            "passwordRequiresNumber": "يجب أن تحتوي كلمة المرور على رقم",
+            "passwordRequiresSpecial": "يجب أن تحتوي كلمة المرور على حرف خاص",
+            "passwordsDoNotMatch": "كلمتا المرور غير متطابقتين",
+            "networkError": "خطأ في الشبكة. الرجاء المحاولة مرة أخرى.",
+            "serverError": "خطأ في الخادم. الرجاء المحاولة مرة أخرى لاحقاً.",
+            "unknownError": "حدث خطأ غير متوقع.",
+            "sessionExpired": "انتهت جلستك. الرجاء تسجيل الدخول مرة أخرى.",
+            "invalidCredentials": "بيانات الاعتماد غير صالحة. الرجاء المحاولة مرة أخرى.",
+            "tooManyAttempts": "محاولات كثيرة جداً. الرجاء المحاولة مرة أخرى لاحقاً.",
+            "accountLocked": "تم قفل حسابك.",
+            "emailAlreadyExists": "حساب بهذا البريد الإلكتروني موجود بالفعل.",
+            "userNotFound": "لم يتم العثور على المستخدم.",
+            "unauthorized": "غير مصرح لك بإجراء هذا الإجراء.",
+            "forbidden": "تم رفض الوصول.",
+            "notFound": "لم يتم العثور على المورد المطلوب.",
+            "badRequest": "طلب غير صالح.",
+            "internalServerError": "خطأ داخلي في الخادم.",
+            "serviceUnavailable": "الخدمة غير متاحة مؤقتاً.",
+            "validationError": "الرجاء التحقق من المدخلات والمحاولة مرة أخرى."
+        },
+        "loading": {
+            "loading": "جاري التحميل...",
+            "pleaseWait": "الرجاء الانتظار...",
+            "processing": "جاري المعالجة...",
+            "saving": "جاري الحفظ...",
+            "deleting": "جاري الحذف...",
+            "updating": "جاري التحديث...",
+            "signingIn": "جاري تسجيل الدخول...",
+            "signingOut": "جاري تسجيل الخروج..."
+        },
+        "validation": {
+            "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا العنصر؟",
+            "unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد المغادرة؟",
+            "minLength": "يجب أن يكون {{count}} أحرف على الأقل",
+            "maxLength": "يجب أن يكون {{count}} أحرف على الأكثر",
+            "minValue": "القيمة يجب أن تكون {{count}} على الأقل",
+            "maxValue": "القيمة يجب أن تكون {{count}} على الأكثر"
+        },
+        "placeholders": {
+            "email": "أدخل بريدك الإلكتروني",
+            "phone": "أدخل رقم هاتفك",
+            "password": "أدخل كلمة المرور",
+            "newPassword": "أدخل كلمة مرور جديدة",
+            "confirmPassword": "أكد كلمة المرور",
+            "search": "بحث...",
+            "selectOption": "اختر خياراً"
+        }
+    },
+    "loading": {
+        "session": "جاري تهيئة الجلسة الآمنة..."
+    },
+    "error": {
+        "title": "خطأ في المصادقة",
+        "sessionFailed": "فشل في تهيئة الجلسة الآمنة.",
+        "retry": "إعادة المحاولة"
+    },
+    "password": {
+        "weak": "ضعيفة",
+        "fair": "متوسطة",
+        "good": "جيدة",
+        "strong": "قوية",
+        "veryStrong": "قوية جداً"
+    },
+    "header": {
+        "title": "حسابات EVzone",
+        "subtitle": "أنشئ هوية EVzone الخاصة بك"
+    },
+    "auth": {
+        "common": {
+            "loading": "جاري التحميل...",
+            "or": "أو",
+            "email": "البريد الإلكتروني",
+            "phone": "الهاتف",
+            "terms": "الشروط",
+            "privacy": "الخصوصية",
+            "help": "مساعدة",
+            "signIn": "تسجيل الدخول",
+            "signUp": "التسجيل",
+            "switchToLight": "التبديل إلى الوضع الفاتح",
+            "switchToDark": "التبديل إلى الوضع الداكن",
+            "continue": "متابعة",
+            "back": "رجوع",
+            "cancel": "إلغاء",
+            "save": "حفظ",
+            "submit": "إرسال",
+            "verify": "تحقق",
+            "send": "إرسال"
+        },
+        "signIn": {
+            "title": "تسجيل الدخول",
+            "subtitle": "مرحباً بعودتك! الرجاء تسجيل الدخول للمتابعة.",
+            "emailOrPhone": "البريد الإلكتروني أو الهاتف",
+            "password": "كلمة المرور",
+            "forgotPassword": "نسيت كلمة المرور؟",
+            "rememberMe": "تذكرني",
+            "submit": "تسجيل الدخول",
+            "noAccount": "ليس لديك حساب؟",
+            "signUp": "التسجيل",
+            "orContinueWith": "أو تابع باستخدام",
+            "checking": "جاري التحقق...",
+            "unavailable": "غير متاح",
+            "errors": {
+                "enterEmailOrPhone": "أدخل بريدك الإلكتروني أو رقم هاتفك.",
+                "enterPassword": "أدخل كلمة المرور للمتابعة.",
+                "invalidCredentials": "بيانات الاعتماد غير صالحة. الرجاء المحاولة مرة أخرى.",
+                "locked": "مقفل. أعد المحاولة خلال {{seconds}}ث"
+            },
+            "verifying": "جاري التحقق من بيانات الاعتماد...",
+            "failed": "فشل تسجيل الدخول",
+            "left": {
+                "title": "حساب واحد لكل شيء في EVzone",
+                "subtitle": "صل إلى Charging و Marketplace و Pay بهوية آمنة واحدة بسلاسة.",
+                "demoNote": "تم التعبئة مسبقاً للعرض التوضيحي: example@mail.com"
+            },
+            "right": {
+                "subtitle": "للمتابعة إلى بوابة EVzone"
+            },
+            "features": {
+                "secureSessions": {
+                    "title": "جلسات آمنة",
+                    "desc": "مراقبة أمنية على مستوى البنوك على مدار الساعة."
+                },
+                "passkeys": {
+                    "title": "مفاتيح المرور والقياسات الحيوية",
+                    "desc": "سجّل الدخول باستخدام TouchID أو FaceID."
+                },
+                "privacy": {
+                    "title": "الخصوصية أولاً",
+                    "desc": "نعظّم خصوصية بياناتك."
+                }
+            },
+            "showPassword": "إظهار كلمة المرور",
+            "hidePassword": "إخفاء كلمة المرور",
+            "switchingToPassword": "جاري التبديل إلى كلمة المرور...",
+            "placeholders": {
+                "email": "name@example.com"
+            },
+            "useOtpTitle": "استخدام رمز لمرة واحدة",
+            "useOtpSubtitle": "لا توجد كلمة مرور؟ استخدم رمزاً سحرياً.",
+            "comingSoon": "قريباً",
+            "otpComingSoon": "جاري دمج تسجيل الدخول برمز لمرة واحدة.",
+            "sendCode": "إرسال الرمز",
+            "termsAgree": "بالمتابعة، أنت توافق على شروط خصوصية EVzone.",
+            "locked": "مقفل. أعد المحاولة خلال {{seconds}}ث"
+        },
+        "signUp": {
+            "sectionTitle": "إنشاء حساب",
+            "sectionSubtitle": "أنشئ معرفاً آمناً واحداً لجميع خدمات EVzone.",
+            "secureIdentity": "هوية آمنة",
+            "secureIdentityDesc": "أمن على مستوى البنوك لأصولك.",
+            "clearPermissions": "أذونات واضحة",
+            "clearPermissionsDesc": "أنت تتحكم في مشاركة بياناتك.",
+            "backToSignIn": "العودة إلى تسجيل الدخول",
+            "createAccount": "إنشاء حساب",
+            "getStarted": "ابدأ مع EVzone",
+            "continueWithGoogle": "متابعة باستخدام Google",
+            "continueWithApple": "متابعة باستخدام Apple",
+            "firstName": "الاسم الأول",
+            "firstNamePlaceholder": "مثال: Jane",
+            "otherNames": "الأسماء الأخرى",
+            "otherNamesPlaceholder": "مثال: Doe",
+            "email": "عنوان البريد الإلكتروني",
+            "emailPlaceholder": "name@example.com",
+            "phone": "رقم الهاتف",
+            "phonePlaceholder": "700 000 000",
+            "createWithOtp": "إنشاء باستخدام رمز لمرة واحدة",
+            "createWithOtpDesc": "لا توجد كلمة مرور مطلوبة. سنتحقق من هاتفك.",
+            "createPassword": "إنشاء كلمة مرور",
+            "confirmPassword": "تأكيد كلمة المرور",
+            "otpInfo": "ستستلم OTP للتحقق من حسابك.",
+            "inviteCode": "رمز الدعوة (اختياري)",
+            "inviteCodePlaceholder": "مثال: EVZ-123",
+            "termsAgreement": "أوافق على شروط الخدمة وسياسة الخصوصية.",
+            "continue": "متابعة",
+            "switchToSignIn": "التبديل إلى تسجيل الدخول",
+            "verifyContactInfo": "تحقق من معلومات الاتصال في الخطوة التالية.",
+            "validation": {
+                "firstNameRequired": "أدخل اسمك الأول.",
+                "otherNamesRequired": "أدخل الأسماء الأخرى.",
+                "emailOrPhoneRequired": "قدم بريداً إلكترونياً أو رقم هاتف على الأقل.",
+                "validEmailRequired": "أدخل عنوان بريد إلكتروني صالح.",
+                "termsRequired": "يجب الموافقة على الشروط وسياسة الخصوصية.",
+                "passwordRequired": "أنشئ كلمة مرور.",
+                "passwordMinLength": "يجب أن تكون كلمة المرور 8 أحرف على الأقل.",
+                "passwordsDoNotMatch": "كلمتا المرور غير متطابقتين."
+            },
+            "notification": {
+                "registrationInfo": "معلومات التسجيل",
+                "accountCreated": "تم إنشاء الحساب",
+                "accountCreatedSuccess": "تم إنشاء الحساب بنجاح! جاري تسجيل دخولك بأمان...",
+                "verifyEmail": "تحقق من بريدك الإلكتروني",
+                "verifyEmailSuccess": "تم إنشاء الحساب! الرجاء التحقق من صندوق الوارد للحصول على رابط التحقق.",
+                "registrationFailed": "فشل التسجيل",
+                "registrationFailedMessage": "فشل في إنشاء الحساب. الرجاء المحاولة مرة أخرى."
+            }
+        },
+        "forgotPassword": {
+            "subtitle": "نسيت كلمة المرور",
+            "resetAccess": "إعادة تعيين الوصول",
+            "resetAccessDesc": "استرد حسابك باستخدام بريدك الإلكتروني أو رقم هاتفك المُتحقق.",
+            "rateLimiting": "تحديد المعدل",
+            "rateLimitingDesc": "انتظر 30 ثانية بين الطلبات.",
+            "secureLink": "رابط آمن",
+            "secureLinkDesc": "نرسل رابطاً سحرياً أو رمزاً.",
+            "backToSignIn": "العودة إلى تسجيل الدخول",
+            "checkContact": "تحقق من {{type}} الخاص بك",
+            "instructionsSent": "أرسلنا التعليمات إلى {{mask}} عبر {{method}}.",
+            "nextSteps": "الخطوات التالية",
+            "nextStepsDesc": "انقر على الرابط أو أدخل الرمز لإعادة تعيين كلمة المرور.",
+            "enterResetCode": "أدخل رمز إعادة التعيين",
+            "resendIn": "إعادة الإرسال خلال {{seconds}}ث",
+            "sendAgain": "إعادة الإرسال",
+            "changeContactInfo": "تغيير معلومات الاتصال",
+            "needHelp": "تحتاج مساعدة؟",
+            "title": "نسيت كلمة المرور",
+            "enterToRecover": "أدخل بريدك الإلكتروني أو رقم هاتفك لاسترداد حسابك.",
+            "identifierLabel": "أدخل بريداً إلكترونياً أو هاتفاً",
+            "identifierPlaceholder": "name@example.com",
+            "validIdentifierHint": "أدخل بريداً إلكترونياً أو رقم هاتف صالح.",
+            "deliveryMethod": "طريقة التسليم",
+            "captchaLabel": "أنا إنسان",
+            "captchaDesc": "أكمل فحص captcha.",
+            "accountRecoveryHelp": "مساعدة استرداد الحساب",
+            "spamTip": "نصيحة: تحقق من مجلد الرسائل غير المرغوب إذا لم تجد البريد.",
+            "confirmSend": "تأكيد الإرسال",
+            "sendTo": "إرسال تعليمات الاسترداد إلى:",
+            "viaMethod": "عبر {{method}}",
+            "invalidatePrevious": "سيؤدي ذلك إلى إلغاء صحة الروابط السابقة.",
+            "sendInstructions": "إرسال التعليمات",
+            "delivery": {
+                "emailLink": "رابط البريد الإلكتروني",
+                "emailLinkDesc": "أرسل رابطاً سحرياً إلى بريدك الإلكتروني.",
+                "smsCode": "رمز SMS",
+                "smsCodeDesc": "أرسل رمزاً من 6 أرقام إلى هاتفك.",
+                "whatsappCode": "رمز WhatsApp",
+                "whatsappCodeDesc": "أرسل رمزاً عبر WhatsApp."
+            },
+            "phoneMethodsHint": "طرق الهاتف متاحة إذا أدخلت رقم هاتف.",
+            "validation": {
+                "enterIdentifier": "أدخل بريداً إلكترونياً أو هاتفاً",
+                "validIdentifier": "أدخل بريداً إلكترونياً أو رقم هاتف صالح.",
+                "waitCooldown": "الرجاء الانتظار {{seconds}}ث",
+                "completeCaptcha": "الرجاء إكمال captcha."
+            },
+            "notification": {
+                "sentSuccess": "تم الإرسال بنجاح عبر {{via}}.",
+                "sendFailed": "فشل في إرسال الطلب. الرجاء المحاولة مرة أخرى."
+            }
+        },
+        "resetPassword": {
+            "subtitle": "إعادة تعيين كلمة المرور",
+            "createNewPassword": "إنشاء كلمة مرور جديدة",
+            "enterNewPassword": "أدخل كلمة مرور جديدة لحسابك.",
+            "navigateToForgot": "انتقل إلى /auth/forgot-password",
+            "backToForgotPassword": "العودة إلى نسيت كلمة المرور",
+            "title": "إعادة تعيين كلمة المرور",
+            "enterDetails": "أدخل تفاصيلك لإعادة تعيين كلمة المرور.",
+            "tokenTab": "رمز",
+            "codeTab": "رمز",
+            "resetToken": "رمز إعادة التعيين",
+            "tokenPlaceholder": "أدخل الرمز",
+            "tokenHelperText": "تحقق من بريدك الإلكتروني للحصول على الرمز.",
+            "verifyToken": "التحقق من الرمز",
+            "identifierLabel": "البريد الإلكتروني أو الهاتف",
+            "identifierPlaceholder": "أدخل بريداً إلكترونياً أو هاتفاً",
+            "identifierHelper": "سنحدد الطريقة بناءً على مدخلاتك.",
+            "deliveryMethod": "طريقة التسليم",
+            "codeSent": "تم إرسال الرمز",
+            "sendCode": "إرسال الرمز",
+            "resendCode": "إعادة إرسال الرمز",
+            "verifyCode": "التحقق من الرمز",
+            "newPassword": "كلمة المرور الجديدة",
+            "confirmPassword": "تأكيد كلمة المرور",
+            "requirements": "المتطلبات",
+            "signOutAll": "تسجيل الخروج من جميع الأجهزة الأخرى",
+            "resetButton": "إعادة تعيين كلمة المرور",
+            "passwordUpdated": "تم تحديث كلمة المرور",
+            "passwordChangedSuccess": "تم تغيير كلمة المرور بنجاح.",
+            "goToSignIn": "الانتقال إلى تسجيل الدخول",
+            "accountRecoveryHelp": "مساعدة استرداد الحساب",
+            "navigateToHelp": "انتقل إلى /auth/account-recovery-help",
+            "channel": {
+                "email": "البريد الإلكتروني",
+                "emailDesc": "إرسال إلى البريد الإلكتروني",
+                "sms": "SMS",
+                "smsDesc": "إرسال عبر SMS",
+                "whatsapp": "WhatsApp",
+                "whatsappDesc": "إرسال عبر WhatsApp"
+            },
+            "phoneChannelsDisabled": "قنوات الهاتف معطلة لمستخدمي البريد الإلكتروني.",
+            "req": {
+                "length": "8 أحرف على الأقل",
+                "uppercase": "حرف كبير واحد",
+                "lowercase": "حرف صغير واحد",
+                "number": "رقم واحد",
+                "special": "حرف خاص واحد",
+                "match": "كلمتا المرور متطابقتان"
+            },
+            "validation": {
+                "tokenRequired": "الرجاء إدخال رمز إعادة التعيين.",
+                "identifierRequired": "الرجاء إدخال بريدك الإلكتروني أو هاتفك.",
+                "invalidIdentifier": "بريد إلكتروني أو هاتف غير صالح.",
+                "codeRequired": "الرجاء إدخال رمز من 6 أرقام.",
+                "passwordRequired": "الرجاء إدخال كلمة مرور.",
+                "passwordStrength": "كلمة المرور يجب أن تكون أقوى.",
+                "passwordsDoNotMatch": "كلمتا المرور غير متطابقتين."
+            },
+            "notification": {
+                "codeSentEmail": "تم إرسال الرمز إلى البريد الإلكتروني.",
+                "codeSentVia": "تم إرسال الرمز عبر {{channel}}.",
+                "sendFailed": "فشل في إرسال الرمز.",
+                "resetSuccessSignedOut": "تم إعادة تعيين كلمة المرور. تم تسجيل خروجك.",
+                "resetSuccess": "تم إعادة تعيين كلمة المرور بنجاح.",
+                "resetFailed": "فشل في إعادة تعيين كلمة المرور. الرمز/التوكين غير صالح."
+            }
+        },
+        "verifyEmail": {
+            "pageTitle": "التحقق من عنوان البريد الإلكتروني",
+            "checkInbox": "تحقق من صندوق الوارد",
+            "codeSentTo": "أرسلنا رمزاً إلى {{email}}.",
+            "openEmailApp": "فتح تطبيق البريد",
+            "openEmailAppDesc": "انقر لفتح برنامج البريد.",
+            "resendCode": "إعادة إرسال الرمز",
+            "resendCodeDesc": "انقر أدناه لإرسال رمز جديد.",
+            "openEmail": "فتح البريد",
+            "changeEmail": "تغيير البريد الإلكتروني",
+            "emailVerified": "تم التحقق من البريد الإلكتروني",
+            "verificationSuccessDesc": "تم التحقق بنجاح من {{email}}.",
+            "nextSteps": "الخطوات التالية",
+            "nextStepsDesc": "تابع للتحقق من هاتفك.",
+            "title": "التحقق من عنوان البريد الإلكتروني",
+            "verify": "تحقق",
+            "resendIn": "إعادة الإرسال خلال {{seconds}}ث",
+            "needHelp": "تحتاج مساعدة؟",
+            "changeEmailDialog": "تغيير عنوان البريد الإلكتروني",
+            "changeEmailDesc": "أدخل أدناه لتلقي الرمز على عنوان بريد إلكتروني جديد.",
+            "emailLabel": "عنوان البريد الإلكتروني",
+            "emailPlaceholder": "name@example.com",
+            "saveAndSend": "حفظ وإرسال",
+            "validation": {
+                "codeRequired": "الرجاء إدخال رمز من 6 أرقام."
+            },
+            "notification": {
+                "codeSent": "تم إرسال الرمز إلى {{email}}.",
+                "sendFailed": "فشل في إرسال الرمز",
+                "openingEmail": "جاري فتح تطبيق البريد...",
+                "verificationSuccess": "تم التحقق من البريد الإلكتروني بنجاح.",
+                "invalidCode": "رمز غير صالح. الرجاء المحاولة مرة أخرى."
+            }
+        },
+        "verifyPhone": {
+            "title": "التحقق من الهاتف",
+            "subtitle": "الرجاء إدخال رمز التحقق المرسل إلى هاتفك.",
+            "code": "رمز التحقق",
+            "submit": "التحقق من الهاتف",
+            "resendCode": "إعادة إرسال الرمز",
+            "resendSuccess": "تم إرسال رمز التحقق",
+            "success": "تم التحقق من الهاتف بنجاح",
+            "successMessage": "تم التحقق من رقم هاتفك."
+        },
+        "mfa": {
+            "title": "المصادقة ذات العاملين",
+            "subtitle": "أدخل الرمز المكون من 6 أرقام من تطبيق المصادقة",
+            "code": "رمز التحقق",
+            "submit": "تحقق",
+            "useBackup": "استخدم رمز نسخ احتياطي بدلاً من ذلك",
+            "resendCode": "إعادة إرسال الرمز",
+            "backupCode": "رمز النسخ الاحتياطي",
+            "success": "التحقق ناجح",
+            "setupTitle": "إعداد المصادقة ذات العاملين",
+            "scanQr": "امسح رمز QR هذا بتطبيق المصادقة",
+            "manualEntry": "أو أدخل هذا الرمز يدوياً",
+            "enterCode": "أدخل الرمز المكون من 6 أرقام من تطبيقك",
+            "confirmSetup": "تأكيد الإعداد",
+            "backupCodesTitle": "رموز النسخ الاحتياطي",
+            "backupCodesDescription": "احفظ رموز النسخ الاحتياطي هذه في مكان آمن. يمكنك استخدامها إذا فقدت الوصول إلى المصادقة.",
+            "copyCodes": "نسخ الرموز",
+            "done": "تم",
+            "invalidCode": "رمز غير صالح. الرجاء المحاولة مرة أخرى.",
+            "tooManyAttempts": "محاولات غير صحيحة كثيرة جداً. الرجاء المحاولة مرة أخرى."
+        },
+        "passkey": {
+            "title": "المصادقة بمفتاح المرور",
+            "subtitle": "سجّل الدخول باستخدام مفتاح المرور",
+            "usePasskey": "استخدام مفتاح المرور",
+            "addPasskey": "إضافة مفتاح مرور",
+            "removePasskey": "إزالة مفتاح المرور",
+            "passkeyAdded": "تم إضافة مفتاح المرور بنجاح",
+            "passkeyRemoved": "تم إزالة مفتاح المرور",
+            "error": "حدث خطأ في مفتاح المرور"
+        },
+        "consent": {
+            "title": "الموافقة مطلوبة",
+            "subtitle": "يطلب التطبيق الوصول إلى حسابك",
+            "permissions": "الأذونات",
+            "approve": "موافقة",
+            "deny": "رفض",
+            "scopes": {
+                "openid": "OpenID Connect",
+                "profile": "عرض ملفك الشخصي",
+                "email": "عرض عنوان بريدك الإلكتروني",
+                "phone": "عرض رقم هاتفك"
+            }
+        },
+        "interaction": {
+            "title": "المصادقة مطلوبة",
+            "subtitle": "الرجاء إكمال المصادقة",
+            "continue": "متابعة",
+            "cancel": "إلغاء"
+        },
+        "Callback": {
+            "processing": "جاري معالجة المصادقة...",
+            "success": "المصادقة ناجحة",
+            "error": "فشل المصادقة"
+        },
+        "signedOut": {
+            "title": "تم تسجيل الخروج",
+            "subtitle": "تم تسجيل الخروج بنجاح",
+            "signInAgain": "تسجيل الدخول مرة أخرى",
+            "returnHome": "العودة إلى الصفحة الرئيسية"
+        },
+        "session": {
+            "expired": "انتهت جلستك",
+            "expiredMessage": "الرجاء تسجيل الدخول مرة أخرى للمتابعة.",
+            "expiredAction": "تسجيل الدخول"
+        }
+    },
+    "dashboard": {
+        "welcome": "مرحباً بعودتك، {{name}}!",
+        "overview": "نظرة عامة على لوحة التحكم",
+        "quickActions": "إجراءات سريعة",
+        "recentActivity": "النشاط الأخير",
+        "notifications": "الإشعارات",
+        "settings": "الإعدادات",
+        "profile": "ملفي الشخصي",
+        "security": "الأمان",
+        "wallet": "المحفظة",
+        "help": "المساعدة والدعم"
+    },
+    "profile": {
+        "title": "إعدادات الملف الشخصي",
+        "personal": {
+            "title": "المعلومات الشخصية",
+            "firstName": "الاسم الأول",
+            "lastName": "الاسم الأخير",
+            "email": "عنوان البريد الإلكتروني",
+            "phone": "رقم الهاتف",
+            "dateOfBirth": "تاريخ الميلاد",
+            "nationality": "الجنسية",
+            "save": "حفظ التغييرات"
+        },
+        "security": {
+            "title": "الأمان",
+            "password": {
+                "title": "كلمة المرور",
+                "currentPassword": "كلمة المرور الحالية",
+                "newPassword": "كلمة المرور الجديدة",
+                "confirmPassword": "تأكيد كلمة المرور",
+                "update": "تحديث كلمة المرور",
+                "success": "تم تحديث كلمة المرور بنجاح",
+                "error": "فشل في تحديث كلمة المرور"
+            },
+            "mfa": {
+                "title": "المصادقة ذات العاملين",
+                "enabled": "مُمكَّن",
+                "disabled": "مُعطَّل",
+                "setup": "إعداد MFA",
+                "disable": "تعطيل MFA",
+                "backupCodes": "رموز النسخ الاحتياطي"
+            },
+            "sessions": {
+                "title": "الجلسات",
+                "active": "جلسات نشطة",
+                "current": "الجهاز الحالي",
+                "revoke": "إلغاء",
+                "revokeAll": "إلغاء الكل"
+            },
+            "passkeys": {
+                "title": "مفاتيح المرور",
+                "add": "إضافة مفتاح مرور",
+                "remove": "إزالة مفتاح مرور"
+            }
+        },
+        "preferences": {
+            "title": "التفضيلات",
+            "language": "اللغة",
+            "theme": "السمة",
+            "notifications": "الإشعارات",
+            "emailNotifications": "إشعارات البريد الإلكتروني",
+            "smsNotifications": "إشعارات SMS",
+            "pushNotifications": "الإشعارات الفورية"
+        },
+        "organizations": {
+            "title": "المنظمات",
+            "current": "المنظمة الحالية",
+            "switch": "تبديل المنظمة",
+            "role": "الدور",
+            "leave": "مغادرة المنظمة"
+        }
+    },
+    "security": {
+        "title": "الأمان",
+        "password": {
+            "title": "إدارة كلمة المرور",
+            "currentPassword": "كلمة المرور الحالية",
+            "newPassword": "كلمة المرور الجديدة",
+            "confirmPassword": "تأكيد كلمة المرور",
+            "update": "تحديث كلمة المرور",
+            "strength": "قوة كلمة المرور",
+            "weak": "ضعيفة",
+            "fair": "متوسطة",
+            "good": "جيدة",
+            "strong": "قوية"
+        },
+        "mfa": {
+            "title": "المصادقة ذات العاملين",
+            "status": "حالة MFA",
+            "enabled": "مُمكَّن",
+            "disabled": "مُعطَّل",
+            "setup": "إعداد MFA",
+            "disable": "تعطيل MFA",
+            "methods": {
+                "authenticator": "تطبيق المصادقة",
+                "sms": "SMS",
+                "email": "البريد الإلكتروني"
+            },
+            "backupCodes": {
+                "title": "رموز النسخ الاحتياطي",
+                "description": "يمكن استخدام هذه الرموز إذا فقدت الوصول إلى طريقتك العادية لـ MFA.",
+                "generate": "إنشاء رموز جديدة",
+                "copy": "نسخ"
+            }
+        },
+        "sessions": {
+            "title": "الجلسات",
+            "description": "عرض وإدارة جميع جلساتك.",
+            "active": "جلسات نشطة",
+            "current": "الجهاز الحالي",
+            "location": "الموقع",
+            "device": "الجهاز",
+            "lastActive": "آخر نشاط",
+            "revoke": "إلغاء",
+            "revokeAll": "إلغاء الكل",
+            "revokeAllConfirm": "هل أنت متأكد أنك تريد تسجيل الخروج من جميع الجلسات؟"
+        },
+        "activity": {
+            "title": "نشاط المصادقة",
+            "description": "عرض سجل تسجيل الدخول.",
+            "recent": "النشاط الأخير",
+            "login": "تسجيل الدخول",
+            "logout": "تسجيل الخروج",
+            "failedLogin": "فشل تسجيل الدخول",
+            "passwordChange": "تغيير كلمة المرور",
+            "mfaSetup": "إعداد MFA",
+            "mfaDisable": "تعطيل MFA"
+        }
+    },
+    "admin": {
+        "title": "إدارة النظام",
+        "dashboard": {
+            "title": "لوحة التحكم الإدارية",
+            "stats": {
+                "totalUsers": "المستخدمون الإجمالي",
+                "activeUsers": "المستخدمون النشطون",
+                "totalOrgs": "المنظمات الإجمالية",
+                "activeSessions": "الجلسات النشطة"
+            }
+        },
+        "users": {
+            "title": "المستخدمون",
+            "add": "إضافة مستخدم",
+            "edit": "تعديل مستخدم",
+            "delete": "حذف مستخدم",
+            "search": "بحث عن مستخدمين",
+            "status": "الحالة",
+            "active": "نشط",
+            "inactive": "غير نشط",
+            "suspended": "معلق",
+            "role": "الدور",
+            "email": "البريد الإلكتروني",
+            "phone": "الهاتف",
+            "createdAt": "تاريخ الإنشاء",
+            "lastLogin": "آخر تسجيل دخول"
+        },
+        "organizations": {
+            "title": "المنظمات",
+            "add": "إضافة منظمة",
+            "edit": "تعديل منظمة",
+            "delete": "حذف منظمة",
+            "name": "الاسم",
+            "type": "النوع",
+            "domain": "النطاق",
+            "status": "الحالة",
+            "active": "نشطة",
+            "inactive": "غير نشطة"
+        },
+        "audit": {
+            "title": "سجل التدقيق",
+            "description": "عرض جميع أنشطة النظام.",
+            "filter": "تصفية",
+            "dateRange": "نطاق التاريخ",
+            "action": "الإجراء",
+            "user": "المستخدم",
+            "timestamp": "الوقت",
+            "details": "التفاصيل"
+        },
+        "apps": {
+            "title": "التطبيقات",
+            "add": "تسجيل تطبيق",
+            "edit": "تعديل تطبيق",
+            "delete": "حذف تطبيق",
+            "name": "اسم التطبيق",
+            "clientId": "معرف العميل",
+            "redirectUris": "URIs إعادة التوجيه",
+            "type": "النوع",
+            "public": "عام",
+            "confidential": "سري"
+        },
+        "settings": {
+            "title": "الإعدادات الإدارية",
+            "general": "الإعدادات العامة",
+            "security": "الأمان",
+            "notifications": "الإشعارات",
+            "branding": "العلامة التجارية"
+        }
+    },
+    "wallet": {
+        "title": "محفظتي",
+        "balance": {
+            "title": "الرصيد",
+            "available": "الرصيد المتاح",
+            "pending": "الرصيد المعلق",
+            "currency": "USD"
+        },
+        "transactions": {
+            "title": "المعاملات",
+            "history": "سجل المعاملات",
+            "filter": "تصفية المعاملات",
+            "all": "الكل",
+            "deposit": "إيداع",
+            "withdrawal": "سحب",
+            "payment": "دفع",
+            "refund": "استرداد",
+            "date": "التاريخ",
+            "description": "الوصف",
+            "amount": "المبلغ",
+            "status": "الحالة",
+            "pending": "قيد الانتظار",
+            "completed": "مكتمل",
+            "failed": "فشل"
+        },
+        "paymentMethods": {
+            "title": "طرق الدفع",
+            "add": "إضافة طريقة دفع",
+            "card": "بطاقة",
+            "bankAccount": "حساب بنكي",
+            "mobileMoney": "محفظة الهاتف",
+            "default": "افتراضي",
+            "remove": "إزالة"
+        },
+        "topUp": {
+            "title": "إعادة تعبئة الرصيد",
+            "amount": "المبلغ",
+            "method": "الطريقة",
+            "submit": "إعادة التعبئة الآن",
+            "success": "تم إضافة الرصيد بنجاح",
+            "error": "فشل في إضافة الرصيد"
+        },
+        "withdraw": {
+            "title": "سحب الأموال",
+            "amount": "المبلغ",
+            "method": "الطريقة",
+            "submit": "سحب الآن",
+            "success": "تم تقديم الطلب",
+            "error": "فشل في تقديم الطلب"
+        }
+    },
+    "notifications": {
+        "title": "الإشعارات",
+        "all": "الكل",
+        "unread": "غير مقروء",
+        "read": "مقروء",
+        "markAllRead": "标记全部为已读",
+        "markAsRead": "标记为已读",
+        "delete": "حذف",
+        "deleteAll": "حذف الكل",
+        "empty": "لا توجد إشعارات",
+        "types": {
+            "info": "معلومات",
+            "success": "نجاح",
+            "warning": "تحذير",
+            "error": "خطأ"
+        },
+        "preferences": {
+            "title": "تفضيلات الإشعارات",
+            "email": "إشعارات البريد الإلكتروني",
+            "sms": "إشعارات SMS",
+            "push": "الإشعارات الفورية",
+            "marketing": "إشعارات التسويق"
+        }
+    },
+    "support": {
+        "title": "المساعدة والدعم",
+        "helpCenter": "مركز المساعدة",
+        "faq": "الأسئلة الشائعة",
+        "contact": "اتصل بنا",
+        "submitTicket": "تقديم تذكرة",
+        "subject": "الموضوع",
+        "message": "الرسالة",
+        "submit": "إرسال",
+        "success": "تم إرسال تذكرتك",
+        "error": "فشل في إرسال التذكرة",
+        "liveChat": "دردشة مباشرة",
+        "phone": "هاتف",
+        "email": "بريد إلكتروني"
+    },
+    "legal": {
+        "title": "قانوني",
+        "terms": {
+            "title": "شروط الخدمة",
+            "content": "شروط الخدمة تحكم استخدامك لخدماتنا."
+        },
+        "privacy": {
+            "title": "سياسة الخصوصية",
+            "content": "توضح سياسة الخصوصية الخاصة بنا كيفية جمعنا واستخدامنا وحماية بياناتك."
+        },
+        "cookies": {
+            "title": "سياسة ملفات تعريف الارتباط",
+            "content": "نستخدم ملفات تعريف الارتباط لتحسين تجربتك."
+        }
+    },
+    "privacy": {
+        "title": "إدارة الخصوصية",
+        "data": {
+            "title": "بياناتك",
+            "download": "تحميل بياناتك",
+            "delete": "حذف بياناتك"
+        },
+        "sharing": {
+            "title": "مشاركة البيانات",
+            "apps": "التطبيقات المتصلة",
+            "revoke": "إلغاء الوصول"
+        },
+        "history": {
+            "title": "سجل البيانات",
+            "access": "وصول البيانات",
+            "changes": "تغييرات البيانات"
+        }
+    },
+    "errors": {
+        "403": {
+            "title": "تم رفض الوصول",
+            "message": "ليس لديك إذن لعرض هذه الصفحة.",
+            "back": "رجوع",
+            "home": "الصفحة الرئيسية"
+        },
+        "404": {
+            "title": "غير موجود",
+            "message": "الصفحة التي تبحث عنها غير موجودة.",
+            "back": "رجوع",
+            "home": "الصفحة الرئيسية"
+        },
+        "429": {
+            "title": "طلبات كثيرة جداً",
+            "message": "لقد وصلت إلى حد الطلبات. الرجاء الانتظار.",
+            "back": "رجوع",
+            "home": "الصفحة الرئيسية"
+        },
+        "500": {
+            "title": "خطأ في الخادم",
+            "message": "حدث خطأ في النظام.",
+            "back": "إعادة المحاولة",
+            "home": "الصفحة الرئيسية"
+        },
+        "offline": {
+            "title": "لا يوجد اتصال",
+            "message": "تحقق من اتصالك بالإنترنت.",
+            "retry": "إعادة المحاولة"
+        }
+    },
+    "parental": {
+        "title": "إدارة الوالدين",
+        "dashboard": {
+            "title": "لوحة تحكم الوالدين",
+            "welcome": "مرحباً {{name}}!",
+            "children": "الأطفال",
+            "activities": "الأنشطة",
+            "settings": "الإعدادات"
+        },
+        "children": {
+            "title": "أطفالي",
+            "add": "إضافة طفل",
+            "edit": "تعديل طفل",
+            "delete": "حذف طفل",
+            "name": "الاسم",
+            "age": "العمر",
+            "profile": "الملف الشخصي",
+            "status": "الحالة",
+            "active": "نشط",
+            "inactive": "غير نشط"
+        },
+        "activities": {
+            "title": "أنشطة الأطفال",
+            "filter": "تصفية الأنشطة",
+            "date": "التاريخ",
+            "child": "الطفل",
+            "type": "النوع",
+            "duration": "المدة",
+            "status": "الحالة",
+            "pending": "قيد الانتظار",
+            "approved": "موافق عليه",
+            "rejected": "مرفوض",
+            "completed": "مكتمل"
+        },
+        "requests": {
+            "title": "الطلبات",
+            "approve": "موافقة",
+            "reject": "رفض",
+            "pending": "قيد الانتظار",
+            "history": "سجل الطلبات"
+        },
+        "settings": {
+            "title": "إعدادات الوالدين",
+            "restrictions": "القيود",
+            "timeLimits": "حدود الوقت",
+            "contentFilters": "مرشحات المحتوى",
+            "notifications": "الإشعارات"
+        },
+        "household": {
+            "title": "الأسرة",
+            "members": "أفراد الأسرة",
+            "invite": "دعوة عضو",
+            "remove": "إزالة عضو",
+            "role": "الدور"
+        }
+    },
+    "apps": {
+        "title": "التطبيقات المتصلة",
+        "available": "التطبيقات المتاحة",
+        "connected": "التطبيقات المتصلة",
+        "connect": "اتصال",
+        "disconnect": "قطع الاتصال",
+        "manage": "إدارة",
+        "permissions": "الأذونات",
+        "access": "الوصول"
+    },
+    "footer": {
+        "terms": "الشروط",
+        "privacy": "الخصوصية",
+        "help": "المساعدة",
+        "contact": "اتصل بنا",
+        "copyright": "© 2025 EVzone. جميع الحقوق محفوظة."
+    }
+}

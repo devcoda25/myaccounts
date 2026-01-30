@@ -1,28 +1,721 @@
 {
-    "app_name": "EVzone 我的账户",
-    "auth": {
-        "sign_in": "登录",
-        "sign_out": "退出",
-        "create_account": "创建账户",
-        "forgot_password": "忘记密码？",
-        "email_placeholder": "name@example.com",
-        "password_placeholder": "密码"
+  "app": {
+    "name": "EVzone 我的帳戶",
+    "tagline": "適用於所有 EVzone 服務的統一帳戶"
+  },
+  "common": {
+    "actions": {
+      "save": "儲存",
+      "cancel": "取消",
+      "delete": "刪除",
+      "edit": "編輯",
+      "submit": "提交",
+      "close": "關閉",
+      "back": "返回",
+      "next": "下一步",
+      "confirm": "確認",
+      "search": "搜尋",
+      "filter": "篩選",
+      "clear": "清除",
+      "reset": "重置",
+      "refresh": "重新整理",
+      "retry": "重試",
+      "continue": "繼續",
+      "done": "完成",
+      "send": "傳送",
+      "download": "下載",
+      "upload": "上傳",
+      "copy": "複製",
+      "view": "檢視",
+      "hide": "隱藏",
+      "show": "顯示",
+      "expand": "展開",
+      "collapse": "收起",
+      "select": "選擇",
+      "selectAll": "全選",
+      "deselectAll": "取消全選",
+      "add": "新增",
+      "remove": "移除",
+      "update": "更新",
+      "create": "建立",
+      "signIn": "登入",
+      "signOut": "退出登入",
+      "signUp": "註冊",
+      "login": "登入",
+      "logout": "退出登入",
+      "register": "註冊"
     },
-    "header": {
-        "search": "搜索...",
-        "language": "语言",
-        "theme": "主题",
-        "notifications": "通知",
-        "profile": "个人资料",
-        "settings": "设置",
-        "help": "帮助"
+    "errors": {
+      "required": "此欄位為必填項",
+      "invalidEmail": "請輸入有效的電子郵件地址",
+      "invalidPhone": "請輸入有效的電話號碼",
+      "passwordTooShort": "密碼至少需 8 個字元",
+      "passwordRequiresUppercase": "密碼必須包含大寫字母",
+      "passwordRequiresLowercase": "密碼必須包含小寫字母",
+      "passwordRequiresNumber": "密碼必須包含數字",
+      "passwordRequiresSpecial": "密碼必須包含特殊字元",
+      "passwordsDoNotMatch": "兩次輸入的密碼不一致",
+      "networkError": "網路錯誤。請重試。",
+      "serverError": "伺服器錯誤。請稍後再試。",
+      "unknownError": "發生意外錯誤。",
+      "sessionExpired": "會話已過期。請重新登入。",
+      "invalidCredentials": "憑據無效。請重試。",
+      "tooManyAttempts": "嘗試次數過多。請稍後再試。",
+      "accountLocked": "你的帳戶已被鎖定。",
+      "emailAlreadyExists": "此電子郵件已註冊帳戶。",
+      "userNotFound": "未找到使用者。",
+      "unauthorized": "你無權執行此操作。",
+      "forbidden": "訪問被拒絕。",
+      "notFound": "未找到請求的資源。",
+      "badRequest": "無效請求。",
+      "internalServerError": "內部伺服器錯誤。",
+      "serviceUnavailable": "服務暫時不可用。",
+      "validationError": "請檢查輸入並重試。"
     },
-    "languages": {
-        "en": "英语",
-        "fr": "法语",
-        "zh": "中文",
-        "es": "西班牙语",
-        "ar": "阿拉伯语",
-        "sw": "斯瓦希里语"
+    "loading": {
+      "loading": "載入中…",
+      "pleaseWait": "請稍候…",
+      "processing": "處理中…",
+      "saving": "儲存中…",
+      "deleting": "刪除中…",
+      "updating": "更新中…",
+      "signingIn": "正在登入…",
+      "signingOut": "正在退出…"
+    },
+    "validation": {
+      "confirmDelete": "確定要刪除此項嗎？",
+      "unsavedChanges": "你有未儲存的更改。確定要離開嗎？",
+      "minLength": "至少需要 {{count}} 個字元",
+      "maxLength": "最多為 {{count}} 個字元",
+      "minValue": "數值至少為 {{count}}",
+      "maxValue": "數值最多為 {{count}}"
+    },
+    "placeholders": {
+      "email": "輸入你的電子郵件",
+      "phone": "輸入你的電話號碼",
+      "password": "輸入你的密碼",
+      "newPassword": "輸入新密碼",
+      "confirmPassword": "確認你的密碼",
+      "search": "搜尋…",
+      "selectOption": "請選擇一個選項"
     }
+  },
+  "loading": {
+    "session": "正在初始化安全會話…"
+  },
+  "error": {
+    "title": "身份驗證錯誤",
+    "sessionFailed": "無法初始化安全會話。",
+    "retry": "重試"
+  },
+  "password": {
+    "weak": "弱",
+    "fair": "一般",
+    "good": "良好",
+    "strong": "強",
+    "veryStrong": "非常強"
+  },
+  "header": {
+    "title": "EVzone 帳戶",
+    "subtitle": "建立你的 EVzone 身份"
+  },
+  "auth": {
+    "common": {
+      "loading": "載入中…",
+      "or": "或",
+      "email": "電子郵件",
+      "phone": "電話",
+      "terms": "條款",
+      "privacy": "隱私",
+      "help": "幫助",
+      "signIn": "登入",
+      "signUp": "註冊",
+      "switchToLight": "切換到淺色模式",
+      "switchToDark": "切換到深色模式",
+      "continue": "繼續",
+      "back": "返回",
+      "cancel": "取消",
+      "save": "儲存",
+      "submit": "提交",
+      "verify": "驗證",
+      "send": "傳送"
+    },
+    "signIn": {
+      "title": "登入",
+      "subtitle": "歡迎回來！請登入以繼續。",
+      "emailOrPhone": "電子郵件或電話",
+      "password": "密碼",
+      "forgotPassword": "忘記密碼？",
+      "rememberMe": "記住我",
+      "submit": "登入",
+      "noAccount": "還沒有帳戶？",
+      "signUp": "註冊",
+      "orContinueWith": "或使用以下方式繼續",
+      "checking": "正在檢查…",
+      "unavailable": "不可用",
+      "errors": {
+        "enterEmailOrPhone": "請輸入你的電子郵件或手機號碼。",
+        "enterPassword": "請輸入密碼以繼續。",
+        "invalidCredentials": "憑據無效。請重試。",
+        "locked": "已鎖定。請在 {{seconds}} 秒後重試。"
+      },
+      "verifying": "正在驗證憑據…",
+      "failed": "登入失敗",
+      "left": {
+        "title": "一個帳戶，暢享所有 EVzone 服務",
+        "subtitle": "使用一個安全身份無縫訪問充電、商城和支付。",
+        "demoNote": "演示已預填：example@mail.com"
+      },
+      "right": {
+        "subtitle": "以繼續訪問 EVzone 門戶"
+      },
+      "features": {
+        "secureSessions": {
+          "title": "安全會話",
+          "desc": "銀行級安全監控，全天候 24/7。"
+        },
+        "passkeys": {
+          "title": "通行金鑰與生物識別",
+          "desc": "使用 TouchID 或 FaceID 登入。"
+        },
+        "privacy": {
+          "title": "隱私優先",
+          "desc": "我們最大化保護你的資料隱私。"
+        }
+      },
+      "showPassword": "顯示密碼",
+      "hidePassword": "隱藏密碼",
+      "switchingToPassword": "正在切換到密碼…",
+      "placeholders": {
+        "email": "name@example.com"
+      },
+      "useOtpTitle": "使用一次性驗證碼",
+      "useOtpSubtitle": "沒有密碼？使用驗證碼登入。",
+      "comingSoon": "即將推出",
+      "otpComingSoon": "一次性驗證碼登入正在整合中。",
+      "sendCode": "傳送驗證碼",
+      "termsAgree": "繼續即表示你同意 EVzone 的條款與隱私政策。",
+      "locked": "已鎖定。請在 {{seconds}} 秒後重試。"
+    },
+    "signUp": {
+      "sectionTitle": "帳戶建立",
+      "sectionSubtitle": "為所有 EVzone 服務建立一個安全的統一 ID。",
+      "secureIdentity": "安全身份",
+      "secureIdentityDesc": "為你的資產提供銀行級安全保障。",
+      "clearPermissions": "許可權透明",
+      "clearPermissionsDesc": "你可以控制資料共享。",
+      "backToSignIn": "返回到登入",
+      "createAccount": "建立帳戶",
+      "getStarted": "開始使用 EVzone",
+      "continueWithGoogle": "使用 Google 繼續",
+      "continueWithApple": "使用 Apple 繼續",
+      "firstName": "名",
+      "firstNamePlaceholder": "例如：Jane",
+      "otherNames": "其他姓名",
+      "otherNamesPlaceholder": "例如：Doe",
+      "email": "電子郵件地址",
+      "emailPlaceholder": "name@example.com",
+      "phone": "電話號碼",
+      "phonePlaceholder": "700 000 000",
+      "createWithOtp": "使用一次性驗證碼建立",
+      "createWithOtpDesc": "無需密碼。我們將驗證你的手機號碼。",
+      "createPassword": "建立密碼",
+      "confirmPassword": "確認密碼",
+      "otpInfo": "你將收到一次性驗證碼（OTP）以驗證你的帳戶。",
+      "inviteCode": "邀請碼（可選）",
+      "inviteCodePlaceholder": "例如：EVZ-123",
+      "termsAgreement": "我同意服務條款和隱私政策。",
+      "continue": "繼續",
+      "switchToSignIn": "切換到登入",
+      "verifyContactInfo": "下一步驗證你的聯絡資訊。",
+      "validation": {
+        "firstNameRequired": "請輸入你的名字。",
+        "otherNamesRequired": "請輸入你的其他姓名。",
+        "emailOrPhoneRequired": "至少提供一個電子郵件或手機號碼。",
+        "validEmailRequired": "請輸入有效的電子郵件地址。",
+        "termsRequired": "你必須接受條款和隱私政策。",
+        "passwordRequired": "建立密碼。",
+        "passwordMinLength": "密碼至少需 8 個字元。",
+        "passwordsDoNotMatch": "兩次輸入的密碼不一致。"
+      },
+      "notification": {
+        "registrationInfo": "註冊資訊",
+        "accountCreated": "帳戶已建立",
+        "accountCreatedSuccess": "帳戶建立成功！正在安全登入…",
+        "verifyEmail": "驗證你的電子郵件",
+        "verifyEmailSuccess": "帳戶已建立！請檢查收件箱中的驗證連結。",
+        "registrationFailed": "註冊失敗",
+        "registrationFailedMessage": "建立帳戶失敗。請重試。"
+      }
+    },
+    "forgotPassword": {
+      "subtitle": "忘記密碼",
+      "resetAccess": "重置訪問許可權",
+      "resetAccessDesc": "使用已驗證的電子郵件或手機號碼找回帳戶。",
+      "rateLimiting": "頻率限制",
+      "rateLimitingDesc": "每次請求之間請等待 30 秒。",
+      "secureLink": "安全連結",
+      "secureLinkDesc": "我們會傳送魔法連結或驗證碼。",
+      "backToSignIn": "返回到登入",
+      "checkContact": "檢查你的 {{type}}",
+      "instructionsSent": "我們已透過 {{method}} 將說明傳送至 {{mask}}。",
+      "nextSteps": "下一步",
+      "nextStepsDesc": "點選連結或輸入驗證碼以重置密碼。",
+      "enterResetCode": "輸入重置驗證碼",
+      "resendIn": "{{seconds}} 秒後可重新傳送",
+      "sendAgain": "再次傳送",
+      "changeContactInfo": "更改聯絡資訊",
+      "needHelp": "需要幫助？",
+      "title": "忘記密碼",
+      "enterToRecover": "輸入你的電子郵件或手機號碼以找回帳戶。",
+      "identifierLabel": "輸入電子郵件或手機號碼",
+      "identifierPlaceholder": "name@example.com",
+      "validIdentifierHint": "請輸入有效的電子郵件或手機號碼。",
+      "deliveryMethod": "傳送方式",
+      "captchaLabel": "我不是機器人",
+      "captchaDesc": "完成驗證碼驗證。",
+      "accountRecoveryHelp": "帳戶找回幫助",
+      "spamTip": "提示：如果沒有收到郵件，請檢查垃圾郵件資料夾。",
+      "confirmSend": "確認傳送",
+      "sendTo": "將找回說明傳送至：",
+      "viaMethod": "透過 {{method}}",
+      "invalidatePrevious": "這將使之前的連結失效。",
+      "sendInstructions": "傳送說明",
+      "delivery": {
+        "emailLink": "郵件連結",
+        "emailLinkDesc": "向你的電子郵件傳送魔法連結。",
+        "smsCode": "簡訊驗證碼",
+        "smsCodeDesc": "向你的手機傳送 6 位驗證碼。",
+        "whatsappCode": "WhatsApp 驗證碼",
+        "whatsappCodeDesc": "透過 WhatsApp 傳送驗證碼。"
+      },
+      "phoneMethodsHint": "如果輸入手機號碼，將提供手機驗證方式。",
+      "validation": {
+        "enterIdentifier": "輸入電子郵件或手機號碼",
+        "validIdentifier": "請輸入有效的電子郵件或手機號碼。",
+        "waitCooldown": "請等待 {{seconds}} 秒",
+        "completeCaptcha": "請完成驗證碼驗證。"
+      },
+      "notification": {
+        "sentSuccess": "已透過 {{via}} 成功傳送。",
+        "sendFailed": "請求傳送失敗。請重試。"
+      }
+    },
+    "resetPassword": {
+      "subtitle": "重置密碼",
+      "createNewPassword": "建立新密碼",
+      "enterNewPassword": "為你的帳戶設定新密碼。",
+      "navigateToForgot": "前往 /auth/forgot-password",
+      "backToForgotPassword": "返回到忘記密碼",
+      "title": "重置密碼",
+      "enterDetails": "輸入資訊以重置密碼。",
+      "tokenTab": "令牌",
+      "codeTab": "驗證碼",
+      "resetToken": "重置令牌",
+      "tokenPlaceholder": "輸入令牌",
+      "tokenHelperText": "請檢視電子郵件獲取令牌。",
+      "verifyToken": "驗證令牌",
+      "identifierLabel": "電子郵件或電話",
+      "identifierPlaceholder": "輸入電子郵件或手機號碼",
+      "identifierHelper": "我們將根據你的輸入確定驗證方式。",
+      "deliveryMethod": "傳送方式",
+      "codeSent": "驗證碼已傳送",
+      "sendCode": "傳送驗證碼",
+      "resendCode": "重新傳送驗證碼",
+      "verifyCode": "驗證驗證碼",
+      "newPassword": "新密碼",
+      "confirmPassword": "確認密碼",
+      "requirements": "要求",
+      "signOutAll": "退出所有其他裝置",
+      "resetButton": "重置密碼",
+      "passwordUpdated": "密碼已更新",
+      "passwordChangedSuccess": "你的密碼已成功更改。",
+      "goToSignIn": "前往登入",
+      "accountRecoveryHelp": "帳戶找回幫助",
+      "navigateToHelp": "前往 /auth/account-recovery-help",
+      "channel": {
+        "email": "電子郵件",
+        "emailDesc": "傳送到電子郵件",
+        "sms": "簡訊",
+        "smsDesc": "透過簡訊傳送",
+        "whatsapp": "WhatsApp",
+        "whatsappDesc": "透過 WhatsApp 傳送"
+      },
+      "phoneChannelsDisabled": "電子郵件使用者無法使用手機通道。",
+      "req": {
+        "length": "至少 8 個字元",
+        "uppercase": "一個大寫字母",
+        "lowercase": "一個小寫字母",
+        "number": "一個數字",
+        "special": "一個特殊字元",
+        "match": "密碼一致"
+      },
+      "validation": {
+        "tokenRequired": "請輸入重置令牌。",
+        "identifierRequired": "請輸入你的電子郵件或手機號碼。",
+        "invalidIdentifier": "電子郵件或手機號碼無效。",
+        "codeRequired": "請輸入 6 位驗證碼。",
+        "passwordRequired": "請輸入密碼。",
+        "passwordStrength": "密碼強度不足。",
+        "passwordsDoNotMatch": "兩次輸入的密碼不一致。"
+      },
+      "notification": {
+        "codeSentEmail": "驗證碼已傳送至電子郵件。",
+        "codeSentVia": "驗證碼已透過 {{channel}} 傳送。",
+        "sendFailed": "傳送驗證碼失敗。",
+        "resetSuccessSignedOut": "密碼已重置。你已退出登入。",
+        "resetSuccess": "密碼重置成功。",
+        "resetFailed": "重置密碼失敗。驗證碼/令牌無效。"
+      }
+    },
+    "verifyEmail": {
+      "pageTitle": "驗證電子郵件地址",
+      "checkInbox": "檢視你的收件箱",
+      "codeSentTo": "我們已向 {{email}} 傳送驗證碼。",
+      "openEmailApp": "開啟電子郵件應用",
+      "openEmailAppDesc": "點選開啟電子郵件客戶端。",
+      "resendCode": "重新傳送驗證碼",
+      "resendCodeDesc": "點選下方傳送新驗證碼。",
+      "openEmail": "開啟電子郵件",
+      "changeEmail": "更改電子郵件",
+      "emailVerified": "電子郵件已驗證",
+      "verificationSuccessDesc": "你已成功驗證 {{email}}。",
+      "nextSteps": "下一步",
+      "nextStepsDesc": "繼續驗證你的手機號碼。",
+      "title": "驗證電子郵件地址",
+      "verify": "驗證",
+      "resendIn": "{{seconds}} 秒後可重新傳送",
+      "needHelp": "需要幫助？",
+      "changeEmailDialog": "更改電子郵件地址",
+      "changeEmailDesc": "在下方輸入新電子郵件地址以接收驗證碼。",
+      "emailLabel": "電子郵件地址",
+      "emailPlaceholder": "name@example.com",
+      "saveAndSend": "儲存併傳送",
+      "validation": {
+        "codeRequired": "請輸入 6 位驗證碼。"
+      },
+      "notification": {
+        "codeSent": "驗證碼已傳送至 {{email}}。",
+        "sendFailed": "傳送驗證碼失敗",
+        "openingEmail": "正在開啟電子郵件應用…",
+        "verificationSuccess": "電子郵件驗證成功。",
+        "invalidCode": "驗證碼無效。請重試。"
+      }
+    },
+    "verifyPhone": {
+      "title": "驗證手機號碼",
+      "subtitle": "請輸入傳送到你手機的驗證碼。",
+      "code": "驗證碼",
+      "submit": "驗證手機號碼",
+      "resendCode": "重新傳送驗證碼",
+      "resendSuccess": "驗證碼已傳送",
+      "success": "手機號碼驗證成功",
+      "successMessage": "你的手機號碼已驗證。"
+    },
+    "mfa": {
+      "title": "雙重驗證",
+      "subtitle": "輸入驗證器應用中的 6 位驗證碼",
+      "code": "驗證碼",
+      "submit": "驗證",
+      "useBackup": "改用備份程式碼",
+      "resendCode": "重新傳送驗證碼",
+      "backupCode": "備份程式碼",
+      "success": "驗證成功",
+      "setupTitle": "設定雙重驗證",
+      "scanQr": "使用驗證器應用掃描此二維碼",
+      "manualEntry": "或手動輸入此程式碼",
+      "enterCode": "輸入應用中的 6 位驗證碼",
+      "confirmSetup": "確認設定",
+      "backupCodesTitle": "備份程式碼",
+      "backupCodesDescription": "將這些備份程式碼儲存在安全的地方。如果你失去對驗證器的訪問許可權，可以使用它們。",
+      "copyCodes": "複製程式碼",
+      "done": "完成",
+      "invalidCode": "驗證碼無效。請重試。",
+      "tooManyAttempts": "錯誤次數過多。請重試。"
+    },
+    "passkey": {
+      "title": "通行金鑰認證",
+      "subtitle": "使用通行金鑰登入",
+      "usePasskey": "使用通行金鑰",
+      "addPasskey": "新增通行金鑰",
+      "removePasskey": "移除通行金鑰",
+      "passkeyAdded": "通行金鑰新增成功",
+      "passkeyRemoved": "通行金鑰已移除",
+      "error": "通行金鑰發生錯誤"
+    },
+    "consent": {
+      "title": "需要同意",
+      "subtitle": "應用請求訪問你的帳戶",
+      "permissions": "許可權",
+      "approve": "批准",
+      "deny": "拒絕",
+      "scopes": {
+        "openid": "開放身份連線",
+        "profile": "檢視你的個人資料",
+        "email": "檢視你的電子郵件地址",
+        "phone": "檢視你的電話號碼"
+      }
+    },
+    "interaction": {
+      "title": "需要身份驗證",
+      "subtitle": "請完成身份驗證",
+      "continue": "繼續",
+      "cancel": "取消"
+    },
+    "Callback": {
+      "processing": "正在處理身份驗證…",
+      "success": "身份驗證成功",
+      "error": "身份驗證失敗"
+    },
+    "signedOut": {
+      "title": "已退出登入",
+      "subtitle": "你已成功退出登入",
+      "signInAgain": "重新登入",
+      "returnHome": "返回首頁"
+    },
+    "session": {
+      "expired": "會話已過期",
+      "expiredMessage": "請重新登入以繼續。",
+      "expiredAction": "登入"
+    }
+  },
+  "dashboard": {
+    "welcome": "歡迎回來，{{name}}！",
+    "overview": "儀表板概覽",
+    "quickActions": "快捷操作",
+    "recentActivity": "最近活動",
+    "notifications": "通知",
+    "settings": "設定",
+    "profile": "我的資料",
+    "security": "安全",
+    "wallet": "錢包",
+    "help": "幫助與支援"
+  },
+  "profile": {
+    "title": "個人資料設定",
+    "personal": {
+      "title": "個人資訊",
+      "firstName": "名",
+      "lastName": "姓",
+      "email": "電子郵件地址",
+      "phone": "電話號碼",
+      "save": "儲存更改"
+    },
+    "contact": {
+      "title": "聯絡資訊",
+      "address": "地址",
+      "city": "城市",
+      "country": "國家/地區",
+      "postalCode": "郵政編碼"
+    },
+    "linkedAccounts": {
+      "title": "已關聯帳戶",
+      "description": "管理已連線的帳戶",
+      "google": "Google",
+      "apple": "Apple",
+      "connect": "連線",
+      "disconnect": "斷開連線",
+      "connected": "已連線",
+      "notConnected": "未連線"
+    }
+  },
+  "security": {
+    "title": "安全設定",
+    "password": {
+      "title": "密碼",
+      "current": "當前密碼",
+      "new": "新密碼",
+      "confirm": "確認新密碼",
+      "update": "更新密碼",
+      "success": "密碼更新成功",
+      "error": "密碼更新失敗"
+    },
+    "twoFactor": {
+      "title": "雙重驗證",
+      "enabled": "已啟用",
+      "disabled": "已禁用",
+      "enable": "啟用 2FA",
+      "disable": "禁用 2FA",
+      "setup": "設定 2FA",
+      "description": "為你的帳戶增加額外安全層"
+    },
+    "sessions": {
+      "title": "活躍會話",
+      "description": "管理你的活躍會話",
+      "current": "當前會話",
+      "other": "其他會話",
+      "revoke": "撤銷",
+      "revokeAll": "撤銷所有其他會話"
+    },
+    "activity": {
+      "title": "登入活動",
+      "description": "檢視你最近的登入活動",
+      "recentLogins": "最近登入",
+      "location": "位置",
+      "device": "裝置",
+      "time": "時間"
+    },
+    "passkeys": {
+      "title": "通行金鑰",
+      "description": "管理用於免密登入的通行金鑰",
+      "add": "新增通行金鑰",
+      "remove": "移除",
+      "lastUsed": "上次使用"
+    },
+    "recoveryCodes": {
+      "title": "恢復程式碼",
+      "description": "如果你丟失了 2FA 裝置，可使用這些程式碼訪問帳戶",
+      "generate": "生成新程式碼",
+      "copied": "程式碼已複製到剪貼簿"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "管理員儀表板",
+      "users": "總使用者數",
+      "active": "活躍使用者",
+      "revenue": "收入",
+      "systemHealth": "系統健康"
+    },
+    "users": {
+      "title": "使用者管理",
+      "search": "搜尋使用者…",
+      "add": "新增使用者",
+      "edit": "編輯使用者",
+      "delete": "刪除使用者",
+      "status": "狀態",
+      "active": "活躍",
+      "inactive": "非活躍",
+      "suspended": "已暫停"
+    },
+    "apps": {
+      "title": "應用管理",
+      "add": "註冊應用",
+      "edit": "編輯應用",
+      "delete": "刪除應用",
+      "clientId": "客戶端 ID",
+      "redirectUris": "重定向 URI"
+    },
+    "audit": {
+      "title": "審計日誌",
+      "filter": "篩選日誌",
+      "export": "匯出"
+    },
+    "kyc": {
+      "title": "KYC 驗證",
+      "pending": "待處理",
+      "approved": "已批准",
+      "rejected": "已拒絕"
+    }
+  },
+  "wallet": {
+    "title": "我的錢包",
+    "balance": "餘額",
+    "currency": "USD",
+    "addFunds": "新增資金",
+    "withdraw": "提現",
+    "transactions": "交易",
+    "history": "交易記錄",
+    "pending": "待處理",
+    "completed": "已完成",
+    "failed": "失敗",
+    "deposit": "充值",
+    "payment": "支付",
+    "refund": "退款"
+  },
+  "support": {
+    "title": "幫助與支援",
+    "faq": "常見問題",
+    "contact": "聯絡支援",
+    "submitTicket": "提交工單",
+    "myTickets": "我的工單",
+    "openTickets": "開放工單",
+    "closedTickets": "已關閉工單",
+    "securityReport": {
+      "title": "報告安全問題",
+      "subtitle": "幫助我們透過報告漏洞來保障 EVzone 安全",
+      "type": "問題型別",
+      "url": "發現問題的 URL",
+      "description": "描述",
+      "steps": "重現步驟"
+    }
+  },
+  "legal": {
+    "terms": {
+      "title": "服務條款",
+      "lastUpdated": "最後更新 {{date}}",
+      "accept": "我接受服務條款"
+    },
+    "privacy": {
+      "title": "隱私政策",
+      "lastUpdated": "最後更新 {{date}}"
+    },
+    "cookies": {
+      "title": "Cookie 政策",
+      "lastUpdated": "最後更新 {{date}}",
+      "description": "本網站使用 Cookie 以提升你的體驗。",
+      "acceptAll": "全部接受",
+      "rejectAll": "全部拒絕",
+      "customize": "自定義"
+    },
+    "consent": {
+      "title": "隱私同意",
+      "description": "管理你的隱私偏好",
+      "necessary": "必要",
+      "functional": "功能性",
+      "analytics": "分析",
+      "marketing": "營銷",
+      "savePreferences": "儲存偏好設定"
+    }
+  },
+  "errors": {
+    "403": {
+      "title": "訪問被拒絕",
+      "subtitle": "你沒有許可權訪問此頁面。",
+      "description": "你可能沒有檢視此內容所需的許可權。",
+      "action": "前往儀表板"
+    },
+    "404": {
+      "title": "頁面未找到",
+      "subtitle": "你要找的頁面不存在。",
+      "description": "未找到你請求的頁面。它可能已被移動或刪除。",
+      "action": "返回首頁"
+    },
+    "429": {
+      "title": "請求過多",
+      "subtitle": "請放慢速度",
+      "description": "你在短時間內發出了太多請求。請稍等片刻後再試。",
+      "action": "再試一次"
+    },
+    "500": {
+      "title": "出了點問題",
+      "subtitle": "發生意外錯誤",
+      "description": "很抱歉，出現了問題。我們的團隊已收到通知。",
+      "action": "前往儀表板",
+      "support": "聯絡支援"
+    }
+  },
+  "footer": {
+    "copyright": "© {{year}} EVzone。保留所有權利。",
+    "terms": "服務條款",
+    "privacy": "隱私政策",
+    "cookies": "Cookie 政策",
+    "contact": "聯絡我們",
+    "help": "幫助中心",
+    "about": "關於 EVzone",
+    "careers": "招聘",
+    "press": "新聞",
+    "social": "關注我們"
+  },
+  "accessibility": {
+    "skipToContent": "跳到主要內容",
+    "menuToggle": "切換選單",
+    "closeMenu": "關閉選單",
+    "openSearch": "開啟搜尋",
+    "closeSearch": "關閉搜尋",
+    "previous": "上一頁",
+    "next": "下一步",
+    "expandSection": "展開部分",
+    "collapseSection": "收起部分"
+  }
 }

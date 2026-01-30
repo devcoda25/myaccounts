@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from "react-i18next";
 import { Box, Card, CardContent, Typography, useTheme, alpha } from '@mui/material';
 import { Users as UsersIcon, Wallet as WalletIcon, Lock as LockIcon, Shield as ShieldIcon } from 'lucide-react';
 import { EVZONE } from '../styles';

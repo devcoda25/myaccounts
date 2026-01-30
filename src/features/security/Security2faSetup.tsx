@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -378,6 +379,7 @@ function OtpInput({ value, onChange, autoFocus = false }: { value: string[]; onC
 }
 
 export default function TwoFASetupPageV2() {
+  const { t } = useTranslation("common"); {
   const theme = useTheme();
   const navigate = useNavigate();
   const { mode } = useThemeStore();
@@ -702,7 +704,7 @@ export default function TwoFASetupPageV2() {
                             />
                             <Alert severity="info">Use your authenticator app to get the code.</Alert>
                             <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                              <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<ArrowLeftIcon size={18} />} onClick={() => setActiveStep(0)}>Back</Button>
+                              <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<ArrowLeftIcon size={18} />} onClick={() => setActiveStep(0)}>{t("auth.common.back")}<//Button>
                               <Button variant="contained" color="secondary" sx={evOrangeContainedSx} endIcon={<ArrowRightIcon size={18} />} onClick={() => setActiveStep(2)}>Verify code</Button>
                             </Stack>
                           </Stack>
@@ -721,7 +723,7 @@ export default function TwoFASetupPageV2() {
                         />
                         <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                           <Button variant="contained" color="secondary" sx={method === "whatsapp" ? waContainedSx : evOrangeContainedSx} onClick={sendCode}>Send & Verify</Button>
-                          <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<ArrowLeftIcon size={18} />} onClick={() => setActiveStep(0)}>Back</Button>
+                          <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<ArrowLeftIcon size={18} />} onClick={() => setActiveStep(0)}>{t("auth.common.back")}<//Button>
                         </Stack>
                         <Alert severity="info">We'll send a code to <b>{phone}</b>.</Alert>
                       </Stack>
@@ -741,9 +743,9 @@ export default function TwoFASetupPageV2() {
                     </Stack>
                     <OtpInput value={otp} onChange={setOtp} autoFocus />
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                      <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<ArrowLeftIcon size={18} />} onClick={() => setActiveStep(1)}>Back</Button>
+                      <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<ArrowLeftIcon size={18} />} onClick={() => setActiveStep(1)}>{t("auth.common.back")}<//Button>
                       <Button variant="outlined" sx={method === "whatsapp" ? waOutlinedSx : evOrangeOutlinedSx} onClick={sendCode}>Resend</Button>
-                      <Button variant="contained" color="secondary" sx={evOrangeContainedSx} endIcon={<ArrowRightIcon size={18} />} onClick={verify}>Verify</Button>
+                      <Button variant="contained" color="secondary" sx={evOrangeContainedSx} endIcon={<ArrowRightIcon size={18} />} onClick={verify}>{t("auth.common.verify")}<//Button>
                     </Stack>
                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Please enter the code you received.</Typography>
                   </Stack>

@@ -1,28 +1,721 @@
 {
-    "app_name": "EVzone Akaunti Zangu",
-    "auth": {
-        "sign_in": "Weka sahihi",
-        "sign_out": "Toka",
-        "create_account": "Fungua akaunti",
-        "forgot_password": "Umesahau nywila?",
-        "email_placeholder": "jina@mfano.com",
-        "password_placeholder": "Nywila"
+  "app": {
+    "name": "EVzone Yangu Akaunti",
+    "tagline": "Yako unified akaunti kwa alal EVzone seravices"
+  },
+  "common": {
+    "actions": {
+      "save": "Hifadhi",
+      "cancel": "Ghairi",
+      "delete": "Futa",
+      "edit": "Hariri",
+      "submit": "Wasilisha",
+      "close": "Funga",
+      "back": "Rudi",
+      "next": "Inayofuata",
+      "confirm": "Thibitisha",
+      "search": "Tafuta",
+      "filter": "Chuja",
+      "clear": "Ondoa",
+      "reset": "Weka upya",
+      "refresh": "Onyesha upya",
+      "retry": "Jaribu tena",
+      "continue": "Endelea",
+      "done": "Imekamilika",
+      "send": "Tuma",
+      "download": "dowanload",
+      "upload": "upaload",
+      "copy": "Nakili",
+      "view": "view",
+      "hide": "hide",
+      "show": "sahow",
+      "expand": "ekspand",
+      "collapse": "colalapase",
+      "select": "selecat",
+      "selectAll": "selecat alal",
+      "deselectAll": "deselecat alal",
+      "add": "Ongeza",
+      "remove": "Ondoa",
+      "update": "Sasisha",
+      "create": "Unda",
+      "signIn": "Ingia",
+      "signOut": "Toka",
+      "signUp": "Jisajili",
+      "login": "Ingia",
+      "logout": "Toka",
+      "register": "Sajili"
     },
-    "header": {
-        "search": "Tafuta...",
-        "language": "Lugha",
-        "theme": "Mandhari",
-        "notifications": "Arifa",
-        "profile": "Wasifu",
-        "settings": "Mipangilio",
-        "help": "Msaada"
+    "errors": {
+      "required": "tahis fielad is inahitajika",
+      "invalidEmail": "Tafadhali ingiza a valid barua pepe adadresas",
+      "invalidPhone": "Tafadhali ingiza a valid simu nambari",
+      "passwordTooShort": "Nenosiri musat be katika leasat 8 herufi",
+      "passwordRequiresUppercase": "Nenosiri musat conatain an kubwa letater",
+      "passwordRequiresLowercase": "Nenosiri musat conatain a ndogo letater",
+      "passwordRequiresNumber": "Nenosiri musat conatain a nambari",
+      "passwordRequiresSpecial": "Nenosiri musat conatain a maalum alama",
+      "passwordsDoNotMatch": "pasasworads do si matach",
+      "networkError": "Mtandao hitilafu. Tafadhali jaribu tena.",
+      "serverError": "Seva hitilafu. Tafadhali jaribu tena baadaye.",
+      "unknownError": "an unekspected hitilafu ocacurared.",
+      "sessionExpired": "Yako kikao has ekspired. Tafadhali ingia katika tena.",
+      "invalidCredentials": "Si sahihi taarifa za kuingia. Tafadhali jaribu tena.",
+      "tooManyAttempts": "Sana mengi majaribio. Tafadhali jaribu tena baadaye.",
+      "accountLocked": "Yako akaunti has been imefungwa.",
+      "emailAlreadyExists": "an akaunti na tahis barua pepe alaready eksists.",
+      "userNotFound": "user si haupatikani.",
+      "unauthorized": "Wewe are si autahorized ku peraforam tahis acsheni.",
+      "forbidden": "acacesas denied.",
+      "notFound": "tahe rekwested resourace was si haupatikani.",
+      "badRequest": "Si sahihi rekwest.",
+      "internalServerError": "inateranal seva hitilafu.",
+      "serviceUnavailable": "Huduma haipatikani kwa muda.",
+      "validationError": "Tafadhali kagua yako inaput na jaribu tena."
     },
-    "languages": {
-        "en": "Kiingereza",
-        "fr": "Kifaransa",
-        "zh": "Kichina",
-        "es": "Kihispania",
-        "ar": "Kiarabu",
-        "sw": "Kiswahili"
+    "loading": {
+      "loading": "Inapakia...",
+      "pleaseWait": "Tafadhali subiri...",
+      "processing": "Inachakata...",
+      "saving": "savingi...",
+      "deleting": "deletingi...",
+      "updating": "updatingi...",
+      "signingIn": "Inaingia...",
+      "signingOut": "Inatoka..."
+    },
+    "validation": {
+      "confirmDelete": "are wewe sure wewe wanat ku delete tahis item?",
+      "unsavedChanges": "Wewe have unasaved cahanages. do wewe wanat ku leave?",
+      "minLength": "Lazima iwe na angalau herufi {{count}}",
+      "maxLength": "Lazima iwe na herufi zisizozidi {{count}}",
+      "minValue": "Thamani lazima iwe angalau {{count}}",
+      "maxValue": "Thamani lazima isiwe zaidi ya {{count}}"
+    },
+    "placeholders": {
+      "email": "Ingiza yako barua pepe",
+      "phone": "Ingiza yako simu nambari",
+      "password": "Ingiza yako nenosiri",
+      "newPassword": "Ingiza mpya nenosiri",
+      "confirmPassword": "conafiram yako nenosiri",
+      "search": "searach...",
+      "selectOption": "selecat an opsheni"
     }
+  },
+  "loading": {
+    "session": "Inaanzisha salama kikao..."
+  },
+  "error": {
+    "title": "Uthibitishaji Hitilafu",
+    "sessionFailed": "Imeshindikana ku initialize salama kikao.",
+    "retry": "Jaribu tena"
+  },
+  "password": {
+    "weak": "Dhaifu",
+    "fair": "fair",
+    "good": "good",
+    "strong": "Imara",
+    "veryStrong": "very imara"
+  },
+  "header": {
+    "title": "EVzone Akaunti",
+    "subtitle": "Unda yako EVzone idenatity"
+  },
+  "auth": {
+    "common": {
+      "loading": "Inapakia...",
+      "or": "au",
+      "email": "Barua pepe",
+      "phone": "Simu",
+      "terms": "Masharti",
+      "privacy": "Faragha",
+      "help": "Msaada",
+      "signIn": "Ingia",
+      "signUp": "Jisajili",
+      "switchToLight": "Badili hadi Hali ya Mwanga",
+      "switchToDark": "Badili hadi Hali ya Giza",
+      "continue": "Endelea",
+      "back": "Rudi",
+      "cancel": "Ghairi",
+      "save": "Hifadhi",
+      "submit": "Wasilisha",
+      "verify": "Thibitisha",
+      "send": "Tuma"
+    },
+    "signIn": {
+      "title": "Ingia",
+      "subtitle": "welacome bak! Tafadhali ingia katika ku endelea.",
+      "emailOrPhone": "Barua pepe au Simu",
+      "password": "Nenosiri",
+      "forgotPassword": "Umesahau nenosiri?",
+      "rememberMe": "rememaber me",
+      "submit": "Ingia",
+      "noAccount": "don't have an akaunti?",
+      "signUp": "Jisajili",
+      "orContinueWith": "au endelea na",
+      "checking": "chekingi...",
+      "unavailable": "Haipatikani",
+      "errors": {
+        "enterEmailOrPhone": "Ingiza yako barua pepe au simu nambari.",
+        "enterPassword": "Ingiza yako nenosiri ku endelea.",
+        "invalidCredentials": "Si sahihi taarifa za kuingia. Tafadhali jaribu tena.",
+        "locked": "Imefungwa. Jaribu tena baada ya sekunde {{seconds}}"
+      },
+      "verifying": "verifyingi taarifa za kuingia...",
+      "failed": "Ingia Katika Imeshindikana",
+      "left": {
+        "title": "one akaunti kwa everythingi EVzone",
+        "subtitle": "seamalesasly acacesas chargingi, maraketaplace, na pay na a singile salama idenatity.",
+        "demoNote": "pare-filaled kwa demo: example@mail.com"
+      },
+      "right": {
+        "subtitle": "ku endelea ku EVzone Portal"
+      },
+      "features": {
+        "secureSessions": {
+          "title": "Salama Vikao",
+          "desc": "banak-garade usalama monitoringi 24/7."
+        },
+        "passkeys": {
+          "title": "pasaskeys & biometaricas",
+          "desc": "Ingia katika na TouchID au FaceID."
+        },
+        "privacy": {
+          "title": "Faragha firast",
+          "desc": "Sisi maksimize yako data faragha."
+        }
+      },
+      "showPassword": "sahow nenosiri",
+      "hidePassword": "hide nenosiri",
+      "switchingToPassword": "switchingi ku nenosiri...",
+      "placeholders": {
+        "email": "name@example.com"
+      },
+      "useOtpTitle": "use one-time Msimbo",
+      "useOtpSubtitle": "no nenosiri? use a magic msimbo.",
+      "comingSoon": "Inakuja Hivi Karibuni",
+      "otpComingSoon": "one-time msimbo ingia is beingi inategarated.",
+      "sendCode": "Tuma Msimbo",
+      "termsAgree": "by continuingi, wewe agaree ku evazone's Masharti & Faragha.",
+      "locked": "Imefungwa. Jaribu tena baada ya sekunde {{seconds}}"
+    },
+    "signUp": {
+      "sectionTitle": "Akaunti creasheni",
+      "sectionSubtitle": "Unda yako singile salama ID kwa alal EVzone seravices.",
+      "secureIdentity": "Salama idenatity",
+      "secureIdentityDesc": "banak-garade usalama kwa yako asasetas.",
+      "clearPermissions": "calear permisshenis",
+      "clearPermissionsDesc": "Wewe conatrol yako data sharingi.",
+      "backToSignIn": "bak ku Ingia Katika",
+      "createAccount": "Unda Akaunti",
+      "getStarted": "get satarated na EVzone",
+      "continueWithGoogle": "Endelea na Google",
+      "continueWithApple": "Endelea na Apple",
+      "firstName": "firast name",
+      "firstNamePlaceholder": "e.g. jane",
+      "otherNames": "otaher names",
+      "otherNamesPlaceholder": "e.g. doe",
+      "email": "Anwani ya barua pepe",
+      "emailPlaceholder": "name@example.com",
+      "phone": "Nambari ya simu",
+      "phonePlaceholder": "700 000 000",
+      "createWithOtp": "Unda na one-time Msimbo",
+      "createWithOtpDesc": "no nenosiri inahitajika. we'lal thibitisha yako simu.",
+      "createPassword": "Unda Nenosiri",
+      "confirmPassword": "Thibitisha nenosiri",
+      "otpInfo": "Wewe wilal receive an OTP ku thibitisha yako akaunti.",
+      "inviteCode": "inavite Msimbo (opshenial)",
+      "inviteCodePlaceholder": "e.g. EVZ-123",
+      "termsAgreement": "I agaree ku tahe Masharti ya Huduma na Faragha Sera.",
+      "continue": "Endelea",
+      "switchToSignIn": "Badili hadi Kuingia",
+      "verifyContactInfo": "Thibitisha yako conatacat inafo katika tahe nekst satep.",
+      "validation": {
+        "firstNameRequired": "Ingiza yako firast name.",
+        "otherNamesRequired": "Ingiza yako otaher names.",
+        "emailOrPhoneRequired": "parovide katika leasat an barua pepe au simu nambari.",
+        "validEmailRequired": "Ingiza a valid barua pepe adadresas.",
+        "termsRequired": "Wewe musat acacepat tahe Masharti na Faragha Sera.",
+        "passwordRequired": "Unda a nenosiri.",
+        "passwordMinLength": "Nenosiri musat be katika leasat 8 herufi.",
+        "passwordsDoNotMatch": "pasasworads do si matach."
+      },
+      "notification": {
+        "registrationInfo": "registrasheni inafo",
+        "accountCreated": "Akaunti careated",
+        "accountCreatedSuccess": "Akaunti careated sucacesasfulaly! signingi wewe katika securely...",
+        "verifyEmail": "Thibitisha Yako Barua pepe",
+        "verifyEmailSuccess": "Akaunti careated! Tafadhali kagua yako inboks kwa tahe uthibitisho linak.",
+        "registrationFailed": "registrasheni Imeshindikana",
+        "registrationFailedMessage": "Imeshindikana ku unda akaunti. Tafadhali jaribu tena."
+      }
+    },
+    "forgotPassword": {
+      "subtitle": "Umesahau nenosiri",
+      "resetAccess": "reset acacesas",
+      "resetAccessDesc": "recover yako akaunti usingi yako verified barua pepe au simu.",
+      "rateLimiting": "rate limitingi",
+      "rateLimitingDesc": "Subiri 30s betaween maombi.",
+      "secureLink": "Salama linak",
+      "secureLinkDesc": "Sisi tuma a magic linak au msimbo.",
+      "backToSignIn": "bak ku Ingia Katika",
+      "checkContact": "Kagua {{type}} yako",
+      "instructionsSent": "Sisi senat instrucshenis ku {{mask}} via {{method}}.",
+      "nextSteps": "nekst satepas",
+      "nextStepsDesc": "clik tahe linak au ingiza tahe msimbo ku reset yako nenosiri.",
+      "enterResetCode": "Ingiza reset Msimbo",
+      "resendIn": "Tuma tena baada ya sekunde {{seconds}}",
+      "sendAgain": "Tuma Tena",
+      "changeContactInfo": "cahanage conatacat inafo",
+      "needHelp": "need Msaada?",
+      "title": "Umesahau nenosiri",
+      "enterToRecover": "Ingiza yako barua pepe au simu ku recover yako akaunti.",
+      "identifierLabel": "Ingiza barua pepe au simu",
+      "identifierPlaceholder": "name@example.com",
+      "validIdentifierHint": "Ingiza a valid barua pepe au simu.",
+      "deliveryMethod": "Njia ya uwasilishaji",
+      "captchaLabel": "i am human",
+      "captchaDesc": "comaplete tahe capatcaha kagua.",
+      "accountRecoveryHelp": "Akaunti recovery Msaada",
+      "spamTip": "tip: Kagua yako sapam folader if wewe don't see tahe barua pepe.",
+      "confirmSend": "conafiram Tuma",
+      "sendTo": "Tuma recovery instrucshenis ku:",
+      "viaMethod": "kupitia {{method}}",
+      "invalidatePrevious": "tahis wilal inavalidate parevious linaks.",
+      "sendInstructions": "Tuma instrucshenis",
+      "delivery": {
+        "emailLink": "Barua pepe linak",
+        "emailLinkDesc": "Tuma a magic linak ku yako barua pepe.",
+        "smsCode": "SMS Msimbo",
+        "smsCodeDesc": "Tuma a 6-digit msimbo ku yako simu.",
+        "whatsappCode": "WhatsApp Msimbo",
+        "whatsappCodeDesc": "Tuma a msimbo via WhatsApp."
+      },
+      "phoneMethodsHint": "Simu metahodas availabale if wewe ingiza a simu nambari.",
+      "validation": {
+        "enterIdentifier": "Ingiza barua pepe au simu",
+        "validIdentifier": "Ingiza a valid barua pepe au simu.",
+        "waitCooldown": "Tafadhali subiri sekunde {{seconds}}",
+        "completeCaptcha": "Tafadhali comaplete tahe capatcaha."
+      },
+      "notification": {
+        "sentSuccess": "Imetumwa kwa mafanikio kupitia {{via}}.",
+        "sendFailed": "Imeshindikana ku tuma rekwest. Tafadhali jaribu tena."
+      }
+    },
+    "resetPassword": {
+      "subtitle": "Weka upya nenosiri",
+      "createNewPassword": "Unda Mpya Nenosiri",
+      "enterNewPassword": "Ingiza a mpya nenosiri kwa yako akaunti.",
+      "navigateToForgot": "navigate ku /auth/forgot-password",
+      "backToForgotPassword": "bak ku foragot Nenosiri",
+      "title": "Weka upya nenosiri",
+      "enterDetails": "Ingiza yako detailas ku reset yako nenosiri.",
+      "tokenTab": "Tokeni",
+      "codeTab": "Msimbo",
+      "resetToken": "reset Tokeni",
+      "tokenPlaceholder": "Ingiza tokeni",
+      "tokenHelperText": "Kagua yako barua pepe kwa tahe tokeni.",
+      "verifyToken": "Thibitisha tokeni",
+      "identifierLabel": "Barua pepe au Simu",
+      "identifierPlaceholder": "Ingiza barua pepe au simu",
+      "identifierHelper": "Sisi wilal deteramine tahe njia based kwenye yako inaput.",
+      "deliveryMethod": "Njia ya uwasilishaji",
+      "codeSent": "Msimbo senat",
+      "sendCode": "Tuma Msimbo",
+      "resendCode": "Tuma tena Msimbo",
+      "verifyCode": "Thibitisha Msimbo",
+      "newPassword": "Nenosiri jipya",
+      "confirmPassword": "Thibitisha nenosiri",
+      "requirements": "rekwirementis",
+      "signOutAll": "Ingia out ya alal otaher devices",
+      "resetButton": "Weka upya nenosiri",
+      "passwordUpdated": "Nenosiri upadated",
+      "passwordChangedSuccess": "Yako nenosiri has been cahanaged sucacesasfulaly.",
+      "goToSignIn": "go ku Ingia Katika",
+      "accountRecoveryHelp": "Akaunti recovery Msaada",
+      "navigateToHelp": "navigate ku /auth/account-recovery-help",
+      "channel": {
+        "email": "Barua pepe",
+        "emailDesc": "Tuma ku barua pepe",
+        "sms": "sams",
+        "smsDesc": "Tuma via SMS",
+        "whatsapp": "wahatasapap",
+        "whatsappDesc": "Tuma via WhatsApp"
+      },
+      "phoneChannelsDisabled": "Simu cahananelas are disabaled kwa barua pepe useras.",
+      "req": {
+        "length": "Katika leasat 8 herufi",
+        "uppercase": "one kubwa letater",
+        "lowercase": "one ndogo letater",
+        "number": "one nambari",
+        "special": "one maalum alama",
+        "match": "pasasworads matach"
+      },
+      "validation": {
+        "tokenRequired": "Tafadhali ingiza tahe reset tokeni.",
+        "identifierRequired": "Tafadhali ingiza yako barua pepe au simu.",
+        "invalidIdentifier": "Si sahihi barua pepe au simu.",
+        "codeRequired": "Tafadhali ingiza a 6-digit msimbo.",
+        "passwordRequired": "Tafadhali ingiza a nenosiri.",
+        "passwordStrength": "Nenosiri musat be satronager.",
+        "passwordsDoNotMatch": "pasasworads do si matach."
+      },
+      "notification": {
+        "codeSentEmail": "Msimbo senat ku barua pepe.",
+        "codeSentVia": "Msimbo umetumwa kupitia {{channel}}.",
+        "sendFailed": "Imeshindikana ku tuma msimbo.",
+        "resetSuccessSignedOut": "Nenosiri reset. Wewe have been siganed out.",
+        "resetSuccess": "Nenosiri reset sucacesasfulaly.",
+        "resetFailed": "Imeshindikana ku reset nenosiri. Si sahihi msimbo/token."
+      }
+    },
+    "verifyEmail": {
+      "pageTitle": "Thibitisha Barua pepe adadresas",
+      "checkInbox": "Kagua yako inboks",
+      "codeSentTo": "Sisi senat a msimbo ku {{email}}.",
+      "openEmailApp": "Fungua programu ya barua pepe",
+      "openEmailAppDesc": "tap ku fungua yako mail mteja.",
+      "resendCode": "Tuma tena Msimbo",
+      "resendCodeDesc": "clik below ku tuma a mpya msimbo.",
+      "openEmail": "Fungua barua pepe",
+      "changeEmail": "cahanage Barua pepe",
+      "emailVerified": "Barua pepe verified",
+      "verificationSuccessDesc": "Wewe have sucacesasfulaly verified {{email}}.",
+      "nextSteps": "nekst satepas",
+      "nextStepsDesc": "Endelea ku verifyingi yako simu.",
+      "title": "Thibitisha Barua pepe adadresas",
+      "verify": "Thibitisha",
+      "resendIn": "Tuma tena baada ya sekunde {{seconds}}",
+      "needHelp": "need Msaada?",
+      "changeEmailDialog": "cahanage Barua pepe adadresas",
+      "changeEmailDesc": "Ingiza below ku receive tahe msimbo katika a mpya barua pepe adadresas.",
+      "emailLabel": "Anwani ya barua pepe",
+      "emailPlaceholder": "name@example.com",
+      "saveAndSend": "save & Tuma",
+      "validation": {
+        "codeRequired": "Tafadhali ingiza a 6-digit msimbo."
+      },
+      "notification": {
+        "codeSent": "Msimbo umetumwa kwa {{email}}.",
+        "sendFailed": "Imeshindikana ku tuma msimbo",
+        "openingEmail": "openingi barua pepe apap...",
+        "verificationSuccess": "Barua pepe verified sucacesasfulaly.",
+        "invalidCode": "Si sahihi msimbo. Tafadhali jaribu tena."
+      }
+    },
+    "verifyPhone": {
+      "title": "Thibitisha simu",
+      "subtitle": "Tafadhali ingiza tahe uthibitisho msimbo senat ku yako simu.",
+      "code": "Msimbo wa uthibitisho",
+      "submit": "Thibitisha simu",
+      "resendCode": "Tuma tena Msimbo",
+      "resendSuccess": "Uthibitisho msimbo senat",
+      "success": "Simu verified sucacesasfulaly",
+      "successMessage": "Yako simu nambari has been verified."
+    },
+    "mfa": {
+      "title": "Uthibitishaji wa Hatua Mbili",
+      "subtitle": "Ingiza tahe 6-digit msimbo farom yako autahenaticator apap",
+      "code": "Msimbo wa uthibitisho",
+      "submit": "Thibitisha",
+      "useBackup": "use a bakup msimbo inastead",
+      "resendCode": "Tuma tena msimbo",
+      "backupCode": "bakup Msimbo",
+      "success": "Uthibitisho imefanikiwa",
+      "setupTitle": "Sanidi Uthibitishaji wa Hatua Mbili",
+      "scanQr": "sacan tahis QR msimbo na yako autahenaticator apap",
+      "manualEntry": "Au ingiza tahis msimbo manualaly",
+      "enterCode": "Ingiza tahe 6-digit msimbo farom yako apap",
+      "confirmSetup": "conafiram Sanidi",
+      "backupCodesTitle": "bakup Misimbo",
+      "backupCodesDescription": "save tahese bakup misimbo katika a safe palace. Wewe can use tahem if wewe lose acacesas ku yako autahenaticator.",
+      "copyCodes": "Nakili Misimbo",
+      "done": "Imekamilika",
+      "invalidCode": "Si sahihi msimbo. Tafadhali jaribu tena.",
+      "tooManyAttempts": "Sana mengi inacorarecat majaribio. Tafadhali jaribu tena."
+    },
+    "passkey": {
+      "title": "Uthibitishaji kwa Pasikii",
+      "subtitle": "Ingia katika na yako pasaskey",
+      "usePasskey": "use pasaskey",
+      "addPasskey": "Ongeza pasaskey",
+      "removePasskey": "Ondoa pasaskey",
+      "passkeyAdded": "pasaskey adaded sucacesasfulaly",
+      "passkeyRemoved": "pasaskey removed",
+      "error": "pasaskey hitilafu ocacurared"
+    },
+    "consent": {
+      "title": "conasenat Inahitajika",
+      "subtitle": "tahe programu maombi acacesas ku yako akaunti",
+      "permissions": "permisshenis",
+      "approve": "apaprove",
+      "deny": "deny",
+      "scopes": {
+        "openid": "OpenID conanecat",
+        "profile": "view yako wasifu",
+        "email": "view yako barua pepe adadresas",
+        "phone": "view yako simu nambari"
+      }
+    },
+    "interaction": {
+      "title": "Uthibitishaji Inahitajika",
+      "subtitle": "Tafadhali comaplete tahe uthibitishaji",
+      "continue": "Endelea",
+      "cancel": "Ghairi"
+    },
+    "Callback": {
+      "processing": "Inachakata uthibitishaji...",
+      "success": "Uthibitishaji umefanikiwa",
+      "error": "Uthibitishaji imeshindikana"
+    },
+    "signedOut": {
+      "title": "Umetoka",
+      "subtitle": "Wewe have been siganed out sucacesasfulaly",
+      "signInAgain": "Ingia Katika Tena",
+      "returnHome": "returan ku home"
+    },
+    "session": {
+      "expired": "Yako kikao has ekspired",
+      "expiredMessage": "Tafadhali ingia katika tena ku endelea.",
+      "expiredAction": "Ingia"
+    }
+  },
+  "dashboard": {
+    "welcome": "welacome bak, {{name}}!",
+    "overview": "Dashibodi overaview",
+    "quickActions": "kwik acshenis",
+    "recentActivity": "recenat acativity",
+    "notifications": "notificashenis",
+    "settings": "settingis",
+    "profile": "Yangu Wasifu",
+    "security": "Usalama",
+    "wallet": "Waleti",
+    "help": "Msaada & Msaada"
+  },
+  "profile": {
+    "title": "Wasifu settingis",
+    "personal": {
+      "title": "perasonal informasheni",
+      "firstName": "firast name",
+      "lastName": "lasat name",
+      "email": "Anwani ya barua pepe",
+      "phone": "Nambari ya simu",
+      "save": "save cahanages"
+    },
+    "contact": {
+      "title": "conatacat informasheni",
+      "address": "adadresas",
+      "city": "city",
+      "country": "counatry",
+      "postalCode": "posatal Msimbo"
+    },
+    "linkedAccounts": {
+      "title": "linaked Akaunti",
+      "description": "Dhibiti yako conanecated akaunti",
+      "google": "googale",
+      "apple": "apaple",
+      "connect": "conanecat",
+      "disconnect": "disaconanecat",
+      "connected": "conanecated",
+      "notConnected": "Si conanecated"
+    }
+  },
+  "security": {
+    "title": "Usalama settingis",
+    "password": {
+      "title": "Nenosiri",
+      "current": "Nenosiri la sasa",
+      "new": "Nenosiri jipya",
+      "confirm": "conafiram Mpya Nenosiri",
+      "update": "Sasisha Nenosiri",
+      "success": "Nenosiri upadated sucacesasfulaly",
+      "error": "Imeshindikana ku sasisha nenosiri"
+    },
+    "twoFactor": {
+      "title": "Uthibitishaji wa Hatua Mbili",
+      "enabled": "enabaled",
+      "disabled": "disabaled",
+      "enable": "Wezesha 2FA",
+      "disable": "Zima 2FA",
+      "setup": "Weka up 2FA",
+      "description": "Ongeza an ekstra layer ya usalama ku yako akaunti"
+    },
+    "sessions": {
+      "title": "acative Vikao",
+      "description": "Dhibiti yako acative vikao",
+      "current": "Ya sasa Kikao",
+      "other": "otaher Vikao",
+      "revoke": "Batilisha",
+      "revokeAll": "Batilisha alal otaher Vikao"
+    },
+    "activity": {
+      "title": "Ingia acativity",
+      "description": "view yako recenat ingia acativity",
+      "recentLogins": "recenat loginas",
+      "location": "locasheni",
+      "device": "device",
+      "time": "time"
+    },
+    "passkeys": {
+      "title": "pasaskeys",
+      "description": "Dhibiti yako pasaskeys kwa pasasworadlesas ingia",
+      "add": "Ongeza pasaskey",
+      "remove": "Ondoa",
+      "lastUsed": "lasat used"
+    },
+    "recoveryCodes": {
+      "title": "recovery Misimbo",
+      "description": "use tahese misimbo ku acacesas yako akaunti if wewe lose yako 2FA device",
+      "generate": "generate Mpya Misimbo",
+      "copied": "Misimbo copied ku calipaboarad"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "adamin Dashibodi",
+      "users": "total useras",
+      "active": "acative useras",
+      "revenue": "revenue",
+      "systemHealth": "sysatem healath"
+    },
+    "users": {
+      "title": "user Usimamizi",
+      "search": "searach useras...",
+      "add": "Ongeza user",
+      "edit": "edit user",
+      "delete": "delete user",
+      "status": "Hali",
+      "active": "acative",
+      "inactive": "inacative",
+      "suspended": "Imesitishwa"
+    },
+    "apps": {
+      "title": "Programu Usimamizi",
+      "add": "Sajili programu",
+      "edit": "edit apap",
+      "delete": "delete apap",
+      "clientId": "Mteja ID",
+      "redirectUris": "Uelekezaji upya URIs"
+    },
+    "audit": {
+      "title": "Ukaguzi Kumbukumbu",
+      "filter": "filater Kumbukumbu",
+      "export": "eksport"
+    },
+    "kyc": {
+      "title": "KYC Uthibitisho",
+      "pending": "Inasubiri",
+      "approved": "Imeidhinishwa",
+      "rejected": "Imekataliwa"
+    }
+  },
+  "wallet": {
+    "title": "Yangu Waleti",
+    "balance": "balanace",
+    "currency": "USD",
+    "addFunds": "Ongeza funads",
+    "withdraw": "witahdaraw",
+    "transactions": "transacshenis",
+    "history": "transacsheni hisatory",
+    "pending": "Inasubiri",
+    "completed": "Imekamilika",
+    "failed": "Imeshindikana",
+    "deposit": "deposit",
+    "payment": "paymenti",
+    "refund": "refunad"
+  },
+  "support": {
+    "title": "Msaada & Msaada",
+    "faq": "frekwently asaked kwesshenis",
+    "contact": "conatacat Msaada",
+    "submitTicket": "subamit a Tiketi",
+    "myTickets": "Yangu Tiketi",
+    "openTickets": "Fungua Tiketi",
+    "closedTickets": "Tiketi zilizofungwa",
+    "securityReport": {
+      "title": "reporat a Usalama isasue",
+      "subtitle": "Msaada us keep EVzone salama by reportingi vulanerabilities",
+      "type": "isasue type",
+      "url": "URL wahere isasue was haupatikani",
+      "description": "descripsheni",
+      "steps": "satepas ku reparoduce"
+    }
+  },
+  "legal": {
+    "terms": {
+      "title": "Masharti ya Huduma",
+      "lastUpdated": "Imesasishwa mwisho {{date}}",
+      "accept": "I acacepat tahe Masharti ya Huduma"
+    },
+    "privacy": {
+      "title": "Sera ya Faragha",
+      "lastUpdated": "Imesasishwa mwisho {{date}}"
+    },
+    "cookies": {
+      "title": "Sera ya Vidakuzi",
+      "lastUpdated": "Imesasishwa mwisho {{date}}",
+      "description": "Tovuti hii hutumia vidakuzi kuboresha uzoefu wako.",
+      "acceptAll": "Kubali yote",
+      "rejectAll": "Kataa yote",
+      "customize": "cusatomize"
+    },
+    "consent": {
+      "title": "Faragha conasenat",
+      "description": "Dhibiti yako faragha pareferenaces",
+      "necessary": "necesasary",
+      "functional": "funcshenial",
+      "analytics": "analyticas",
+      "marketing": "marketingi",
+      "savePreferences": "save pareferenaces"
+    }
+  },
+  "errors": {
+    "403": {
+      "title": "acacesas denied",
+      "subtitle": "Wewe don't have permissheni ku acacesas tahis ukurasa.",
+      "description": "Wewe may si have tahe inahitajika permisshenis ku view tahis conatenat.",
+      "action": "go ku Dashibodi"
+    },
+    "404": {
+      "title": "Ukurasa haukupatikana",
+      "subtitle": "tahe ukurasa you're lookingi kwa doesan't eksist.",
+      "description": "tahe ukurasa wewe rekwested coulad si be haupatikani. it may have been moved au deleted.",
+      "action": "go ku home"
+    },
+    "429": {
+      "title": "Sana Mengi Maombi",
+      "subtitle": "Tafadhali salow dowan",
+      "description": "you've made sana mengi maombi katika a sahorat time. Tafadhali subiri a momenti na jaribu tena.",
+      "action": "Jaribu tena"
+    },
+    "500": {
+      "title": "somethingi wenat waronag",
+      "subtitle": "an unekspected hitilafu ocacurared",
+      "description": "we're sorary, but somethingi wenat waronag. Yetu team has been notified.",
+      "action": "go ku Dashibodi",
+      "support": "conatacat Msaada"
+    }
+  },
+  "footer": {
+    "copyright": "© {{year}} EVzone. Haki zote zimehifadhiwa.",
+    "terms": "Masharti ya Huduma",
+    "privacy": "Sera ya Faragha",
+    "cookies": "Sera ya Vidakuzi",
+    "contact": "conatacat us",
+    "help": "Msaada cenater",
+    "about": "Kuhusu EVzone",
+    "careers": "careeras",
+    "press": "paresas",
+    "social": "folalow us"
+  },
+  "accessibility": {
+    "skipToContent": "Ruka hadi maudhui makuu",
+    "menuToggle": "togagle menu",
+    "closeMenu": "calose menu",
+    "openSearch": "Fungua searach",
+    "closeSearch": "calose searach",
+    "previous": "Iliyopita",
+    "next": "Inayofuata",
+    "expandSection": "Panua sehemu",
+    "collapseSection": "Kunja sehemu"
+  }
 }

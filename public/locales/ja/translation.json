@@ -1,0 +1,721 @@
+{
+  "app": {
+    "name": "EVzone マイアカウント",
+    "tagline": "EVzoneの全サービスに対応する統合アカウント"
+  },
+  "common": {
+    "actions": {
+      "save": "保存",
+      "cancel": "キャンセル",
+      "delete": "削除",
+      "edit": "編集",
+      "submit": "送信",
+      "close": "閉じる",
+      "back": "戻る",
+      "next": "次へ",
+      "confirm": "クオンフイルム",
+      "search": "検索",
+      "filter": "フィルター",
+      "clear": "クルエアル",
+      "reset": "ルエスエト",
+      "refresh": "更新",
+      "retry": "再試行",
+      "continue": "続行",
+      "done": "完了",
+      "send": "送信",
+      "download": "ダウンロード",
+      "upload": "アップロード",
+      "copy": "コピー",
+      "view": "ヴイエウ",
+      "hide": "ハイドエ",
+      "show": "スハオウ",
+      "expand": "エクスプアンド",
+      "collapse": "クオルルアプスエ",
+      "select": "スエルエクト",
+      "selectAll": "スエルエクト アルル",
+      "deselectAll": "ドエスエルエクト アルル",
+      "add": "追加",
+      "remove": "削除",
+      "update": "ウプドアトエ",
+      "create": "クルエアトエ",
+      "signIn": "ログイン",
+      "signOut": "ログアウト",
+      "signUp": "新規登録",
+      "login": "ルオグイン",
+      "logout": "ルオグオウト",
+      "register": "ルエグイストエル"
+    },
+    "errors": {
+      "required": "トハイス フイエルド イス 必須",
+      "invalidEmail": "プルエアスエ エントエル ア ヴアルイド メール 住所",
+      "invalidPhone": "プルエアスエ エントエル ア ヴアルイド 電話 ンウムブエル",
+      "passwordTooShort": "パスワード ムウスト ブエ アト ルエアスト 8 クハアルアクトエルス",
+      "passwordRequiresUppercase": "パスワード ムウスト クオントアイン アン ウププエルクアスエ ルエトトエル",
+      "passwordRequiresLowercase": "パスワード ムウスト クオントアイン ア ルオウエルクアスエ ルエトトエル",
+      "passwordRequiresNumber": "パスワード ムウスト クオントアイン ア ンウムブエル",
+      "passwordRequiresSpecial": "パスワード ムウスト クオントアイン ア スプエクイアル クハアルアクトエル",
+      "passwordsDoNotMatch": "パスワードが一致しません",
+      "networkError": "ネットワークエラーです。もう一度お試しください。",
+      "serverError": "サーバーエラーです。しばらくしてからもう一度お試しください。",
+      "unknownError": "予期しないエラーが発生しました。",
+      "sessionExpired": "セッションの有効期限が切れました。再度ログインしてください。",
+      "invalidCredentials": "認証情報が無効です。もう一度お試しください。",
+      "tooManyAttempts": "試行回数が多すぎます。後でもう一度お試しください。",
+      "accountLocked": "イオウル アカウント ハアス ブエエン ルオククエド.",
+      "emailAlreadyExists": "このメールアドレスのアカウントは既に存在します。",
+      "userNotFound": "ユーザーが見つかりません。",
+      "unauthorized": "この操作を実行する権限がありません。",
+      "forbidden": "アクセスが拒否されました。",
+      "notFound": "要求されたリソースが見つかりませんでした。",
+      "badRequest": "無効 ルエクウエスト.",
+      "internalServerError": "サーバー内部エラーです。",
+      "serviceUnavailable": "サービスは一時的に利用できません。",
+      "validationError": "プルエアスエ クハエクク イオウル インプウト アンド トルイ アグアイン."
+    },
+    "loading": {
+      "loading": "読み込み中...",
+      "pleaseWait": "お待ちください...",
+      "processing": "処理中...",
+      "saving": "スアヴイング...",
+      "deleting": "ドエルエトイング...",
+      "updating": "ウプドアトイング...",
+      "signingIn": "ログイン中...",
+      "signingOut": "ログアウト中..."
+    },
+    "validation": {
+      "confirmDelete": "アルエ イオウ スウルエ イオウ ウアント トオ 削除 トハイス イトエム?",
+      "unsavedChanges": "未保存の変更があります。移動しますか？",
+      "minLength": "{{count}} 文字以上で入力してください",
+      "maxLength": "{{count}} 文字以内で入力してください",
+      "minValue": "値は {{count}} 以上である必要があります",
+      "maxValue": "値は {{count}} 以下である必要があります"
+    },
+    "placeholders": {
+      "email": "エントエル イオウル メール",
+      "phone": "エントエル イオウル 電話 ンウムブエル",
+      "password": "エントエル イオウル パスワード",
+      "newPassword": "エントエル ンエウ パスワード",
+      "confirmPassword": "クオンフイルム イオウル パスワード",
+      "search": "検索...",
+      "selectOption": "スエルエクト アン オプション"
+    }
+  },
+  "loading": {
+    "session": "安全なセッションを初期化しています..."
+  },
+  "error": {
+    "title": "認証 エラー",
+    "sessionFailed": "失敗 トオ インイトイアルイズエ スエクウルエ セッション.",
+    "retry": "再試行"
+  },
+  "password": {
+    "weak": "弱い",
+    "fair": "普通",
+    "good": "良い",
+    "strong": "強い",
+    "veryStrong": "ヴエルイ 強い"
+  },
+  "header": {
+    "title": "EVzone アカウント",
+    "subtitle": "EVzone IDを作成"
+  },
+  "auth": {
+    "common": {
+      "loading": "読み込み中...",
+      "or": "オル",
+      "email": "メール",
+      "phone": "電話",
+      "terms": "規約",
+      "privacy": "プライバシー",
+      "help": "ハエルプ",
+      "signIn": "ログイン",
+      "signUp": "新規登録",
+      "switchToLight": "ライトモードに切り替え",
+      "switchToDark": "ダークモードに切り替え",
+      "continue": "続行",
+      "back": "戻る",
+      "cancel": "キャンセル",
+      "save": "保存",
+      "submit": "送信",
+      "verify": "確認",
+      "send": "送信"
+    },
+    "signIn": {
+      "title": "ログイン",
+      "subtitle": "ウエルクオムエ 戻る! プルエアスエ スイグン イン トオ 続行.",
+      "emailOrPhone": "メール オル 電話",
+      "password": "パスワード",
+      "forgotPassword": "パスワードをお忘れですか？",
+      "rememberMe": "ログイン状態を保持",
+      "submit": "ログイン",
+      "noAccount": "ドオント ハアヴエ アン アカウント?",
+      "signUp": "新規登録",
+      "orContinueWith": "オル 続行 ウイトハ",
+      "checking": "クハエククイング...",
+      "unavailable": "ウンアヴアイルアブルエ",
+      "errors": {
+        "enterEmailOrPhone": "エントエル イオウル メール オル 電話 ンウムブエル.",
+        "enterPassword": "エントエル イオウル パスワード トオ 続行.",
+        "invalidCredentials": "認証情報が無効です。もう一度お試しください。",
+        "locked": "ロック中。{{seconds}} 秒後に再試行してください"
+      },
+      "verifying": "ヴエルイフイイング クルエドエントイアルス...",
+      "failed": "スイグン イン 失敗",
+      "left": {
+        "title": "オンエ アカウント フオル エヴエルイトハイング EVzone",
+        "subtitle": "1つの安全なIDで、充電・マーケットプレイス・決済にシームレスにアクセスできます。",
+        "demoNote": "プルエフイルルエド フオル ドエムオ: example@mail.com"
+      },
+      "right": {
+        "subtitle": "EVzoneポータルへ進むには"
+      },
+      "features": {
+        "secureSessions": {
+          "title": "スエクウルエ セッション",
+          "desc": "ブアンクグルアドエ セキュリティ ムオンイトオルイング 24/7."
+        },
+        "passkeys": {
+          "title": "パスキー & 生体認証",
+          "desc": "スイグン イン ウイトハ TouchID オル FaceID."
+        },
+        "privacy": {
+          "title": "プライバシー フイルスト",
+          "desc": "データプライバシーを最優先にします。"
+        }
+      },
+      "showPassword": "スハオウ パスワード",
+      "hidePassword": "ハイドエ パスワード",
+      "switchingToPassword": "パスワードに切り替えています...",
+      "placeholders": {
+        "email": "name@example.com"
+      },
+      "useOtpTitle": "ウスエ オンエトイムエ コード",
+      "useOtpSubtitle": "いいえ パスワード? ウスエ ア ムアグイク コード.",
+      "comingSoon": "クオムイング スオオン",
+      "otpComingSoon": "オンエトイムエ コード スイグンイン イス ブエイング イントエグルアトエド.",
+      "sendCode": "送信 コード",
+      "termsAgree": "続行すると、EVzoneの利用規約とプライバシーに同意したものとみなされます。",
+      "locked": "ロック中。{{seconds}} 秒後に再試行してください"
+    },
+    "signUp": {
+      "sectionTitle": "アカウント クルエアション",
+      "sectionSubtitle": "EVzoneの全サービスで使える、安全な単一IDを作成します。",
+      "secureIdentity": "スエクウルエ イドエントイトイ",
+      "secureIdentityDesc": "ブアンクグルアドエ セキュリティ フオル イオウル アススエトス.",
+      "clearPermissions": "クルエアル プエルムイススイオンス",
+      "clearPermissionsDesc": "データ共有はあなたが管理します。",
+      "backToSignIn": "戻る トオ スイグン イン",
+      "createAccount": "クルエアトエ アカウント",
+      "getStarted": "グエト ストアルトエド ウイトハ EVzone",
+      "continueWithGoogle": "続行 ウイトハ Google",
+      "continueWithApple": "続行 ウイトハ Apple",
+      "firstName": "フイルスト 名前",
+      "firstNamePlaceholder": "エ.グ. ジアンエ",
+      "otherNames": "オトハエル ンアムエス",
+      "otherNamesPlaceholder": "エ.グ. ドオエ",
+      "email": "メール 住所",
+      "emailPlaceholder": "name@example.com",
+      "phone": "電話 ンウムブエル",
+      "phonePlaceholder": "700 000 000",
+      "createWithOtp": "クルエアトエ ウイトハ オンエトイムエ コード",
+      "createWithOtpDesc": "いいえ パスワード 必須. ウエルル 確認 イオウル 電話.",
+      "createPassword": "クルエアトエ パスワード",
+      "confirmPassword": "パスワード（確認）",
+      "otpInfo": "イオウ ウイルル ルエクエイヴエ アン OTP トオ 確認 イオウル アカウント.",
+      "inviteCode": "インヴイトエ コード (オプションアル)",
+      "inviteCodePlaceholder": "エ.グ. EVZ-123",
+      "termsAgreement": "利用規約とプライバシーポリシーに同意します。",
+      "continue": "続行",
+      "switchToSignIn": "ログインに切り替え",
+      "verifyContactInfo": "確認 イオウル クオントアクト 情報 イン トハエ 次へ ストエプ.",
+      "validation": {
+        "firstNameRequired": "エントエル イオウル フイルスト 名前.",
+        "otherNamesRequired": "エントエル イオウル オトハエル ンアムエス.",
+        "emailOrPhoneRequired": "プルオヴイドエ アト ルエアスト アン メール オル 電話 ンウムブエル.",
+        "validEmailRequired": "エントエル ア ヴアルイド メール 住所.",
+        "termsRequired": "イオウ ムウスト アククエプト トハエ 規約 アンド プライバシー ポリシー.",
+        "passwordRequired": "クルエアトエ ア パスワード.",
+        "passwordMinLength": "パスワード ムウスト ブエ アト ルエアスト 8 クハアルアクトエルス.",
+        "passwordsDoNotMatch": "パスワードが一致しません。"
+      },
+      "notification": {
+        "registrationInfo": "ルエグイストルアション 情報",
+        "accountCreated": "アカウント クルエアトエド",
+        "accountCreatedSuccess": "アカウントが作成されました。安全にログインしています...",
+        "verifyEmail": "確認 イオウル メール",
+        "verifyEmailSuccess": "アカウントが作成されました。受信トレイで確認リンクをご確認ください。",
+        "registrationFailed": "ルエグイストルアション 失敗",
+        "registrationFailedMessage": "失敗 トオ クルエアトエ アカウント. プルエアスエ トルイ アグアイン."
+      }
+    },
+    "forgotPassword": {
+      "subtitle": "パスワードを忘れた場合",
+      "resetAccess": "ルエスエト アククエスス",
+      "resetAccessDesc": "確認済みのメールまたは電話でアカウントを復旧します。",
+      "rateLimiting": "ルアトエ ルイムイトイング",
+      "rateLimitingDesc": "ウアイト 30ス ブエトウエエン ルエクウエストス.",
+      "secureLink": "スエクウルエ ルインク",
+      "secureLinkDesc": "ウエ 送信 ア ムアグイク ルインク オル コード.",
+      "backToSignIn": "戻る トオ スイグン イン",
+      "checkContact": "{{type}} を確認してください",
+      "instructionsSent": "{{method}} を通じて {{mask}} に手順を送信しました。",
+      "nextSteps": "次へ 手順",
+      "nextStepsDesc": "リンクをクリックするか、コードを入力してパスワードをリセットしてください。",
+      "enterResetCode": "エントエル ルエスエト コード",
+      "resendIn": "再送まで {{seconds}} 秒",
+      "sendAgain": "送信 アグアイン",
+      "changeContactInfo": "クハアングエ クオントアクト 情報",
+      "needHelp": "ンエエド ハエルプ?",
+      "title": "パスワードを忘れた場合",
+      "enterToRecover": "エントエル イオウル メール オル 電話 トオ ルエクオヴエル イオウル アカウント.",
+      "identifierLabel": "エントエル メール オル 電話",
+      "identifierPlaceholder": "name@example.com",
+      "validIdentifierHint": "エントエル ア ヴアルイド メール オル 電話.",
+      "deliveryMethod": "ドエルイヴエルイ ムエトハオド",
+      "captchaLabel": "私はロボットではありません",
+      "captchaDesc": "クオムプルエトエ トハエ クアプトクハア クハエクク.",
+      "accountRecoveryHelp": "アカウント ルエクオヴエルイ ハエルプ",
+      "spamTip": "ヒント：メールが見当たらない場合は迷惑メールフォルダを確認してください。",
+      "confirmSend": "クオンフイルム 送信",
+      "sendTo": "送信 ルエクオヴエルイ インストルウクションス トオ:",
+      "viaMethod": "{{method}} 経由",
+      "invalidatePrevious": "トハイス ウイルル インヴアルイドアトエ プルエヴイオウス ルインクス.",
+      "sendInstructions": "送信 インストルウクションス",
+      "delivery": {
+        "emailLink": "メール ルインク",
+        "emailLinkDesc": "送信 ア ムアグイク ルインク トオ イオウル メール.",
+        "smsCode": "SMS コード",
+        "smsCodeDesc": "送信 ア 6-ドイグイト コード トオ イオウル 電話.",
+        "whatsappCode": "WhatsApp コード",
+        "whatsappCodeDesc": "送信 ア コード ヴイア WhatsApp."
+      },
+      "phoneMethodsHint": "電話番号を入力すると電話による方法が利用できます。",
+      "validation": {
+        "enterIdentifier": "エントエル メール オル 電話",
+        "validIdentifier": "エントエル ア ヴアルイド メール オル 電話.",
+        "waitCooldown": "{{seconds}} 秒お待ちください",
+        "completeCaptcha": "プルエアスエ クオムプルエトエ トハエ クアプトクハア."
+      },
+      "notification": {
+        "sentSuccess": "{{via}} 経由で正常に送信しました。",
+        "sendFailed": "失敗 トオ 送信 ルエクウエスト. プルエアスエ トルイ アグアイン."
+      }
+    },
+    "resetPassword": {
+      "subtitle": "パスワードをリセット",
+      "createNewPassword": "クルエアトエ ンエウ パスワード",
+      "enterNewPassword": "エントエル ア ンエウ パスワード フオル イオウル アカウント.",
+      "navigateToForgot": "ンアヴイグアトエ トオ /auth/forgot-password",
+      "backToForgotPassword": "戻る トオ フオルグオト パスワード",
+      "title": "パスワードをリセット",
+      "enterDetails": "エントエル イオウル ドエトアイルス トオ ルエスエト イオウル パスワード.",
+      "tokenTab": "トークン",
+      "codeTab": "コード",
+      "resetToken": "ルエスエト トークン",
+      "tokenPlaceholder": "エントエル トークン",
+      "tokenHelperText": "メールでトークンを確認してください。",
+      "verifyToken": "確認 トークン",
+      "identifierLabel": "メール オル 電話",
+      "identifierPlaceholder": "エントエル メール オル 電話",
+      "identifierHelper": "入力内容に基づいて方法を決定します。",
+      "deliveryMethod": "ドエルイヴエルイ ムエトハオド",
+      "codeSent": "コード スエント",
+      "sendCode": "送信 コード",
+      "resendCode": "ルエスエンド コード",
+      "verifyCode": "確認 コード",
+      "newPassword": "新しいパスワード",
+      "confirmPassword": "パスワード（確認）",
+      "requirements": "ルエクウイルエムエントス",
+      "signOutAll": "スイグン オウト オフ アルル オトハエル ドエヴイクエス",
+      "resetButton": "パスワードをリセット",
+      "passwordUpdated": "パスワード ウプドアトエド",
+      "passwordChangedSuccess": "イオウル パスワード ハアス ブエエン クハアングエド スウククエススフウルルイ.",
+      "goToSignIn": "グオ トオ スイグン イン",
+      "accountRecoveryHelp": "アカウント ルエクオヴエルイ ハエルプ",
+      "navigateToHelp": "ンアヴイグアトエ トオ /auth/account-recovery-help",
+      "channel": {
+        "email": "メール",
+        "emailDesc": "送信 トオ メール",
+        "sms": "SMS（テキスト）",
+        "smsDesc": "送信 ヴイア SMS",
+        "whatsapp": "WhatsApp（ワッツアップ）",
+        "whatsappDesc": "送信 ヴイア WhatsApp"
+      },
+      "phoneChannelsDisabled": "電話 クハアンンエルス アルエ 無効 フオル メール ユーザー.",
+      "req": {
+        "length": "アト ルエアスト 8 クハアルアクトエルス",
+        "uppercase": "オンエ ウププエルクアスエ ルエトトエル",
+        "lowercase": "オンエ ルオウエルクアスエ ルエトトエル",
+        "number": "オンエ ンウムブエル",
+        "special": "オンエ スプエクイアル クハアルアクトエル",
+        "match": "パスワードが一致します"
+      },
+      "validation": {
+        "tokenRequired": "プルエアスエ エントエル トハエ ルエスエト トークン.",
+        "identifierRequired": "プルエアスエ エントエル イオウル メール オル 電話.",
+        "invalidIdentifier": "メールアドレスまたは電話番号が無効です。",
+        "codeRequired": "プルエアスエ エントエル ア 6-ドイグイト コード.",
+        "passwordRequired": "プルエアスエ エントエル ア パスワード.",
+        "passwordStrength": "パスワード ムウスト ブエ ストルオングエル.",
+        "passwordsDoNotMatch": "パスワードが一致しません。"
+      },
+      "notification": {
+        "codeSentEmail": "コード スエント トオ メール.",
+        "codeSentVia": "{{channel}} 経由でコードを送信しました。",
+        "sendFailed": "失敗 トオ 送信 コード.",
+        "resetSuccessSignedOut": "パスワード ルエスエト. イオウ ハアヴエ ブエエン スイグンエド オウト.",
+        "resetSuccess": "パスワードをリセットしました。",
+        "resetFailed": "失敗 トオ ルエスエト パスワード. 無効 コード/token."
+      }
+    },
+    "verifyEmail": {
+      "pageTitle": "確認 メール 住所",
+      "checkInbox": "受信トレイを確認",
+      "codeSentTo": "{{email}} にコードを送信しました。",
+      "openEmailApp": "開く メール アププ",
+      "openEmailAppDesc": "タップしてメールアプリを開きます。",
+      "resendCode": "ルエスエンド コード",
+      "resendCodeDesc": "クルイクク ブエルオウ トオ 送信 ア ンエウ コード.",
+      "openEmail": "開く メール",
+      "changeEmail": "クハアングエ メール",
+      "emailVerified": "メール ヴエルイフイエド",
+      "verificationSuccessDesc": "イオウ ハアヴエ スウククエススフウルルイ ヴエルイフイエド {{email}}.",
+      "nextSteps": "次へ 手順",
+      "nextStepsDesc": "続行 トオ ヴエルイフイイング イオウル 電話.",
+      "title": "確認 メール 住所",
+      "verify": "確認",
+      "resendIn": "再送まで {{seconds}} 秒",
+      "needHelp": "ンエエド ハエルプ?",
+      "changeEmailDialog": "クハアングエ メール 住所",
+      "changeEmailDesc": "新しいメールアドレスでコードを受け取るには下に入力してください。",
+      "emailLabel": "メール 住所",
+      "emailPlaceholder": "name@example.com",
+      "saveAndSend": "保存 & 送信",
+      "validation": {
+        "codeRequired": "プルエアスエ エントエル ア 6-ドイグイト コード."
+      },
+      "notification": {
+        "codeSent": "{{email}} にコードを送信しました。",
+        "sendFailed": "失敗 トオ 送信 コード",
+        "openingEmail": "オプエンイング メール アププ...",
+        "verificationSuccess": "メール ヴエルイフイエド スウククエススフウルルイ.",
+        "invalidCode": "コードが無効です。もう一度お試しください。"
+      }
+    },
+    "verifyPhone": {
+      "title": "確認 電話",
+      "subtitle": "電話に送信された確認コードを入力してください。",
+      "code": "確認コード",
+      "submit": "確認 電話",
+      "resendCode": "ルエスエンド コード",
+      "resendSuccess": "確認 コード スエント",
+      "success": "電話 ヴエルイフイエド スウククエススフウルルイ",
+      "successMessage": "イオウル 電話 ンウムブエル ハアス ブエエン ヴエルイフイエド."
+    },
+    "mfa": {
+      "title": "トウオフアクトオル 認証",
+      "subtitle": "認証アプリの6桁コードを入力してください",
+      "code": "確認コード",
+      "submit": "確認",
+      "useBackup": "ウスエ ア ブアククウプ コード インストエアド",
+      "resendCode": "ルエスエンド コード",
+      "backupCode": "ブアククウプ コード",
+      "success": "確認 スウククエススフウル",
+      "setupTitle": "スエト ウプ トウオフアクトオル 認証",
+      "scanQr": "認証アプリでこのQRコードをスキャンしてください",
+      "manualEntry": "またはこのコードを手動で入力してください",
+      "enterCode": "アプリの6桁コードを入力してください",
+      "confirmSetup": "クオンフイルム スエトウプ",
+      "backupCodesTitle": "ブアククウプ コード",
+      "backupCodesDescription": "バックアップコードは安全な場所に保管してください。認証アプリにアクセスできない場合に使用できます。",
+      "copyCodes": "コピー コード",
+      "done": "完了",
+      "invalidCode": "コードが無効です。もう一度お試しください。",
+      "tooManyAttempts": "誤った試行が多すぎます。もう一度お試しください。"
+    },
+    "passkey": {
+      "title": "パスキー 認証",
+      "subtitle": "スイグン イン ウイトハ イオウル パスキー",
+      "usePasskey": "ウスエ パスキー",
+      "addPasskey": "追加 パスキー",
+      "removePasskey": "削除 パスキー",
+      "passkeyAdded": "パスキー アドドエド スウククエススフウルルイ",
+      "passkeyRemoved": "パスキー ルエムオヴエド",
+      "error": "パスキー エラー オククウルルエド"
+    },
+    "consent": {
+      "title": "クオンスエント 必須",
+      "subtitle": "アプリケーションがアカウントへのアクセスを要求しています",
+      "permissions": "プエルムイススイオンス",
+      "approve": "アププルオヴエ",
+      "deny": "ドエンイ",
+      "scopes": {
+        "openid": "OpenID コネクト",
+        "profile": "ヴイエウ イオウル プロフィール",
+        "email": "ヴイエウ イオウル メール 住所",
+        "phone": "ヴイエウ イオウル 電話 ンウムブエル"
+      }
+    },
+    "interaction": {
+      "title": "認証 必須",
+      "subtitle": "プルエアスエ クオムプルエトエ トハエ 認証",
+      "continue": "続行",
+      "cancel": "キャンセル"
+    },
+    "Callback": {
+      "processing": "処理中 認証...",
+      "success": "認証 スウククエススフウル",
+      "error": "認証 失敗"
+    },
+    "signedOut": {
+      "title": "ログアウトしました",
+      "subtitle": "イオウ ハアヴエ ブエエン スイグンエド オウト スウククエススフウルルイ",
+      "signInAgain": "スイグン イン アグアイン",
+      "returnHome": "ルエトウルン トオ ハオムエ"
+    },
+    "session": {
+      "expired": "セッションの有効期限が切れました",
+      "expiredMessage": "プルエアスエ スイグン イン アグアイン トオ 続行.",
+      "expiredAction": "ログイン"
+    }
+  },
+  "dashboard": {
+    "welcome": "ウエルクオムエ 戻る, {{name}}!",
+    "overview": "ダッシュボード オヴエルヴイエウ",
+    "quickActions": "クウイクク アクションス",
+    "recentActivity": "ルエクエント アクトイヴイトイ",
+    "notifications": "通知",
+    "settings": "設定",
+    "profile": "ムイ プロフィール",
+    "security": "セキュリティ",
+    "wallet": "ウォレット",
+    "help": "ハエルプ & サポート"
+  },
+  "profile": {
+    "title": "プロフィール 設定",
+    "personal": {
+      "title": "プエルスオンアル インフオルムアション",
+      "firstName": "フイルスト 名前",
+      "lastName": "ルアスト 名前",
+      "email": "メール 住所",
+      "phone": "電話 ンウムブエル",
+      "save": "保存 クハアングエス"
+    },
+    "contact": {
+      "title": "クオントアクト インフオルムアション",
+      "address": "住所",
+      "city": "市",
+      "country": "国",
+      "postalCode": "プオストアル コード"
+    },
+    "linkedAccounts": {
+      "title": "ルインクエド アカウント",
+      "description": "ムアンアグエ イオウル クオンンエクトエド アカウント",
+      "google": "Google（グーグル）",
+      "apple": "Apple（アップル）",
+      "connect": "コネクト",
+      "disconnect": "ドイスクオンンエクト",
+      "connected": "クオンンエクトエド",
+      "notConnected": "ンオト クオンンエクトエド"
+    }
+  },
+  "security": {
+    "title": "セキュリティ 設定",
+    "password": {
+      "title": "パスワード",
+      "current": "クウルルエント パスワード",
+      "new": "新しいパスワード",
+      "confirm": "クオンフイルム ンエウ パスワード",
+      "update": "ウプドアトエ パスワード",
+      "success": "パスワードを更新しました",
+      "error": "失敗 トオ ウプドアトエ パスワード"
+    },
+    "twoFactor": {
+      "title": "トウオフアクトオル 認証",
+      "enabled": "有効",
+      "disabled": "無効",
+      "enable": "有効化 2FA",
+      "disable": "無効化 2FA",
+      "setup": "スエト ウプ 2FA",
+      "description": "追加 アン エクストルア ルアイエル オフ セキュリティ トオ イオウル アカウント"
+    },
+    "sessions": {
+      "title": "有効 セッション",
+      "description": "ムアンアグエ イオウル 有効 セッション",
+      "current": "クウルルエント セッション",
+      "other": "オトハエル セッション",
+      "revoke": "ルエヴオクエ",
+      "revokeAll": "ルエヴオクエ アルル オトハエル セッション"
+    },
+    "activity": {
+      "title": "ルオグイン アクトイヴイトイ",
+      "description": "ヴイエウ イオウル ルエクエント ルオグイン アクトイヴイトイ",
+      "recentLogins": "ルエクエント ルオグインス",
+      "location": "ルオクアション",
+      "device": "デバイス",
+      "time": "トイムエ"
+    },
+    "passkeys": {
+      "title": "パスキー",
+      "description": "ムアンアグエ イオウル パスキー フオル プアススウオルドルエスス ルオグイン",
+      "add": "追加 パスキー",
+      "remove": "削除",
+      "lastUsed": "ルアスト ウスエド"
+    },
+    "recoveryCodes": {
+      "title": "ルエクオヴエルイ コード",
+      "description": "2FAデバイスを紛失した場合、このコードでアカウントにアクセスできます",
+      "generate": "グエンエルアトエ ンエウ コード",
+      "copied": "コード クオプイエド トオ クルイプブオアルド"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "アドムイン ダッシュボード",
+      "users": "トオトアル ユーザー",
+      "active": "有効 ユーザー",
+      "revenue": "収益",
+      "systemHealth": "スイストエム ハエアルトハ"
+    },
+    "users": {
+      "title": "ユーザー ムアンアグエムエント",
+      "search": "検索 ユーザー...",
+      "add": "追加 ユーザー",
+      "edit": "編集 ユーザー",
+      "delete": "削除 ユーザー",
+      "status": "ストアトウス",
+      "active": "有効",
+      "inactive": "無効",
+      "suspended": "スウスプエンドエド"
+    },
+    "apps": {
+      "title": "アププルイクアション ムアンアグエムエント",
+      "add": "ルエグイストエル アププ",
+      "edit": "編集 アププ",
+      "delete": "削除 アププ",
+      "clientId": "クルイエント ID",
+      "redirectUris": "ルエドイルエクト URIs"
+    },
+    "audit": {
+      "title": "アウドイト ルオグス",
+      "filter": "フィルター ルオグス",
+      "export": "エクスプオルト"
+    },
+    "kyc": {
+      "title": "KYC 確認",
+      "pending": "プエンドイング",
+      "approved": "アププルオヴエド",
+      "rejected": "ルエジエクトエド"
+    }
+  },
+  "wallet": {
+    "title": "ムイ ウォレット",
+    "balance": "ブアルアンクエ",
+    "currency": "USD",
+    "addFunds": "追加 フウンドス",
+    "withdraw": "ウイトハドルアウ",
+    "transactions": "取引",
+    "history": "取引 履歴",
+    "pending": "プエンドイング",
+    "completed": "クオムプルエトエド",
+    "failed": "失敗",
+    "deposit": "ドエプオスイト",
+    "payment": "プアイムエント",
+    "refund": "ルエフウンド"
+  },
+  "support": {
+    "title": "ハエルプ & サポート",
+    "faq": "よくある質問",
+    "contact": "サポートに連絡",
+    "submitTicket": "送信 ア トイククエト",
+    "myTickets": "チケット",
+    "openTickets": "開く トイククエトス",
+    "closedTickets": "クルオスエド トイククエトス",
+    "securityReport": {
+      "title": "セキュリティ問題を報告",
+      "subtitle": "脆弱性を報告してEVzoneの安全性向上にご協力ください",
+      "type": "問題の種類",
+      "url": "問題が見つかったURL",
+      "description": "説明",
+      "steps": "再現手順"
+    }
+  },
+  "legal": {
+    "terms": {
+      "title": "利用規約",
+      "lastUpdated": "最終更新：{{date}}",
+      "accept": "利用規約に同意します"
+    },
+    "privacy": {
+      "title": "プライバシーポリシー",
+      "lastUpdated": "最終更新：{{date}}"
+    },
+    "cookies": {
+      "title": "クッキーポリシー",
+      "lastUpdated": "最終更新：{{date}}",
+      "description": "このウェブサイトは体験向上のためにクッキーを使用します。",
+      "acceptAll": "すべて同意",
+      "rejectAll": "すべて拒否",
+      "customize": "クウストオムイズエ"
+    },
+    "consent": {
+      "title": "プライバシー クオンスエント",
+      "description": "ムアンアグエ イオウル プライバシー プルエフエルエンクエス",
+      "necessary": "ンエクエススアルイ",
+      "functional": "フウンクションアル",
+      "analytics": "アンアルイトイクス",
+      "marketing": "マーケティング",
+      "savePreferences": "保存 プルエフエルエンクエス"
+    }
+  },
+  "errors": {
+    "403": {
+      "title": "アクセス拒否",
+      "subtitle": "このページにアクセスする権限がありません。",
+      "description": "この内容を表示するための権限がない可能性があります。",
+      "action": "グオ トオ ダッシュボード"
+    },
+    "404": {
+      "title": "プアグエ ンオト フオウンド",
+      "subtitle": "お探しのページは存在しません。",
+      "description": "要求されたページが見つかりませんでした。移動または削除された可能性があります。",
+      "action": "グオ トオ ハオムエ"
+    },
+    "429": {
+      "title": "リクエストが多すぎます",
+      "subtitle": "少し時間をおいてください",
+      "description": "短時間にリクエストが多すぎます。しばらく待ってから再度お試しください。",
+      "action": "トルイ アグアイン"
+    },
+    "500": {
+      "title": "問題が発生しました",
+      "subtitle": "アン ウンエクスプエクトエド エラー オククウルルエド",
+      "description": "申し訳ありません。問題が発生しました。担当チームに通知されました。",
+      "action": "グオ トオ ダッシュボード",
+      "support": "サポートに連絡"
+    }
+  },
+  "footer": {
+    "copyright": "© {{year}} EVzone. 無断転載を禁じます。",
+    "terms": "利用規約",
+    "privacy": "プライバシーポリシー",
+    "cookies": "クッキーポリシー",
+    "contact": "クオントアクト ウス",
+    "help": "ハエルプ クエントエル",
+    "about": "アブオウト EVzone",
+    "careers": "クアルエエルス",
+    "press": "プルエスス",
+    "social": "フオルルオウ ウス"
+  },
+  "accessibility": {
+    "skipToContent": "メインコンテンツへスキップ",
+    "menuToggle": "トオググルエ ムエンウ",
+    "closeMenu": "閉じる ムエンウ",
+    "openSearch": "開く 検索",
+    "closeSearch": "閉じる 検索",
+    "previous": "プルエヴイオウス",
+    "next": "次へ",
+    "expandSection": "エクスプアンド スエクション",
+    "collapseSection": "クオルルアプスエ スエクション"
+  }
+}

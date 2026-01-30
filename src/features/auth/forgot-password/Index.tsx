@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Alert,
   Box,
@@ -80,6 +81,7 @@ function maskPhone(phone: string) {
 
 
 export default function ForgotPasswordPage() {
+  const { t } = useTranslation("common");
   const navigate = useNavigate();
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
@@ -159,31 +161,31 @@ export default function ForgotPasswordPage() {
   };
 
   const labelForDelivery = (d: Delivery) => {
-    if (d === "email_link") return "Email Link";
-    if (d === "sms_code") return "SMS Code";
-    return "WhatsApp Code";
+    if (d === "email_link") return t("auth.forgotPassword.delivery.emailLink");
+    if (d === "sms_code") return t("auth.forgotPassword.delivery.smsCode");
+    return t("auth.forgotPassword.delivery.whatsappCode");
   };
 
   const requestSend = () => {
     setBanner(null);
 
     if (!identifier.trim()) {
-      setBanner({ severity: "warning", msg: "Enter email or phone" });
+      setBanner({ severity: "warning", msg: t("auth.forgotPassword.validation.enterIdentifier") });
       return;
     }
 
     if (idType === "unknown") {
-      setBanner({ severity: "warning", msg: "Enter a valid email or phone." });
+      setBanner({ severity: "warning", msg: t("auth.forgotPassword.validation.validIdentifier") });
       return;
     }
 
     if (cooldown > 0) {
-      setBanner({ severity: "warning", msg: `Please wait ${cooldown}s` });
+      setBanner({ severity: "warning", msg: t("auth.forgotPassword.validation.waitCooldown", { seconds: cooldown }) });
       return;
     }
 
     if (captchaRequired && !captchaChecked) {
-      setBanner({ severity: "warning", msg: "Please complete the captcha." });
+      setBanner({ severity: "warning", msg: t("auth.forgotPassword.validation.completeCaptcha") });
       return;
     }
 
@@ -214,11 +216,11 @@ export default function ForgotPasswordPage() {
       setSnack({
         open: true,
         severity: "success",
-        msg: `Sent successfully via ${via}.`
+        msg: t("auth.forgotPassword.notification.sentSuccess", { via })
       });
     } catch (e: any) {
       console.error("Forgot Password Error:", e);
-      setBanner({ severity: "error", msg: e.message || "Failed to send request. Please try again." });
+      setBanner({ severity: "error", msg: e.message || t("auth.forgotPassword.notification.sendFailed") });
     }
   };
 
@@ -263,9 +265,9 @@ export default function ForgotPasswordPage() {
             transition: "all 160ms ease",
             "&:hover": enabled
               ? {
-                backgroundColor: base,
-                color: "#FFFFFF",
-              }
+                  backgroundColor: base,
+                  color: "#FFFFFF",
+                }
               : undefined,
           }}
         >
@@ -300,8 +302,8 @@ export default function ForgotPasswordPage() {
     <Box className="min-h-screen" sx={{ background: pageBg }}>
       {/* Unified Auth Header */}
       <AuthHeader
-        title="EVzone Accounts"
-        subtitle="Forgot Password"
+        title={t("auth.header.title")}
+        subtitle={t("auth.forgotPassword.subtitle")}
       />
 
       {/* Body */}
@@ -312,9 +314,9 @@ export default function ForgotPasswordPage() {
             <Card>
               <CardContent className="p-5 md:p-6">
                 <Stack spacing={1.2}>
-                  <Typography variant="h6">Reset Access</Typography>
+                  <Typography variant="h6">{t("auth.forgotPassword.resetAccess")}</Typography>
                   <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                    Recover your account using your verified email or phone.
+                    {t("auth.forgotPassword.resetAccessDesc")}
                   </Typography>
 
                   <Divider sx={{ my: 1 }} />
@@ -325,9 +327,9 @@ export default function ForgotPasswordPage() {
                         <TimerIcon size={18} />
                       </Box>
                       <Box>
-                        <Typography sx={{ fontWeight: 900 }}>Rate Limiting</Typography>
+                        <Typography sx={{ fontWeight: 900 }}>{t("auth.forgotPassword.rateLimiting")}</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Wait 30s between requests.
+                          {t("auth.forgotPassword.rateLimitingDesc")}
                         </Typography>
                       </Box>
                     </Stack>
@@ -336,9 +338,9 @@ export default function ForgotPasswordPage() {
                         <MailIcon size={18} />
                       </Box>
                       <Box>
-                        <Typography sx={{ fontWeight: 900 }}>Secure Link</Typography>
+                        <Typography sx={{ fontWeight: 900 }}>{t("auth.forgotPassword.secureLink")}</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          We send a magic link or code.
+                          {t("auth.forgotPassword.secureLinkDesc")}
                         </Typography>
                       </Box>
                     </Stack>
@@ -347,7 +349,7 @@ export default function ForgotPasswordPage() {
                   <Divider sx={{ my: 1 }} />
 
                   <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => navigate("/auth/sign-in")}>
-                    Back to Sign In
+                    {t("auth.forgotPassword.backToSignIn")}
                   </Button>
                 </Stack>
               </CardContent>
@@ -361,17 +363,17 @@ export default function ForgotPasswordPage() {
                 {step === "sent" ? (
                   <Stack spacing={2.0}>
                     <Stack spacing={0.6}>
-                      <Typography variant="h6">Check your {idType === "email" ? "email" : "phone"}</Typography>
+                      <Typography variant="h6">{t("auth.forgotPassword.checkContact", { type: idType === "email" ? t("auth.common.email") : t("auth.common.phone") })}</Typography>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        We sent instructions to {deliveryMask()} via {labelForDelivery(delivery)}.
+                        {t("auth.forgotPassword.instructionsSent", { mask: deliveryMask(), method: labelForDelivery(delivery) })}
                       </Typography>
                     </Stack>
 
                     <Box sx={{ borderRadius: 2, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>
                       <Stack spacing={1}>
-                        <Typography sx={{ fontWeight: 900 }}>Next Steps</Typography>
+                        <Typography sx={{ fontWeight: 900 }}>{t("auth.forgotPassword.nextSteps")}</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Click the link or enter the code to reset your password.
+                          {t("auth.forgotPassword.nextStepsDesc")}
                         </Typography>
                         <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                           <Button
@@ -381,7 +383,7 @@ export default function ForgotPasswordPage() {
                             endIcon={<ArrowRightIcon size={18} />}
                             onClick={() => navigate("/auth/reset-password")}
                           >
-                            Enter Reset Code
+                            {t("auth.forgotPassword.enterResetCode")}
                           </Button>
                           <Button
                             variant="outlined"
@@ -394,7 +396,7 @@ export default function ForgotPasswordPage() {
                             }}
                             disabled={cooldown > 0}
                           >
-                            {cooldown > 0 ? `Resend in ${cooldown}s` : "Send Again"}
+                            {cooldown > 0 ? t("auth.forgotPassword.resendIn", { seconds: cooldown }) : t("auth.forgotPassword.sendAgain")}
                           </Button>
                         </Stack>
                       </Stack>
@@ -402,23 +404,23 @@ export default function ForgotPasswordPage() {
 
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                       <Button variant="outlined" sx={orangeOutlinedSx} onClick={resetForm}>
-                        Change Contact Info
+                        {t("auth.forgotPassword.changeContactInfo")}
                       </Button>
                       <Button
                         variant="outlined"
                         sx={orangeOutlinedSx}
                         onClick={() => navigate("/auth/account-recovery-help")}
                       >
-                        Need Help?
+                        {t("auth.forgotPassword.needHelp")}
                       </Button>
                     </Stack>
                   </Stack>
                 ) : (
                   <Stack spacing={2.0}>
                     <Stack spacing={0.6}>
-                      <Typography variant="h6">Forgot Password</Typography>
+                      <Typography variant="h6">{t("auth.forgotPassword.title")}</Typography>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        Enter your email or phone to recover your account.
+                        {t("auth.forgotPassword.enterToRecover")}
                       </Typography>
                     </Stack>
 
@@ -427,8 +429,8 @@ export default function ForgotPasswordPage() {
                     <TextField
                       value={identifier}
                       onChange={(e) => setIdentifier(e.target.value)}
-                      label="Enter email or phone"
-                      placeholder="name@example.com"
+                      label={t("auth.forgotPassword.identifierLabel")}
+                      placeholder={t("auth.forgotPassword.identifierPlaceholder")}
                       fullWidth
                       InputProps={{
                         startAdornment: (
@@ -437,32 +439,32 @@ export default function ForgotPasswordPage() {
                           </Box>
                         ),
                       }}
-                      helperText={idType === "unknown" ? "Enter a valid email or phone." : ""}
+                      helperText={idType === "unknown" ? t("auth.forgotPassword.validIdentifierHint") : ""}
                     />
 
                     <Box>
-                      <Typography sx={{ fontWeight: 900, mb: 1 }}>Delivery Method</Typography>
+                      <Typography sx={{ fontWeight: 900, mb: 1 }}>{t("auth.forgotPassword.deliveryMethod")}</Typography>
                       <Box className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                         <DeliveryCard
                           value="email_link"
-                          title="Email Link"
-                          subtitle="Send a magic link to your email."
+                          title={t("auth.forgotPassword.delivery.emailLink")}
+                          subtitle={t("auth.forgotPassword.delivery.emailLinkDesc")}
                           enabled={idType === "email"}
                           accent="orange"
                           icon={<MailIcon size={18} />}
                         />
                         <DeliveryCard
                           value="sms_code"
-                          title="SMS Code"
-                          subtitle="Send a 6-digit code to your phone."
+                          title={t("auth.forgotPassword.delivery.smsCode")}
+                          subtitle={t("auth.forgotPassword.delivery.smsCodeDesc")}
                           enabled={idType === "phone"}
                           accent="orange"
                           icon={<PhoneIcon size={18} />}
                         />
                         <DeliveryCard
                           value="whatsapp_code"
-                          title="WhatsApp Code"
-                          subtitle="Send a code via WhatsApp."
+                          title={t("auth.forgotPassword.delivery.whatsappCode")}
+                          subtitle={t("auth.forgotPassword.delivery.whatsappCodeDesc")}
                           enabled={idType === "phone"}
                           accent="whatsapp"
                           icon={<WhatsAppIcon size={18} />}
@@ -470,7 +472,7 @@ export default function ForgotPasswordPage() {
                       </Box>
                       {idType === "email" ? (
                         <Typography variant="caption" sx={{ color: theme.palette.text.secondary, mt: 1, display: "block" }}>
-                          Phone methods available if you enter a phone number.
+                          {t("auth.forgotPassword.phoneMethodsHint")}
                         </Typography>
                       ) : null}
                     </Box>
@@ -488,10 +490,10 @@ export default function ForgotPasswordPage() {
                           label={
                             <Box>
                               <Typography variant="body2" sx={{ fontWeight: 900 }}>
-                                I am human
+                                {t("auth.forgotPassword.captchaLabel")}
                               </Typography>
                               <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                                Complete the captcha check.
+                                {t("auth.forgotPassword.captchaDesc")}
                               </Typography>
                             </Box>
                           }
@@ -508,7 +510,7 @@ export default function ForgotPasswordPage() {
                         onClick={requestSend}
                         disabled={!canSend()}
                       >
-                        Continue
+                        {t("auth.common.continue")}
                       </Button>
                       <Button
                         variant="outlined"
@@ -516,12 +518,12 @@ export default function ForgotPasswordPage() {
                         startIcon={<HelpCircleIcon size={18} />}
                         onClick={() => navigate("/auth/account-recovery-help")}
                       >
-                        Account Recovery Help
+                        {t("auth.forgotPassword.accountRecoveryHelp")}
                       </Button>
                     </Stack>
 
                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      Tip: Check your spam folder if you don't see the email.
+                      {t("auth.forgotPassword.spamTip")}
                     </Typography>
                   </Stack>
                 )}
@@ -537,27 +539,26 @@ export default function ForgotPasswordPage() {
           </Typography>
           <Stack direction="row" spacing={1.2} alignItems="center">
             <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>
-              Terms
+              {t("auth.common.terms")}
             </Button>
             <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>
-              Privacy
+              {t("auth.common.privacy")}
             </Button>
           </Stack>
         </Box>
       </Box>
 
       {/* Confirm send dialog */}
-      < Dialog
+      <Dialog
         open={confirmOpen}
-        onClose={() => setConfirmOpen(false)
-        }
+        onClose={() => setConfirmOpen(false)}
         PaperProps={{ sx: { borderRadius: 2, border: `1px solid ${theme.palette.divider}`, backgroundImage: "none" } }}
       >
-        <DialogTitle sx={{ fontWeight: 950 }}>Confirm Send</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 950 }}>{t("auth.forgotPassword.confirmSend")}</DialogTitle>
         <DialogContent>
           <Stack spacing={1.2}>
             <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-              Send recovery instructions to:
+              {t("auth.forgotPassword.sendTo")}
             </Typography>
             <Box sx={{ borderRadius: 2, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.55), p: 1.2 }}>
               <Stack direction="row" spacing={1.2} alignItems="center">
@@ -567,23 +568,23 @@ export default function ForgotPasswordPage() {
                 <Box>
                   <Typography sx={{ fontWeight: 900 }}>{deliveryMask()}</Typography>
                   <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                    via <b>{labelForDelivery(delivery)}</b>
+                    {t("auth.forgotPassword.viaMethod", { method: labelForDelivery(delivery) })}
                   </Typography>
                 </Box>
               </Stack>
             </Box>
-            <Alert severity="info">This will invalidate previous links.</Alert>
+            <Alert severity="info">{t("auth.forgotPassword.invalidatePrevious")}</Alert>
           </Stack>
         </DialogContent>
         <DialogActions sx={{ p: 2, pt: 0 }}>
           <Button variant="outlined" sx={orangeOutlinedSx} onClick={() => setConfirmOpen(false)}>
-            Cancel
+            {t("auth.common.cancel")}
           </Button>
           <Button variant="contained" color="secondary" sx={orangeContainedSx} onClick={doSend}>
-            Send Instructions
+            {t("auth.forgotPassword.sendInstructions")}
           </Button>
         </DialogActions>
-      </Dialog >
+      </Dialog>
 
       <Snackbar
         open={snack.open}
@@ -600,6 +601,6 @@ export default function ForgotPasswordPage() {
           {snack.msg}
         </Alert>
       </Snackbar>
-    </Box >
+    </Box>
   );
 }

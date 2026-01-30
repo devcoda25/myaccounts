@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 
@@ -7,6 +8,7 @@ import { useParams, useLocation } from "react-router-dom";
  * Specifically targets OIDC interaction UIDs (long strings) and redirects to /oidc/auth/UID.
  */
 export default function PatchOidcResume() {
+  const { t } = useTranslation("common"); {
     const location = useLocation();
 
     useEffect(() => {

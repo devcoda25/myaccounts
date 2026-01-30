@@ -1,0 +1,721 @@
+{
+  "app": {
+    "name": "EVzone 我的账户",
+    "tagline": "适用于所有 EVzone 服务的统一账户"
+  },
+  "common": {
+    "actions": {
+      "save": "保存",
+      "cancel": "取消",
+      "delete": "删除",
+      "edit": "编辑",
+      "submit": "提交",
+      "close": "关闭",
+      "back": "返回",
+      "next": "下一步",
+      "confirm": "确认",
+      "search": "搜索",
+      "filter": "筛选",
+      "clear": "清除",
+      "reset": "重置",
+      "refresh": "刷新",
+      "retry": "重试",
+      "continue": "继续",
+      "done": "完成",
+      "send": "发送",
+      "download": "下载",
+      "upload": "上传",
+      "copy": "复制",
+      "view": "查看",
+      "hide": "隐藏",
+      "show": "显示",
+      "expand": "展开",
+      "collapse": "收起",
+      "select": "选择",
+      "selectAll": "全选",
+      "deselectAll": "取消全选",
+      "add": "添加",
+      "remove": "移除",
+      "update": "更新",
+      "create": "创建",
+      "signIn": "登录",
+      "signOut": "退出登录",
+      "signUp": "注册",
+      "login": "登录",
+      "logout": "退出登录",
+      "register": "注册"
+    },
+    "errors": {
+      "required": "此字段为必填项",
+      "invalidEmail": "请输入有效的邮箱地址",
+      "invalidPhone": "请输入有效的电话号码",
+      "passwordTooShort": "密码至少需 8 个字符",
+      "passwordRequiresUppercase": "密码必须包含大写字母",
+      "passwordRequiresLowercase": "密码必须包含小写字母",
+      "passwordRequiresNumber": "密码必须包含数字",
+      "passwordRequiresSpecial": "密码必须包含特殊字符",
+      "passwordsDoNotMatch": "两次输入的密码不一致",
+      "networkError": "网络错误。请重试。",
+      "serverError": "服务器错误。请稍后再试。",
+      "unknownError": "发生意外错误。",
+      "sessionExpired": "会话已过期。请重新登录。",
+      "invalidCredentials": "凭据无效。请重试。",
+      "tooManyAttempts": "尝试次数过多。请稍后再试。",
+      "accountLocked": "你的账户已被锁定。",
+      "emailAlreadyExists": "此邮箱已注册账户。",
+      "userNotFound": "未找到用户。",
+      "unauthorized": "你无权执行此操作。",
+      "forbidden": "访问被拒绝。",
+      "notFound": "未找到请求的资源。",
+      "badRequest": "无效请求。",
+      "internalServerError": "内部服务器错误。",
+      "serviceUnavailable": "服务暂时不可用。",
+      "validationError": "请检查输入并重试。"
+    },
+    "loading": {
+      "loading": "加载中…",
+      "pleaseWait": "请稍候…",
+      "processing": "处理中…",
+      "saving": "保存中…",
+      "deleting": "删除中…",
+      "updating": "更新中…",
+      "signingIn": "正在登录…",
+      "signingOut": "正在退出…"
+    },
+    "validation": {
+      "confirmDelete": "确定要删除此项吗？",
+      "unsavedChanges": "你有未保存的更改。确定要离开吗？",
+      "minLength": "至少需要 {{count}} 个字符",
+      "maxLength": "最多为 {{count}} 个字符",
+      "minValue": "数值至少为 {{count}}",
+      "maxValue": "数值最多为 {{count}}"
+    },
+    "placeholders": {
+      "email": "输入你的邮箱",
+      "phone": "输入你的电话号码",
+      "password": "输入你的密码",
+      "newPassword": "输入新密码",
+      "confirmPassword": "确认你的密码",
+      "search": "搜索…",
+      "selectOption": "请选择一个选项"
+    }
+  },
+  "loading": {
+    "session": "正在初始化安全会话…"
+  },
+  "error": {
+    "title": "身份验证错误",
+    "sessionFailed": "无法初始化安全会话。",
+    "retry": "重试"
+  },
+  "password": {
+    "weak": "弱",
+    "fair": "一般",
+    "good": "良好",
+    "strong": "强",
+    "veryStrong": "非常强"
+  },
+  "header": {
+    "title": "EVzone 账户",
+    "subtitle": "创建你的 EVzone 身份"
+  },
+  "auth": {
+    "common": {
+      "loading": "加载中…",
+      "or": "或",
+      "email": "邮箱",
+      "phone": "电话",
+      "terms": "条款",
+      "privacy": "隐私",
+      "help": "帮助",
+      "signIn": "登录",
+      "signUp": "注册",
+      "switchToLight": "切换到浅色模式",
+      "switchToDark": "切换到深色模式",
+      "continue": "继续",
+      "back": "返回",
+      "cancel": "取消",
+      "save": "保存",
+      "submit": "提交",
+      "verify": "验证",
+      "send": "发送"
+    },
+    "signIn": {
+      "title": "登录",
+      "subtitle": "欢迎回来！请登录以继续。",
+      "emailOrPhone": "邮箱或电话",
+      "password": "密码",
+      "forgotPassword": "忘记密码？",
+      "rememberMe": "记住我",
+      "submit": "登录",
+      "noAccount": "还没有账户？",
+      "signUp": "注册",
+      "orContinueWith": "或使用以下方式继续",
+      "checking": "正在检查…",
+      "unavailable": "不可用",
+      "errors": {
+        "enterEmailOrPhone": "请输入你的邮箱或手机号。",
+        "enterPassword": "请输入密码以继续。",
+        "invalidCredentials": "凭据无效。请重试。",
+        "locked": "已锁定。请在 {{seconds}} 秒后重试。"
+      },
+      "verifying": "正在验证凭据…",
+      "failed": "登录失败",
+      "left": {
+        "title": "一个账户，畅享所有 EVzone 服务",
+        "subtitle": "使用一个安全身份无缝访问充电、商城和支付。",
+        "demoNote": "演示已预填：example@mail.com"
+      },
+      "right": {
+        "subtitle": "以继续访问 EVzone 门户"
+      },
+      "features": {
+        "secureSessions": {
+          "title": "安全会话",
+          "desc": "银行级安全监控，全天候 24/7。"
+        },
+        "passkeys": {
+          "title": "通行密钥与生物识别",
+          "desc": "使用 TouchID 或 FaceID 登录。"
+        },
+        "privacy": {
+          "title": "隐私优先",
+          "desc": "我们最大化保护你的数据隐私。"
+        }
+      },
+      "showPassword": "显示密码",
+      "hidePassword": "隐藏密码",
+      "switchingToPassword": "正在切换到密码…",
+      "placeholders": {
+        "email": "name@example.com"
+      },
+      "useOtpTitle": "使用一次性验证码",
+      "useOtpSubtitle": "没有密码？使用验证码登录。",
+      "comingSoon": "即将推出",
+      "otpComingSoon": "一次性验证码登录正在集成中。",
+      "sendCode": "发送验证码",
+      "termsAgree": "继续即表示你同意 EVzone 的条款与隐私政策。",
+      "locked": "已锁定。请在 {{seconds}} 秒后重试。"
+    },
+    "signUp": {
+      "sectionTitle": "账户创建",
+      "sectionSubtitle": "为所有 EVzone 服务创建一个安全的统一 ID。",
+      "secureIdentity": "安全身份",
+      "secureIdentityDesc": "为你的资产提供银行级安全保障。",
+      "clearPermissions": "权限透明",
+      "clearPermissionsDesc": "你可以控制数据共享。",
+      "backToSignIn": "返回到登录",
+      "createAccount": "创建账户",
+      "getStarted": "开始使用 EVzone",
+      "continueWithGoogle": "使用 Google 继续",
+      "continueWithApple": "使用 Apple 继续",
+      "firstName": "名",
+      "firstNamePlaceholder": "例如：Jane",
+      "otherNames": "其他姓名",
+      "otherNamesPlaceholder": "例如：Doe",
+      "email": "邮箱地址",
+      "emailPlaceholder": "name@example.com",
+      "phone": "电话号码",
+      "phonePlaceholder": "700 000 000",
+      "createWithOtp": "使用一次性验证码创建",
+      "createWithOtpDesc": "无需密码。我们将验证你的手机号。",
+      "createPassword": "创建密码",
+      "confirmPassword": "确认密码",
+      "otpInfo": "你将收到一次性验证码（OTP）以验证你的账户。",
+      "inviteCode": "邀请码（可选）",
+      "inviteCodePlaceholder": "例如：EVZ-123",
+      "termsAgreement": "我同意服务条款和隐私政策。",
+      "continue": "继续",
+      "switchToSignIn": "切换到登录",
+      "verifyContactInfo": "下一步验证你的联系信息。",
+      "validation": {
+        "firstNameRequired": "请输入你的名字。",
+        "otherNamesRequired": "请输入你的其他姓名。",
+        "emailOrPhoneRequired": "至少提供一个邮箱或手机号。",
+        "validEmailRequired": "请输入有效的邮箱地址。",
+        "termsRequired": "你必须接受条款和隐私政策。",
+        "passwordRequired": "创建密码。",
+        "passwordMinLength": "密码至少需 8 个字符。",
+        "passwordsDoNotMatch": "两次输入的密码不一致。"
+      },
+      "notification": {
+        "registrationInfo": "注册信息",
+        "accountCreated": "账户已创建",
+        "accountCreatedSuccess": "账户创建成功！正在安全登录…",
+        "verifyEmail": "验证你的邮箱",
+        "verifyEmailSuccess": "账户已创建！请检查收件箱中的验证链接。",
+        "registrationFailed": "注册失败",
+        "registrationFailedMessage": "创建账户失败。请重试。"
+      }
+    },
+    "forgotPassword": {
+      "subtitle": "忘记密码",
+      "resetAccess": "重置访问权限",
+      "resetAccessDesc": "使用已验证的邮箱或手机号找回账户。",
+      "rateLimiting": "频率限制",
+      "rateLimitingDesc": "每次请求之间请等待 30 秒。",
+      "secureLink": "安全链接",
+      "secureLinkDesc": "我们会发送魔法链接或验证码。",
+      "backToSignIn": "返回到登录",
+      "checkContact": "检查你的 {{type}}",
+      "instructionsSent": "我们已通过 {{method}} 将说明发送至 {{mask}}。",
+      "nextSteps": "下一步",
+      "nextStepsDesc": "点击链接或输入验证码以重置密码。",
+      "enterResetCode": "输入重置验证码",
+      "resendIn": "{{seconds}} 秒后可重新发送",
+      "sendAgain": "再次发送",
+      "changeContactInfo": "更改联系信息",
+      "needHelp": "需要帮助？",
+      "title": "忘记密码",
+      "enterToRecover": "输入你的邮箱或手机号以找回账户。",
+      "identifierLabel": "输入邮箱或手机号",
+      "identifierPlaceholder": "name@example.com",
+      "validIdentifierHint": "请输入有效的邮箱或手机号。",
+      "deliveryMethod": "发送方式",
+      "captchaLabel": "我不是机器人",
+      "captchaDesc": "完成验证码验证。",
+      "accountRecoveryHelp": "账户找回帮助",
+      "spamTip": "提示：如果没有收到邮件，请检查垃圾邮件文件夹。",
+      "confirmSend": "确认发送",
+      "sendTo": "将找回说明发送至：",
+      "viaMethod": "通过 {{method}}",
+      "invalidatePrevious": "这将使之前的链接失效。",
+      "sendInstructions": "发送说明",
+      "delivery": {
+        "emailLink": "邮件链接",
+        "emailLinkDesc": "向你的邮箱发送魔法链接。",
+        "smsCode": "短信验证码",
+        "smsCodeDesc": "向你的手机发送 6 位验证码。",
+        "whatsappCode": "WhatsApp 验证码",
+        "whatsappCodeDesc": "通过 WhatsApp 发送验证码。"
+      },
+      "phoneMethodsHint": "如果输入手机号，将提供手机验证方式。",
+      "validation": {
+        "enterIdentifier": "输入邮箱或手机号",
+        "validIdentifier": "请输入有效的邮箱或手机号。",
+        "waitCooldown": "请等待 {{seconds}} 秒",
+        "completeCaptcha": "请完成验证码验证。"
+      },
+      "notification": {
+        "sentSuccess": "已通过 {{via}} 成功发送。",
+        "sendFailed": "请求发送失败。请重试。"
+      }
+    },
+    "resetPassword": {
+      "subtitle": "重置密码",
+      "createNewPassword": "创建新密码",
+      "enterNewPassword": "为你的账户设置新密码。",
+      "navigateToForgot": "前往 /auth/forgot-password",
+      "backToForgotPassword": "返回到忘记密码",
+      "title": "重置密码",
+      "enterDetails": "输入信息以重置密码。",
+      "tokenTab": "令牌",
+      "codeTab": "验证码",
+      "resetToken": "重置令牌",
+      "tokenPlaceholder": "输入令牌",
+      "tokenHelperText": "请查看邮箱获取令牌。",
+      "verifyToken": "验证令牌",
+      "identifierLabel": "邮箱或电话",
+      "identifierPlaceholder": "输入邮箱或手机号",
+      "identifierHelper": "我们将根据你的输入确定验证方式。",
+      "deliveryMethod": "发送方式",
+      "codeSent": "验证码已发送",
+      "sendCode": "发送验证码",
+      "resendCode": "重新发送验证码",
+      "verifyCode": "验证验证码",
+      "newPassword": "新密码",
+      "confirmPassword": "确认密码",
+      "requirements": "要求",
+      "signOutAll": "退出所有其他设备",
+      "resetButton": "重置密码",
+      "passwordUpdated": "密码已更新",
+      "passwordChangedSuccess": "你的密码已成功更改。",
+      "goToSignIn": "前往登录",
+      "accountRecoveryHelp": "账户找回帮助",
+      "navigateToHelp": "前往 /auth/account-recovery-help",
+      "channel": {
+        "email": "邮箱",
+        "emailDesc": "发送到邮箱",
+        "sms": "短信",
+        "smsDesc": "通过短信发送",
+        "whatsapp": "WhatsApp",
+        "whatsappDesc": "通过 WhatsApp 发送"
+      },
+      "phoneChannelsDisabled": "邮箱用户无法使用手机通道。",
+      "req": {
+        "length": "至少 8 个字符",
+        "uppercase": "一个大写字母",
+        "lowercase": "一个小写字母",
+        "number": "一个数字",
+        "special": "一个特殊字符",
+        "match": "密码一致"
+      },
+      "validation": {
+        "tokenRequired": "请输入重置令牌。",
+        "identifierRequired": "请输入你的邮箱或手机号。",
+        "invalidIdentifier": "邮箱或手机号无效。",
+        "codeRequired": "请输入 6 位验证码。",
+        "passwordRequired": "请输入密码。",
+        "passwordStrength": "密码强度不足。",
+        "passwordsDoNotMatch": "两次输入的密码不一致。"
+      },
+      "notification": {
+        "codeSentEmail": "验证码已发送至邮箱。",
+        "codeSentVia": "验证码已通过 {{channel}} 发送。",
+        "sendFailed": "发送验证码失败。",
+        "resetSuccessSignedOut": "密码已重置。你已退出登录。",
+        "resetSuccess": "密码重置成功。",
+        "resetFailed": "重置密码失败。验证码/令牌无效。"
+      }
+    },
+    "verifyEmail": {
+      "pageTitle": "验证邮箱地址",
+      "checkInbox": "查看你的收件箱",
+      "codeSentTo": "我们已向 {{email}} 发送验证码。",
+      "openEmailApp": "打开邮箱应用",
+      "openEmailAppDesc": "点击打开邮箱客户端。",
+      "resendCode": "重新发送验证码",
+      "resendCodeDesc": "点击下方发送新验证码。",
+      "openEmail": "打开邮箱",
+      "changeEmail": "更改邮箱",
+      "emailVerified": "邮箱已验证",
+      "verificationSuccessDesc": "你已成功验证 {{email}}。",
+      "nextSteps": "下一步",
+      "nextStepsDesc": "继续验证你的手机号。",
+      "title": "验证邮箱地址",
+      "verify": "验证",
+      "resendIn": "{{seconds}} 秒后可重新发送",
+      "needHelp": "需要帮助？",
+      "changeEmailDialog": "更改邮箱地址",
+      "changeEmailDesc": "在下方输入新邮箱地址以接收验证码。",
+      "emailLabel": "邮箱地址",
+      "emailPlaceholder": "name@example.com",
+      "saveAndSend": "保存并发送",
+      "validation": {
+        "codeRequired": "请输入 6 位验证码。"
+      },
+      "notification": {
+        "codeSent": "验证码已发送至 {{email}}。",
+        "sendFailed": "发送验证码失败",
+        "openingEmail": "正在打开邮箱应用…",
+        "verificationSuccess": "邮箱验证成功。",
+        "invalidCode": "验证码无效。请重试。"
+      }
+    },
+    "verifyPhone": {
+      "title": "验证手机号",
+      "subtitle": "请输入发送到你手机的验证码。",
+      "code": "验证码",
+      "submit": "验证手机号",
+      "resendCode": "重新发送验证码",
+      "resendSuccess": "验证码已发送",
+      "success": "手机号验证成功",
+      "successMessage": "你的手机号已验证。"
+    },
+    "mfa": {
+      "title": "双重验证",
+      "subtitle": "输入验证器应用中的 6 位验证码",
+      "code": "验证码",
+      "submit": "验证",
+      "useBackup": "改用备份代码",
+      "resendCode": "重新发送验证码",
+      "backupCode": "备份代码",
+      "success": "验证成功",
+      "setupTitle": "设置双重验证",
+      "scanQr": "使用验证器应用扫描此二维码",
+      "manualEntry": "或手动输入此代码",
+      "enterCode": "输入应用中的 6 位验证码",
+      "confirmSetup": "确认设置",
+      "backupCodesTitle": "备份代码",
+      "backupCodesDescription": "将这些备份代码保存在安全的地方。如果你失去对验证器的访问权限，可以使用它们。",
+      "copyCodes": "复制代码",
+      "done": "完成",
+      "invalidCode": "验证码无效。请重试。",
+      "tooManyAttempts": "错误次数过多。请重试。"
+    },
+    "passkey": {
+      "title": "通行密钥认证",
+      "subtitle": "使用通行密钥登录",
+      "usePasskey": "使用通行密钥",
+      "addPasskey": "添加通行密钥",
+      "removePasskey": "移除通行密钥",
+      "passkeyAdded": "通行密钥添加成功",
+      "passkeyRemoved": "通行密钥已移除",
+      "error": "通行密钥发生错误"
+    },
+    "consent": {
+      "title": "需要同意",
+      "subtitle": "应用请求访问你的账户",
+      "permissions": "权限",
+      "approve": "批准",
+      "deny": "拒绝",
+      "scopes": {
+        "openid": "开放身份连接",
+        "profile": "查看你的个人资料",
+        "email": "查看你的邮箱地址",
+        "phone": "查看你的电话号码"
+      }
+    },
+    "interaction": {
+      "title": "需要身份验证",
+      "subtitle": "请完成身份验证",
+      "continue": "继续",
+      "cancel": "取消"
+    },
+    "Callback": {
+      "processing": "正在处理身份验证…",
+      "success": "身份验证成功",
+      "error": "身份验证失败"
+    },
+    "signedOut": {
+      "title": "已退出登录",
+      "subtitle": "你已成功退出登录",
+      "signInAgain": "重新登录",
+      "returnHome": "返回首页"
+    },
+    "session": {
+      "expired": "会话已过期",
+      "expiredMessage": "请重新登录以继续。",
+      "expiredAction": "登录"
+    }
+  },
+  "dashboard": {
+    "welcome": "欢迎回来，{{name}}！",
+    "overview": "仪表板概览",
+    "quickActions": "快捷操作",
+    "recentActivity": "最近活动",
+    "notifications": "通知",
+    "settings": "设置",
+    "profile": "我的资料",
+    "security": "安全",
+    "wallet": "钱包",
+    "help": "帮助与支持"
+  },
+  "profile": {
+    "title": "个人资料设置",
+    "personal": {
+      "title": "个人信息",
+      "firstName": "名",
+      "lastName": "姓",
+      "email": "邮箱地址",
+      "phone": "电话号码",
+      "save": "保存更改"
+    },
+    "contact": {
+      "title": "联系信息",
+      "address": "地址",
+      "city": "城市",
+      "country": "国家/地区",
+      "postalCode": "邮政编码"
+    },
+    "linkedAccounts": {
+      "title": "已关联账户",
+      "description": "管理已连接的账户",
+      "google": "Google",
+      "apple": "Apple",
+      "connect": "连接",
+      "disconnect": "断开连接",
+      "connected": "已连接",
+      "notConnected": "未连接"
+    }
+  },
+  "security": {
+    "title": "安全设置",
+    "password": {
+      "title": "密码",
+      "current": "当前密码",
+      "new": "新密码",
+      "confirm": "确认新密码",
+      "update": "更新密码",
+      "success": "密码更新成功",
+      "error": "密码更新失败"
+    },
+    "twoFactor": {
+      "title": "双重验证",
+      "enabled": "已启用",
+      "disabled": "已禁用",
+      "enable": "启用 2FA",
+      "disable": "禁用 2FA",
+      "setup": "设置 2FA",
+      "description": "为你的账户增加额外安全层"
+    },
+    "sessions": {
+      "title": "活跃会话",
+      "description": "管理你的活跃会话",
+      "current": "当前会话",
+      "other": "其他会话",
+      "revoke": "撤销",
+      "revokeAll": "撤销所有其他会话"
+    },
+    "activity": {
+      "title": "登录活动",
+      "description": "查看你最近的登录活动",
+      "recentLogins": "最近登录",
+      "location": "位置",
+      "device": "设备",
+      "time": "时间"
+    },
+    "passkeys": {
+      "title": "通行密钥",
+      "description": "管理用于免密登录的通行密钥",
+      "add": "添加通行密钥",
+      "remove": "移除",
+      "lastUsed": "上次使用"
+    },
+    "recoveryCodes": {
+      "title": "恢复代码",
+      "description": "如果你丢失了 2FA 设备，可使用这些代码访问账户",
+      "generate": "生成新代码",
+      "copied": "代码已复制到剪贴板"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "管理员仪表板",
+      "users": "总用户数",
+      "active": "活跃用户",
+      "revenue": "收入",
+      "systemHealth": "系统健康"
+    },
+    "users": {
+      "title": "用户管理",
+      "search": "搜索用户…",
+      "add": "添加用户",
+      "edit": "编辑用户",
+      "delete": "删除用户",
+      "status": "状态",
+      "active": "活跃",
+      "inactive": "非活跃",
+      "suspended": "已暂停"
+    },
+    "apps": {
+      "title": "应用管理",
+      "add": "注册应用",
+      "edit": "编辑应用",
+      "delete": "删除应用",
+      "clientId": "客户端 ID",
+      "redirectUris": "重定向 URI"
+    },
+    "audit": {
+      "title": "审计日志",
+      "filter": "筛选日志",
+      "export": "导出"
+    },
+    "kyc": {
+      "title": "KYC 验证",
+      "pending": "待处理",
+      "approved": "已批准",
+      "rejected": "已拒绝"
+    }
+  },
+  "wallet": {
+    "title": "我的钱包",
+    "balance": "余额",
+    "currency": "USD",
+    "addFunds": "添加资金",
+    "withdraw": "提现",
+    "transactions": "交易",
+    "history": "交易记录",
+    "pending": "待处理",
+    "completed": "已完成",
+    "failed": "失败",
+    "deposit": "充值",
+    "payment": "支付",
+    "refund": "退款"
+  },
+  "support": {
+    "title": "帮助与支持",
+    "faq": "常见问题",
+    "contact": "联系支持",
+    "submitTicket": "提交工单",
+    "myTickets": "我的工单",
+    "openTickets": "开放工单",
+    "closedTickets": "已关闭工单",
+    "securityReport": {
+      "title": "报告安全问题",
+      "subtitle": "帮助我们通过报告漏洞来保障 EVzone 安全",
+      "type": "问题类型",
+      "url": "发现问题的 URL",
+      "description": "描述",
+      "steps": "重现步骤"
+    }
+  },
+  "legal": {
+    "terms": {
+      "title": "服务条款",
+      "lastUpdated": "最后更新 {{date}}",
+      "accept": "我接受服务条款"
+    },
+    "privacy": {
+      "title": "隐私政策",
+      "lastUpdated": "最后更新 {{date}}"
+    },
+    "cookies": {
+      "title": "Cookie 政策",
+      "lastUpdated": "最后更新 {{date}}",
+      "description": "本网站使用 Cookie 以提升你的体验。",
+      "acceptAll": "全部接受",
+      "rejectAll": "全部拒绝",
+      "customize": "自定义"
+    },
+    "consent": {
+      "title": "隐私同意",
+      "description": "管理你的隐私偏好",
+      "necessary": "必要",
+      "functional": "功能性",
+      "analytics": "分析",
+      "marketing": "营销",
+      "savePreferences": "保存偏好设置"
+    }
+  },
+  "errors": {
+    "403": {
+      "title": "访问被拒绝",
+      "subtitle": "你没有权限访问此页面。",
+      "description": "你可能没有查看此内容所需的权限。",
+      "action": "前往仪表板"
+    },
+    "404": {
+      "title": "页面未找到",
+      "subtitle": "你要找的页面不存在。",
+      "description": "未找到你请求的页面。它可能已被移动或删除。",
+      "action": "返回首页"
+    },
+    "429": {
+      "title": "请求过多",
+      "subtitle": "请放慢速度",
+      "description": "你在短时间内发出了太多请求。请稍等片刻后再试。",
+      "action": "再试一次"
+    },
+    "500": {
+      "title": "出了点问题",
+      "subtitle": "发生意外错误",
+      "description": "很抱歉，出现了问题。我们的团队已收到通知。",
+      "action": "前往仪表板",
+      "support": "联系支持"
+    }
+  },
+  "footer": {
+    "copyright": "© {{year}} EVzone。保留所有权利。",
+    "terms": "服务条款",
+    "privacy": "隐私政策",
+    "cookies": "Cookie 政策",
+    "contact": "联系我们",
+    "help": "帮助中心",
+    "about": "关于 EVzone",
+    "careers": "招聘",
+    "press": "新闻",
+    "social": "关注我们"
+  },
+  "accessibility": {
+    "skipToContent": "跳到主要内容",
+    "menuToggle": "切换菜单",
+    "closeMenu": "关闭菜单",
+    "openSearch": "打开搜索",
+    "closeSearch": "关闭搜索",
+    "previous": "上一页",
+    "next": "下一步",
+    "expandSection": "展开部分",
+    "collapseSection": "收起部分"
+  }
+}

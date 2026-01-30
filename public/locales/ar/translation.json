@@ -1,28 +1,721 @@
 {
-    "app_name": "EVzone حساباتي",
-    "auth": {
-        "sign_in": "تسجيل الدخول",
-        "sign_out": "خروج",
-        "create_account": "إنشاء حساب",
-        "forgot_password": "هل نسيت كلمة المرور؟",
-        "email_placeholder": "name@example.com",
-        "password_placeholder": "كلمة المرور"
+  "app": {
+    "name": "EVzone مي حسابات",
+    "tagline": "حسابك الموحد لجميع خدمات EVzone"
+  },
+  "common": {
+    "actions": {
+      "save": "حفظ",
+      "cancel": "إلغاء",
+      "delete": "حذف",
+      "edit": "تعديل",
+      "submit": "إرسال",
+      "close": "إغلاق",
+      "back": "رجوع",
+      "next": "التالي",
+      "confirm": "تأكيد",
+      "search": "بحث",
+      "filter": "تصفية",
+      "clear": "مسح",
+      "reset": "إعادة تعيين",
+      "refresh": "ريفريش",
+      "retry": "إعادة المحاولة",
+      "continue": "متابعة",
+      "done": "تم",
+      "send": "إرسال",
+      "download": "تنزيل",
+      "upload": "رفع",
+      "copy": "نسخ",
+      "view": "عرض",
+      "hide": "إخفاء",
+      "show": "إظهار",
+      "expand": "توسيع",
+      "collapse": "طي",
+      "select": "تحديد",
+      "selectAll": "تحديد الكل",
+      "deselectAll": "إلغاء تحديد الكل",
+      "add": "إضافة",
+      "remove": "ريموفي",
+      "update": "تحديث",
+      "create": "إنشاء",
+      "signIn": "تسجيل الدخول",
+      "signOut": "تسجيل الخروج",
+      "signUp": "إنشاء حساب",
+      "login": "تسجيل الدخول",
+      "logout": "تسجيل الخروج",
+      "register": "ريجيستير"
     },
-    "header": {
-        "search": "بحث...",
-        "language": "لغة",
-        "theme": "سمة",
-        "notifications": "إشعارات",
-        "profile": "الملف الشخصي",
-        "settings": "الإعدادات",
-        "help": "مساعدة"
+    "errors": {
+      "required": "هذا الحقل مطلوب",
+      "invalidEmail": "يرجى إدخال عنوان بريد إلكتروني صالح",
+      "invalidPhone": "يرجى إدخال رقم هاتف صالح",
+      "passwordTooShort": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+      "passwordRequiresUppercase": "يجب أن تحتوي كلمة المرور على حرف كبير",
+      "passwordRequiresLowercase": "يجب أن تحتوي كلمة المرور على حرف صغير",
+      "passwordRequiresNumber": "يجب أن تحتوي كلمة المرور على رقم",
+      "passwordRequiresSpecial": "يجب أن تحتوي كلمة المرور على رمز خاص",
+      "passwordsDoNotMatch": "باسسووردس دو غير ماتتش",
+      "networkError": "خطأ في الشبكة. يرجى المحاولة مرة أخرى.",
+      "serverError": "خطأ في الخادم. يرجى المحاولة لاحقاً.",
+      "unknownError": "ان ونيكسبيكتيد خطأ وككورريد.",
+      "sessionExpired": "انتهت صلاحية جلستك. يرجى تسجيل الدخول مرة أخرى.",
+      "invalidCredentials": "بيانات اعتماد غير صحيحة. يرجى المحاولة مرة أخرى.",
+      "tooManyAttempts": "محاولات كثيرة جداً. يرجى المحاولة لاحقاً.",
+      "accountLocked": "تم قفل حسابك.",
+      "emailAlreadyExists": "ان حساب ويث هذا البريد الإلكتروني الريادي يكسيستس.",
+      "userNotFound": "مستخدم غير موجودة.",
+      "unauthorized": "غير مصرح لك بتنفيذ هذا الإجراء.",
+      "forbidden": "تم رفض الوصول.",
+      "notFound": "لم يتم العثور على المورد المطلوب.",
+      "badRequest": "طلب غير صالح.",
+      "internalServerError": "خطأ داخلي في الخادم.",
+      "serviceUnavailable": "الخدمة غير متاحة مؤقتاً.",
+      "validationError": "يرجى التحقق من إدخالك والمحاولة مرة أخرى."
     },
-    "languages": {
-        "en": "إنجليزي",
-        "fr": "فرنسي",
-        "zh": "صيني",
-        "es": "إسباني",
-        "ar": "عربي",
-        "sw": "سواحلي"
+    "loading": {
+      "loading": "جارٍ التحميل...",
+      "pleaseWait": "يرجى الانتظار...",
+      "processing": "بروكيسسينغ...",
+      "saving": "جارٍ الحفظ...",
+      "deleting": "جارٍ الحذف...",
+      "updating": "جارٍ التحديث...",
+      "signingIn": "جارٍ تسجيل الدخول...",
+      "signingOut": "جارٍ تسجيل الخروج..."
+    },
+    "validation": {
+      "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا العنصر؟",
+      "unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد المغادرة؟",
+      "minLength": "يجب ألا يقل عن {{count}} حرفاً",
+      "maxLength": "يجب ألا يزيد عن {{count}} حرفاً",
+      "minValue": "يجب أن تكون القيمة {{count}} على الأقل",
+      "maxValue": "يجب ألا تزيد القيمة عن {{count}}"
+    },
+    "placeholders": {
+      "email": "أدخل بريدك الإلكتروني",
+      "phone": "أدخل رقم هاتفك",
+      "password": "أدخل كلمة المرور",
+      "newPassword": "أدخل جديد كلمة مرور",
+      "confirmPassword": "أكّد كلمة المرور الخاصة بك",
+      "search": "بحث...",
+      "selectOption": "تحديد ان خيار"
     }
+  },
+  "loading": {
+    "session": "جارٍ تهيئة جلسة آمنة..."
+  },
+  "error": {
+    "title": "مصادقة خطأ",
+    "sessionFailed": "فشل تهيئة جلسة آمنة.",
+    "retry": "إعادة المحاولة"
+  },
+  "password": {
+    "weak": "ضعيف",
+    "fair": "متوسط",
+    "good": "جيد",
+    "strong": "قوي",
+    "veryStrong": "جداً قوي"
+  },
+  "header": {
+    "title": "EVzone حسابات",
+    "subtitle": "أنشئ هوية EVzone الخاصة بك"
+  },
+  "auth": {
+    "common": {
+      "loading": "جارٍ التحميل...",
+      "or": "أو",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "terms": "الشروط",
+      "privacy": "بريفاكي",
+      "help": "مساعدة",
+      "signIn": "تسجيل الدخول",
+      "signUp": "إنشاء حساب",
+      "switchToLight": "التبديل إلى الوضع الفاتح",
+      "switchToDark": "التبديل إلى الوضع الداكن",
+      "continue": "متابعة",
+      "back": "رجوع",
+      "cancel": "إلغاء",
+      "save": "حفظ",
+      "submit": "إرسال",
+      "verify": "تحقق",
+      "send": "إرسال"
+    },
+    "signIn": {
+      "title": "تسجيل الدخول",
+      "subtitle": "مرحباً رجوع! يرجى تسجيل الدخول إلى متابعة.",
+      "emailOrPhone": "البريد الإلكتروني أو الهاتف",
+      "password": "كلمة المرور",
+      "forgotPassword": "هل نسيت كلمة المرور؟",
+      "rememberMe": "ريميمبير مي",
+      "submit": "تسجيل الدخول",
+      "noAccount": "ليس لديك حساب؟",
+      "signUp": "إنشاء حساب",
+      "orContinueWith": "أو متابعة ويث",
+      "checking": "جارٍ التحقق...",
+      "unavailable": "غير متاح",
+      "errors": {
+        "enterEmailOrPhone": "أدخل بريدك الإلكتروني أو رقم هاتفك.",
+        "enterPassword": "أدخل كلمة المرور للمتابعة.",
+        "invalidCredentials": "بيانات اعتماد غير صحيحة. يرجى المحاولة مرة أخرى.",
+        "locked": "مقفل. أعد المحاولة بعد {{seconds}} ثانية"
+      },
+      "verifying": "جارٍ التحقق من بيانات الاعتماد...",
+      "failed": "فشل تسجيل الدخول",
+      "left": {
+        "title": "حساب واحد لكل شيء في EVzone",
+        "subtitle": "استمتع بالوصول السلس إلى الشحن والمتجر والدفع بهوية آمنة واحدة.",
+        "demoNote": "معبأ مسبقاً للعرض: example@mail.com"
+      },
+      "right": {
+        "subtitle": "للمتابعة إلى بوابة EVzone"
+      },
+      "features": {
+        "secureSessions": {
+          "title": "آمن جلسات",
+          "desc": "مراقبة أمان بمستوى بنكي على مدار الساعة (24/7)."
+        },
+        "passkeys": {
+          "title": "مفاتيح المرور و القياسات الحيوية",
+          "desc": "سجّل الدخول باستخدام تاتش آي دي أو فيس آي دي."
+        },
+        "privacy": {
+          "title": "بريفاكي الأول",
+          "desc": "نحن نعظّم خصوصية بياناتك."
+        }
+      },
+      "showPassword": "إظهار كلمة مرور",
+      "hidePassword": "إخفاء كلمة مرور",
+      "switchingToPassword": "جارٍ التبديل إلى كلمة المرور...",
+      "placeholders": {
+        "email": "name@example.com"
+      },
+      "useOtpTitle": "استخدم وني-تيمي كودي",
+      "useOtpSubtitle": "لا توجد كلمة مرور؟ استخدم رمزاً سحرياً.",
+      "comingSoon": "قريباً",
+      "otpComingSoon": "يتم دمج تسجيل الدخول برمز لمرة واحدة.",
+      "sendCode": "إرسال كودي",
+      "termsAgree": "بالمتابعة، أنت توافق على شروط وخصوصية EVzone.",
+      "locked": "مقفل. أعد المحاولة بعد {{seconds}} ثانية"
+    },
+    "signUp": {
+      "sectionTitle": "إنشاء الحساب",
+      "sectionSubtitle": "أنشئ معرّفاً آمناً واحداً لجميع خدمات EVzone.",
+      "secureIdentity": "آمن يدينتيتي",
+      "secureIdentityDesc": "أمان بمستوى بنكي لأصولك.",
+      "clearPermissions": "مسح أذونات",
+      "clearPermissionsDesc": "أنت تتحكم في مشاركة بياناتك.",
+      "backToSignIn": "رجوع إلى تسجيل الدخول",
+      "createAccount": "إنشاء حساب",
+      "getStarted": "جيت ستارتيد ويث EVzone",
+      "continueWithGoogle": "متابعة ويث جوجل",
+      "continueWithApple": "متابعة ويث آبل",
+      "firstName": "الأول اسم",
+      "firstNamePlaceholder": "ي.ج. جاني",
+      "otherNames": "أخرى ناميس",
+      "otherNamesPlaceholder": "ي.ج. دوي",
+      "email": "عنوان البريد الإلكتروني",
+      "emailPlaceholder": "name@example.com",
+      "phone": "رقم الهاتف",
+      "phonePlaceholder": "700 000 000",
+      "createWithOtp": "إنشاء ويث وني-تيمي كودي",
+      "createWithOtpDesc": "لا يلزم كلمة مرور. سنقوم بالتحقق من هاتفك.",
+      "createPassword": "إنشاء كلمة مرور",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "otpInfo": "ستتلقى رمز OTP للتحقق من حسابك.",
+      "inviteCode": "دعوة كودي (اختياري)",
+      "inviteCodePlaceholder": "ي.ج. EVZ-123",
+      "termsAgreement": "أوافق على شروط الخدمة وسياسة الخصوصية.",
+      "continue": "متابعة",
+      "switchToSignIn": "التبديل إلى تسجيل الدخول",
+      "verifyContactInfo": "تحقق من معلومات الاتصال في الخطوة التالية.",
+      "validation": {
+        "firstNameRequired": "أدخل اسمك الأول.",
+        "otherNamesRequired": "أدخل أسمائك الأخرى.",
+        "emailOrPhoneRequired": "قدّم بريداً إلكترونياً أو رقم هاتف على الأقل.",
+        "validEmailRequired": "أدخل عنوان بريد إلكتروني صالح.",
+        "termsRequired": "يجب عليك قبول الشروط وسياسة الخصوصية.",
+        "passwordRequired": "أنشئ كلمة مرور.",
+        "passwordMinLength": "يجب أن تكون كلمة المرور 8 أحرف على الأقل.",
+        "passwordsDoNotMatch": "باسسووردس دو غير ماتتش."
+      },
+      "notification": {
+        "registrationInfo": "ريجيستراشن معلومات",
+        "accountCreated": "تم إنشاء الحساب",
+        "accountCreatedSuccess": "تم إنشاء الحساب بنجاح! جارٍ تسجيل دخولك بأمان...",
+        "verifyEmail": "تحقق من بريدك الإلكتروني",
+        "verifyEmailSuccess": "تم إنشاء الحساب! يرجى التحقق من صندوق الوارد للحصول على رابط التحقق.",
+        "registrationFailed": "ريجيستراشن فشل",
+        "registrationFailedMessage": "فشل إنشاء الحساب. يرجى المحاولة مرة أخرى."
+      }
+    },
+    "forgotPassword": {
+      "subtitle": "نسيت كلمة المرور",
+      "resetAccess": "إعادة تعيين وصول",
+      "resetAccessDesc": "استعد حسابك باستخدام بريدك الإلكتروني أو هاتفك المُتحقق منه.",
+      "rateLimiting": "راتي ليميتينغ",
+      "rateLimitingDesc": "انتظر 30 ثانية بين الطلبات.",
+      "secureLink": "آمن رابط",
+      "secureLinkDesc": "نرسل رابطاً أو رمزاً سحرياً.",
+      "backToSignIn": "رجوع إلى تسجيل الدخول",
+      "checkContact": "تحقق من {{type}}",
+      "instructionsSent": "أرسلنا التعليمات إلى {{mask}} عبر {{method}}.",
+      "nextSteps": "التالي خطوات",
+      "nextStepsDesc": "انقر على الرابط أو أدخل الرمز لإعادة تعيين كلمة المرور.",
+      "enterResetCode": "أدخل رمز إعادة التعيين",
+      "resendIn": "إعادة الإرسال بعد {{seconds}} ثانية",
+      "sendAgain": "إرسال مرة أخرى",
+      "changeContactInfo": "تغيير اتصال معلومات",
+      "needHelp": "هل تحتاج إلى مساعدة؟",
+      "title": "نسيت كلمة المرور",
+      "enterToRecover": "أدخل بريدك الإلكتروني أو هاتفك لاستعادة حسابك.",
+      "identifierLabel": "أدخل البريد الإلكتروني أو هاتف",
+      "identifierPlaceholder": "name@example.com",
+      "validIdentifierHint": "أدخل بريداً إلكترونياً أو رقم هاتف صالحاً.",
+      "deliveryMethod": "تسليم طريقة",
+      "captchaLabel": "أنا لست روبوتاً",
+      "captchaDesc": "أكمل التحقق من الكابتشا.",
+      "accountRecoveryHelp": "مساعدة استعادة الحساب",
+      "spamTip": "نصيحة: تحقق من مجلد البريد العشوائي إذا لم تجد البريد الإلكتروني.",
+      "confirmSend": "تأكيد إرسال",
+      "sendTo": "أرسل تعليمات الاستعادة إلى:",
+      "viaMethod": "عبر {{method}}",
+      "invalidatePrevious": "سيؤدي هذا إلى إبطال الروابط السابقة.",
+      "sendInstructions": "إرسال تعليمات",
+      "delivery": {
+        "emailLink": "رابط البريد الإلكتروني",
+        "emailLinkDesc": "أرسل رابطاً سحرياً إلى بريدك الإلكتروني.",
+        "smsCode": "SMS كودي",
+        "smsCodeDesc": "أرسل رمزاً مكوناً من 6 أرقام إلى هاتفك.",
+        "whatsappCode": "واتساب كودي",
+        "whatsappCodeDesc": "أرسل رمزاً عبر واتساب."
+      },
+      "phoneMethodsHint": "طرق الهاتف متاحة إذا أدخلت رقم هاتف.",
+      "validation": {
+        "enterIdentifier": "أدخل البريد الإلكتروني أو هاتف",
+        "validIdentifier": "أدخل بريداً إلكترونياً أو رقم هاتف صالحاً.",
+        "waitCooldown": "يرجى الانتظار {{seconds}} ثانية",
+        "completeCaptcha": "يرجى إكمال الكابتشا."
+      },
+      "notification": {
+        "sentSuccess": "تم الإرسال بنجاح عبر {{via}}.",
+        "sendFailed": "فشل إرسال الطلب. يرجى المحاولة مرة أخرى."
+      }
+    },
+    "resetPassword": {
+      "subtitle": "إعادة تعيين كلمة المرور",
+      "createNewPassword": "إنشاء كلمة مرور جديدة",
+      "enterNewPassword": "أدخل كلمة مرور جديدة لحسابك.",
+      "navigateToForgot": "انتقل إلى /auth/forgot-password",
+      "backToForgotPassword": "رجوع إلى نسيت كلمة المرور",
+      "title": "إعادة تعيين كلمة المرور",
+      "enterDetails": "أدخل بياناتك لإعادة تعيين كلمة المرور.",
+      "tokenTab": "رمز",
+      "codeTab": "رمز",
+      "resetToken": "إعادة تعيين رمز",
+      "tokenPlaceholder": "أدخل رمز",
+      "tokenHelperText": "تحقق من بريدك الإلكتروني للحصول على الرمز.",
+      "verifyToken": "تحقق من الرمز",
+      "identifierLabel": "البريد الإلكتروني أو الهاتف",
+      "identifierPlaceholder": "أدخل البريد الإلكتروني أو هاتف",
+      "identifierHelper": "سنحدد الطريقة بناءً على إدخالك.",
+      "deliveryMethod": "تسليم طريقة",
+      "codeSent": "كودي تم الإرسال",
+      "sendCode": "إرسال كودي",
+      "resendCode": "ريسيند كودي",
+      "verifyCode": "تحقق من الرمز",
+      "newPassword": "كلمة مرور جديدة",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "requirements": "ريكويريمينتس",
+      "signOutAll": "تسجيل الخروج وف الكل أخرى ديفيكيس",
+      "resetButton": "إعادة تعيين كلمة المرور",
+      "passwordUpdated": "كلمة المرور تم التحديث",
+      "passwordChangedSuccess": "تم تغيير كلمة المرور بنجاح.",
+      "goToSignIn": "اذهب إلى تسجيل الدخول",
+      "accountRecoveryHelp": "مساعدة استعادة الحساب",
+      "navigateToHelp": "انتقل إلى /auth/account-recovery-help",
+      "channel": {
+        "email": "البريد الإلكتروني",
+        "emailDesc": "إرسال إلى البريد الإلكتروني",
+        "sms": "رسالة نصية",
+        "smsDesc": "إرسال عبر SMS",
+        "whatsapp": "واتساب",
+        "whatsappDesc": "إرسال عبر واتساب"
+      },
+      "phoneChannelsDisabled": "قنوات الهاتف معطلة لمستخدمي البريد الإلكتروني.",
+      "req": {
+        "length": "على الأقل 8 أحرف",
+        "uppercase": "واحد كبير ليتتير",
+        "lowercase": "واحد صغير ليتتير",
+        "number": "واحد رقم",
+        "special": "واحد خاص رمز",
+        "match": "باسسووردس ماتتش"
+      },
+      "validation": {
+        "tokenRequired": "يرجى إدخال رمز إعادة التعيين.",
+        "identifierRequired": "يرجى إدخال بريدك الإلكتروني أو هاتفك.",
+        "invalidIdentifier": "بريد إلكتروني أو هاتف غير صالح.",
+        "codeRequired": "يرجى إدخال رمز مكوّن من 6 أرقام.",
+        "passwordRequired": "يرجى إدخال كلمة مرور.",
+        "passwordStrength": "يجب أن تكون كلمة المرور أقوى.",
+        "passwordsDoNotMatch": "باسسووردس دو غير ماتتش."
+      },
+      "notification": {
+        "codeSentEmail": "كودي أُرسل إلى البريد الإلكتروني.",
+        "codeSentVia": "تم إرسال الرمز عبر {{channel}}.",
+        "sendFailed": "فشل إلى إرسال كودي.",
+        "resetSuccessSignedOut": "تمت إعادة تعيين كلمة المرور. تم تسجيل خروجك.",
+        "resetSuccess": "تمت إعادة تعيين كلمة المرور بنجاح.",
+        "resetFailed": "فشل إعادة تعيين كلمة المرور. الرمز/التوكن غير صالح."
+      }
+    },
+    "verifyEmail": {
+      "pageTitle": "تحقق من عنوان البريد الإلكتروني",
+      "checkInbox": "تحقق من صندوق الوارد",
+      "codeSentTo": "أرسلنا رمزاً إلى {{email}}.",
+      "openEmailApp": "فتح تطبيق البريد الإلكتروني",
+      "openEmailAppDesc": "اضغط لفتح تطبيق البريد.",
+      "resendCode": "ريسيند كودي",
+      "resendCodeDesc": "انقر أدناه لإرسال رمز جديد.",
+      "openEmail": "فتح البريد الإلكتروني",
+      "changeEmail": "تغيير البريد الإلكتروني",
+      "emailVerified": "تم التحقق من البريد الإلكتروني",
+      "verificationSuccessDesc": "تم التحقق من {{email}} بنجاح.",
+      "nextSteps": "التالي خطوات",
+      "nextStepsDesc": "تابع للتحقق من هاتفك.",
+      "title": "تحقق من عنوان البريد الإلكتروني",
+      "verify": "تحقق",
+      "resendIn": "إعادة الإرسال بعد {{seconds}} ثانية",
+      "needHelp": "هل تحتاج إلى مساعدة؟",
+      "changeEmailDialog": "تغيير البريد الإلكتروني عنوان",
+      "changeEmailDesc": "أدخل أدناه لاستلام الرمز على عنوان بريد إلكتروني جديد.",
+      "emailLabel": "عنوان البريد الإلكتروني",
+      "emailPlaceholder": "name@example.com",
+      "saveAndSend": "حفظ و إرسال",
+      "validation": {
+        "codeRequired": "يرجى إدخال رمز مكوّن من 6 أرقام."
+      },
+      "notification": {
+        "codeSent": "تم إرسال الرمز إلى {{email}}.",
+        "sendFailed": "فشل إلى إرسال كودي",
+        "openingEmail": "جارٍ فتح تطبيق البريد الإلكتروني...",
+        "verificationSuccess": "تم التحقق من البريد الإلكتروني بنجاح.",
+        "invalidCode": "رمز غير صالح. يرجى المحاولة مرة أخرى."
+      }
+    },
+    "verifyPhone": {
+      "title": "تحقق من الهاتف",
+      "subtitle": "يرجى إدخال رمز التحقق المُرسل إلى هاتفك.",
+      "code": "رمز التحقق",
+      "submit": "تحقق من الهاتف",
+      "resendCode": "ريسيند كودي",
+      "resendSuccess": "تم إرسال رمز التحقق",
+      "success": "تم التحقق من الهاتف بنجاح",
+      "successMessage": "تم التحقق من رقم هاتفك."
+    },
+    "mfa": {
+      "title": "ثنائي العامل مصادقة",
+      "subtitle": "أدخل 6-ديجيت كودي فروم خاصتك اوثينتيكاتور ابب",
+      "code": "رمز التحقق",
+      "submit": "تحقق",
+      "useBackup": "استخدم رمزاً احتياطياً بدلاً من ذلك",
+      "resendCode": "ريسيند كودي",
+      "backupCode": "رمز احتياطي",
+      "success": "تم التحقق بنجاح",
+      "setupTitle": "إعداد الاشتراك ثنائي العامل مصادقة",
+      "scanQr": "امسح رمز QR هذا باستخدام تطبيق المصادقة",
+      "manualEntry": "أو أدخل هذا الرمز يدوياً",
+      "enterCode": "أدخل 6-ديجيت كودي فروم خاصتك ابب",
+      "confirmSetup": "تأكيد الإعداد",
+      "backupCodesTitle": "رموز احتياطية",
+      "backupCodesDescription": "احفظ رموز النسخ الاحتياطي في مكان آمن. يمكنك استخدامها إذا فقدت الوصول إلى تطبيق المصادقة.",
+      "copyCodes": "نسخ رموز",
+      "done": "تم",
+      "invalidCode": "رمز غير صالح. يرجى المحاولة مرة أخرى.",
+      "tooManyAttempts": "عدد كبير من المحاولات الخاطئة. يرجى المحاولة مرة أخرى."
+    },
+    "passkey": {
+      "title": "مفتاح مرور مصادقة",
+      "subtitle": "سجّل الدخول باستخدام مفتاح المرور الخاص بك",
+      "usePasskey": "استخدم مفتاح مرور",
+      "addPasskey": "إضافة مفتاح مرور",
+      "removePasskey": "ريموفي مفتاح مرور",
+      "passkeyAdded": "مفتاح مرور ادديد سوككيسسفوللي",
+      "passkeyRemoved": "مفتاح مرور تمت الإزالة",
+      "error": "مفتاح مرور خطأ وككورريد"
+    },
+    "consent": {
+      "title": "كونسينت مطلوب",
+      "subtitle": "يطلب التطبيق الوصول إلى حسابك",
+      "permissions": "أذونات",
+      "approve": "موافقة",
+      "deny": "رفض",
+      "scopes": {
+        "openid": "اتصال أوبن آي دي",
+        "profile": "عرض خاصتك الملف الشخصي",
+        "email": "عرض خاصتك البريد الإلكتروني عنوان",
+        "phone": "عرض خاصتك هاتف رقم"
+      }
+    },
+    "interaction": {
+      "title": "مصادقة مطلوب",
+      "subtitle": "يرجى إكمال المصادقة",
+      "continue": "متابعة",
+      "cancel": "إلغاء"
+    },
+    "Callback": {
+      "processing": "بروكيسسينغ مصادقة...",
+      "success": "مصادقة ناجح",
+      "error": "مصادقة فشل"
+    },
+    "signedOut": {
+      "title": "تم تسجيل الخروج",
+      "subtitle": "تم تسجيل خروجك بنجاح",
+      "signInAgain": "تسجيل الدخول مرة أخرى",
+      "returnHome": "العودة إلى الرئيسية"
+    },
+    "session": {
+      "expired": "انتهت صلاحية جلستك",
+      "expiredMessage": "يرجى تسجيل الدخول مرة أخرى للمتابعة.",
+      "expiredAction": "تسجيل الدخول"
+    }
+  },
+  "dashboard": {
+    "welcome": "مرحباً رجوع, ف0!",
+    "overview": "لوحة التحكم وفيرفييو",
+    "quickActions": "كويك اكشنس",
+    "recentActivity": "ريكينت اكتيفيتي",
+    "notifications": "إشعارات",
+    "settings": "الإعدادات",
+    "profile": "مي الملف الشخصي",
+    "security": "الأمان",
+    "wallet": "محفظة",
+    "help": "مساعدة و سوببورت"
+  },
+  "profile": {
+    "title": "الملف الشخصي الإعدادات",
+    "personal": {
+      "title": "شخصية معلومات",
+      "firstName": "الأول اسم",
+      "lastName": "آخر اسم",
+      "email": "عنوان البريد الإلكتروني",
+      "phone": "رقم الهاتف",
+      "save": "حفظ تشانجيس"
+    },
+    "contact": {
+      "title": "اتصال معلومات",
+      "address": "عنوان",
+      "city": "مدينة",
+      "country": "دولة",
+      "postalCode": "بوستال كودي"
+    },
+    "linkedAccounts": {
+      "title": "مرتبطة حسابات",
+      "description": "إدارة حساباتك المتصلة",
+      "google": "جوجل",
+      "apple": "آبل",
+      "connect": "كونكت",
+      "disconnect": "قطع الاتصال",
+      "connected": "متصل",
+      "notConnected": "غير متصل"
+    }
+  },
+  "security": {
+    "title": "الأمان الإعدادات",
+    "password": {
+      "title": "كلمة المرور",
+      "current": "كلمة المرور الحالية",
+      "new": "كلمة مرور جديدة",
+      "confirm": "تأكيد كلمة المرور الجديدة",
+      "update": "تحديث كلمة المرور",
+      "success": "تم تحديث كلمة المرور بنجاح",
+      "error": "فشل إلى تحديث كلمة مرور"
+    },
+    "twoFactor": {
+      "title": "ثنائي العامل مصادقة",
+      "enabled": "مُمكّن",
+      "disabled": "معطّل",
+      "enable": "تمكين 2فا",
+      "disable": "تعطيل 2فا",
+      "setup": "إعداد الاشتراك 2فا",
+      "description": "أضف طبقة أمان إضافية إلى حسابك"
+    },
+    "sessions": {
+      "title": "نشط جلسات",
+      "description": "إدارة جلساتك النشطة",
+      "current": "الجلسة الحالية",
+      "other": "أخرى جلسات",
+      "revoke": "إلغاء",
+      "revokeAll": "إلغاء الكل أخرى جلسات"
+    },
+    "activity": {
+      "title": "تسجيل الدخول اكتيفيتي",
+      "description": "عرض خاصتك ريكينت تسجيل الدخول اكتيفيتي",
+      "recentLogins": "ريكينت لوجينس",
+      "location": "موقع",
+      "device": "جهاز",
+      "time": "الوقت"
+    },
+    "passkeys": {
+      "title": "مفاتيح المرور",
+      "description": "إدارة مفاتيح المرور لتسجيل الدخول بدون كلمة مرور",
+      "add": "إضافة مفتاح مرور",
+      "remove": "ريموفي",
+      "lastUsed": "آخر مستخدم"
+    },
+    "recoveryCodes": {
+      "title": "استعادة رموز",
+      "description": "استخدم هذه الرموز للوصول إلى حسابك إذا فقدت جهاز 2FA الخاص بك",
+      "generate": "توليد جديد رموز",
+      "copied": "تم نسخ الرموز إلى الحافظة"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "مسؤول لوحة التحكم",
+      "users": "إجمالي مستخدمون",
+      "active": "نشط مستخدمون",
+      "revenue": "الإيرادات",
+      "systemHealth": "سيستيم هيالث"
+    },
+    "users": {
+      "title": "مستخدم إدارة",
+      "search": "بحث مستخدمون...",
+      "add": "إضافة مستخدم",
+      "edit": "تعديل مستخدم",
+      "delete": "حذف مستخدم",
+      "status": "الحالة",
+      "active": "نشط",
+      "inactive": "يناكتيفي",
+      "suspended": "معلّق"
+    },
+    "apps": {
+      "title": "تطبيق إدارة",
+      "add": "ريجيستير ابب",
+      "edit": "تعديل ابب",
+      "delete": "حذف ابب",
+      "clientId": "عميل ID",
+      "redirectUris": "ريديريكت URIs"
+    },
+    "audit": {
+      "title": "تدقيق سجلات",
+      "filter": "تصفية سجلات",
+      "export": "تصدير"
+    },
+    "kyc": {
+      "title": "KYC تحقق",
+      "pending": "قيد الانتظار",
+      "approved": "تمت الموافقة",
+      "rejected": "ريجيكتيد"
+    }
+  },
+  "wallet": {
+    "title": "مي محفظة",
+    "balance": "الرصيد",
+    "currency": "دولار أمريكي",
+    "addFunds": "إضافة أموال",
+    "withdraw": "ويثدراو",
+    "transactions": "معاملات",
+    "history": "معاملة سجل",
+    "pending": "قيد الانتظار",
+    "completed": "مكتمل",
+    "failed": "فشل",
+    "deposit": "إيداع",
+    "payment": "بايمينت",
+    "refund": "ريفوند"
+  },
+  "support": {
+    "title": "مساعدة و سوببورت",
+    "faq": "متكرر مطروح أسئلة",
+    "contact": "اتصال سوببورت",
+    "submitTicket": "إرسال ا تيكيت",
+    "myTickets": "مي تذاكر",
+    "openTickets": "فتح تذاكر",
+    "closedTickets": "مغلقة تذاكر",
+    "securityReport": {
+      "title": "ريبورت ا الأمان مشكلة",
+      "subtitle": "ساعدنا في الحفاظ على أمان EVzone عبر الإبلاغ عن الثغرات",
+      "type": "مشكلة نوع",
+      "url": "URL وهيري مشكلة واس موجودة",
+      "description": "وصف",
+      "steps": "خطوات إعادة إنتاج المشكلة"
+    }
+  },
+  "legal": {
+    "terms": {
+      "title": "الشروط وف خدمة",
+      "lastUpdated": "آخر تحديث {{date}}",
+      "accept": "أوافق على شروط الخدمة"
+    },
+    "privacy": {
+      "title": "بريفاكي سياسة",
+      "lastUpdated": "آخر تحديث {{date}}"
+    },
+    "cookies": {
+      "title": "سياسة ملفات تعريف الارتباط",
+      "lastUpdated": "آخر تحديث {{date}}",
+      "description": "يستخدم هذا الموقع ملفات تعريف الارتباط لتحسين تجربتك.",
+      "acceptAll": "قبول الكل",
+      "rejectAll": "رفض الكل",
+      "customize": "تخصيص"
+    },
+    "consent": {
+      "title": "بريفاكي كونسينت",
+      "description": "إدارة تفضيلات الخصوصية",
+      "necessary": "ضروري",
+      "functional": "وظيفي",
+      "analytics": "تحليلات",
+      "marketing": "تسويق",
+      "savePreferences": "حفظ تفضيلات"
+    }
+  },
+  "errors": {
+    "403": {
+      "title": "تم رفض الوصول",
+      "subtitle": "لا تملك الإذن للوصول إلى هذه الصفحة.",
+      "description": "قد لا تملك الأذونات المطلوبة لعرض هذا المحتوى.",
+      "action": "اذهب إلى لوحة التحكم"
+    },
+    "404": {
+      "title": "الصفحة غير موجودة",
+      "subtitle": "الصفحة التي تبحث عنها غير موجودة.",
+      "description": "تعذر العثور على الصفحة المطلوبة. ربما تم نقلها أو حذفها.",
+      "action": "اذهب إلى الرئيسية"
+    },
+    "429": {
+      "title": "طلبات كثيرة جداً",
+      "subtitle": "يرجى التمهّل",
+      "description": "لقد أجريت طلبات كثيرة في وقت قصير. يرجى الانتظار قليلاً ثم المحاولة مرة أخرى.",
+      "action": "حاول مرة أخرى"
+    },
+    "500": {
+      "title": "حدث خطأ ما",
+      "subtitle": "ان ونيكسبيكتيد خطأ وككورريد",
+      "description": "نعتذر، حدث خطأ ما. تم إخطار فريقنا.",
+      "action": "اذهب إلى لوحة التحكم",
+      "support": "اتصال سوببورت"
+    }
+  },
+  "footer": {
+    "copyright": "© {{year}} EVzone. جميع الحقوق محفوظة.",
+    "terms": "الشروط وف خدمة",
+    "privacy": "بريفاكي سياسة",
+    "cookies": "سياسة ملفات تعريف الارتباط",
+    "contact": "اتصال نحن",
+    "help": "مساعدة كينتير",
+    "about": "حول EVzone",
+    "careers": "وظائف",
+    "press": "بريسس",
+    "social": "تابع نحن"
+  },
+  "accessibility": {
+    "skipToContent": "تخطي إلى المحتوى الرئيسي",
+    "menuToggle": "تبديل قائمة",
+    "closeMenu": "إغلاق قائمة",
+    "openSearch": "فتح بحث",
+    "closeSearch": "إغلاق بحث",
+    "previous": "سابقة",
+    "next": "التالي",
+    "expandSection": "توسيع القسم",
+    "collapseSection": "طي القسم"
+  }
 }

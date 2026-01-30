@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Box, CircularProgress, Typography } from "@mui/material";
@@ -10,6 +11,7 @@ import { Box, CircularProgress, Typography } from "@mui/material";
  * so the backend can decide whether to show login/consent and continue the flow.
  */
 export default function InteractionDispatcher() {
+  const { t } = useTranslation("common"); {
   const { uid } = useParams<{ uid: string }>();
 
   useEffect(() => {

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
     Alert,
     Avatar,
@@ -70,6 +71,7 @@ import { api } from "@/utils/api";
 import { exportToCsv } from "@/utils/export";
 
 export default function AuditLogs() {
+  const { t } = useTranslation("common"); {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const isDark = theme.palette.mode === 'dark';

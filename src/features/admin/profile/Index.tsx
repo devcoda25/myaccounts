@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from "react-i18next";
 import {
     Box,
     Paper,
@@ -59,6 +60,7 @@ import { ISession, ILoginEvent } from "@/types";
 import { useNotification } from '@/context/NotificationContext';
 
 export default function AdminProfile() {
+  const { t } = useTranslation("common"); {
     const theme = useTheme();
     const { user } = useAdminAuthStore();
     const [tabValue, setTabValue] = useState(0);

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from "react-i18next";
 import { Box, Card, CardContent, Typography, Stack, Switch, Divider, Alert, useTheme, alpha } from '@mui/material';
 import { useThemeStore } from "@/stores/themeStore";
 import { getStyles } from '../../styles';

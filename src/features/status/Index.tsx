@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   Alert,
@@ -48,6 +49,7 @@ function healthChip(health: Health) {
 }
 
 export default function SystemStatusPage() {
+  const { t } = useTranslation("common"); {
   const theme = useTheme();
   const navigate = useNavigate();
   const { mode, toggleMode } = useThemeStore();

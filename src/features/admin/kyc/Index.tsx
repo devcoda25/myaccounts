@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from "react-i18next";
 import { formatUserId } from "@/utils/format";
 import { api } from "@/utils/api";
 import Pagination from '@/components/ui/Pagination';
@@ -67,6 +68,7 @@ interface KycRequest {
 
 
 export default function KycQueue() {
+  const { t } = useTranslation("common"); {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const [tab, setTab] = useState(0);
@@ -415,7 +417,7 @@ export default function KycQueue() {
                             </Grid>
                         </DialogContent>
                         <DialogActions sx={{ p: 3, borderTop: `1px solid ${theme.palette.divider}` }}>
-                            <Button onClick={() => setSelectedRequest(null)} sx={{ color: 'text.secondary' }}>Cancel</Button>
+                            <Button onClick={() => setSelectedRequest(null)} sx={{ color: 'text.secondary' }}>{t("auth.common.cancel")}<//Button>
                             <Button
                                 variant="contained"
                                 color="error"

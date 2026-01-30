@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Box, Typography, useTheme } from "@mui/material";
 
 export const ProfileHeader = () => {

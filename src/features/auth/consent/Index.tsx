@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   Alert,
   Box,
@@ -269,6 +270,7 @@ function buildScopeItems(keys: string[]): ScopeItem[] {
 }
 
 export default function ConsentScreenPage() {
+  const { t } = useTranslation("common"); {
   const navigate = useNavigate();
 
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());

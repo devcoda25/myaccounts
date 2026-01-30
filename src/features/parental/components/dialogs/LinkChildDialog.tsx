@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from "react-i18next";
 import { Box, Typography, Stack, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, InputAdornment, Alert, useTheme } from '@mui/material';
 import { useThemeStore } from "../../../../stores/themeStore";
 import { Link as LinkIcon, Shield as ShieldIcon } from 'lucide-react';

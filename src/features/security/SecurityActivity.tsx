@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Alert,
   Box,
@@ -227,6 +228,7 @@ function statusChipProps(s: LoginStatus) {
 
 // --- lightweight self-tests ---
 export default function LoginActivityPage() {
+  const { t } = useTranslation("common"); {
   const theme = useTheme();
   const { mode } = useThemeStore();
   const isDark = mode === "dark";
@@ -661,7 +663,7 @@ export default function LoginActivityPage() {
           </Stack>
         </DialogContent>
         <DialogActions sx={{ p: 2, pt: 0 }}>
-          <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => setReportOpen(false)}>Cancel</Button>
+          <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => setReportOpen(false)}>{t("auth.common.cancel")}<//Button>
           <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={submitReport}>
             Submit report
           </Button>

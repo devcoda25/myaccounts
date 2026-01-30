@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -200,6 +201,7 @@ function friendlyTitle(error: string) {
 }
 
 export default function OAuthErrorPage() {
+  const { t } = useTranslation("common"); {
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);

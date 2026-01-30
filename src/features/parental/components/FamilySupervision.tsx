@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from "react-i18next";
 import { Box, Card, CardContent, Typography, Stack, Button, Chip, Avatar, Tabs, Tab, TextField, MenuItem, Divider, Switch, FormControlLabel, Slider, InputAdornment, Alert, useTheme, alpha } from '@mui/material';
 import { useThemeStore } from "@/stores/themeStore";
 import { getStyles } from '../styles';

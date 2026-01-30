@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -148,6 +149,7 @@ function maskPhone(v: string) {
 
 
 export default function VerifyPhonePage() {
+  const { t } = useTranslation("common"); {
   const navigate = useNavigate();
   const { user, requestPhoneVerification, verifyPhone } = useAuthStore();
 

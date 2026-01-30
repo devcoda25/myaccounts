@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -292,6 +293,7 @@ function runSelfTestsOnce() {
 }
 
 export default function DeleteDeactivateAccountPage() {
+  const { t } = useTranslation("common"); {
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const navigate = useNavigate();
@@ -421,7 +423,7 @@ export default function DeleteDeactivateAccountPage() {
                 No further account changes are scheduled.
               </Typography>
               <Divider />
-              <Button variant="contained" sx={orangeContained} onClick={() => setFlow("form")}>Back</Button>
+              <Button variant="contained" sx={orangeContained} onClick={() => setFlow("form")}>{t("auth.common.back")}<//Button>
             </Stack>
           </CardContent>
         </Card>
@@ -730,7 +732,7 @@ export default function DeleteDeactivateAccountPage() {
             </Stack>
           </DialogContent>
           <DialogActions sx={{ p: 2, pt: 0 }}>
-            <Button variant="outlined" sx={orangeOutlined} onClick={closeReauth}>Cancel</Button>
+            <Button variant="outlined" sx={orangeOutlined} onClick={closeReauth}>{t("auth.common.cancel")}<//Button>
             <Button variant="contained" sx={dangerContained} onClick={submit}>Confirm</Button>
           </DialogActions>
         </Dialog>

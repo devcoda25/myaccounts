@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 ﻿import React, { useEffect, useMemo, useRef, useState, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -183,6 +184,7 @@ function getTemplatePatch(template: AgeTemplate, c: ChildProfile): Partial<Child
 
 
 export default function ParentalControls() {
+  const { t } = useTranslation("common"); {
   const navigate = useNavigate();
   const theme = useTheme();
   const { mode } = useThemeStore();

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Alert,
   Box,
@@ -160,6 +161,7 @@ function countEnabled(c: Channels) {
 }
 
 export default function NotificationPreferencesPage() {
+  const { t } = useTranslation("common"); {
   const { mode } = useThemeStore();
   const theme = useTheme();
   const isDark = mode === "dark";

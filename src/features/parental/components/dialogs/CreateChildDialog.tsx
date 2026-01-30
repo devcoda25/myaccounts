@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from "react-i18next";
 import { Typography, Stack, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Alert, useTheme } from '@mui/material';
 import { Shield as ShieldIcon } from 'lucide-react';
 import { useThemeStore } from "../../../../stores/themeStore";

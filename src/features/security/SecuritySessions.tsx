@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Alert,
   Box,
@@ -127,6 +128,7 @@ function riskChipProps(r: IRiskTag) {
 }
 
 export default function ActiveSessionsPage() {
+  const { t } = useTranslation("common"); {
   const theme = useTheme();
   const { mode } = useThemeStore();
   const isDark = mode === "dark";

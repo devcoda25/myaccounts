@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -60,6 +61,7 @@ function maskIdentifier(v: string) {
 }
 
 export default function SignInOtpPage() {
+  const { t } = useTranslation("common"); {
   const navigate = useNavigate();
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
@@ -224,7 +226,7 @@ export default function SignInOtpPage() {
   return (
     <Box className="min-h-screen" sx={{ background: pageBg }}>
       {/* Top Bar - Replace with AuthHeader */}
-      <AuthHeader title="EVzone My Accounts" subtitle="Sign in with a one-time code" />
+      <AuthHeader title={t("EVzone My Accounts")} subtitle={t("Sign in with a one-time code")} />
 
       {/* Body */}
       <Box className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">

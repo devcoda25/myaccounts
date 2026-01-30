@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -371,6 +372,7 @@ function maskEmail(email?: string) {
 // [Removed] mfaCodeFor (was mock)
 
 export default function LinkedAccountsPage() {
+  const { t } = useTranslation("common"); {
   const { mode } = useThemeStore();
   const theme = useTheme();
   const navigate = useNavigate();

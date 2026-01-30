@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import AuthHeader from "@/components/layout/AuthHeader";
@@ -55,6 +56,7 @@ function maskIdentifier(v: string) {
 }
 
 export default function AdminLogin() {
+  const { t } = useTranslation("common"); {
     const navigate = useNavigate();
     const theme = useTheme();
     const isDark = theme.palette.mode === "dark";
@@ -148,10 +150,7 @@ export default function AdminLogin() {
     return (
         <Box className="min-h-screen" sx={{ background: pageBg }}>
             {/* Unified Auth Header */}
-            <AuthHeader
-                title="EVzone Admin"
-                subtitle="Sign in to manage the platform"
-            />
+            <AuthHeader title={t("EVzone Admin")} subtitle={t("Sign in to manage the platform")} />
 
             {/* Body */}
             <Box className="mx-auto max-w-lg px-4 py-8 md:px-6 md:py-24">
@@ -160,7 +159,7 @@ export default function AdminLogin() {
                         <CardContent className="p-5 md:p-8">
                             <Stack spacing={2.4}>
                                 <Stack spacing={0.6}>
-                                    <Typography variant="h4" sx={{ color: isDark ? "text.primary" : "#000000" }}>Sign In</Typography>
+                                    <Typography variant="h4" sx={{ color: isDark ? "text.primary" : "#000000" }}>{t("auth.common.signIn")}<//Typography>
                                     <Typography variant="body2" sx={{ color: isDark ? theme.palette.text.secondary : "#000000" }}>
                                         Enter your admin credentials to continue.
                                     </Typography>

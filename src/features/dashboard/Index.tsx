@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Container,
@@ -38,6 +39,7 @@ interface IApp {
 }
 
 export default function Dashboard() {
+  const { t } = useTranslation("common"); {
   const navigate = useNavigate();
   const theme = useTheme();
   const { mode } = useThemeStore();

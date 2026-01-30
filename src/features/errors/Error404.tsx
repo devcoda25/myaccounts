@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -143,6 +144,7 @@ function routeInfo() {
 }
 
 export default function Error404Page() {
+  const { t } = useTranslation("common"); {
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const navigate = useNavigate();

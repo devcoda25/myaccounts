@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import AuthHeader from "@/components/layout/AuthHeader";
 
@@ -17,6 +18,7 @@ import { ArrowLeftIcon, ShieldIcon } from '@/components/icons';
 import { alpha } from "@mui/material/styles";
 
 export default function AdminForgotPassword() {
+  const { t } = useTranslation("common"); {
     const navigate = useNavigate();
     const theme = useTheme();
     const isDark = theme.palette.mode === "dark";
@@ -37,10 +39,7 @@ export default function AdminForgotPassword() {
 
     return (
         <Box className="min-h-screen" sx={{ background: pageBg }}>
-            <AuthHeader
-                title="EVzone Admin"
-                subtitle="Sign in to manage the platform"
-            />
+            <AuthHeader title={t("EVzone Admin")} subtitle={t("Sign in to manage the platform")} />
 
             <Box className="mx-auto max-w-lg px-4 py-8 md:px-6 md:py-24">
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
   Alert,
@@ -141,6 +142,7 @@ function msToHhmm(ms: number) {
 }
 
 export default function Maintenance503Page() {
+  const { t } = useTranslation("common"); {
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";

@@ -1,28 +1,721 @@
 {
-    "app_name": "EVzone Mis Cuentas",
-    "auth": {
-        "sign_in": "Iniciar sesión",
-        "sign_out": "Cerrar sesión",
-        "create_account": "Crear cuenta",
-        "forgot_password": "¿Olvidaste tu contraseña?",
-        "email_placeholder": "nombre@ejemplo.com",
-        "password_placeholder": "Contraseña"
+  "app": {
+    "name": "EVzone Mis cuentas",
+    "tagline": "Tu cuenta unificada para todos los servicios de EVzone"
+  },
+  "common": {
+    "actions": {
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "edit": "Editar",
+      "submit": "Enviar",
+      "close": "Cerrar",
+      "back": "Atrás",
+      "next": "Siguiente",
+      "confirm": "Confirmar",
+      "search": "Buscar",
+      "filter": "Filtrar",
+      "clear": "Limpiar",
+      "reset": "Restablecer",
+      "refresh": "Actualizar",
+      "retry": "Reintentar",
+      "continue": "Continuar",
+      "done": "Hecho",
+      "send": "Enviar",
+      "download": "Descargar",
+      "upload": "Subir",
+      "copy": "Copiar",
+      "view": "Ver",
+      "hide": "Ocultar",
+      "show": "Mostrar",
+      "expand": "Expandir",
+      "collapse": "Contraer",
+      "select": "Seleccionar",
+      "selectAll": "Seleccionar All",
+      "deselectAll": "Deseleccionar todo",
+      "add": "Añadir",
+      "remove": "Eliminar",
+      "update": "Actualizar",
+      "create": "Crear",
+      "signIn": "Iniciar sesión",
+      "signOut": "Cerrar sesión",
+      "signUp": "Registrarse",
+      "login": "Iniciar",
+      "logout": "Cerrar",
+      "register": "Registrarse"
     },
-    "header": {
-        "search": "Buscar...",
-        "language": "Idioma",
-        "theme": "Tema",
-        "notifications": "Notificaciones",
-        "profile": "Perfil",
-        "settings": "Configuración",
-        "help": "Ayuda"
+    "errors": {
+      "required": "este field is obligatorio",
+      "invalidEmail": "Por favor enter un valid correo dirección",
+      "invalidPhone": "Por favor enter un valid teléfono número",
+      "passwordTooShort": "Contraseña must be en least 8 characters",
+      "passwordRequiresUppercase": "Contraseña must contain un uppercase letter",
+      "passwordRequiresLowercase": "Contraseña must contain un lowercase letter",
+      "passwordRequiresNumber": "Contraseña must contain un número",
+      "passwordRequiresSpecial": "Contraseña must contain un special character",
+      "passwordsDoNotMatch": "Las contraseñas no coinciden",
+      "networkError": "Error de red. Inténtalo de nuevo.",
+      "serverError": "Error del servidor. Inténtalo más tarde.",
+      "unknownError": "Ocurrió un error inesperado.",
+      "sessionExpired": "Tu sesión ha caducado. Inicia sesión de nuevo.",
+      "invalidCredentials": "Credenciales inválidas. Inténtalo de nuevo.",
+      "tooManyAttempts": "Demasiados intentos. Inténtalo más tarde.",
+      "accountLocked": "Tu cuenta has been bloqueado.",
+      "emailAlreadyExists": "Ya existe una cuenta con este correo electrónico.",
+      "userNotFound": "Usuario no encontrado.",
+      "unauthorized": "Tú are not authorized a perform este action.",
+      "forbidden": "Acceso denegado.",
+      "notFound": "el requested resource was not found.",
+      "badRequest": "Inválido request.",
+      "internalServerError": "Error interno del servidor.",
+      "serviceUnavailable": "El servicio no está disponible temporalmente.",
+      "validationError": "Por favor check tu input y try de nuevo."
     },
-    "languages": {
-        "en": "Inglés",
-        "fr": "Francés",
-        "zh": "Chino",
-        "es": "Español",
-        "ar": "Árabe",
-        "sw": "Suajili"
+    "loading": {
+      "loading": "Cargando...",
+      "pleaseWait": "Por favor espera...",
+      "processing": "Procesando...",
+      "saving": "Guardando...",
+      "deleting": "Eliminando...",
+      "updating": "Actualizando...",
+      "signingIn": "Iniciando sesión...",
+      "signingOut": "Cerrando sesión..."
+    },
+    "validation": {
+      "confirmDelete": "¿Seguro que quieres eliminar este elemento?",
+      "unsavedChanges": "Tú have unsaved changes. Do tú want a leave?",
+      "minLength": "Debe tener al menos {{count}} caracteres",
+      "maxLength": "Debe tener como máximo {{count}} caracteres",
+      "minValue": "El valor debe ser al menos {{count}}",
+      "maxValue": "El valor debe ser como máximo {{count}}"
+    },
+    "placeholders": {
+      "email": "Introduce tu correo electrónico",
+      "phone": "Introduce tu número de teléfono",
+      "password": "Enter tu contraseña",
+      "newPassword": "Enter new contraseña",
+      "confirmPassword": "Confirmar tu contraseña",
+      "search": "Buscar...",
+      "selectOption": "Seleccionar un option"
     }
+  },
+  "loading": {
+    "session": "Initializing secure sesión..."
+  },
+  "error": {
+    "title": "Error de autenticación",
+    "sessionFailed": "Falló a initialize secure sesión.",
+    "retry": "Reintentar"
+  },
+  "password": {
+    "weak": "Débil",
+    "fair": "Regular",
+    "good": "Bueno",
+    "strong": "Fuerte",
+    "veryStrong": "Muy fuerte"
+  },
+  "header": {
+    "title": "EVzone Cuentas",
+    "subtitle": "Crear tu EVzone Identity"
+  },
+  "auth": {
+    "common": {
+      "loading": "Cargando...",
+      "or": "o",
+      "email": "Correo",
+      "phone": "Teléfono",
+      "terms": "Términos",
+      "privacy": "Privacidad",
+      "help": "Ayuda",
+      "signIn": "Iniciar sesión",
+      "signUp": "Registrarse",
+      "switchToLight": "Switch a Light Mode",
+      "switchToDark": "Switch a Dark Mode",
+      "continue": "Continuar",
+      "back": "Atrás",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "submit": "Enviar",
+      "verify": "Verificar",
+      "send": "Enviar"
+    },
+    "signIn": {
+      "title": "Iniciar sesión",
+      "subtitle": "¡Bienvenido de nuevo! Inicia sesión para continuar.",
+      "emailOrPhone": "Correo o Teléfono",
+      "password": "Contraseña",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "rememberMe": "Recordarme",
+      "submit": "Iniciar sesión",
+      "noAccount": "Don't have un cuenta?",
+      "signUp": "Registrarse",
+      "orContinueWith": "o continuar con",
+      "checking": "Verificando...",
+      "unavailable": "No disponible",
+      "errors": {
+        "enterEmailOrPhone": "Enter tu correo o teléfono número.",
+        "enterPassword": "Enter tu contraseña a continuar.",
+        "invalidCredentials": "Credenciales inválidas. Inténtalo de nuevo.",
+        "locked": "Bloqueado. Reintenta en {{seconds}} s"
+      },
+      "verifying": "Verificando credenciales...",
+      "failed": "Error al iniciar sesión",
+      "left": {
+        "title": "One cuenta para everything EVzone",
+        "subtitle": "Accede sin problemas a Carga, Marketplace y Pay con una sola identidad segura.",
+        "demoNote": "Pre-filled para demo: example@mail.com"
+      },
+      "right": {
+        "subtitle": "para continuar al Portal de EVzone"
+      },
+      "features": {
+        "secureSessions": {
+          "title": "Secure Sesiones",
+          "desc": "Bank-grade seguridad monitoring 24/7."
+        },
+        "passkeys": {
+          "title": "Claves de acceso y biometría",
+          "desc": "Inicia sesión con TouchID o FaceID."
+        },
+        "privacy": {
+          "title": "Privacidad First",
+          "desc": "Maximizamos tu privacidad de datos."
+        }
+      },
+      "showPassword": "Mostrar contraseña",
+      "hidePassword": "Ocultar contraseña",
+      "switchingToPassword": "Switching a contraseña...",
+      "placeholders": {
+        "email": "name@example.com"
+      },
+      "useOtpTitle": "Use One-Time Código",
+      "useOtpSubtitle": "No contraseña? Use un magic código.",
+      "comingSoon": "Próximamente",
+      "otpComingSoon": "One-time código sign-in is being integrated.",
+      "sendCode": "Enviar Código",
+      "termsAgree": "Al continuar, aceptas los Términos y la Privacidad de EVzone.",
+      "locked": "Bloqueado. Reintenta en {{seconds}} s"
+    },
+    "signUp": {
+      "sectionTitle": "Cuenta Creation",
+      "sectionSubtitle": "Crear tu single secure ID para all EVzone services.",
+      "secureIdentity": "Identidad segura",
+      "secureIdentityDesc": "Bank-grade seguridad para tu assets.",
+      "clearPermissions": "Limpiar Permissions",
+      "clearPermissionsDesc": "Tú controlas el uso compartido de tus datos.",
+      "backToSignIn": "Atrás a Sign en",
+      "createAccount": "Crear Cuenta",
+      "getStarted": "Get started con EVzone",
+      "continueWithGoogle": "Continuar con Google",
+      "continueWithApple": "Continuar con Apple",
+      "firstName": "Nombre",
+      "firstNamePlaceholder": "e.g. Jane",
+      "otherNames": "Otros nombres",
+      "otherNamesPlaceholder": "e.g. Doe",
+      "email": "Correo Dirección",
+      "emailPlaceholder": "name@example.com",
+      "phone": "Teléfono Número",
+      "phonePlaceholder": "700 000 000",
+      "createWithOtp": "Crear con One-Time Código",
+      "createWithOtpDesc": "No contraseña obligatorio. We'll verificar tu teléfono.",
+      "createPassword": "Crear Contraseña",
+      "confirmPassword": "Confirmar contraseña",
+      "otpInfo": "Tú will receive un OTP a verificar tu cuenta.",
+      "inviteCode": "Invite Código (Optional)",
+      "inviteCodePlaceholder": "e.g. EVZ-123",
+      "termsAgreement": "Acepto los Términos de servicio y la Política de privacidad.",
+      "continue": "Continuar",
+      "switchToSignIn": "Switch a Sign en",
+      "verifyContactInfo": "Verificar tu contacto información en el siguiente step.",
+      "validation": {
+        "firstNameRequired": "Enter tu first name.",
+        "otherNamesRequired": "Enter tu other names.",
+        "emailOrPhoneRequired": "Provide en least un correo o teléfono número.",
+        "validEmailRequired": "Enter un valid correo dirección.",
+        "termsRequired": "Tú must accept el Términos y Privacidad Policy.",
+        "passwordRequired": "Crear un contraseña.",
+        "passwordMinLength": "Contraseña must be en least 8 characters.",
+        "passwordsDoNotMatch": "Las contraseñas no coinciden."
+      },
+      "notification": {
+        "registrationInfo": "Registration Información",
+        "accountCreated": "Cuenta Created",
+        "accountCreatedSuccess": "Cuenta created successfully! Signing tú en securely...",
+        "verifyEmail": "Verificar Tu Correo",
+        "verifyEmailSuccess": "Cuenta created! Por favor check tu inbox para el verificación link.",
+        "registrationFailed": "Registration Falló",
+        "registrationFailedMessage": "Falló a crear cuenta. Por favor try de nuevo."
+      }
+    },
+    "forgotPassword": {
+      "subtitle": "Forgot Contraseña",
+      "resetAccess": "Restablecer Access",
+      "resetAccessDesc": "Recover tu cuenta using tu verified correo o teléfono.",
+      "rateLimiting": "Limitación de solicitudes",
+      "rateLimitingDesc": "Espera 30 s entre solicitudes.",
+      "secureLink": "Enlace seguro",
+      "secureLinkDesc": "We enviar un magic link o código.",
+      "backToSignIn": "Atrás a Sign en",
+      "checkContact": "Revisa tu {{type}}",
+      "instructionsSent": "Enviamos instrucciones a {{mask}} por {{method}}.",
+      "nextSteps": "Siguiente Pasos",
+      "nextStepsDesc": "Haz clic en el enlace o introduce el código para restablecer tu contraseña.",
+      "enterResetCode": "Enter Restablecer Código",
+      "resendIn": "Reenviar en {{seconds}} s",
+      "sendAgain": "Enviar de nuevo",
+      "changeContactInfo": "Change Contacto Información",
+      "needHelp": "Need Ayuda?",
+      "title": "Forgot Contraseña",
+      "enterToRecover": "Enter tu correo o teléfono a recover tu cuenta.",
+      "identifierLabel": "Enter correo o teléfono",
+      "identifierPlaceholder": "name@example.com",
+      "validIdentifierHint": "Enter un valid correo o teléfono.",
+      "deliveryMethod": "Método de envío",
+      "captchaLabel": "No soy un robot",
+      "captchaDesc": "Complete el captcha check.",
+      "accountRecoveryHelp": "Cuenta Recovery Ayuda",
+      "spamTip": "Consejo: revisa tu carpeta de spam si no ves el correo.",
+      "confirmSend": "Confirmar Enviar",
+      "sendTo": "Enviar recovery instructions a:",
+      "viaMethod": "por {{method}}",
+      "invalidatePrevious": "este will invalidate previous links.",
+      "sendInstructions": "Enviar Instructions",
+      "delivery": {
+        "emailLink": "Correo Link",
+        "emailLinkDesc": "Enviar un magic link a tu correo.",
+        "smsCode": "SMS Código",
+        "smsCodeDesc": "Enviar un 6-digit código a tu teléfono.",
+        "whatsappCode": "WhatsApp Código",
+        "whatsappCodeDesc": "Enviar un código via WhatsApp."
+      },
+      "phoneMethodsHint": "Teléfono methods available if tú enter un teléfono número.",
+      "validation": {
+        "enterIdentifier": "Enter correo o teléfono",
+        "validIdentifier": "Enter un valid correo o teléfono.",
+        "waitCooldown": "Por favor espera {{seconds}} s",
+        "completeCaptcha": "Por favor complete el captcha."
+      },
+      "notification": {
+        "sentSuccess": "Enviado con éxito por {{via}}.",
+        "sendFailed": "Falló a enviar request. Por favor try de nuevo."
+      }
+    },
+    "resetPassword": {
+      "subtitle": "Restablecer contraseña",
+      "createNewPassword": "Crear New Contraseña",
+      "enterNewPassword": "Enter un new contraseña para tu cuenta.",
+      "navigateToForgot": "Navigate a /auth/forgot-password",
+      "backToForgotPassword": "Atrás a Forgot Contraseña",
+      "title": "Restablecer contraseña",
+      "enterDetails": "Enter tu details a restablecer tu contraseña.",
+      "tokenTab": "token",
+      "codeTab": "Código",
+      "resetToken": "Restablecer token",
+      "tokenPlaceholder": "Introduce el token",
+      "tokenHelperText": "Revisa tu correo electrónico para obtener el token.",
+      "verifyToken": "Verificar token",
+      "identifierLabel": "Correo o Teléfono",
+      "identifierPlaceholder": "Enter correo o teléfono",
+      "identifierHelper": "We will determine el method based en tu input.",
+      "deliveryMethod": "Método de envío",
+      "codeSent": "Código Sent",
+      "sendCode": "Enviar Código",
+      "resendCode": "Reenviar código",
+      "verifyCode": "Verificar Código",
+      "newPassword": "Nueva contraseña",
+      "confirmPassword": "Confirmar contraseña",
+      "requirements": "Requisitos",
+      "signOutAll": "Cerrar sesión en todos los demás dispositivos",
+      "resetButton": "Restablecer contraseña",
+      "passwordUpdated": "Contraseña Updated",
+      "passwordChangedSuccess": "Tu contraseña has been changed successfully.",
+      "goToSignIn": "Go a Sign en",
+      "accountRecoveryHelp": "Cuenta Recovery Ayuda",
+      "navigateToHelp": "Navigate a /auth/account-recovery-help",
+      "channel": {
+        "email": "Correo",
+        "emailDesc": "Enviar a correo",
+        "sms": "SMS",
+        "smsDesc": "Enviar via SMS",
+        "whatsapp": "WhatsApp",
+        "whatsappDesc": "Enviar via WhatsApp"
+      },
+      "phoneChannelsDisabled": "Teléfono channels are deshabilitado para correo usuarios.",
+      "req": {
+        "length": "en least 8 characters",
+        "uppercase": "Una letra mayúscula",
+        "lowercase": "Una letra minúscula",
+        "number": "One número",
+        "special": "Un carácter especial",
+        "match": "Las contraseñas coinciden"
+      },
+      "validation": {
+        "tokenRequired": "Por favor enter el restablecer token.",
+        "identifierRequired": "Introduce tu correo o teléfono.",
+        "invalidIdentifier": "Inválido correo o teléfono.",
+        "codeRequired": "Por favor enter un 6-digit código.",
+        "passwordRequired": "Por favor enter un contraseña.",
+        "passwordStrength": "Contraseña must be stronger.",
+        "passwordsDoNotMatch": "Las contraseñas no coinciden."
+      },
+      "notification": {
+        "codeSentEmail": "Código enviado al correo.",
+        "codeSentVia": "Código enviado por {{channel}}.",
+        "sendFailed": "Falló a enviar código.",
+        "resetSuccessSignedOut": "Contraseña restablecer. Tú have been signed out.",
+        "resetSuccess": "Contraseña restablecida con éxito.",
+        "resetFailed": "Falló a restablecer contraseña. Inválido código/token."
+      }
+    },
+    "verifyEmail": {
+      "pageTitle": "Verificar Correo Dirección",
+      "checkInbox": "Revisa tu bandeja de entrada",
+      "codeSentTo": "Enviamos un código a {{email}}.",
+      "openEmailApp": "Abrir Correo App",
+      "openEmailAppDesc": "Tap a abrir tu mail client.",
+      "resendCode": "Reenviar código",
+      "resendCodeDesc": "Click below a enviar un new código.",
+      "openEmail": "Abrir Correo",
+      "changeEmail": "Change Correo",
+      "emailVerified": "Correo Verified",
+      "verificationSuccessDesc": "Tú have successfully verified {{email}}.",
+      "nextSteps": "Siguiente Pasos",
+      "nextStepsDesc": "Continuar a verifying tu teléfono.",
+      "title": "Verificar Correo Dirección",
+      "verify": "Verificar",
+      "resendIn": "Reenviar en {{seconds}} s",
+      "needHelp": "Need Ayuda?",
+      "changeEmailDialog": "Change Correo Dirección",
+      "changeEmailDesc": "Enter below a receive el código en un new correo dirección.",
+      "emailLabel": "Correo Dirección",
+      "emailPlaceholder": "name@example.com",
+      "saveAndSend": "Guardar & Enviar",
+      "validation": {
+        "codeRequired": "Por favor enter un 6-digit código."
+      },
+      "notification": {
+        "codeSent": "Código enviado a {{email}}.",
+        "sendFailed": "Falló a enviar código",
+        "openingEmail": "Opening correo app...",
+        "verificationSuccess": "Correo verified successfully.",
+        "invalidCode": "Inválido código. Por favor try de nuevo."
+      }
+    },
+    "verifyPhone": {
+      "title": "Verificar Teléfono",
+      "subtitle": "Introduce el código de verificación enviado a tu teléfono.",
+      "code": "Verificación Código",
+      "submit": "Verificar Teléfono",
+      "resendCode": "Reenviar código",
+      "resendSuccess": "Verificación código sent",
+      "success": "Teléfono verified successfully",
+      "successMessage": "Tu teléfono número has been verified."
+    },
+    "mfa": {
+      "title": "Autenticación de dos factores",
+      "subtitle": "Enter el 6-digit código from tu authenticator app",
+      "code": "Verificación Código",
+      "submit": "Verificar",
+      "useBackup": "Use un backup código instead",
+      "resendCode": "Resend código",
+      "backupCode": "Backup Código",
+      "success": "Verificación successful",
+      "setupTitle": "Configurar la autenticación de dos factores",
+      "scanQr": "Scan este QR código con tu authenticator app",
+      "manualEntry": "o enter este código manually",
+      "enterCode": "Enter el 6-digit código from tu app",
+      "confirmSetup": "Confirmar Setup",
+      "backupCodesTitle": "Backup Códigos",
+      "backupCodesDescription": "Guardar estos backup códigos en un safe place. Tú can use them if tú lose access a tu authenticator.",
+      "copyCodes": "Copiar Códigos",
+      "done": "Hecho",
+      "invalidCode": "Inválido código. Por favor try de nuevo.",
+      "tooManyAttempts": "Too many incorrect attempts. Por favor try de nuevo."
+    },
+    "passkey": {
+      "title": "Autenticación con clave de acceso",
+      "subtitle": "Inicia sesión con tu clave de acceso",
+      "usePasskey": "Usar clave de acceso",
+      "addPasskey": "Añadir Passkey",
+      "removePasskey": "Eliminar Passkey",
+      "passkeyAdded": "Clave de acceso agregada con éxito",
+      "passkeyRemoved": "Clave de acceso eliminada",
+      "error": "Ocurrió un error con la clave de acceso"
+    },
+    "consent": {
+      "title": "Consent Obligatorio",
+      "subtitle": "el application requests access a tu cuenta",
+      "permissions": "Permisos",
+      "approve": "Aprobar",
+      "deny": "Denegar",
+      "scopes": {
+        "openid": "OpenID Conectar",
+        "profile": "Ver tu perfil",
+        "email": "Ver tu correo dirección",
+        "phone": "Ver tu teléfono número"
+      }
+    },
+    "interaction": {
+      "title": "Authentication Obligatorio",
+      "subtitle": "Por favor complete el authentication",
+      "continue": "Continuar",
+      "cancel": "Cancelar"
+    },
+    "Callback": {
+      "processing": "Procesando autenticación...",
+      "success": "Autenticación exitosa",
+      "error": "Authentication falló"
+    },
+    "signedOut": {
+      "title": "Sesión cerrada",
+      "subtitle": "Tú have been signed out successfully",
+      "signInAgain": "Iniciar sesión de nuevo",
+      "returnHome": "Return a Inicio"
+    },
+    "session": {
+      "expired": "Tu sesión ha caducado",
+      "expiredMessage": "Por favor sign en de nuevo a continuar.",
+      "expiredAction": "Iniciar sesión"
+    }
+  },
+  "dashboard": {
+    "welcome": "¡Bienvenido de nuevo, {{name}}!",
+    "overview": "Panel Overview",
+    "quickActions": "Acciones rápidas",
+    "recentActivity": "Actividad reciente",
+    "notifications": "Notificaciones",
+    "settings": "Configuración",
+    "profile": "My Perfil",
+    "security": "Seguridad",
+    "wallet": "Billetera",
+    "help": "Ayuda & Soporte"
+  },
+  "profile": {
+    "title": "Perfil Configuración",
+    "personal": {
+      "title": "Información personal",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Correo Dirección",
+      "phone": "Teléfono Número",
+      "save": "Guardar Changes"
+    },
+    "contact": {
+      "title": "Contacto Information",
+      "address": "Dirección",
+      "city": "Ciudad",
+      "country": "País",
+      "postalCode": "Postal Código"
+    },
+    "linkedAccounts": {
+      "title": "Linked Cuentas",
+      "description": "Manage tu connected cuentas",
+      "google": "Google",
+      "apple": "Apple",
+      "connect": "Conectar",
+      "disconnect": "Desconectar",
+      "connected": "Conectado",
+      "notConnected": "No conectado"
+    }
+  },
+  "security": {
+    "title": "Seguridad Configuración",
+    "password": {
+      "title": "Contraseña",
+      "current": "Current Contraseña",
+      "new": "Nueva contraseña",
+      "confirm": "Confirmar New Contraseña",
+      "update": "Actualizar Contraseña",
+      "success": "Contraseña actualizada con éxito",
+      "error": "Falló a actualizar contraseña"
+    },
+    "twoFactor": {
+      "title": "Autenticación de dos factores",
+      "enabled": "Habilitado",
+      "disabled": "Deshabilitado",
+      "enable": "Activar 2FA",
+      "disable": "Desactivar 2FA",
+      "setup": "Configurar 2FA",
+      "description": "Añadir un extra layer de seguridad a tu cuenta"
+    },
+    "sessions": {
+      "title": "Activo Sesiones",
+      "description": "Manage tu activo sesiones",
+      "current": "Current Sesión",
+      "other": "Other Sesiones",
+      "revoke": "Revocar",
+      "revokeAll": "Revoke All Other Sesiones"
+    },
+    "activity": {
+      "title": "Iniciar Activity",
+      "description": "Ver tu recent iniciar activity",
+      "recentLogins": "Inicios de sesión recientes",
+      "location": "Ubicación",
+      "device": "Dispositivo",
+      "time": "Hora"
+    },
+    "passkeys": {
+      "title": "Claves de acceso",
+      "description": "Manage tu passkeys para passwordless iniciar",
+      "add": "Añadir Passkey",
+      "remove": "Eliminar",
+      "lastUsed": "Último uso"
+    },
+    "recoveryCodes": {
+      "title": "Recovery Códigos",
+      "description": "Use estos códigos a access tu cuenta if tú lose tu 2FA device",
+      "generate": "Generate New Códigos",
+      "copied": "Códigos copied a clipboard"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Admin Panel",
+      "users": "Total Usuarios",
+      "active": "Activo Usuarios",
+      "revenue": "Ingresos",
+      "systemHealth": "Salud del sistema"
+    },
+    "users": {
+      "title": "Usuario Management",
+      "search": "Buscar usuarios...",
+      "add": "Añadir Usuario",
+      "edit": "Editar Usuario",
+      "delete": "Eliminar Usuario",
+      "status": "Estado",
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "suspended": "Suspendido"
+    },
+    "apps": {
+      "title": "Gestión de aplicaciones",
+      "add": "Registrar aplicación",
+      "edit": "Editar App",
+      "delete": "Eliminar App",
+      "clientId": "ID de cliente",
+      "redirectUris": "URI de redirección"
+    },
+    "audit": {
+      "title": "Registros de auditoría",
+      "filter": "Filtrar Logs",
+      "export": "Exportar"
+    },
+    "kyc": {
+      "title": "KYC Verificación",
+      "pending": "Pendiente",
+      "approved": "Aprobado",
+      "rejected": "Rechazado"
+    }
+  },
+  "wallet": {
+    "title": "My Billetera",
+    "balance": "Saldo",
+    "currency": "USD",
+    "addFunds": "Añadir Funds",
+    "withdraw": "Retirar",
+    "transactions": "Transacciones",
+    "history": "Transacción Historial",
+    "pending": "Pendiente",
+    "completed": "Completado",
+    "failed": "Falló",
+    "deposit": "Depósito",
+    "payment": "Pago",
+    "refund": "Reembolso"
+  },
+  "support": {
+    "title": "Ayuda & Soporte",
+    "faq": "Preguntas frecuentes",
+    "contact": "Contactar soporte",
+    "submitTicket": "Enviar un Ticket",
+    "myTickets": "Mis tickets",
+    "openTickets": "Abrir Tickets",
+    "closedTickets": "Tickets cerrados",
+    "securityReport": {
+      "title": "Reportar un problema de seguridad",
+      "subtitle": "Ayúdanos a mantener EVzone seguro reportando vulnerabilidades",
+      "type": "Tipo de incidencia",
+      "url": "URL donde se encontró el problema",
+      "description": "Descripción",
+      "steps": "Pasos para reproducir"
+    }
+  },
+  "legal": {
+    "terms": {
+      "title": "Términos de servicio",
+      "lastUpdated": "Última actualización {{date}}",
+      "accept": "Acepto los Términos de servicio"
+    },
+    "privacy": {
+      "title": "Política de privacidad",
+      "lastUpdated": "Última actualización {{date}}"
+    },
+    "cookies": {
+      "title": "Política de cookies",
+      "lastUpdated": "Última actualización {{date}}",
+      "description": "Este sitio web usa cookies para mejorar tu experiencia.",
+      "acceptAll": "Aceptar todo",
+      "rejectAll": "Rechazar todo",
+      "customize": "Personalizar"
+    },
+    "consent": {
+      "title": "Privacidad Consent",
+      "description": "Manage tu privacidad preferences",
+      "necessary": "Necesario",
+      "functional": "Funcional",
+      "analytics": "Analítica",
+      "marketing": "Marketing",
+      "savePreferences": "Guardar Preferences"
+    }
+  },
+  "errors": {
+    "403": {
+      "title": "Acceso denegado",
+      "subtitle": "Tú don't have permission a access este page.",
+      "description": "Tú may not have el obligatorio permissions a ver este content.",
+      "action": "Go a Panel"
+    },
+    "404": {
+      "title": "Página no encontrada",
+      "subtitle": "el page you're looking para doesn't exist.",
+      "description": "el page tú requested could not be found. It may have been moved o deleted.",
+      "action": "Go a Inicio"
+    },
+    "429": {
+      "title": "Demasiadas solicitudes",
+      "subtitle": "Por favor, reduce la velocidad",
+      "description": "Has realizado demasiadas solicitudes en poco tiempo. Espera un momento e inténtalo de nuevo.",
+      "action": "Try de nuevo"
+    },
+    "500": {
+      "title": "Algo salió mal",
+      "subtitle": "un unexpected error occurred",
+      "description": "Lo sentimos, algo salió mal. Nuestro equipo ha sido notificado.",
+      "action": "Go a Panel",
+      "support": "Contactar soporte"
+    }
+  },
+  "footer": {
+    "copyright": "© {{year}} EVzone. Todos los derechos reservados.",
+    "terms": "Términos de servicio",
+    "privacy": "Política de privacidad",
+    "cookies": "Política de cookies",
+    "contact": "Contacto Us",
+    "help": "Ayuda Center",
+    "about": "Acerca de EVzone",
+    "careers": "Carreras",
+    "press": "Prensa",
+    "social": "Síguenos"
+  },
+  "accessibility": {
+    "skipToContent": "Skip a main content",
+    "menuToggle": "Alternar menú",
+    "closeMenu": "Cerrar menu",
+    "openSearch": "Abrir buscar",
+    "closeSearch": "Cerrar buscar",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "expandSection": "Expandir section",
+    "collapseSection": "Contraer section"
+  }
 }

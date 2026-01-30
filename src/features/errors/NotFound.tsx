@@ -1,7 +1,9 @@
+import { useTranslation } from "react-i18next";
 import { Box, Button, Container, Typography, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 export default function NotFound() {
+  const { t } = useTranslation("common"); {
     const navigate = useNavigate();
     const theme = useTheme();
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   CssBaseline,
@@ -16,6 +17,7 @@ import ContactSettings from "./ProfileContact";
 import { useNotification } from "@/context/NotificationContext";
 
 export default function PersonalProfilePage() {
+  const { t } = useTranslation("common"); {
   const { mode } = useThemeStore();
   const theme = useTheme();
   const { user, refreshUser } = useAuthStore();

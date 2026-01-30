@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from "react-i18next";
 import { api } from "@/utils/api";
 import {
     Box,
@@ -50,6 +51,7 @@ interface AdminMember {
 // MOCK_ADMINS removed
 
 export default function Administrators() {
+  const { t } = useTranslation("common"); {
     const theme = useTheme();
     const isDark = theme.palette.mode === 'dark';
     const [admins, setAdmins] = useState<AdminMember[]>([]);
@@ -218,7 +220,7 @@ export default function Administrators() {
                     </Stack>
                 </DialogContent>
                 <DialogActions sx={{ p: 2 }}>
-                    <Button onClick={() => setOpenInvite(false)}>Cancel</Button>
+                    <Button onClick={() => setOpenInvite(false)}>{t("auth.common.cancel")}<//Button>
                     <Button variant="contained" onClick={handleInvite} sx={orangeContained}>Send Invite</Button>
                 </DialogActions>
             </Dialog>

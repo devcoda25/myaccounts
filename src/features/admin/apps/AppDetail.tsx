@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     Box,
@@ -59,6 +60,7 @@ interface AppRecord {
 }
 
 export default function AppDetail() {
+  const { t } = useTranslation("common"); {
     const { clientId } = useParams<{ clientId: string }>();
     const navigate = useNavigate();
     const theme = useTheme();
@@ -275,7 +277,7 @@ export default function AppDetail() {
                     </Stack>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setInviteOpen(false)}>Cancel</Button>
+                    <Button onClick={() => setInviteOpen(false)}>{t("auth.common.cancel")}<//Button>
                     <Button variant="contained" onClick={handleInvite}>Invite</Button>
                 </DialogActions>
             </Dialog>
