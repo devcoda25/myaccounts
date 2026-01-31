@@ -789,7 +789,6 @@ export default function VerifyPhonePage() {
           </Alert>
         </Snackbar>
       </Box>
-    </ThemeProvider >
+    </ThemeProvider>
   );
-}
 }
