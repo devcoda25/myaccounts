@@ -68,7 +68,7 @@ interface KycRequest {
 
 
 export default function KycQueue() {
-  const { t } = useTranslation("common"); {
+    const { t } = useTranslation("common");
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const [tab, setTab] = useState(0);
@@ -417,7 +417,7 @@ export default function KycQueue() {
                             </Grid>
                         </DialogContent>
                         <DialogActions sx={{ p: 3, borderTop: `1px solid ${theme.palette.divider}` }}>
-                            <Button onClick={() => setSelectedRequest(null)} sx={{ color: 'text.secondary' }}>{t("auth.common.cancel")}<//Button>
+                            <Button onClick={() => setSelectedRequest(null)} sx={{ color: 'text.secondary' }}>{t("auth.common.cancel")}</Button>
                             <Button
                                 variant="contained"
                                 color="error"

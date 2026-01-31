@@ -142,7 +142,7 @@ function msToHhmm(ms: number) {
 }
 
 export default function Maintenance503Page() {
-  const { t } = useTranslation("common"); {
+  const { t } = useTranslation("common");
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";

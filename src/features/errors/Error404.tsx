@@ -144,7 +144,7 @@ function routeInfo() {
 }
 
 export default function Error404Page() {
-  const { t } = useTranslation("common"); {
+  const { t } = useTranslation("common");
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const navigate = useNavigate();
@@ -327,4 +327,5 @@ export default function Error404Page() {
       </Box>
     </ThemeProvider>
   );
+}
 }

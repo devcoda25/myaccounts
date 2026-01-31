@@ -119,7 +119,7 @@ function Section({ id, title, children }: { id: string; title: string; children:
 }
 
 export default function TermsOfServicePage() {
-  const { t } = useTranslation("common"); {
+  const { t } = useTranslation("common");
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const isDark = mode === "dark";

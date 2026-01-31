@@ -149,7 +149,7 @@ function maskPhone(v: string) {
 
 
 export default function VerifyPhonePage() {
-  const { t } = useTranslation("common"); {
+  const { t } = useTranslation("common");
   const navigate = useNavigate();
   const { user, requestPhoneVerification, verifyPhone } = useAuthStore();
 
@@ -791,4 +791,5 @@ export default function VerifyPhonePage() {
       </Box>
     </ThemeProvider >
   );
+}
 }

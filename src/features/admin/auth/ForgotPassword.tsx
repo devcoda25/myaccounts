@@ -18,7 +18,7 @@ import { ArrowLeftIcon, ShieldIcon } from '@/components/icons';
 import { alpha } from "@mui/material/styles";
 
 export default function AdminForgotPassword() {
-  const { t } = useTranslation("common"); {
+    const { t } = useTranslation("common");
     const navigate = useNavigate();
     const theme = useTheme();
     const isDark = theme.palette.mode === "dark";

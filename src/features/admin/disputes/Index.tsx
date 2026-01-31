@@ -66,7 +66,7 @@ interface DisputeRow {
 }
 
 export default function AdminDisputesList() {
-  const { t } = useTranslation("common"); {
+    const { t } = useTranslation("common");
     const theme = useTheme();
     // const navigate = useNavigate(); // Unused
     const [q, setQ] = useState("");
@@ -387,7 +387,7 @@ export default function AdminDisputesList() {
                     )}
                 </DialogContent>
                 <DialogActions sx={{ px: 3, pb: 3 }}>
-                    <Button onClick={() => setReviewOpen(false)} disabled={processing}>{t("auth.common.cancel")}<//Button>
+                    <Button onClick={() => setReviewOpen(false)} disabled={processing}>{t("auth.common.cancel")}</Button>
                 </DialogActions>
             </Dialog>
 

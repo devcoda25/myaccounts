@@ -129,7 +129,7 @@ function statusTone(s: UserStatus) {
 
 
 export default function AdminUsersList() {
-  const { t } = useTranslation("common"); {
+    const { t } = useTranslation("common");
     const navigate = useNavigate();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));

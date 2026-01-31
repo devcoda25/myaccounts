@@ -70,7 +70,7 @@ import { IAuditLog } from '@/types';
 // Remove mkEvents
 
 export default function AdminDashboard() {
-  const { t } = useTranslation("common"); {
+    const { t } = useTranslation("common");
     const theme = useTheme();
     const navigate = useNavigate();
     const { mode } = useThemeStore();

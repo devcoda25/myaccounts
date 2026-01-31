@@ -56,7 +56,7 @@ function maskIdentifier(v: string) {
 }
 
 export default function AdminLogin() {
-  const { t } = useTranslation("common"); {
+    const { t } = useTranslation("common");
     const navigate = useNavigate();
     const theme = useTheme();
     const isDark = theme.palette.mode === "dark";
@@ -159,7 +159,7 @@ export default function AdminLogin() {
                         <CardContent className="p-5 md:p-8">
                             <Stack spacing={2.4}>
                                 <Stack spacing={0.6}>
-                                    <Typography variant="h4" sx={{ color: isDark ? "text.primary" : "#000000" }}>{t("auth.common.signIn")}<//Typography>
+                                    <Typography variant="h4" sx={{ color: isDark ? "text.primary" : "#000000" }}>{t("auth.common.signIn")}</Typography>
                                     <Typography variant="body2" sx={{ color: isDark ? theme.palette.text.secondary : "#000000" }}>
                                         Enter your admin credentials to continue.
                                     </Typography>

@@ -187,7 +187,7 @@ async function copyToClipboard(text: string) {
 }
 
 export default function Error500Page() {
-  const { t } = useTranslation("common"); {
+  const { t } = useTranslation("common");
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const navigate = useNavigate();

@@ -60,7 +60,7 @@ interface AppRecord {
 }
 
 export default function AppDetail() {
-  const { t } = useTranslation("common"); {
+    const { t } = useTranslation("common");
     const { clientId } = useParams<{ clientId: string }>();
     const navigate = useNavigate();
     const theme = useTheme();
@@ -277,7 +277,7 @@ export default function AppDetail() {
                     </Stack>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setInviteOpen(false)}>{t("auth.common.cancel")}<//Button>
+                    <Button onClick={() => setInviteOpen(false)}>{t("auth.common.cancel")}</Button>
                     <Button variant="contained" onClick={handleInvite}>Invite</Button>
                 </DialogActions>
             </Dialog>

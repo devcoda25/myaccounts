@@ -65,7 +65,7 @@ function parseDevice(userAgent?: string) {
 }
 
 export default function UserSessions() {
-  const { t } = useTranslation("common"); {
+    const { t } = useTranslation("common");
     const navigate = useNavigate();
     const { userId } = useParams();
     const theme = useTheme();
@@ -105,7 +105,7 @@ export default function UserSessions() {
         return (
             <Box sx={{ p: 4 }}>
                 <Alert severity="error">{error}</Alert>
-                <Button onClick={() => navigate(-1)} sx={{ mt: 2 }}>{t("auth.common.back")}<//Button>
+                <Button onClick={() => navigate(-1)} sx={{ mt: 2 }}>{t("auth.common.back")}</Button>
             </Box>
         );
     }

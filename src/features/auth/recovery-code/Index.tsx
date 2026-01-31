@@ -121,7 +121,7 @@ function normalizeCode(s: string) {
 }
 
 export default function RecoveryCodeEntryPage() {
-  const { t } = useTranslation("common"); {
+  const { t } = useTranslation("common");
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);

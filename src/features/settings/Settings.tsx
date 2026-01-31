@@ -52,7 +52,7 @@ function IconBase({ size = 18, children }: { size?: number; children: React.Reac
 }
 
 export default function SettingsPage() {
-  const { t } = useTranslation("common"); {
+    const { t } = useTranslation("common");
     const navigate = useNavigate();
     const theme = useTheme();
     const { mode, toggleMode } = useThemeStore();

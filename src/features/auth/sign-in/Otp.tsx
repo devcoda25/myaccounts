@@ -61,7 +61,7 @@ function maskIdentifier(v: string) {
 }
 
 export default function SignInOtpPage() {
-  const { t } = useTranslation("common"); {
+  const { t } = useTranslation("common");
   const navigate = useNavigate();
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";

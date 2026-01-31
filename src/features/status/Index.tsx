@@ -49,7 +49,7 @@ function healthChip(health: Health) {
 }
 
 export default function SystemStatusPage() {
-  const { t } = useTranslation("common"); {
+  const { t } = useTranslation("common");
   const theme = useTheme();
   const navigate = useNavigate();
   const { mode, toggleMode } = useThemeStore();

@@ -153,7 +153,7 @@ function fmtSeconds(s: number) {
 }
 
 export default function Error429Page() {
-  const { t } = useTranslation("common"); {
+  const { t } = useTranslation("common");
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);
   const navigate = useNavigate();
@@ -342,4 +342,5 @@ function QuickTip({ title, body }: { title: string; body: string }) {
       <Typography variant="body2" sx={{ color: "text.secondary" }}>{body}</Typography>
     </Box>
   );
+}
 }

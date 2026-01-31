@@ -207,7 +207,7 @@ function runSelfTestsOnce() {
 }
 
 export default function SetPasswordPage() {
-  const { t } = useTranslation("common"); {
+  const { t } = useTranslation("common");
   const navigate = useNavigate();
   const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
   const theme = useMemo(() => buildTheme(mode), [mode]);

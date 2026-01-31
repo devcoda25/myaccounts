@@ -31,7 +31,7 @@ import { EVZONE } from "@/theme/evzone";
  */
 
 export default function SignedOutPage() {
-  const { t } = useTranslation("common"); {
+  const { t } = useTranslation("common");
   const navigate = useNavigate();
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
