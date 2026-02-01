@@ -193,9 +193,10 @@
             "useOtpSubtitle": "No password? Use a magic code.",
             "comingSoon": "Coming Soon",
             "otpComingSoon": "One-time code sign-in is being integrated.",
-            "sendCode": "Send Code",
-            "termsAgree": "By continuing, you agree to EVzone's Terms & Privacy.",
-            "locked": "Locked. Retry in {{seconds}}s"
+            "sendCode": "コードを送信",
+            "termsAgree": "続行すると、EVzoneの利用規約とプライバシーに同意したものとみなされます。",
+            "locked": "ロック中。{{seconds}}秒後に再試行",
+            "or": "または"
         },
         "signUp": {
             "sectionTitle": "Account Creation",

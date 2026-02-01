@@ -195,7 +195,8 @@
             "otpComingSoon": "One-time code sign-in is being integrated.",
             "sendCode": "Send Code",
             "termsAgree": "By continuing, you agree to EVzone's Terms & Privacy.",
-            "locked": "Locked. Retry in {{seconds}}s"
+            "locked": "Locked. Retry in {{seconds}}s",
+            "or": "or"
         },
         "signUp": {
             "sectionTitle": "Account Creation",

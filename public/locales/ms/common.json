@@ -195,7 +195,8 @@
             "otpComingSoon": "Log masuk kod sekali pakai sedang diintegrasikan.",
             "sendCode": "Hantar Kod",
             "termsAgree": "Dengan meneruskan, anda bersetuju dengan Syarat & Privasi EVzone.",
-            "locked": "Dikunci. Cuba lagi dalam {{seconds}}s"
+            "locked": "Dikunci. Cuba lagi dalam {{seconds}}s",
+            "or": "atau"
         },
         "signUp": {
             "sectionTitle": "Penciptaan Akaun",

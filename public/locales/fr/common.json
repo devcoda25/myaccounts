@@ -195,7 +195,8 @@
             "otpComingSoon": "L'intégration de la connexion par code unique est en cours.",
             "sendCode": "Envoyer le Code",
             "termsAgree": "En continuant, vous acceptez les Conditions et Confidentialité d'EVzone.",
-            "locked": "Verrouillé. Réessayer dans {{seconds}}s"
+            "locked": "Verrouillé. Réessayer dans {{seconds}}s",
+            "or": "ou"
         },
         "signUp": {
             "sectionTitle": "Création de Compte",

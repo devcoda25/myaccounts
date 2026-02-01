@@ -195,7 +195,8 @@
             "otpComingSoon": "Masuk dengan kode sekali pakai sedang diintegrasikan.",
             "sendCode": "Kirim Kode",
             "termsAgree": "Dengan melanjutkan, Anda menyetujui Ketentuan & Privasi EVzone.",
-            "locked": "Terkunci. Coba lagi dalam {{seconds}}s"
+            "locked": "Terkunci. Coba lagi dalam {{seconds}}s",
+            "or": "atau"
         },
         "signUp": {
             "sectionTitle": "Pembuatan Akun",

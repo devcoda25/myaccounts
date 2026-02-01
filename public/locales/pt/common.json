@@ -195,7 +195,8 @@
             "otpComingSoon": "Login com código único está sendo integrado.",
             "sendCode": "Enviar código",
             "termsAgree": "Continuar significa que você concorda com os Termos & Privacidade EVzone.",
-            "locked": "Bloqueado. Tente novamente em {{seconds}}s"
+            "locked": "Bloqueado. Tente novamente em {{seconds}}s",
+            "or": "ou"
         },
         "signUp": {
             "sectionTitle": "Criação de Conta",

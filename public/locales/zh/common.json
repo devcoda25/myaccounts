@@ -195,7 +195,8 @@
             "otpComingSoon": "一次性验证码登录正在集成中。",
             "sendCode": "发送验证码",
             "termsAgree": "继续即表示您同意EVzone的条款和隐私政策。",
-            "locked": "已锁定，{{seconds}}秒后重试"
+            "locked": "已锁定，{{seconds}}秒后重试",
+            "or": "或"
         },
         "signUp": {
             "sectionTitle": "创建账户",

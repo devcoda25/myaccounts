@@ -195,7 +195,8 @@
             "otpComingSoon": "正在整合一次性代碼登入。",
             "sendCode": "發送代碼",
             "termsAgree": "繼續即表示您同意EVzone的條款與隱私權政策。",
-            "locked": "已鎖定。{{seconds}}秒後重試"
+            "locked": "已鎖定。{{seconds}}秒後重試",
+            "or": "或"
         },
         "signUp": {
             "sectionTitle": "帳戶創建",

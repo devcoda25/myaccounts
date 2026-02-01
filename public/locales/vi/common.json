@@ -195,7 +195,8 @@
             "otpComingSoon": "Đăng nhập bằng mã một lần đang được tích hợp.",
             "sendCode": "Gửi mã",
             "termsAgree": "Tiếp tục có nghĩa là bạn đồng ý với Điều khoản & Quyền riêng tư của EVzone.",
-            "locked": "Bị khóa. Thử lại sau {{seconds}} giây"
+            "locked": "Bị khóa. Thử lại sau {{seconds}} giây",
+            "or": "hoặc"
         },
         "signUp": {
             "sectionTitle": "Tạo tài khoản",

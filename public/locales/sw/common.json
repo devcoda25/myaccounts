@@ -195,7 +195,8 @@
             "otpComingSoon": "Uingizaji wa msimbo wa muda mmoja unaendelea.",
             "sendCode": "Tuma Msimbo",
             "termsAgree": "Kwa kuendelea, unakubali Sheria na Faragha za EVzone.",
-            "locked": "Imefungwa. Jaribu tena katika {{seconds}}s"
+            "locked": "Imefungwa. Jaribu tena katika {{seconds}}s",
+            "or": "au"
         },
         "signUp": {
             "sectionTitle": "Uundaji wa Akaunti",

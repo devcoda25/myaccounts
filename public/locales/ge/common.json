@@ -195,7 +195,8 @@
       "otpComingSoon": "Anmeldung mit Einmalcode wird integriert.",
       "sendCode": "Code senden",
       "termsAgree": "Durch Fortfahren stimmen Sie den EVzone-Bedingungen und dem Datenschutz zu.",
-      "locked": "Gesperrt. Erneut versuchen in {{seconds}}s"
+      "locked": "Gesperrt. Erneut versuchen in {{seconds}}s",
+      "or": "oder"
     },
     "signUp": {
       "sectionTitle": "Kontoerstellung",

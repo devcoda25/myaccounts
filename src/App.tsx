@@ -8,7 +8,7 @@ import { AuthProvider, useAuth } from 'react-oidc-context';
 import { oidcConfig, userManager } from './auth/oidcConfig';
 import { NotificationProvider } from './context/NotificationContext';
 // Initialize i18n before any i18n-dependent components
-import './i18n/LanguageProvider';
+import { LanguageProvider } from './i18n';
 
 export default function App() {
   // Auto-logout after 30 minutes of inactivity
@@ -17,11 +17,13 @@ export default function App() {
   return (
     <BrowserRouter>
       <NotificationProvider>
-        <AuthProviderWrapper>
-          <AppThemeProvider>
-            <AppRouter />
-          </AppThemeProvider>
-        </AuthProviderWrapper>
+        <LanguageProvider>
+          <AuthProviderWrapper>
+            <AppThemeProvider>
+              <AppRouter />
+            </AppThemeProvider>
+          </AuthProviderWrapper>
+        </LanguageProvider>
       </NotificationProvider>
     </BrowserRouter>
   );
