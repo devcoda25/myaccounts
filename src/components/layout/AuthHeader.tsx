@@ -1,8 +1,9 @@
 import { Box, Stack, Typography, IconButton, Tooltip, alpha, useTheme } from '@mui/material';
-import { Sun as SunIcon, Moon as MoonIcon, HelpCircle as HelpIcon } from 'lucide-react';
+import { Sun as SunIcon, Moon as MoonIcon, HelpCircle as HelpIcon, Globe } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useThemeStore } from '../../stores/themeStore';
 import { EVZONE } from '../../theme/evzone';
+import { LanguageSelector } from '../../i18n';
 
 
 interface AuthHeaderProps {
@@ -50,6 +51,11 @@ export default function AuthHeader({ title = "EVzone", subtitle, showHelp = true
 
                     {/* Actions */}
                     <Stack direction="row" alignItems="center" spacing={1}>
+                        {/* Language Selector */}
+                        <Box sx={{ minWidth: 120 }}>
+                            <LanguageSelector variant="minimal" />
+                        </Box>
+
                         <Tooltip title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}>
                             <IconButton
                                 onClick={toggleMode}
@@ -64,8 +70,6 @@ export default function AuthHeader({ title = "EVzone", subtitle, showHelp = true
                                 {isDark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
                             </IconButton>
                         </Tooltip>
-
-
 
                         {showHelp && (
                             <Tooltip title="Help & Support">

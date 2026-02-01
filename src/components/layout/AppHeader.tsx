@@ -35,6 +35,7 @@ import NotificationsPopover from './NotificationsPopover';
 import { useThemeStore } from '../../stores/themeStore';
 import { useAuthStore } from '../../stores/authStore';
 import { formatUserId } from '../../utils/format';
+import { LanguageSelector } from '../../i18n';
 
 interface AppHeaderProps {
     onDrawerToggle?: () => void;
@@ -154,13 +155,16 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
             </Box>
 
             <Stack direction="row" spacing={1} alignItems="center">
+                {/* Language Selector */}
+                <Box sx={{ minWidth: 100 }}>
+                    <LanguageSelector variant="minimal" />
+                </Box>
+
                 <Tooltip title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}>
                     <IconButton size="small" onClick={toggleMode} sx={{ border: `1px solid ${alpha(EVZONE.orange, 0.30)}`, borderRadius: 12, color: EVZONE.orange, backgroundColor: alpha(theme.palette.background.paper, 0.60) }}>
                         {isDark ? <SunIcon size={18} /> : <MoonIcon size={18} />}
                     </IconButton>
                 </Tooltip>
-
-
 
                 <Box>
                     <Tooltip title="Notifications">
