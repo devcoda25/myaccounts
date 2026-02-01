@@ -18,9 +18,16 @@ import jaCommon from '../../public/locales/ja/common.json';
 import koCommon from '../../public/locales/ko/common.json';
 import zhCNCommon from '../../public/locales/zh-CN/common.json';
 import zhCommon from '../../public/locales/zh/common.json';
+import zhTWCommon from '../../public/locales/zh-TW/common.json';
 import esCommon from '../../public/locales/es/common.json';
 import deCommon from '../../public/locales/ge/common.json';
 import ruCommon from '../../public/locales/ru/common.json';
+import hiCommon from '../../public/locales/hi/common.json';
+import idCommon from '../../public/locales/id/common.json';
+import msCommon from '../../public/locales/ms/common.json';
+import thCommon from '../../public/locales/th/common.json';
+import viCommon from '../../public/locales/vi/common.json';
+import ptCommon from '../../public/locales/pt/common.json';
 
 // Initialize i18next
 const resources = {
@@ -32,9 +39,16 @@ const resources = {
     ko: { common: koCommon },
     'zh-CN': { common: zhCNCommon },
     zh: { common: zhCommon },
+    'zh-TW': { common: zhTWCommon },
     es: { common: esCommon },
     ge: { common: deCommon },
     ru: { common: ruCommon },
+    hi: { common: hiCommon },
+    id: { common: idCommon },
+    ms: { common: msCommon },
+    th: { common: thCommon },
+    vi: { common: viCommon },
+    pt: { common: ptCommon },
 };
 
 // Initialize i18n instance

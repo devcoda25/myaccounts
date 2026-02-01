@@ -1,0 +1,508 @@
+{
+    "app": {
+        "name": "EVzone मेरे खाते",
+        "tagline": "सभी EVzone सेवाओं के लिए आपका एकीकृत खाता"
+    },
+    "common": {
+        "actions": {
+            "save": "सहेजें",
+            "cancel": "रद्द करें",
+            "delete": "हटाएं",
+            "edit": "संपादित करें",
+            "submit": "सबमिट करें",
+            "close": "बंद करें",
+            "back": "वापस",
+            "next": "अगला",
+            "confirm": "पुष्टि करें",
+            "search": "खोजें",
+            "filter": "फ़िल्टर",
+            "clear": "साफ़ करें",
+            "reset": "रीसेट",
+            "refresh": "रीफ़्रेश",
+            "retry": "पुनः प्रयास करें",
+            "continue": "जारी रखें",
+            "done": "हो गया",
+            "send": "भेजें",
+            "download": "डाउनलोड",
+            "upload": "अपलोड",
+            "copy": "कॉपी",
+            "view": "देखें",
+            "hide": "छुपाएं",
+            "show": "दिखाएं",
+            "expand": "विस्तार करें",
+            "collapse": "संक्षिप्त करें",
+            "select": "चुनें",
+            "selectAll": "सभी चुनें",
+            "deselectAll": "सभी अचयनित करें",
+            "add": "जोड़ें",
+            "remove": "हटाएं",
+            "update": "अपडेट करें",
+            "create": "बनाएं",
+            "signIn": "साइन इन",
+            "signOut": "साइन आउट",
+            "signUp": "साइन अप",
+            "login": "लॉगिन",
+            "logout": "लॉगआउट",
+            "register": "रजिस्टर"
+        },
+        "errors": {
+            "required": "यह फ़ील्ड आवश्यक है",
+            "invalidEmail": "कृपया एक वैध ईमेल पता दर्ज करें",
+            "invalidPhone": "कृपया एक वैध फ़ोन नंबर दर्ज करें",
+            "passwordTooShort": "पासवर्ड कम से कम 8 अक्षरों का होना चाहिए",
+            "passwordRequiresUppercase": "पासवर्ड में एक बड़ा अक्षर होना चाहिए",
+            "passwordRequiresLowercase": "पासवर्ड में एक छोटा अक्षर होना चाहिए",
+            "passwordRequiresNumber": "पासवर्ड में एक संख्या होनी चाहिए",
+            "passwordRequiresSpecial": "पासवर्ड में एक विशेष वर्ण होना चाहिए",
+            "passwordsDoNotMatch": "पासवर्ड मेल नहीं खाते",
+            "networkError": "नेटवर्क त्रुटि। कृपया पुनः प्रयास करें।",
+            "serverError": "सर्वर त्रुटि। कृपया बाद में पुनः प्रयास करें।",
+            "unknownError": "एक अप्रत्याशित त्रुटि हुई।",
+            "sessionExpired": "आपका सत्र समाप्त हो गया है। कृपया पुनः साइन इन करें।",
+            "invalidCredentials": "अमान्य प्रमाण पत्र। कृपया पुनः प्रयास करें।",
+            "tooManyAttempts": "बहुत अधिक प्रयास। कृपया बाद में पुनः प्रयास करें।",
+            "accountLocked": "आपका खाता लॉक कर दिया गया है।",
+            "emailAlreadyExists": "इस ईमेल के साथ एक खाता पहले से मौजूद है।",
+            "userNotFound": "उपयोगकर्ता नहीं मिला।",
+            "unauthorized": "आप इस क्रिया को करने के लिए अधिकृत नहीं हैं।",
+            "forbidden": "पहुँच अस्वीकृत।",
+            "notFound": "अनुरोधित संसाधन नहीं मिला।",
+            "badRequest": "अमान्य अनुरोध।",
+            "internalServerError": "आंतरिक सर्वर त्रुटि।",
+            "serviceUnavailable": "सेवा अस्थायी रूप से उपलब्ध नहीं है।",
+            "validationError": "कृपया अपना इनपुट जांचें और पुनः प्रयास करें।"
+        },
+        "loading": {
+            "loading": "लोड हो रहा है...",
+            "pleaseWait": "कृपया प्रतीक्षा करें...",
+            "processing": "प्रोसेसिंग...",
+            "saving": "सहेजा जा रहा है...",
+            "deleting": "हटाया जा रहा है...",
+            "updating": "अपडेट किया जा रहा है...",
+            "signingIn": "साइन इन हो रहा है...",
+            "signingOut": "साइन आउट हो रहा है..."
+        },
+        "validation": {
+            "confirmDelete": "क्या आप वाकई इस आइटम को हटाना चाहते हैं?",
+            "unsavedChanges": "आपके पास सहेजे न गए परिवर्तन हैं। क्या आप जाना चाहते हैं?",
+            "minLength": "कम से कम {{count}} अक्षर होने चाहिए",
+            "maxLength": "अधिकतम {{count}} अक्षर होने चाहिए",
+            "minValue": "मान कम से कम {{count}} होना चाहिए",
+            "maxValue": "मान अधिकतम {{count}} होना चाहिए"
+        },
+        "placeholders": {
+            "email": "अपना ईमेल दर्ज करें",
+            "phone": "अपना फ़ोन नंबर दर्ज करें",
+            "password": "अपना पासवर्ड दर्ज करें",
+            "newPassword": "नया पासवर्ड दर्ज करें",
+            "confirmPassword": "अपना पासवर्ड पुष्टि करें",
+            "search": "खोजें...",
+            "selectOption": "एक विकल्प चुनें"
+        }
+    },
+    "loading": {
+        "session": "सुरक्षित सत्र प्रारंभ हो रहा है..."
+    },
+    "error": {
+        "title": "प्रमाणीकरण त्रुटि",
+        "sessionFailed": "सुरक्षित सत्र प्रारंभ करने में विफल।",
+        "retry": "पुनः प्रयास करें"
+    },
+    "password": {
+        "weak": "कमज़ोर",
+        "fair": "ठीक",
+        "good": "अच्छा",
+        "strong": "मजबूत",
+        "veryStrong": "बहुत मजबूत"
+    },
+    "header": {
+        "title": "EVzone खाते",
+        "subtitle": "अपना EVzone पहचान बनाएं"
+    },
+    "auth": {
+        "common": {
+            "loading": "लोड हो रहा है...",
+            "or": "या",
+            "email": "ईमेल",
+            "phone": "फ़ोन",
+            "terms": "नियम और शर्तें",
+            "privacy": "गोपनीयता",
+            "help": "सहायता",
+            "signIn": "साइन इन",
+            "signUp": "साइन अप",
+            "switchToLight": "लाइट मोड पर स्विच करें",
+            "switchToDark": "डार्क मोड पर स्विच करें",
+            "continue": "जारी रखें",
+            "back": "वापस",
+            "cancel": "रद्द करें",
+            "save": "सहेजें",
+            "submit": "सबमिट करें",
+            "verify": "सत्यापित करें",
+            "send": "भेजें"
+        },
+        "signIn": {
+            "title": "साइन इन",
+            "subtitle": "वापस स्वागत है! कृपया जारी रखने के लिए साइन इन करें।",
+            "emailOrPhone": "ईमेल या फ़ोन",
+            "password": "पासवर्ड",
+            "forgotPassword": "पासवर्ड भूल गए?",
+            "rememberMe": "मुझे याद रखें",
+            "submit": "साइन इन",
+            "noAccount": "खाता नहीं है?",
+            "signUp": "साइन अप करें",
+            "orContinueWith": "या इसके साथ जारी रखें",
+            "checking": "जांच हो रही है...",
+            "unavailable": "अनुपलब्ध",
+            "errors": {
+                "enterEmailOrPhone": "अपना ईमेल या फ़ोन नंबर दर्ज करें।",
+                "enterPassword": "जारी रखने के लिए अपना पासवर्ड दर्ज करें।",
+                "invalidCredentials": "अमान्य प्रमाण पत्र। कृपया पुनः प्रयास करें।",
+                "locked": "लॉक है। {{seconds}}s में पुनः प्रयास करें"
+            },
+            "verifying": "प्रमाण पत्र सत्यापित हो रहे हैं...",
+            "failed": "साइन इन विफल",
+            "left": {
+                "title": "EVzone के लिए एक खाता",
+                "subtitle": "एक सुरक्षित पहचान से सहज रूप से चार्जिंग, मार्केटप्लेस और पे तक पहुंचें।",
+                "demoNote": "डेमो के लिए पूर्व-भरा गया: example@mail.com"
+            },
+            "right": {
+                "subtitle": "EVzone पोर्टल पर जारी रखने के लिए"
+            },
+            "features": {
+                "secureSessions": {
+                    "title": "सुरक्षित सत्र",
+                    "desc": "24/7 बैंक-ग्रेड सुरक्षा निगरानी।"
+                },
+                "passkeys": {
+                    "title": "पासकी और बायोमेट्रिक्स",
+                    "desc": "TouchID या FaceID से साइन इन करें।"
+                },
+                "privacy": {
+                    "title": "गोपनीयता पहले",
+                    "desc": "हम आपकी डेटा गोपनीयता को अधिकतम करते हैं।"
+                }
+            },
+            "showPassword": "पासवर्ड दिखाएं",
+            "hidePassword": "पासवर्ड छुपाएं",
+            "switchingToPassword": "पासवर्ड पर स्विच हो रहा है...",
+            "placeholders": {
+                "email": "name@example.com"
+            },
+            "useOtpTitle": "एक बार का कोड उपयोग करें",
+            "useOtpSubtitle": "पासवर्ड नहीं? एक जादुई कोड का उपयोग करें।",
+            "comingSoon": "जल्द आ रहा है",
+            "otpComingSoon": "एक बार का कोड साइन-इन एकीकृत किया जा रहा है।",
+            "sendCode": "कोड भेजें",
+            "termsAgree": "जारी रखकर, आप EVzone की नियम और शर्तें और गोपनीयता नीति से सहमत होते हैं।",
+            "locked": "लॉक है। {{seconds}}s में पुनः प्रयास करें"
+        },
+        "signUp": {
+            "sectionTitle": "खाता निर्माण",
+            "sectionSubtitle": "सभी EVzone सेवाओं के लिए अपनी एक सुरक्षित ID बनाएं।",
+            "secureIdentity": "सुरक्षित पहचान",
+            "secureIdentityDesc": "आपकी संपत्तियों के लिए बैंक-ग्रेड सुरक्षा।",
+            "clearPermissions": "स्पष्ट अनुमतियां",
+            "clearPermissionsDesc": "आप अपने डेटा साझाकरण को नियंत्रित करते हैं।",
+            "backToSignIn": "साइन इन पर वापस जाएं",
+            "createAccount": "खाता बनाएं",
+            "getStarted": "EVzone के साथ शुरू करें",
+            "continueWithGoogle": "Google के साथ जारी रखें",
+            "continueWithApple": "Apple के साथ जारी रखें",
+            "firstName": "पहला नाम",
+            "firstNamePlaceholder": "उदा., जेन",
+            "otherNames": "अन्य नाम",
+            "otherNamesPlaceholder": "उदा., डो",
+            "email": "ईमेल पता",
+            "emailPlaceholder": "name@example.com",
+            "phone": "फ़ोन नंबर",
+            "phonePlaceholder": "700 000 000",
+            "createWithOtp": "एक बार के कोड के साथ बनाएं",
+            "createWithOtpDesc": "पासवर्ड की आवश्यकता नहीं। हम आपके फ़ोन को सत्यापित करेंगे।",
+            "createPassword": "पासवर्ड बनाएं",
+            "confirmPassword": "पासवर्ड पुष्टि करें",
+            "otpInfo": "आपको अपने खाते को सत्यापित करने के लिए एक OTP प्राप्त होगा।",
+            "inviteCode": "आमंत्रण कोड (वैकल्पिक)",
+            "inviteCodePlaceholder": "उदा., EVZ-123",
+            "termsAgreement": "मैं सेवा की नियम और शर्तें और गोपनीयता नीति से सहमत हूं।",
+            "continue": "जारी रखें",
+            "switchToSignIn": "साइन इन पर स्विच करें",
+            "verifyContactInfo": "अगले चरण में अपना संपर्क जानकारी सत्यापित करें।",
+            "validation": {
+                "firstNameRequired": "अपना पहला नाम दर्ज करें।",
+                "otherNamesRequired": "अपने अन्य नाम दर्ज करें।",
+                "emailOrPhoneRequired": "कम से कम एक ईमेल या फ़ोन नंबर प्रदान करें।",
+                "validEmailRequired": "एक वैध ईमेल पता दर्ज करें।",
+                "termsRequired": "आपको नियम और गोपनीयता नीति स्वीकार करनी होगी।",
+                "passwordRequired": "एक पासवर्ड बनाएं।",
+                "passwordMinLength": "पासवर्ड कम से कम 8 अक्षरों का होना चाहिए।",
+                "passwordsDoNotMatch": "पासवर्ड मेल नहीं खाते।"
+            },
+            "notification": {
+                "registrationInfo": "पंजीकरण जानकारी",
+                "accountCreated": "खाता बनाया गया",
+                "accountCreatedSuccess": "खाता सफलतापूर्वक बनाया गया! आपको सुरक्षित रूप से साइन इन कर रहे हैं...",
+                "verifyEmail": "अपना ईमेल सत्यापित करें",
+                "verifyEmailSuccess": "खाता बनाया गया! कृपया सत्यापन लिंक के लिए अपना इनबॉक्स जांचें।",
+                "registrationFailed": "पंजीकरण विफल",
+                "registrationFailedMessage": "खाता बनाने में विफल। कृपया पुनः प्रयास करें।"
+            }
+        },
+        "forgotPassword": {
+            "subtitle": "पासवर्ड भूल गए",
+            "resetAccess": "पहुंच रीसेट करें",
+            "resetAccessDesc": "अपने सत्यापित ईमेल या फ़ोन का उपयोग करके अपना खाता पुनर्प्राप्त करें।",
+            "rateLimiting": "दर सीमित करना",
+            "rateLimitingDesc": "अनुरोधों के बीच 30s प्रतीक्षा करें।",
+            "secureLink": "सुरक्षित लिंक",
+            "secureLinkDesc": "हम एक जादुई लिंक या कोड भेजते हैं।",
+            "backToSignIn": "साइन इन पर वापस जाएं",
+            "checkContact": "अपना {{type}} जांचें",
+            "instructionsSent": "हमने {{mask}} को {{method}} के माध्यम से निर्देश भेजे।",
+            "nextSteps": "अगले कदम",
+            "nextStepsDesc": "रीसेट करने के लिए लिंक पर क्लिक करें या कोड दर्ज करें।",
+            "enterResetCode": "रीसेट कोड दर्ज करें",
+            "resendIn": "{{seconds}}s में पुनः भेजें",
+            "sendAgain": "फिर से भेजें",
+            "changeContactInfo": "संपर्क जानकारी बदलें",
+            "needHelp": "मदद चाहिए?",
+            "title": "पासवर्ड भूल गए",
+            "enterToRecover": "अपना खाता पुनर्प्राप्त करने के लिए अपना ईमेल या फ़ोन दर्ज करें।",
+            "identifierLabel": "ईमेल या फ़ोन दर्ज करें",
+            "identifierPlaceholder": "name@example.com",
+            "validIdentifierHint": "एक वैध ईमेल या फ़ोन दर्ज करें।",
+            "deliveryMethod": "डिलीवरी विधि",
+            "captchaLabel": "मैं मनुष्य हूं",
+            "captchaDesc": "कैप्चा जांच पूरी करें।",
+            "accountRecoveryHelp": "खाता पुनर्प्राप्ति सहायता",
+            "spamTip": "टिप: यदि आप ईमेल नहीं देखते हैं तो अपना स्पैम फ़ोल्डर जांचें।",
+            "confirmSend": "भेजने की पुष्टि करें",
+            "sendTo": "पुनर्प्राप्ति निर्देश भेजें:",
+            "viaMethod": "{{method}} के माध्यम से",
+            "invalidatePrevious": "यह पिछले लिंक को अमान्य कर देगा।",
+            "sendInstructions": "निर्देश भेजें",
+            "delivery": {
+                "emailLink": "ईमेल लिंक",
+                "emailLinkDesc": "अपने ईमेल पर एक जादुई लिंक भेजें।",
+                "smsCode": "SMS कोड",
+                "smsCodeDesc": "अपने फ़ोन पर 6 अंकों का कोड भेजें।",
+                "whatsappCode": "WhatsApp कोड",
+                "whatsappCodeDesc": "WhatsApp के माध्यम से एक कोड भेजें।"
+            },
+            "phoneMethodsHint": "यदि आप फ़ोन नंबर दर्ज करते हैं तो फ़ोन विधियां उपलब्ध हैं।",
+            "validation": {
+                "enterIdentifier": "ईमेल या फ़ोन दर्ज करें",
+                "validIdentifier": "एक वैध ईमेल या फ़ोन दर्ज करें।",
+                "waitCooldown": "कृपया {{seconds}}s प्रतीक्षा करें",
+                "completeCaptcha": "कृपया कैप्चा पूरा करें।"
+            },
+            "notification": {
+                "sentSuccess": "{{via}} के माध्यम से सफलतापूर्वक भेजा गया।",
+                "sendFailed": "अनुरोध भेजने में विफल। कृपया पुनः प्रयास करें।"
+            }
+        },
+        "resetPassword": {
+            "subtitle": "पासवर्ड रीसेट करें",
+            "createNewPassword": "नया पासवर्ड बनाएं",
+            "enterNewPassword": "अपने खाते के लिए एक नया पासवर्ड दर्ज करें।",
+            "navigateToForgot": "/auth/forgot-password पर नेविगेट करें",
+            "backToForgotPassword": "पासवर्ड भूल गए पर वापस जाएं",
+            "title": "पासवर्ड रीसेट करें",
+            "enterDetails": "अपना पासवर्ड रीसेट करने के लिए अपना विवरण दर्ज करें।",
+            "tokenTab": "टोकन",
+            "codeTab": "कोड",
+            "resetToken": "रीसेट टोकन",
+            "tokenPlaceholder": "टोकन दर्ज करें",
+            "tokenHelperText": "टोकन के लिए अपना ईमेल जांचें।",
+            "verifyToken": "टोकन सत्यापित करें",
+            "identifierLabel": "ईमेल या फ़ोन",
+            "identifierPlaceholder": "ईमेल या फ़ोन दर्ज करें",
+            "identifierHelper": "हम आपके इनपुट के आधार पर विधि निर्धारित करेंगे।",
+            "deliveryMethod": "डिलीवरी विधि",
+            "codeSent": "कोड भेजा गया",
+            "sendCode": "कोड भेजें",
+            "resendCode": "कोड पुनः भेजें",
+            "verifyCode": "कोड सत्यापित करें",
+            "newPassword": "नया पासवर्ड",
+            "confirmPassword": "पासवर्ड पुष्टि करें",
+            "requirements": "आवश्यकताएं",
+            "signOutAll": "सभी अन्य उपकरणों से साइन आउट करें",
+            "resetButton": "पासवर्ड रीसेट करें",
+            "passwordUpdated": "पासवर्ड अपडेट किया गया",
+            "passwordChangedSuccess": "आपका पासवर्ड सफलतापूर्वक बदल दिया गया है।",
+            "goToSignIn": "साइन इन पर जाएं",
+            "accountRecoveryHelp": "खाता पुनर्प्राप्ति सहायता",
+            "navigateToHelp": "/auth/account-recovery-help पर नेविगेट करें",
+            "channel": {
+                "email": "ईमेल",
+                "emailDesc": "ईमेल पर भेजें",
+                "sms": "SMS",
+                "smsDesc": "SMS के माध्यम से भेजें",
+                "whatsapp": "WhatsApp",
+                "whatsappDesc": "WhatsApp के माध्यम से भेजें"
+            },
+            "phoneChannelsDisabled": "ईमेल उपयोगकर्ताओं के लिए फ़ोन चैनल अक्षम हैं।",
+            "req": {
+                "length": "कम से कम 8 अक्षर",
+                "uppercase": "एक बड़ा अक्षर",
+                "lowercase": "एक छोटा अक्षर",
+                "number": "एक संख्या",
+                "special": "एक विशेष वर्ण",
+                "match": "पासवर्ड मेल खाते हैं"
+            },
+            "validation": {
+                "tokenRequired": "कृपया रीसेट टोकन दर्ज करें।",
+                "identifierRequired": "कृपया अपना ईमेल या फ़ोन दर्ज करें।",
+                "invalidIdentifier": "अमान्य ईमेल या फ़ोन।",
+                "codeRequired": "कृपया 6 अंकों का कोड दर्ज करें।",
+                "passwordRequired": "कृपया एक पासवर्ड दर्ज करें।",
+                "passwordStrength": "पासवर्ड मजबूत होना चाहिए।",
+                "passwordsDoNotMatch": "पासवर्ड मेल नहीं खाते।"
+            },
+            "notification": {
+                "codeSentEmail": "ईमेल पर कोड भेजा गया।",
+                "codeSentVia": "{{channel}} के माध्यम से कोड भेजा गया।",
+                "sendFailed": "कोड भेजने में विफल।",
+                "resetSuccessSignedOut": "पासवर्ड रीसेट। आपको साइन आउट कर दिया गया है।",
+                "resetSuccess": "पासवर्ड सफलतापूर्वक रीसेट किया गया।",
+                "resetFailed": "पासवर्ड रीसेट करने में विफल। अमान्य कोड/टोकन।"
+            }
+        },
+        "verifyEmail": {
+            "pageTitle": "ईमेल पता सत्यापित करें",
+            "checkInbox": "अपना इनबॉक्स जांचें",
+            "codeSentTo": "हमने {{email}} पर एक कोड भेजा।",
+            "openEmailApp": "ईमेल ऐप खोलें",
+            "openEmailAppDesc": "अपने मेल क्लाइंट को खोलने के लिए टैप करें।",
+            "resendCode": "कोड पुनः भेजें",
+            "resendCodeDesc": "नया कोड भेजने के लिए नीचे क्लिक करें।",
+            "openEmail": "ईमेल खोलें",
+            "changeEmail": "ईमेल बदलें",
+            "emailVerified": "ईमेल सत्यापित",
+            "verificationSuccessDesc": "आपने {{email}} सफलतापूर्वक सत्यापित किया है।",
+            "nextSteps": "अगले कदम",
+            "nextStepsDesc": "अपने फ़ोन को सत्यापित करना जारी रखें।",
+            "title": "ईमेल पता सत्यापित करें",
+            "verify": "सत्यापित करें",
+            "resendIn": "{{seconds}}s में पुनः भेजें",
+            "needHelp": "मदद चाहिए?",
+            "changeEmailDialog": "ईमेल पता बदलें",
+            "changeEmailDesc": "नए पते पर कोड प्राप्त करने के लिए नीचे दर्ज करें।",
+            "emailLabel": "ईमेल पता",
+            "emailPlaceholder": "name@example.com",
+            "saveAndSend": "सहेजें और भेजें",
+            "validation": {
+                "codeRequired": "कृपया 6 अंकों का कोड दर्ज करें।"
+            },
+            "notification": {
+                "codeSent": "{{email}} पर कोड भेजा गया।",
+                "sendFailed": "कोड भेजने में विफल",
+                "openingEmail": "ईमेल ऐप खोल रहे हैं...",
+                "verificationSuccess": "ईमेल सफलतापूर्वक सत्यापित।",
+                "invalidCode": "अमान्य कोड। कृपया पुनः प्रयास करें।"
+            }
+        },
+        "verifyPhone": {
+            "title": "फ़ोन सत्यापित करें",
+            "subtitle": "कृपया अपने फ़ोन पर भेजे गए सत्यापन कोड दर्ज करें।",
+            "code": "सत्यापन कोड",
+            "submit": "फ़ोन सत्यापित करें",
+            "resendCode": "कोड पुनः भेजें",
+            "resendSuccess": "सत्यापन कोड भेजा गया",
+            "success": "फ़ोन सफलतापूर्वक सत्यापित",
+            "successMessage": "आपका फ़ोन नंबर सत्यापित किया गया है।"
+        },
+        "mfa": {
+            "title": "दो-कारक प्रमाणीकरण",
+            "subtitle": "अपने प्रमाणिकर ऐप से 6 अंकों का कोड दर्ज करें",
+            "code": "सत्यापन कोड",
+            "submit": "सत्यापित करें",
+            "useBackup": "इसके बजाय बैकअप कोड का उपयोग करें",
+            "resendCode": "कोड पुनः भेजें",
+            "backupCode": "बैकअप कोड",
+            "success": "सत्यापन सफल",
+            "setupTitle": "दो-कारक प्रमाणीकरण सेट करें",
+            "scanQr": "इस QR कोड को अपने प्रमाणिकर ऐप के साथ स्कैन करें",
+            "manualEntry": "या इस कोड को मैन्युअल रूप से दर्ज करें",
+            "enterCode": "अपने ऐप से 6 अंकों का कोड दर्ज करें",
+            "confirmSetup": "सेटअप की पुष्टि करें",
+            "backupCodesTitle": "बैकअप कोड",
+            "backupCodesDescription": "इन बैकअप कोडों को सुरक्षित स्थान पर सहेजें। आप इनका उपयोग कर सकते हैं यदि आप अपने प्रमाणिकर तक पहुंच खो देते हैं।",
+            "copyCodes": "कोड कॉपी करें",
+            "done": "हो गया",
+            "invalidCode": "अमान्य कोड। कृपया पुनः प्रयास करें।",
+            "tooManyAttempts": "बहुत अधिक गलत प्रयास। कृपया पुनः प्रयास करें।"
+        },
+        "passkey": {
+            "title": "पासकी प्रमाणीकरण",
+            "subtitle": "अपनी पासकी से साइन इन करें",
+            "usePasskey": "पासकी का उपयोग करें",
+            "addPasskey": "पासकी जोड़ें",
+            "removePasskey": "पासकी हटाएं",
+            "passkeyAdded": "पासकी सफलतापूर्वक जोड़ी गई",
+            "passkeyRemoved": "पासकी हटा दी गई",
+            "error": "पासकी त्रुटि हुई"
+        },
+        "consent": {
+            "title": "सहमति आवश्यक",
+            "subtitle": "एप्लिकेशन आपके खाते तक पहुंच का अनुरोध करता है",
+            "permissions": "अनुमतियां",
+            "approve": "अनुमोदन करें",
+            "deny": "अस्वीकार करें",
+            "scopes": {
+                "openid": "OpenID कनेक्ट",
+                "profile": "अपनी प्रोफ़ाइल देखें",
+                "email": "अपना ईमेल पता देखें",
+                "phone": "अपना फ़ोन नंबर देखें"
+            }
+        },
+        "interaction": {
+            "title": "प्रमाणीकरण आवश्यक",
+            "subtitle": "कृपया प्रमाणीकरण पूरा करें",
+            "continue": "जारी रखें",
+            "cancel": "रद्द करें"
+        },
+        "Callback": {
+            "processing": "प्रमाणीकरण प्रोसेस हो रहा है...",
+            "success": "प्रमाणीकरण सफल",
+            "error": "प्रमाणीकरण विफल"
+        },
+        "signedOut": {
+            "title": "साइन आउट किया गया",
+            "subtitle": "आप सफलतापूर्वक साइन आउट हो गए हैं",
+            "signInAgain": "फिर से साइन इन करें",
+            "returnHome": "होम पर लौटें"
+        },
+        "session": {
+            "expired": "आपका सत्र समाप्त हो गया है",
+            "expiredMessage": "कृपया जारी रखने के लिए पुनः साइन इन करें।",
+            "expiredAction": "साइन इन"
+        }
+    },
+    "dashboard": {
+        "welcome": "वापसी पर स्वागत है, {{name}}!",
+        "overview": "डैशबोर्ड अवलोकन",
+        "quickActions": "त्वरित क्रियाएं",
+        "recentActivity": "हाल की गतिविधि",
+        "notifications": "सूचनाएं",
+        "settings": "सेटिंग्स",
+        "profile": "मेरी प्रोफ़ाइल",
+        "security": "सुरक्षा",
+        "wallet": "वॉलेट",
+        "help": "सहायता और समर्थन"
+    },
+    "profile": {
+        "title": "प्रोफ़ाइल सेटिंग्स",
+        "personal": {
+            "title": "व्यक्तिगत जानकारी",
+            "firstName": "पहला नाम",
+            "lastName": "अंतिम नाम",
+            "email": "ईमेल पता",
+            "phone": "फ़ोन नंबर",
+            "dateOfBirth": "जन्म तिथि",
+            "nationality": "राष्ट्रीयता",
+            "save": "सहेजें",
+            "cancel": "रद्द करें"
+        }
+    }
+}

@@ -1,0 +1,508 @@
+{
+    "app": {
+        "name": "EVzone Akaun Saya",
+        "tagline": "Akaun bersatu anda untuk semua perkhidmatan EVzone"
+    },
+    "common": {
+        "actions": {
+            "save": "Simpan",
+            "cancel": "Batal",
+            "delete": "Padam",
+            "edit": "Edit",
+            "submit": "Hantar",
+            "close": "Tutup",
+            "back": "Kembali",
+            "next": "Seterusnya",
+            "confirm": "Sahkan",
+            "search": "Cari",
+            "filter": "Tapis",
+            "clear": "Kosongkan",
+            "reset": "Tetapkan semula",
+            "refresh": "Segarkan",
+            "retry": "Cuba lagi",
+            "continue": "Teruskan",
+            "done": "Selesai",
+            "send": "Hantar",
+            "download": "Muat turun",
+            "upload": "Muat naik",
+            "copy": "Salin",
+            "view": "Lihat",
+            "hide": "Sembunyikan",
+            "show": "Tunjukkan",
+            "expand": "Kembangkan",
+            "collapse": "Runtuhkan",
+            "select": "Pilih",
+            "selectAll": "Pilih semua",
+            "deselectAll": "Batalkan semua",
+            "add": "Tambah",
+            "remove": "Alih keluar",
+            "update": "Kemas kini",
+            "create": "Cipta",
+            "signIn": "Log masuk",
+            "signOut": "Log keluar",
+            "signUp": "Daftar",
+            "login": "Log masuk",
+            "logout": "Log keluar",
+            "register": "Daftar"
+        },
+        "errors": {
+            "required": "Medan ini diperlukan",
+            "invalidEmail": "Sila masukkan alamat emel yang sah",
+            "invalidPhone": "Sila masukkan nombor telefon yang sah",
+            "passwordTooShort": "Kata laluan mestilah sekurang-kurangnya 8 aksara",
+            "passwordRequiresUppercase": "Kata laluan mestilah mengandungi huruf besar",
+            "passwordRequiresLowercase": "Kata laluan mestilah mengandungi huruf kecil",
+            "passwordRequiresNumber": "Kata laluan mestilah mengandungi nombor",
+            "passwordRequiresSpecial": "Kata laluan mestilah mengandungi aksara khas",
+            "passwordsDoNotMatch": "Kata laluan tidak sepadan",
+            "networkError": "Ralat rangkaian. Sila cuba lagi.",
+            "serverError": "Ralat pelayan. Sila cuba lagi kemudian.",
+            "unknownError": "Ralat tidak dijangka berlaku.",
+            "sessionExpired": "Sesi anda telah tamat tempoh. Sila log masuk semula.",
+            "invalidCredentials": "Kelayakan tidak sah. Sila cuba lagi.",
+            "tooManyAttempts": "Terlalu banyak percubaan. Sila cuba lagi kemudian.",
+            "accountLocked": "Akaun anda telah dikunci.",
+            "emailAlreadyExists": "Akaun dengan emel ini sudah wujud.",
+            "userNotFound": "Pengguna tidak dijumpai.",
+            "unauthorized": "Anda tidak dibenarkan untuk melakukan tindakan ini.",
+            "forbidden": "Akses ditolak.",
+            "notFound": "Sumber yang diminta tidak dijumpai.",
+            "badRequest": "Permintaan tidak sah.",
+            "internalServerError": "Ralat pelayan dalaman.",
+            "serviceUnavailable": "Perkhidmatan tidak tersedia buat masa ini.",
+            "validationError": "Sila semak input anda dan cuba lagi."
+        },
+        "loading": {
+            "loading": "Memuatkan...",
+            "pleaseWait": "Sila tunggu...",
+            "processing": "Memproses...",
+            "saving": "Menyimpan...",
+            "deleting": "Memadam...",
+            "updating": "Mengemas kini...",
+            "signingIn": "Log masuk...",
+            "signingOut": "Log keluar..."
+        },
+        "validation": {
+            "confirmDelete": "Adakah anda pasti mahu memadam item ini?",
+            "unsavedChanges": "Anda mempunyai perubahan yang tidak disimpan. Adakah anda mahu keluar?",
+            "minLength": "Mesti sekurang-kurangnya {{count}} aksara",
+            "maxLength": "Mesti paling banyak {{count}} aksara",
+            "minValue": "Nilai mestilah sekurang-kurangnya {{count}}",
+            "maxValue": "Nilai mestilah paling banyak {{count}}"
+        },
+        "placeholders": {
+            "email": "Masukkan emel anda",
+            "phone": "Masukkan nombor telefon anda",
+            "password": "Masukkan kata laluan anda",
+            "newPassword": "Masukkan kata laluan baharu",
+            "confirmPassword": "Sahkan kata laluan anda",
+            "search": "Cari...",
+            "selectOption": "Pilih pilihan"
+        }
+    },
+    "loading": {
+        "session": "Memulakan sesi selamat..."
+    },
+    "error": {
+        "title": "Ralat Pengesahan",
+        "sessionFailed": "Gagal memulakan sesi selamat.",
+        "retry": "Cuba lagi"
+    },
+    "password": {
+        "weak": "Lemah",
+        "fair": "Sederhana",
+        "good": "Baik",
+        "strong": "Kuat",
+        "veryStrong": "Sangat kuat"
+    },
+    "header": {
+        "title": "Akaun EVzone",
+        "subtitle": "Cipta Identiti EVzone anda"
+    },
+    "auth": {
+        "common": {
+            "loading": "Memuatkan...",
+            "or": "atau",
+            "email": "Emel",
+            "phone": "Telefon",
+            "terms": "Syarat",
+            "privacy": "Privasi",
+            "help": "Bantuan",
+            "signIn": "Log masuk",
+            "signUp": "Daftar",
+            "switchToLight": "Tukar ke Mod Cerah",
+            "switchToDark": "Tukar ke Mod Gelap",
+            "continue": "Teruskan",
+            "back": "Kembali",
+            "cancel": "Batal",
+            "save": "Simpan",
+            "submit": "Hantar",
+            "verify": "Sahkan",
+            "send": "Hantar"
+        },
+        "signIn": {
+            "title": "Log masuk",
+            "subtitle": "Selamat datang kembali! Sila log masuk untuk meneruskan.",
+            "emailOrPhone": "Emel atau Telefon",
+            "password": "Kata laluan",
+            "forgotPassword": "Lupa Kata Laluan?",
+            "rememberMe": "Ingat saya",
+            "submit": "Log masuk",
+            "noAccount": "Tiada akaun?",
+            "signUp": "Daftar",
+            "orContinueWith": "atau teruskan dengan",
+            "checking": "Memeriksa...",
+            "unavailable": "Tidak Tersedia",
+            "errors": {
+                "enterEmailOrPhone": "Masukkan emel atau nombor telefon anda.",
+                "enterPassword": "Masukkan kata laluan anda untuk meneruskan.",
+                "invalidCredentials": "Kelayakan tidak sah. Sila cuba lagi.",
+                "locked": "Dikunci. Cuba lagi dalam {{seconds}}s"
+            },
+            "verifying": "Mengesahkan kelayakan...",
+            "failed": "Log masuk Gagal",
+            "left": {
+                "title": "Satu akaun untuk semua EVzone",
+                "subtitle": "Akses Charging, Marketplace dan Bayar dengan satu identiti selamat.",
+                "demoNote": "Pra-isi untuk demo: example@mail.com"
+            },
+            "right": {
+                "subtitle": "untuk meneruskan ke Portal EVzone"
+            },
+            "features": {
+                "secureSessions": {
+                    "title": "Sesi Selamat",
+                    "desc": "Pemantauan keselamatan peringkat bank 24/7."
+                },
+                "passkeys": {
+                    "title": "Passkey & Biometrik",
+                    "desc": "Log masuk dengan TouchID atau FaceID."
+                },
+                "privacy": {
+                    "title": "Privasi Utama",
+                    "desc": "Kami memaksimumkan privasi data anda."
+                }
+            },
+            "showPassword": "Tunjukkan kata laluan",
+            "hidePassword": "Sembunyikan kata laluan",
+            "switchingToPassword": "Bertukar ke kata laluan...",
+            "placeholders": {
+                "email": "name@example.com"
+            },
+            "useOtpTitle": "Gunakan Kod Sekali Pakai",
+            "useOtpSubtitle": "Tiada kata laluan? Gunakan kod ajaib.",
+            "comingSoon": "Datang Soon",
+            "otpComingSoon": "Log masuk kod sekali pakai sedang diintegrasikan.",
+            "sendCode": "Hantar Kod",
+            "termsAgree": "Dengan meneruskan, anda bersetuju dengan Syarat & Privasi EVzone.",
+            "locked": "Dikunci. Cuba lagi dalam {{seconds}}s"
+        },
+        "signUp": {
+            "sectionTitle": "Penciptaan Akaun",
+            "sectionSubtitle": "Cipta ID selamat tunggal anda untuk semua perkhidmatan EVzone.",
+            "secureIdentity": "Identiti Selamat",
+            "secureIdentityDesc": "Keselamatan peringkat bank untuk aset anda.",
+            "clearPermissions": "Keizinan Jelas",
+            "clearPermissionsDesc": "Anda mengawal perkongsian data anda.",
+            "backToSignIn": "Kembali ke Log masuk",
+            "createAccount": "Cipta Akaun",
+            "getStarted": "Mulakan dengan EVzone",
+            "continueWithGoogle": "Teruskan dengan Google",
+            "continueWithApple": "Teruskan dengan Apple",
+            "firstName": "Nama Pertama",
+            "firstNamePlaceholder": "cth., Jane",
+            "otherNames": "Nama Lain",
+            "otherNamesPlaceholder": "cth., Doe",
+            "email": "Alamat Emel",
+            "emailPlaceholder": "name@example.com",
+            "phone": "Nombor Telefon",
+            "phonePlaceholder": "012 000 000",
+            "createWithOtp": "Cipta dengan Kod Sekali Pakai",
+            "createWithOtpDesc": "Tiada kata laluan diperlukan. Kami akan mengesahkan telefon anda.",
+            "createPassword": "Cipta Kata Laluan",
+            "confirmPassword": "Sahkan Kata Laluan",
+            "otpInfo": "Anda akan menerima OTP untuk mengesahkan akaun anda.",
+            "inviteCode": "Kod Jemputan (Pilihan)",
+            "inviteCodePlaceholder": "cth., EVZ-123",
+            "termsAgreement": "Saya bersetuju dengan Terma Perkhidmatan dan Dasar Privasi.",
+            "continue": "Teruskan",
+            "switchToSignIn": "Tukar ke Log masuk",
+            "verifyContactInfo": "Sahkan maklumat hubungan anda dalam langkah seterusnya.",
+            "validation": {
+                "firstNameRequired": "Masukkan nama pertama anda.",
+                "otherNamesRequired": "Masukkan nama lain anda.",
+                "emailOrPhoneRequired": "Sediakan sekurang-kurangnya emel atau nombor telefon.",
+                "validEmailRequired": "Masukkan alamat emel yang sah.",
+                "termsRequired": "Anda harus menerima Terma dan Dasar Privasi.",
+                "passwordRequired": "Cipta kata laluan.",
+                "passwordMinLength": "Kata laluan mestilah sekurang-kurangnya 8 aksara.",
+                "passwordsDoNotMatch": "Kata laluan tidak sepadan."
+            },
+            "notification": {
+                "registrationInfo": "Maklumat Pendaftaran",
+                "accountCreated": "Akaun Dicipta",
+                "accountCreatedSuccess": "Akaun berjaya dicipta! Sedang melog masuk anda dengan selamat...",
+                "verifyEmail": "Sahkan Emel Anda",
+                "verifyEmailSuccess": "Akaun dicipta! Sila semak inbox anda untuk pautan pengesahan.",
+                "registrationFailed": "Pendaftaran Gagal",
+                "registrationFailedMessage": "Gagal mencipta akaun. Sila cuba lagi."
+            }
+        },
+        "forgotPassword": {
+            "subtitle": "Lupa Kata Laluan",
+            "resetAccess": "Tetapkan Semula Akses",
+            "resetAccessDesc": "Pulihkan akaun anda menggunakan emel atau telefon disahkan.",
+            "rateLimiting": "Had Kadar",
+            "rateLimitingDesc": "Tunggu 30s antara permintaan.",
+            "secureLink": "Pautan Selamat",
+            "secureLinkDesc": "Kami menghantar pautan atau kod ajaib.",
+            "backToSignIn": "Kembali ke Log masuk",
+            "checkContact": "Periksa {{type}} anda",
+            "instructionsSent": "Kami menghantar arahan ke {{mask}} melalui {{method}}.",
+            "nextSteps": "Langkah Seterusnya",
+            "nextStepsDesc": "Klik pautan atau masukkan kod untuk menetapkan semula.",
+            "enterResetCode": "Masukkan Kod Tetapan Semula",
+            "resendIn": "Hantar semula dalam {{seconds}}s",
+            "sendAgain": "Hantar Semula",
+            "changeContactInfo": "Tukar Maklumat Hubungan",
+            "needHelp": "Perlu Bantuan?",
+            "title": "Lupa Kata Laluan",
+            "enterToRecover": "Masukkan emel atau telefon untuk memulihkan akaun anda.",
+            "identifierLabel": "Masukkan emel atau telefon",
+            "identifierPlaceholder": "name@example.com",
+            "validIdentifierHint": "Masukkan emel atau telefon yang sah.",
+            "deliveryMethod": "Kaedah Penghantaran",
+            "captchaLabel": "Saya manusia",
+            "captchaDesc": "Lengkapkan semakan captcha.",
+            "accountRecoveryHelp": "Bantuan Pemulihan Akaun",
+            "spamTip": "Tip: Semak folder spam jika anda tidak melihat emel.",
+            "confirmSend": "Sahkan Hantar",
+            "sendTo": "Hantar arahan pemulihan ke:",
+            "viaMethod": "melalui {{method}}",
+            "invalidatePrevious": "Ini akan membatalkan pautan sebelumnya.",
+            "sendInstructions": "Hantar Arahan",
+            "delivery": {
+                "emailLink": "Pautan Emel",
+                "emailLinkDesc": "Hantar pautan ajaib ke emel anda.",
+                "smsCode": "Kod SMS",
+                "smsCodeDesc": "Hantar kod 6 digit ke telefon anda.",
+                "whatsappCode": "Kod WhatsApp",
+                "whatsappDesc": "Hantar kod melalui WhatsApp."
+            },
+            "phoneMethodsHint": "Kaedah telefon tersedia jika anda memasukkan nombor telefon.",
+            "validation": {
+                "enterIdentifier": "Masukkan emel atau telefon",
+                "validIdentifier": "Masukkan emel atau telefon yang sah.",
+                "waitCooldown": "Sila tunggu {{seconds}}s",
+                "completeCaptcha": "Sila lengkapkan captcha."
+            },
+            "notification": {
+                "sentSuccess": "Berjaya dihantar melalui {{via}}.",
+                "sendFailed": "Gagal menghantar permintaan. Sila cuba lagi."
+            }
+        },
+        "resetPassword": {
+            "subtitle": "Tetapkan Semula Kata Laluan",
+            "createNewPassword": "Cipta Kata Laluan Baharu",
+            "enterNewPassword": "Masukkan kata laluan baharu untuk akaun anda.",
+            "navigateToForgot": "Navigasi ke /auth/forgot-password",
+            "backToForgotPassword": "Kembali ke Lupa Kata Laluan",
+            "title": "Tetapkan Semula Kata Laluan",
+            "enterDetails": "Masukkan butiran anda untuk menetapkan semula kata laluan.",
+            "tokenTab": "Token",
+            "codeTab": "Kod",
+            "resetToken": "Token Tetapan Semula",
+            "tokenPlaceholder": "Masukkan token",
+            "tokenHelperText": "Semak emel anda untuk token.",
+            "verifyToken": "Sahkan Token",
+            "identifierLabel": "Emel atau Telefon",
+            "identifierPlaceholder": "Masukkan emel atau telefon",
+            "identifierHelper": "Kami akan menentukan kaedah berdasarkan input anda.",
+            "deliveryMethod": "Kaedah Penghantaran",
+            "codeSent": "Kod Dihantar",
+            "sendCode": "Hantar Kod",
+            "resendCode": "Hantar Semula Kod",
+            "verifyCode": "Sahkan Kod",
+            "newPassword": "Kata Laluan Baharu",
+            "confirmPassword": "Sahkan Kata Laluan",
+            "requirements": "Keperluan",
+            "signOutAll": "Log keluar dari semua peranti lain",
+            "resetButton": "Tetapkan Semula Kata Laluan",
+            "passwordUpdated": "Kata Laluan Dikemas kini",
+            "passwordChangedSuccess": "Kata laluan anda telah berjaya diubah.",
+            "goToSignIn": "Pergi ke Log masuk",
+            "accountRecoveryHelp": "Bantuan Pemulihan Akaun",
+            "navigateToHelp": "Navigasi ke /auth/account-recovery-help",
+            "channel": {
+                "email": "Emel",
+                "emailDesc": "Hantar ke emel",
+                "sms": "SMS",
+                "smsDesc": "Hantar melalui SMS",
+                "whatsapp": "WhatsApp",
+                "whatsappDesc": "Hantar melalui WhatsApp"
+            },
+            "phoneChannelsDisabled": "Saluran telefon dilumpuhkan untuk pengguna emel.",
+            "req": {
+                "length": "Sekurang-kurangnya 8 aksara",
+                "uppercase": "Satu huruf besar",
+                "lowercase": "Satu huruf kecil",
+                "number": "Satu nombor",
+                "special": "Satu aksara khas",
+                "match": "Kata laluan sepadan"
+            },
+            "validation": {
+                "tokenRequired": "Sila masukkan token tetapan semula.",
+                "identifierRequired": "Sila masukkan emel atau telefon anda.",
+                "invalidIdentifier": "Emel atau telefon tidak sah.",
+                "codeRequired": "Sila masukkan kod 6 digit.",
+                "passwordRequired": "Sila masukkan kata laluan.",
+                "passwordStrength": "Kata laluan mestilah lebih kuat.",
+                "passwordsDoNotMatch": "Kata laluan tidak sepadan."
+            },
+            "notification": {
+                "codeSentEmail": "Kod dihantar ke emel.",
+                "codeSentVia": "Kod dihantar melalui {{channel}}.",
+                "sendFailed": "Gagal menghantar kod.",
+                "resetSuccessSignedOut": "Kata laluan ditetapkan semula. Anda telah dilog keluar.",
+                "resetSuccess": "Kata laluan berjaya ditetapkan semula.",
+                "resetFailed": "Gagal menetapkan semula kata laluan. Kod/token tidak sah."
+            }
+        },
+        "verifyEmail": {
+            "pageTitle": "Sahkan Alamat Emel",
+            "checkInbox": "Semak Inbox Anda",
+            "codeSentTo": "Kami menghantar kod ke {{email}}.",
+            "openEmailApp": "Buka Aplikasi Emel",
+            "openEmailAppDesc": "Ketuk untuk membuka klien emel anda.",
+            "resendCode": "Hantar Semula Kod",
+            "resendCodeDesc": "Klik di bawah untuk menghantar kod baharu.",
+            "openEmail": "Buka Emel",
+            "changeEmail": "Tukar Emel",
+            "emailVerified": "Emel Disahkan",
+            "verificationSuccessDesc": "Anda telah berjaya mengesahkan {{email}}.",
+            "nextSteps": "Langkah Seterusnya",
+            "nextStepsDesc": "Teruskan untuk mengesahkan telefon anda.",
+            "title": "Sahkan Alamat Emel",
+            "verify": "Sahkan",
+            "resendIn": "Hantar semula dalam {{seconds}}s",
+            "needHelp": "Perlu Bantuan?",
+            "changeEmailDialog": "Tukar Alamat Emel",
+            "changeEmailDesc": "Masukkan di bawah untuk menerima kod di alamat emel baharu.",
+            "emailLabel": "Alamat Emel",
+            "emailPlaceholder": "name@example.com",
+            "saveAndSend": "Simpan & Hantar",
+            "validation": {
+                "codeRequired": "Sila masukkan kod 6 digit."
+            },
+            "notification": {
+                "codeSent": "Kod dihantar ke {{email}}.",
+                "sendFailed": "Gagal menghantar kod",
+                "openingEmail": "Membuka aplikasi emel...",
+                "verificationSuccess": "Emel berjaya disahkan.",
+                "invalidCode": "Kod tidak sah. Sila cuba lagi."
+            }
+        },
+        "verifyPhone": {
+            "title": "Sahkan Telefon",
+            "subtitle": "Sila masukkan kod pengesahan yang dihantar ke telefon anda.",
+            "code": "Kod Pengesahan",
+            "submit": "Sahkan Telefon",
+            "resendCode": "Hantar Semula Kod",
+            "resendSuccess": "Kod pengesahan dihantar",
+            "success": "Telefon berjaya disahkan",
+            "successMessage": "Nombor telefon anda telah disahkan."
+        },
+        "mfa": {
+            "title": "Pengesahan Dua Faktor",
+            "subtitle": "Masukkan kod 6 digit dari aplikasi pengesah anda",
+            "code": "Kod Pengesahan",
+            "submit": "Sahkan",
+            "useBackup": "Gunakan kod sandaran sebaliknya",
+            "resendCode": "Hantar semula kod",
+            "backupCode": "Kod Sandaran",
+            "success": "Pengesahan berjaya",
+            "setupTitle": "Sediakan Pengesahan Dua Faktor",
+            "scanQr": "Imbas QR ini dengan aplikasi pengesah anda",
+            "manualEntry": "Atau masukkan kod ini secara manual",
+            "enterCode": "Masukkan kod 6 digit dari aplikasi anda",
+            "confirmSetup": "Sahkan Penyediaan",
+            "backupCodesTitle": "Kod Sandaran",
+            "backupCodesDescription": "Simpan kod sandaran ini di tempat yang selamat. Anda boleh menggunakannya jika anda kehilangan akses kepada pengesah anda.",
+            "copyCodes": "Salin Kod",
+            "done": "Selesai",
+            "invalidCode": "Kod tidak sah. Sila cuba lagi.",
+            "tooManyAttempts": "Terlalu banyak percubaan salah. Sila cuba lagi."
+        },
+        "passkey": {
+            "title": "Pengesahan Passkey",
+            "subtitle": "Log masuk dengan passkey anda",
+            "usePasskey": "Gunakan Passkey",
+            "addPasskey": "Tambah Passkey",
+            "removePasskey": "Alih Passkey",
+            "passkeyAdded": "Passkey berjaya ditambah",
+            "passkeyRemoved": "Passkey dialih keluar",
+            "error": "Ralat passkey berlaku"
+        },
+        "consent": {
+            "title": "Persetujuan Diperlukan",
+            "subtitle": "Aplikasi meminta akses kepada akaun anda",
+            "permissions": "Keizinan",
+            "approve": "Lulus",
+            "deny": "Tolak",
+            "scopes": {
+                "openid": "OpenID Connect",
+                "profile": "Lihat profil anda",
+                "email": "Lihat alamat emel anda",
+                "phone": "Lihat nombor telefon anda"
+            }
+        },
+        "interaction": {
+            "title": "Pengesahan Diperlukan",
+            "subtitle": "Sila lengkap pengesahan",
+            "continue": "Teruskan",
+            "cancel": "Batal"
+        },
+        "Callback": {
+            "processing": "Memproses pengesahan...",
+            "success": "Pengesahan berjaya",
+            "error": "Pengesahan gagal"
+        },
+        "signedOut": {
+            "title": "Dilog Keluar",
+            "subtitle": "Anda telah berjaya dilog keluar",
+            "signInAgain": "Log Masuk Semula",
+            "returnHome": "Kembali ke Laman Utama"
+        },
+        "session": {
+            "expired": "Sesi anda telah tamat tempoh",
+            "expiredMessage": "Sila log masuk lagi untuk meneruskan.",
+            "expiredAction": "Log masuk"
+        }
+    },
+    "dashboard": {
+        "welcome": "Selamat datang kembali, {{name}}!",
+        "overview": "Gambaran Keseluruhan Papan Pemuka",
+        "quickActions": "Tindakan Pantas",
+        "recentActivity": "Aktiviti Terkini",
+        "notifications": "Pemberitahuan",
+        "settings": "Tetapan",
+        "profile": "Profil Saya",
+        "security": "Keselamatan",
+        "wallet": "Dompet",
+        "help": "Bantuan & Sokongan"
+    },
+    "profile": {
+        "title": "Tetapan Profil",
+        "personal": {
+            "title": "Maklumat Peribadi",
+            "firstName": "Nama Pertama",
+            "lastName": "Nama Akhir",
+            "email": "Alamat Emel",
+            "phone": "Nombor Telefon",
+            "dateOfBirth": "Tarikh Lahir",
+            "nationality": "Kewarganegaraan",
+            "save": "Simpan",
+            "cancel": "Batal"
+        }
+    }
+}

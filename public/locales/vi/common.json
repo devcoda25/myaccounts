@@ -1,0 +1,508 @@
+{
+    "app": {
+        "name": "EVzone Tài khoản của tôi",
+        "tagline": "Tài khoản thống nhất của bạn cho tất cả các dịch vụ EVzone"
+    },
+    "common": {
+        "actions": {
+            "save": "Lưu",
+            "cancel": "Hủy",
+            "delete": "Xóa",
+            "edit": "Chỉnh sửa",
+            "submit": "Gửi",
+            "close": "Đóng",
+            "back": "Quay lại",
+            "next": "Tiếp theo",
+            "confirm": "Xác nhận",
+            "search": "Tìm kiếm",
+            "filter": "Lọc",
+            "clear": "Xóa",
+            "reset": "Đặt lại",
+            "refresh": "Làm mới",
+            "retry": "Thử lại",
+            "continue": "Tiếp tục",
+            "done": "Hoàn thành",
+            "send": "Gửi",
+            "download": "Tải xuống",
+            "upload": "Tải lên",
+            "copy": "Sao chép",
+            "view": "Xem",
+            "hide": "Ẩn",
+            "show": "Hiển thị",
+            "expand": "Mở rộng",
+            "collapse": "Thu gọn",
+            "select": "Chọn",
+            "selectAll": "Chọn tất cả",
+            "deselectAll": "Bỏ chọn tất cả",
+            "add": "Thêm",
+            "remove": "Xóa",
+            "update": "Cập nhật",
+            "create": "Tạo",
+            "signIn": "Đăng nhập",
+            "signOut": "Đăng xuất",
+            "signUp": "Đăng ký",
+            "login": "Đăng nhập",
+            "logout": "Đăng xuất",
+            "register": "Đăng ký"
+        },
+        "errors": {
+            "required": "Trường này là bắt buộc",
+            "invalidEmail": "Vui lòng nhập địa chỉ email hợp lệ",
+            "invalidPhone": "Vui lòng nhập số điện thoại hợp lệ",
+            "passwordTooShort": "Mật khẩu phải có ít nhất 8 ký tự",
+            "passwordRequiresUppercase": "Mật khẩu phải có chữ cái viết hoa",
+            "passwordRequiresLowercase": "Mật khẩu phải có chữ cái viết thường",
+            "passwordRequiresNumber": "Mật khẩu phải có số",
+            "passwordRequiresSpecial": "Mật khẩu phải có ký tự đặc biệt",
+            "passwordsDoNotMatch": "Mật khẩu không khớp",
+            "networkError": "Lỗi mạng. Vui lòng thử lại.",
+            "serverError": "Lỗi máy chủ. Vui lòng thử lại sau.",
+            "unknownError": "Đã xảy ra lỗi không mong muốn.",
+            "sessionExpired": "Phiên của bạn đã hết hạn. Vui lòng đăng nhập lại.",
+            "invalidCredentials": "Thông tin đăng nhập không hợp lệ. Vui lòng thử lại.",
+            "tooManyAttempts": "Quá nhiều lần thử. Vui lòng thử lại sau.",
+            "accountLocked": "Tài khoản của bạn đã bị khóa.",
+            "emailAlreadyExists": "Tài khoản với email này đã tồn tại.",
+            "userNotFound": "Không tìm thấy người dùng.",
+            "unauthorized": "Bạn không được phép thực hiện hành động này.",
+            "forbidden": "Truy cập bị từ chối.",
+            "notFound": "Không tìm thấy tài nguyên được yêu cầu.",
+            "badRequest": "Yêu cầu không hợp lệ.",
+            "internalServerError": "Lỗi máy chủ nội bộ.",
+            "serviceUnavailable": "Dịch vụ hiện không khả dụng.",
+            "validationError": "Vui lòng kiểm tra đầu vào và thử lại."
+        },
+        "loading": {
+            "loading": "Đang tải...",
+            "pleaseWait": "Vui lòng chờ...",
+            "processing": "Đang xử lý...",
+            "saving": "Đang lưu...",
+            "deleting": "Đang xóa...",
+            "updating": "Đang cập nhật...",
+            "signingIn": "Đang đăng nhập...",
+            "signingOut": "Đang đăng xuất..."
+        },
+        "validation": {
+            "confirmDelete": "Bạn có chắc chắn muốn xóa mục này không?",
+            "unsavedChanges": "Bạn có thay đổi chưa lưu. Bạn có muốn thoát không?",
+            "minLength": "Phải có ít nhất {{count}} ký tự",
+            "maxLength": "Phải có nhiều nhất {{count}} ký tự",
+            "minValue": "Giá trị phải ít nhất {{count}}",
+            "maxValue": "Giá trị phải nhiều nhất {{count}}"
+        },
+        "placeholders": {
+            "email": "Nhập email của bạn",
+            "phone": "Nhập số điện thoại của bạn",
+            "password": "Nhập mật khẩu của bạn",
+            "newPassword": "Nhập mật khẩu mới",
+            "confirmPassword": "Xác nhận mật khẩu của bạn",
+            "search": "Tìm kiếm...",
+            "selectOption": "Chọn tùy chọn"
+        }
+    },
+    "loading": {
+        "session": "Đang khởi tạo phiên bản an toàn..."
+    },
+    "error": {
+        "title": "Lỗi xác thực",
+        "sessionFailed": "Không thể khởi tạo phiên bản an toàn.",
+        "retry": "Thử lại"
+    },
+    "password": {
+        "weak": "Yếu",
+        "fair": "Trung bình",
+        "good": "Tốt",
+        "strong": "Mạnh",
+        "veryStrong": "Rất mạnh"
+    },
+    "header": {
+        "title": "Tài khoản EVzone",
+        "subtitle": "Tạo danh tính EVzone của bạn"
+    },
+    "auth": {
+        "common": {
+            "loading": "Đang tải...",
+            "or": "hoặc",
+            "email": "Email",
+            "phone": "Điện thoại",
+            "terms": "Điều khoản",
+            "privacy": "Quyền riêng tư",
+            "help": "Trợ giúp",
+            "signIn": "Đăng nhập",
+            "signUp": "Đăng ký",
+            "switchToLight": "Chuyển sang Chế độ Sáng",
+            "switchToDark": "Chuyển sang Chế độ Tối",
+            "continue": "Tiếp tục",
+            "back": "Quay lại",
+            "cancel": "Hủy",
+            "save": "Lưu",
+            "submit": "Gửi",
+            "verify": "Xác minh",
+            "send": "Gửi"
+        },
+        "signIn": {
+            "title": "Đăng nhập",
+            "subtitle": "Chào mừng trở lại! Vui lòng đăng nhập để tiếp tục.",
+            "emailOrPhone": "Email hoặc Điện thoại",
+            "password": "Mật khẩu",
+            "forgotPassword": "Quên mật khẩu?",
+            "rememberMe": "Ghi nhớ tôi",
+            "submit": "Đăng nhập",
+            "noAccount": "Chưa có tài khoản?",
+            "signUp": "Đăng ký",
+            "orContinueWith": "hoặc tiếp tục với",
+            "checking": "Đang kiểm tra...",
+            "unavailable": "Không khả dụng",
+            "errors": {
+                "enterEmailOrPhone": "Vui lòng nhập email hoặc số điện thoại của bạn.",
+                "enterPassword": "Vui lòng nhập mật khẩu để tiếp tục.",
+                "invalidCredentials": "Thông tin đăng nhập không hợp lệ. Vui lòng thử lại.",
+                "locked": "Bị khóa. Thử lại sau {{seconds}} giây"
+            },
+            "verifying": "Đang xác minh thông tin đăng nhập...",
+            "failed": "Đăng nhập thất bại",
+            "left": {
+                "title": "Một tài khoản cho tất cả EVzone",
+                "subtitle": "Truy cập Charging, Marketplace và Pay bằng một danh tính an toàn.",
+                "demoNote": "Điền sẵn cho demo: example@mail.com"
+            },
+            "right": {
+                "subtitle": "để tiếp tục đến Cổng thông tin EVzone"
+            },
+            "features": {
+                "secureSessions": {
+                    "title": "Phiên an toàn",
+                    "desc": "Giám sát bảo mật cấp ngân hàng 24/7."
+                },
+                "passkeys": {
+                    "title": "Passkey & Sinh trắc học",
+                    "desc": "Đăng nhập bằng TouchID hoặc FaceID."
+                },
+                "privacy": {
+                    "title": "Quyền riêng tư là ưu tiên",
+                    "desc": "Chúng tôi tối đa hóa quyền riêng tư dữ liệu của bạn."
+                }
+            },
+            "showPassword": "Hiển thị mật khẩu",
+            "hidePassword": "Ẩn mật khẩu",
+            "switchingToPassword": "Đang chuyển sang mật khẩu...",
+            "placeholders": {
+                "email": "name@example.com"
+            },
+            "useOtpTitle": "Sử dụng Mã một lần",
+            "useOtpSubtitle": "Không có mật khẩu? Sử dụng mã ma thuật.",
+            "comingSoon": "Sắp ra mắt",
+            "otpComingSoon": "Đăng nhập bằng mã một lần đang được tích hợp.",
+            "sendCode": "Gửi mã",
+            "termsAgree": "Tiếp tục có nghĩa là bạn đồng ý với Điều khoản & Quyền riêng tư của EVzone.",
+            "locked": "Bị khóa. Thử lại sau {{seconds}} giây"
+        },
+        "signUp": {
+            "sectionTitle": "Tạo tài khoản",
+            "sectionSubtitle": "Tạo một ID an toàn duy nhất cho tất cả các dịch vụ EVzone.",
+            "secureIdentity": "Danh tính An toàn",
+            "secureIdentityDesc": "Bảo mật cấp ngân hàng cho tài sản của bạn.",
+            "clearPermissions": "Quyền hạn Rõ ràng",
+            "clearPermissionsDesc": "Bạn kiểm soát việc chia sẻ dữ liệu của mình.",
+            "backToSignIn": "Quay lại Đăng nhập",
+            "createAccount": "Tạo tài khoản",
+            "getStarted": "Bắt đầu với EVzone",
+            "continueWithGoogle": "Tiếp tục với Google",
+            "continueWithApple": "Tiếp tục với Apple",
+            "firstName": "Tên",
+            "firstNamePlaceholder": "ví dụ., Jane",
+            "otherNames": "Họ",
+            "otherNamesPlaceholder": "ví dụ., Doe",
+            "email": "Địa chỉ Email",
+            "emailPlaceholder": "name@example.com",
+            "phone": "Số Điện thoại",
+            "phonePlaceholder": "012 000 000",
+            "createWithOtp": "Tạo bằng Mã một lần",
+            "createWithOtpDesc": "Không cần mật khẩu. Chúng tôi sẽ xác minh điện thoại của bạn.",
+            "createPassword": "Tạo mật khẩu",
+            "confirmPassword": "Xác nhận mật khẩu",
+            "otpInfo": "Bạn sẽ nhận được OTP để xác minh tài khoản của mình.",
+            "inviteCode": "Mã mời (Tùy chọn)",
+            "inviteCodePlaceholder": "ví dụ., EVZ-123",
+            "termsAgreement": "Tôi đồng ý với Điều khoản dịch vụ và Chính sách quyền riêng tư.",
+            "continue": "Tiếp tục",
+            "switchToSignIn": "Chuyển sang Đăng nhập",
+            "verifyContactInfo": "Xác minh thông tin liên hệ của bạn trong bước tiếp theo.",
+            "validation": {
+                "firstNameRequired": "Vui lòng nhập tên của bạn.",
+                "otherNamesRequired": "Vui lòng nhập họ của bạn.",
+                "emailOrPhoneRequired": "Vui lòng cung cấp ít nhất email hoặc số điện thoại.",
+                "validEmailRequired": "Vui lòng nhập địa chỉ email hợp lệ.",
+                "termsRequired": "Bạn phải đồng ý với Điều khoản và Chính sách quyền riêng tư.",
+                "passwordRequired": "Tạo mật khẩu.",
+                "passwordMinLength": "Mật khẩu phải có ít nhất 8 ký tự.",
+                "passwordsDoNotMatch": "Mật khẩu không khớp."
+            },
+            "notification": {
+                "registrationInfo": "Thông tin Đăng ký",
+                "accountCreated": "Tài khoản đã được tạo",
+                "accountCreatedSuccess": "Tài khoản được tạo thành công! Đang đăng nhập an toàn...",
+                "verifyEmail": "Xác minh Email của bạn",
+                "verifyEmailSuccess": "Tài khoản được tạo! Vui lòng kiểm tra hộp thư để xác minh.",
+                "registrationFailed": "Đăng ký thất bại",
+                "registrationFailedMessage": "Không thể tạo tài khoản. Vui lòng thử lại."
+            }
+        },
+        "forgotPassword": {
+            "subtitle": "Quên mật khẩu",
+            "resetAccess": "Đặt lại quyền truy cập",
+            "resetAccessDesc": "Khôi phục tài khoản của bạn bằng email hoặc điện thoại đã xác minh.",
+            "rateLimiting": "Giới hạn tốc độ",
+            "rateLimitingDesc": "Chờ 30 giây giữa các yêu cầu.",
+            "secureLink": "Liên kết An toàn",
+            "secureLinkDesc": "Chúng tôi gửi liên kết hoặc mã ma thuật.",
+            "backToSignIn": "Quay lại Đăng nhập",
+            "checkContact": "Kiểm tra {{type}} của bạn",
+            "instructionsSent": "Chúng tôi đã gửi hướng dẫn đến {{mask}} qua {{method}}.",
+            "nextSteps": "Bước tiếp theo",
+            "nextStepsDesc": "Nhấp vào liên kết hoặc nhập mã để đặt lại.",
+            "enterResetCode": "Nhập mã đặt lại",
+            "resendIn": "Gửi lại sau {{seconds}} giây",
+            "sendAgain": "Gửi lại",
+            "changeContactInfo": "Thay đổi thông tin liên hệ",
+            "needHelp": "Cần trợ giúp?",
+            "title": "Quên mật khẩu",
+            "enterToRecover": "Nhập email hoặc điện thoại để khôi phục tài khoản.",
+            "identifierLabel": "Nhập email hoặc điện thoại",
+            "identifierPlaceholder": "name@example.com",
+            "validIdentifierHint": "Nhập email hoặc điện thoại hợp lệ.",
+            "deliveryMethod": "Phương thức giao hàng",
+            "captchaLabel": "Tôi là người",
+            "captchaDesc": "Hoàn thành kiểm tra captcha.",
+            "accountRecoveryHelp": "Trợ giúp khôi phục tài khoản",
+            "spamTip": "Mẹo: Kiểm tra thư mục spam nếu bạn không thấy email.",
+            "confirmSend": "Xác nhận gửi",
+            "sendTo": "Gửi hướng dẫn khôi phục đến:",
+            "viaMethod": "qua {{method}}",
+            "invalidatePrevious": "Điều này sẽ làm mất hiệu lực liên kết trước đó.",
+            "sendInstructions": "Gửi hướng dẫn",
+            "delivery": {
+                "emailLink": "Liên kết Email",
+                "emailLinkDesc": "Gửi liên kết ma thuật đến email của bạn.",
+                "smsCode": "Mã SMS",
+                "smsCodeDesc": "Gửi mã 6 chữ số đến điện thoại của bạn.",
+                "whatsappCode": "Mã WhatsApp",
+                "whatsappDesc": "Gửi mã qua WhatsApp."
+            },
+            "phoneMethodsHint": "Phương thức điện thoại có sẵn nếu bạn nhập số điện thoại.",
+            "validation": {
+                "enterIdentifier": "Nhập email hoặc điện thoại",
+                "validIdentifier": "Nhập email hoặc điện thoại hợp lệ.",
+                "waitCooldown": "Vui lòng chờ {{seconds}} giây",
+                "completeCaptcha": "Vui lòng hoàn thành captcha."
+            },
+            "notification": {
+                "sentSuccess": "Đã gửi thành công qua {{via}}",
+                "sendFailed": "Không thể gửi yêu cầu. Vui lòng thử lại."
+            }
+        },
+        "resetPassword": {
+            "subtitle": "Đặt lại mật khẩu",
+            "createNewPassword": "Tạo mật khẩu mới",
+            "enterNewPassword": "Nhập mật khẩu mới cho tài khoản của bạn.",
+            "navigateToForgot": "Điều hướng đến /auth/forgot-password",
+            "backToForgotPassword": "Quay lại Quên mật khẩu",
+            "title": "Đặt lại mật khẩu",
+            "enterDetails": "Nhập chi tiết của bạn để đặt lại mật khẩu.",
+            "tokenTab": "Mã thông báo",
+            "codeTab": "Mã",
+            "resetToken": "Mã thông báo đặt lại",
+            "tokenPlaceholder": "Nhập mã thông báo",
+            "tokenHelperText": "Kiểm tra email của bạn để lấy mã thông báo.",
+            "verifyToken": "Xác minh mã thông báo",
+            "identifierLabel": "Email hoặc Điện thoại",
+            "identifierPlaceholder": "Nhập email hoặc điện thoại",
+            "identifierHelper": "Chúng tôi sẽ xác định phương thức dựa trên đầu vào của bạn.",
+            "deliveryMethod": "Phương thức giao hàng",
+            "codeSent": "Mã đã được gửi",
+            "sendCode": "Gửi mã",
+            "resendCode": "Gửi lại mã",
+            "verifyCode": "Xác minh mã",
+            "newPassword": "Mật khẩu mới",
+            "confirmPassword": "Xác nhận mật khẩu",
+            "requirements": "Yêu cầu",
+            "signOutAll": "Đăng xuất khỏi tất cả thiết bị khác",
+            "resetButton": "Đặt lại mật khẩu",
+            "passwordUpdated": "Mật khẩu đã được cập nhật",
+            "passwordChangedSuccess": "Mật khẩu của bạn đã được thay đổi thành công.",
+            "goToSignIn": "Đến Đăng nhập",
+            "accountRecoveryHelp": "Trợ giúp khôi phục tài khoản",
+            "navigateToHelp": "Điều hướng đến /auth/account-recovery-help",
+            "channel": {
+                "email": "Email",
+                "emailDesc": "Gửi đến email",
+                "sms": "SMS",
+                "smsDesc": "Gửi qua SMS",
+                "whatsapp": "WhatsApp",
+                "whatsappDesc": "Gửi qua WhatsApp"
+            },
+            "phoneChannelsDisabled": "Kênh điện thoại bị vô hiệu hóa cho người dùng email.",
+            "req": {
+                "length": "Ít nhất 8 ký tự",
+                "uppercase": "Một chữ cái viết hoa",
+                "lowercase": "Một chữ cái viết thường",
+                "number": "Một số",
+                "special": "Một ký tự đặc biệt",
+                "match": "Mật khẩu khớp"
+            },
+            "validation": {
+                "tokenRequired": "Vui lòng nhập mã thông báo đặt lại.",
+                "identifierRequired": "Vui lòng nhập email hoặc điện thoại của bạn.",
+                "invalidIdentifier": "Email hoặc điện thoại không hợp lệ.",
+                "codeRequired": "Vui lòng nhập mã 6 chữ số.",
+                "passwordRequired": "Vui lòng nhập mật khẩu.",
+                "passwordStrength": "Mật khẩu phải mạnh hơn.",
+                "passwordsDoNotMatch": "Mật khẩu không khớp."
+            },
+            "notification": {
+                "codeSentEmail": "Mã đã được gửi đến email.",
+                "codeSentVia": "Mã đã được gửi qua {{channel}}",
+                "sendFailed": "Không thể gửi mã",
+                "resetSuccessSignedOut": "Mật khẩu đã được đặt lại. Bạn đã được đăng xuất.",
+                "resetSuccess": "Đặt lại mật khẩu thành công.",
+                "resetFailed": "Không thể đặt lại mật khẩu. Mã/mã thông báo không hợp lệ."
+            }
+        },
+        "verifyEmail": {
+            "pageTitle": "Xác minh địa chỉ Email",
+            "checkInbox": "Kiểm tra Hộp thư đến",
+            "codeSentTo": "Chúng tôi đã gửi mã đến {{email}}.",
+            "openEmailApp": "Mở ứng dụng Email",
+            "openEmailAppDesc": "Nhấn để mở ứng dụng email của bạn.",
+            "resendCode": "Gửi lại mã",
+            "resendCodeDesc": "Nhấp vào bên dưới để gửi mã mới.",
+            "openEmail": "Mở Email",
+            "changeEmail": "Thay đổi Email",
+            "emailVerified": "Email đã được xác minh",
+            "verificationSuccessDesc": "Bạn đã xác minh thành công {{email}}.",
+            "nextSteps": "Bước tiếp theo",
+            "nextStepsDesc": "Tiếp tục để xác minh điện thoại của bạn.",
+            "title": "Xác minh địa chỉ Email",
+            "verify": "Xác minh",
+            "resendIn": "Gửi lại sau {{seconds}} giây",
+            "needHelp": "Cần trợ giúp?",
+            "changeEmailDialog": "Thay đổi địa chỉ Email",
+            "changeEmailDesc": "Nhập bên dưới để nhận mã tại địa chỉ email mới.",
+            "emailLabel": "Địa chỉ Email",
+            "emailPlaceholder": "name@example.com",
+            "saveAndSend": "Lưu & Gửi",
+            "validation": {
+                "codeRequired": "Vui lòng nhập mã 6 chữ số."
+            },
+            "notification": {
+                "codeSent": "Mã đã được gửi đến {{email}}.",
+                "sendFailed": "Không thể gửi mã",
+                "openingEmail": "Đang mở ứng dụng email...",
+                "verificationSuccess": "Email đã được xác minh thành công.",
+                "invalidCode": "Mã không hợp lệ. Vui lòng thử lại."
+            }
+        },
+        "verifyPhone": {
+            "title": "Xác minh điện thoại",
+            "subtitle": "Vui lòng nhập mã xác minh được gửi đến điện thoại của bạn.",
+            "code": "Mã xác minh",
+            "submit": "Xác minh điện thoại",
+            "resendCode": "Gửi lại mã",
+            "resendSuccess": "Mã xác minh đã được gửi",
+            "success": "Điện thoại đã được xác minh",
+            "successMessage": "Số điện thoại của bạn đã được xác minh."
+        },
+        "mfa": {
+            "title": "Xác minh hai yếu tố",
+            "subtitle": "Nhập mã 6 chữ số từ ứng dụng xác minh của bạn",
+            "code": "Mã xác minh",
+            "submit": "Xác minh",
+            "useBackup": "Sử dụng mã sao lưu thay thế",
+            "resendCode": "Gửi lại mã",
+            "backupCode": "Mã sao lưu",
+            "success": "Xác minh thành công",
+            "setupTitle": "Thiết lập xác minh hai yếu tố",
+            "scanQr": "Quét mã QR này bằng ứng dụng xác minh của bạn",
+            "manualEntry": "Hoặc nhập mã này theo cách thủ công",
+            "enterCode": "Nhập mã 6 chữ số từ ứng dụng của bạn",
+            "confirmSetup": "Xác nhận thiết lập",
+            "backupCodesTitle": "Mã sao lưu",
+            "backupCodesDescription": "Lưu các mã sao lưu này ở nơi an toàn. Bạn có thể sử dụng chúng nếu mất quyền truy cập vào ứng dụng xác minh.",
+            "copyCodes": "Sao chép mã",
+            "done": "Hoàn thành",
+            "invalidCode": "Mã không hợp lệ. Vui lòng thử lại.",
+            "tooManyAttempts": "Quá nhiều lần thử sai. Vui lòng thử lại."
+        },
+        "passkey": {
+            "title": "Xác minh Passkey",
+            "subtitle": "Đăng nhập bằng passkey của bạn",
+            "usePasskey": "Sử dụng Passkey",
+            "addPasskey": "Thêm Passkey",
+            "removePasskey": "Xóa Passkey",
+            "passkeyAdded": "Thêm Passkey thành công",
+            "passkeyRemoved": "Passkey đã được xóa",
+            "error": "Đã xảy ra lỗi passkey"
+        },
+        "consent": {
+            "title": "Cần sự đồng ý",
+            "subtitle": "Ứng dụng yêu cầu quyền truy cập vào tài khoản của bạn",
+            "permissions": "Quyền",
+            "approve": "Phê duyệt",
+            "deny": "Từ chối",
+            "scopes": {
+                "openid": "OpenID Connect",
+                "profile": "Xem hồ sơ của bạn",
+                "email": "Xem địa chỉ email của bạn",
+                "phone": "Xem số điện thoại của bạn"
+            }
+        },
+        "interaction": {
+            "title": "Cần xác minh",
+            "subtitle": "Vui lòng hoàn tất xác minh",
+            "continue": "Tiếp tục",
+            "cancel": "Hủy"
+        },
+        "Callback": {
+            "processing": "Đang xử lý xác minh...",
+            "success": "Xác minh thành công",
+            "error": "Xác minh thất bại"
+        },
+        "signedOut": {
+            "title": "Đã đăng xuất",
+            "subtitle": "Bạn đã đăng xuất thành công",
+            "signInAgain": "Đăng nhập lại",
+            "returnHome": "Quay về Trang chủ"
+        },
+        "session": {
+            "expired": "Phiên của bạn đã hết hạn",
+            "expiredMessage": "Vui lòng đăng nhập để tiếp tục.",
+            "expiredAction": "Đăng nhập"
+        }
+    },
+    "dashboard": {
+        "welcome": "Chào mừng trở lại, {{name}}!",
+        "overview": "Tổng quan Dashboard",
+        "quickActions": "Hành động nhanh",
+        "recentActivity": "Hoạt động gần đây",
+        "notifications": "Thông báo",
+        "settings": "Cài đặt",
+        "profile": "Hồ sơ của tôi",
+        "security": "Bảo mật",
+        "wallet": "Ví",
+        "help": "Trợ giúp & Hỗ trợ"
+    },
+    "profile": {
+        "title": "Cài đặt Hồ sơ",
+        "personal": {
+            "title": "Thông tin cá nhân",
+            "firstName": "Tên",
+            "lastName": "Họ",
+            "email": "Địa chỉ Email",
+            "phone": "Số Điện thoại",
+            "dateOfBirth": "Ngày sinh",
+            "nationality": "Quốc tịch",
+            "save": "Lưu",
+            "cancel": "Hủy"
+        }
+    }
+}

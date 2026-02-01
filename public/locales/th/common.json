@@ -1,0 +1,508 @@
+{
+    "app": {
+        "name": "EVzone บัญชีของฉัน",
+        "tagline": "บัญชีรวมของคุณสำหรับบริการ EVzone ทั้งหมด"
+    },
+    "common": {
+        "actions": {
+            "save": "บันทึก",
+            "cancel": "ยกเลิก",
+            "delete": "ลบ",
+            "edit": "แก้ไข",
+            "submit": "ส่ง",
+            "close": "ปิด",
+            "back": "กลับ",
+            "next": "ถัดไป",
+            "confirm": "ยืนยัน",
+            "search": "ค้นหา",
+            "filter": "กรอง",
+            "clear": "ล้าง",
+            "reset": "รีเซ็ต",
+            "refresh": "รีเฟรช",
+            "retry": "ลองใหม่",
+            "continue": "ดำเนินการต่อ",
+            "done": "เสร็จสิ้น",
+            "send": "ส่ง",
+            "download": "ดาวน์โหลด",
+            "upload": "อัปโหลด",
+            "copy": "คัดลอก",
+            "view": "ดู",
+            "hide": "ซ่อน",
+            "show": "แสดง",
+            "expand": "ขยาย",
+            "collapse": "ย่อ",
+            "select": "เลือก",
+            "selectAll": "เลือกทั้งหมด",
+            "deselectAll": "ยกเลือกทั้งหมด",
+            "add": "เพิ่ม",
+            "remove": "ลบออก",
+            "update": "อัปเดต",
+            "create": "สร้าง",
+            "signIn": "เข้าสู่ระบบ",
+            "signOut": "ออกจากระบบ",
+            "signUp": "ลงทะเบียน",
+            "login": "เข้าสู่ระบบ",
+            "logout": "ออกจากระบบ",
+            "register": "ลงทะเบียน"
+        },
+        "errors": {
+            "required": "ช่องนี้จำเป็น",
+            "invalidEmail": "กรุณากรอกอีเมลที่ถูกต้อง",
+            "invalidPhone": "กรุณากรอกหมายเลขโทรศัพท์ที่ถูกต้อง",
+            "passwordTooShort": "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร",
+            "passwordRequiresUppercase": "รหัสผ่านต้องมีตัวพิมพ์ใหญ่",
+            "passwordRequiresLowercase": "รหัสผ่านต้องมีตัวพิมพ์เล็ก",
+            "passwordRequiresNumber": "รหัสผ่านต้องมีตัวเลข",
+            "passwordRequiresSpecial": "รหัสผ่านต้องมีอักษรพิเศษ",
+            "passwordsDoNotMatch": "รหัสผ่านไม่ตรงกัน",
+            "networkError": "ข้อผิดพลาดเครือข่าย กรุณาลองใหม่",
+            "serverError": "ข้อผิดพลาดเซิร์ฟเวอร์ กรุณาลองใหม่ภายหลัง",
+            "unknownError": "เกิดข้อผิดพลาดที่ไม่คาดคิด",
+            "sessionExpired": "เซสชันของคุณหมดอายุ กรุณาเข้าสู่ระบบใหม่",
+            "invalidCredentials": "ข้อมูลประจำตัวไม่ถูกต้อง กรุณาลองใหม่",
+            "tooManyAttempts": "พยายามมากเกินไป กรุณาลองใหม่ภายหลัง",
+            "accountLocked": "บัญชีของคุณถูกล็อก",
+            "emailAlreadyExists": "บัญชีที่มีอีเมลนี้มีอยู่แล้ว",
+            "userNotFound": "ไม่พบผู้ใช้",
+            "unauthorized": "คุณไม่ได้รับอนุญาตให้ดำเนินการนี้",
+            "forbidden": "การเข้าถึงถูกปฏิเสธ",
+            "notFound": "ไม่พบทรัพยากรที่ร้องขอ",
+            "badRequest": "คำขอไม่ถูกต้อง",
+            "internalServerError": "ข้อผิดพลาดเซิร์ฟเวอร์ภายใน",
+            "serviceUnavailable": "บริการไม่พร้อมใช้งานชั่วคราว",
+            "validationError": "กรุณาตรวจสอบข้อมูลและลองใหม่"
+        },
+        "loading": {
+            "loading": "กำลังโหลด...",
+            "pleaseWait": "กรุณารอสักครู่...",
+            "processing": "กำลังประมวลผล...",
+            "saving": "กำลังบันทึก...",
+            "deleting": "กำลังลบ...",
+            "updating": "กำลังอัปเดต...",
+            "signingIn": "กำลังเข้าสู่ระบบ...",
+            "signingOut": "กำลังออกจากระบบ..."
+        },
+        "validation": {
+            "confirmDelete": "คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้?",
+            "unsavedChanges": "คุณมีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก ต้องการออกหรือไม่?",
+            "minLength": "ต้องมีอย่างน้อย {{count}} ตัวอักษร",
+            "maxLength": "ต้องมีไม่เกิน {{count}} ตัวอักษร",
+            "minValue": "ค่าต้องมีอย่างน้อย {{count}}",
+            "maxValue": "ค่าต้องมีไม่เกิน {{count}}"
+        },
+        "placeholders": {
+            "email": "กรอกอีเมลของคุณ",
+            "phone": "กรอกหมายเลขโทรศัพท์ของคุณ",
+            "password": "กรอกรหัสผ่านของคุณ",
+            "newPassword": "กรอกรหัสผ่านใหม่",
+            "confirmPassword": "ยืนยันรหัสผ่านของคุณ",
+            "search": "ค้นหา...",
+            "selectOption": "เลือกตัวเลือก"
+        }
+    },
+    "loading": {
+        "session": "กำลังเริ่มต้นเซสชันที่ปลอดภัย..."
+    },
+    "error": {
+        "title": "ข้อผิดพลาดการยืนยันตัวตน",
+        "sessionFailed": "ไม่สามารถเริ่มต้นเซสชันที่ปลอดภัย",
+        "retry": "ลองใหม่"
+    },
+    "password": {
+        "weak": "อ่อน",
+        "fair": "ปานกลาง",
+        "good": "ดี",
+        "strong": "แข็งแรง",
+        "veryStrong": "แข็งแรงมาก"
+    },
+    "header": {
+        "title": "บัญชี EVzone",
+        "subtitle": "สร้างตัวตน EVzone ของคุณ"
+    },
+    "auth": {
+        "common": {
+            "loading": "กำลังโหลด...",
+            "or": "หรือ",
+            "email": "อีเมล",
+            "phone": "โทรศัพท์",
+            "terms": "ข้อตกลง",
+            "privacy": "ความเป็นส่วนตัว",
+            "help": "ความช่วยเหลือ",
+            "signIn": "เข้าสู่ระบบ",
+            "signUp": "ลงทะเบียน",
+            "switchToLight": "เปลี่ยนเป็นโหมดสว่าง",
+            "switchToDark": "เปลี่ยนเป็นโหมดมืด",
+            "continue": "ดำเนินการต่อ",
+            "back": "กลับ",
+            "cancel": "ยกเลิก",
+            "save": "บันทึก",
+            "submit": "ส่ง",
+            "verify": "ยืนยัน",
+            "send": "ส่ง"
+        },
+        "signIn": {
+            "title": "เข้าสู่ระบบ",
+            "subtitle": "ยินดีต้อนรับกลับ! กรุณาเข้าสู่ระบบเพื่อดำเนินการต่อ",
+            "emailOrPhone": "อีเมลหรือโทรศัพท์",
+            "password": "รหัสผ่าน",
+            "forgotPassword": "ลืมรหัสผ่าน?",
+            "rememberMe": "จดจำฉัน",
+            "submit": "เข้าสู่ระบบ",
+            "noAccount": "ยังไม่มีบัญชี?",
+            "signUp": "ลงทะเบียน",
+            "orContinueWith": "หรือดำเนินการต่อด้วย",
+            "checking": "กำลังตรวจสอบ...",
+            "unavailable": "ไม่พร้อมใช้งาน",
+            "errors": {
+                "enterEmailOrPhone": "กรุณากรอกอีเมลหรือหมายเลขโทรศัพท์ของคุณ",
+                "enterPassword": "กรุณากรอกรหัสผ่านเพื่อดำเนินการต่อ",
+                "invalidCredentials": "ข้อมูลประจำตัวไม่ถูกต้อง กรุณาลองใหม่",
+                "locked": "ถูกล็อก ลองใหม่ใน {{seconds}}วินาที"
+            },
+            "verifying": "กำลังยืนยันข้อมูลประจำตัว...",
+            "failed": "เข้าสู่ระบบไม่สำเร็จ",
+            "left": {
+                "title": "หนึ่งบัญชีสำหรับทุกอย่าง EVzone",
+                "subtitle": "เข้าถึง Charging, Marketplace และ Pay ด้วยตัวตนที่ปลอดภัยเพียงหนึ่งเดียว",
+                "demoNote": "กรอกไว้ล่วงหน้าสำหรับการทดสอบ: example@mail.com"
+            },
+            "right": {
+                "subtitle": "เพื่อดำเนินการต่อไปยังพอร์ทัล EVzone"
+            },
+            "features": {
+                "secureSessions": {
+                    "title": "เซสชันที่ปลอดภัย",
+                    "desc": "การตรวจสอบความปลอดภัยระดับธนาคารตลอด 24 ชั่วโมง"
+                },
+                "passkeys": {
+                    "title": "Passkey และไบโอเมตริกซ์",
+                    "desc": "เข้าสู่ระบบด้วย TouchID หรือ FaceID"
+                },
+                "privacy": {
+                    "title": "ความเป็นส่วนตัวเป็นสิ่งสำคัญ",
+                    "desc": "เราให้ความสำคัญกับความเป็นส่วนตัวของข้อมูลของคุณ"
+                }
+            },
+            "showPassword": "แสดงรหัสผ่าน",
+            "hidePassword": "ซ่อนรหัสผ่าน",
+            "switchingToPassword": "กำลังเปลี่ยนเป็นรหัสผ่าน...",
+            "placeholders": {
+                "email": "name@example.com"
+            },
+            "useOtpTitle": "ใช้รหัสใช้ครั้งเดียว",
+            "useOtpSubtitle": "ไม่มีรหัสผ่าน? ใช้รหัสวิเศษ",
+            "comingSoon": "เร็วๆ นี้",
+            "otpComingSoon": "การเข้าสู่ระบบด้วยรหัสใช้ครั้งเดียวกำลังถูกบูรณาการ",
+            "sendCode": "ส่งรหัส",
+            "termsAgree": "ดำเนินการต่อหมายความว่าคุณยอมรับข้อตกลงและความเป็นส่วนตัวของ EVzone",
+            "locked": "ถูกล็อก ลองใหม่ใน {{seconds}}วินาที"
+        },
+        "signUp": {
+            "sectionTitle": "การสร้างบัญชี",
+            "sectionSubtitle": "สร้าง ID ที่ปลอดภัยเพียงหนึ่งเดียวสำหรับบริการ EVzone ทั้งหมด",
+            "secureIdentity": "ตัวตนที่ปลอดภัย",
+            "secureIdentityDesc": "ความปลอดภัยระดับธนาคารสำหรับทรัพย์สินของคุณ",
+            "clearPermissions": "สิทธิ์ที่ชัดเจน",
+            "clearPermissionsDesc": "คุณควบคุมการแบ่งปันข้อมูลของคุณ",
+            "backToSignIn": "กลับไปยังการเข้าสู่ระบบ",
+            "createAccount": "สร้างบัญชี",
+            "getStarted": "เริ่มต้นกับ EVzone",
+            "continueWithGoogle": "ดำเนินการต่อด้วย Google",
+            "continueWithApple": "ดำเนินการต่อด้วย Apple",
+            "firstName": "ชื่อ",
+            "firstNamePlaceholder": "เช่น Jane",
+            "otherNames": "นามสกุล",
+            "otherNamesPlaceholder": "เช่น Doe",
+            "email": "ที่อยู่อีเมล",
+            "emailPlaceholder": "name@example.com",
+            "phone": "หมายเลขโทรศัพท์",
+            "phonePlaceholder": "080 000 0000",
+            "createWithOtp": "สร้างด้วยรหัสใช้ครั้งเดียว",
+            "createWithOtpDesc": "ไม่ต้องใช้รหัสผ่าน เราจะยืนยันโทรศัพท์ของคุณ",
+            "createPassword": "สร้างรหัสผ่าน",
+            "confirmPassword": "ยืนยันรหัสผ่าน",
+            "otpInfo": "คุณจะได้รับ OTP เพื่อยืนยันบัญชีของคุณ",
+            "inviteCode": "รหัสเชิญ (ไม่บังคับ)",
+            "inviteCodePlaceholder": "เช่น EVZ-123",
+            "termsAgreement": "ฉันยอมรับข้อตกลงการให้บริการและนโยบายความเป็นส่วนตัว",
+            "continue": "ดำเนินการต่อ",
+            "switchToSignIn": "เปลี่ยนเป็นการเข้าสู่ระบบ",
+            "verifyContactInfo": "ยืนยันข้อมูลติดต่อของคุณในขั้นตอนถัดไป",
+            "validation": {
+                "firstNameRequired": "กรุณากรอกชื่อของคุณ",
+                "otherNamesRequired": "กรุณากรอกนามสกุลของคุณ",
+                "emailOrPhoneRequired": "โปรดระบุอีเมลหรือหมายเลขโทรศัพท์อย่างน้อยหนึ่ง",
+                "validEmailRequired": "กรุณากรอกที่อยู่อีเมลที่ถูกต้อง",
+                "termsRequired": "คุณต้องยอมรับข้อตกลงและนโยบายความเป็นส่วนตัว",
+                "passwordRequired": "สร้างรหัสผ่าน",
+                "passwordMinLength": "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร",
+                "passwordsDoNotMatch": "รหัสผ่านไม่ตรงกัน"
+            },
+            "notification": {
+                "registrationInfo": "ข้อมูลการลงทะเบียน",
+                "accountCreated": "สร้างบัญชีแล้ว",
+                "accountCreatedSuccess": "สร้างบัญชีสำเร็จ! กำลังเข้าสู่ระบบอย่างปลอดภัย...",
+                "verifyEmail": "ยืนยันอีเมลของคุณ",
+                "verifyEmailSuccess": "สร้างบัญชีแล้ว! กรุณาตรวจสอบกล่องจดหมายสำหรับลิงก์ยืนยัน",
+                "registrationFailed": "การลงทะเบียนไม่สำเร็จ",
+                "registrationFailedMessage": "ไม่สามารถสร้างบัญชี กรุณาลองใหม่"
+            }
+        },
+        "forgotPassword": {
+            "subtitle": "ลืมรหัสผ่าน",
+            "resetAccess": "รีเซ็ตการเข้าถึง",
+            "resetAccessDesc": "กู้คืนบัญชีของคุณโดยใช้อีเมลหรือโทรศัพท์ที่ยืนยันแล้ว",
+            "rateLimiting": "การจำกัดอัตรา",
+            "rateLimitingDesc": "รอ 30 วินาทีระหว่างคำขอ",
+            "secureLink": "ลิงก์ที่ปลอดภัย",
+            "secureLinkDesc": "เราส่งลิงก์หรือรหัสวิเศษ",
+            "backToSignIn": "กลับไปยังการเข้าสู่ระบบ",
+            "checkContact": "ตรวจสอบ {{type}} ของคุณ",
+            "instructionsSent": "เราได้ส่งคำแนะนำไปยัง {{mask}} ผ่าน {{method}}",
+            "nextSteps": "ขั้นตอนถัดไป",
+            "nextStepsDesc": "คลิกลิงก์หรือกรอกรหัสเพื่อรีเซ็ต",
+            "enterResetCode": "กรอกรหัสรีเซ็ต",
+            "resendIn": "ส่งใหม่ใน {{seconds}}วินาที",
+            "sendAgain": "ส่งอีกครั้ง",
+            "changeContactInfo": "เปลี่ยนข้อมูลติดต่อ",
+            "needHelp": "ต้องการความช่วยเหลือ?",
+            "title": "ลืมรหัสผ่าน",
+            "enterToRecover": "กรอกอีเมลหรือโทรศัพท์เพื่อกู้คืนบัญชี",
+            "identifierLabel": "กรอกอีเมลหรือโทรศัพท์",
+            "identifierPlaceholder": "name@example.com",
+            "validIdentifierHint": "กรอกอีเมลหรือโทรศัพท์ที่ถูกต้อง",
+            "deliveryMethod": "วิธีการส่ง",
+            "captchaLabel": "ฉันเป็นมนุษย์",
+            "captchaDesc": "ทำการตรวจสอบ captcha ให้เสร็จสิ้น",
+            "accountRecoveryHelp": "ความช่วยเหลือการกู้คืนบัญชี",
+            "spamTip": "เคล็ดลับ: ตรวจสอบโฟลเดอร์สแปมหากคุณไม่เห็นอีเมล",
+            "confirmSend": "ยืนยันการส่ง",
+            "sendTo": "ส่งคำแนะนำการกู้คืนไปยัง:",
+            "viaMethod": "ผ่าน {{method}}",
+            "invalidatePrevious": "สิ่งนี้จะทำให้ลิงก์ก่อนหน้าใช้งานไม่ได้",
+            "sendInstructions": "ส่งคำแนะนำ",
+            "delivery": {
+                "emailLink": "ลิงก์อีเมล",
+                "emailLinkDesc": "ส่งลิงก์วิเศษไปยังอีเมลของคุณ",
+                "smsCode": "รหัส SMS",
+                "smsCodeDesc": "ส่งรหัส 6 หลักไปยังโทรศัพท์ของคุณ",
+                "whatsappCode": "รหัส WhatsApp",
+                "whatsappCodeDesc": "ส่งรหัสผ่าน WhatsApp"
+            },
+            "phoneMethodsHint": "วิธีการทางโทรศัพท์พร้อมใช้งานหากคุณกรอกหมายเลขโทรศัพท์",
+            "validation": {
+                "enterIdentifier": "กรอกอีเมลหรือโทรศัพท์",
+                "validIdentifier": "กรอกอีเมลหรือโทรศัพท์ที่ถูกต้อง",
+                "waitCooldown": "กรุณารอ {{seconds}}วินาที",
+                "completeCaptcha": "กรุณาทำการตรวจสอบ captcha ให้เสร็จสิ้น"
+            },
+            "notification": {
+                "sentSuccess": "ส่งสำเร็จผ่าน {{via}}",
+                "sendFailed": "ไม่สามารถส่งคำขอ กรุณาลองใหม่"
+            }
+        },
+        "resetPassword": {
+            "subtitle": "รีเซ็ตรหัสผ่าน",
+            "createNewPassword": "สร้างรหัสผ่านใหม่",
+            "enterNewPassword": "กรอกรหัสผ่านใหม่สำหรับบัญชีของคุณ",
+            "navigateToForgot": "ไปยัง /auth/forgot-password",
+            "backToForgotPassword": "กลับไปยังลืมรหัสผ่าน",
+            "title": "รีเซ็ตรหัสผ่าน",
+            "enterDetails": "กรอกรายละเอียดเพื่อรีเซ็ตรหัสผ่าน",
+            "tokenTab": "โทเค็น",
+            "codeTab": "รหัส",
+            "resetToken": "โทเค็นรีเซ็ต",
+            "tokenPlaceholder": "กรอกโทเค็น",
+            "tokenHelperText": "ตรวจสอบอีเมลของคุณสำหรับโทเค็น",
+            "verifyToken": "ยืนยันโทเค็น",
+            "identifierLabel": "อีเมลหรือโทรศัพท์",
+            "identifierPlaceholder": "กรอกอีเมลหรือโทรศัพท์",
+            "identifierHelper": "เราจะกำหนดวิธีการตามข้อมูลที่คุณกรอก",
+            "deliveryMethod": "วิธีการส่ง",
+            "codeSent": "รหัสถูกส่งแล้ว",
+            "sendCode": "ส่งรหัส",
+            "resendCode": "ส่งรหัสอีกครั้ง",
+            "verifyCode": "ยืนยันรหัส",
+            "newPassword": "รหัสผ่านใหม่",
+            "confirmPassword": "ยืนยันรหัสผ่าน",
+            "requirements": "ข้อกำหนด",
+            "signOutAll": "ออกจากระบบอุปกรณ์อื่นทั้งหมด",
+            "resetButton": "รีเซ็ตรหัสผ่าน",
+            "passwordUpdated": "รหัสผ่านถูกอัปเดต",
+            "passwordChangedSuccess": "รหัสผ่านของคุณถูกเปลี่ยนเรียบร้อยแล้ว",
+            "goToSignIn": "ไปยังการเข้าสู่ระบบ",
+            "accountRecoveryHelp": "ความช่วยเหลือการกู้คืนบัญชี",
+            "navigateToHelp": "ไปยัง /auth/account-recovery-help",
+            "channel": {
+                "email": "อีเมล",
+                "emailDesc": "ส่งไปยังอีเมล",
+                "sms": "SMS",
+                "smsDesc": "ส่งผ่าน SMS",
+                "whatsapp": "WhatsApp",
+                "whatsappDesc": "ส่งผ่าน WhatsApp"
+            },
+            "phoneChannelsDisabled": "ช่องทางโทรศัพท์ถูกปิดใช้งานสำหรับผู้ใช้อีเมล",
+            "req": {
+                "length": "อย่างน้อย 8 ตัวอักษร",
+                "uppercase": "ตัวพิมพ์ใหญ่หนึ่งตัว",
+                "lowercase": "ตัวพิมพ์เล็กหนึ่งตัว",
+                "number": "ตัวเลขหนึ่งตัว",
+                "special": "อักษรพิเศษหนึ่งตัว",
+                "match": "รหัสผ่านตรงกัน"
+            },
+            "validation": {
+                "tokenRequired": "กรุณากรอกโทเค็นรีเซ็ต",
+                "identifierRequired": "กรุณากรอกอีเมลหรือโทรศัพท์ของคุณ",
+                "invalidIdentifier": "อีเมลหรือโทรศัพท์ไม่ถูกต้อง",
+                "codeRequired": "กรุณากรอกรหัส 6 หลัก",
+                "passwordRequired": "กรุณากรอกรหัสผ่าน",
+                "passwordStrength": "รหัสผ่านต้องแข็งแรงกว่านี้",
+                "passwordsDoNotMatch": "รหัสผ่านไม่ตรงกัน"
+            },
+            "notification": {
+                "codeSentEmail": "รหัสถูกส่งไปยังอีเมล",
+                "codeSentVia": "รหัสถูกส่งผ่าน {{channel}}",
+                "sendFailed": "ไม่สามารถส่งรหัส",
+                "resetSuccessSignedOut": "รีเซ็ตรหัสผ่าน คุณถูกออกจากระบบแล้ว",
+                "resetSuccess": "รีเซ็ตรหัสผ่านสำเร็จ",
+                "resetFailed": "ไม่สามารถรีเซ็ตรหัสผ่าน รหัส/โทเค็นไม่ถูกต้อง"
+            }
+        },
+        "verifyEmail": {
+            "pageTitle": "ยืนยันที่อยู่อีเมล",
+            "checkInbox": "ตรวจสอบกล่องจดหมายของคุณ",
+            "codeSentTo": "เราได้ส่งรหัสไปยัง {{email}}",
+            "openEmailApp": "เปิดแอปอีเมล",
+            "openEmailAppDesc": "แตะเพื่อเปิดไคลเอนต์อีเมลของคุณ",
+            "resendCode": "ส่งรหัสอีกครั้ง",
+            "resendCodeDesc": "คลิกด้านล่างเพื่อส่งรหัสใหม่",
+            "openEmail": "เปิดอีเมล",
+            "changeEmail": "เปลี่ยนอีเมล",
+            "emailVerified": "อีเมลได้รับการยืนยัน",
+            "verificationSuccessDesc": "คุณได้ยืนยัน {{email}} สำเร็จแล้ว",
+            "nextSteps": "ขั้นตอนถัดไป",
+            "nextStepsDesc": "ดำเนินการต่อเพื่อยืนยันโทรศัพท์ของคุณ",
+            "title": "ยืนยันที่อยู่อีเมล",
+            "verify": "ยืนยัน",
+            "resendIn": "ส่งใหม่ใน {{seconds}}วินาที",
+            "needHelp": "ต้องการความช่วยเหลือ?",
+            "changeEmailDialog": "เปลี่ยนที่อยู่อีเมล",
+            "changeEmailDesc": "กรอกด้านล่างเพื่อรับรหัสที่ที่อยู่อีเมลใหม่",
+            "emailLabel": "ที่อยู่อีเมล",
+            "emailPlaceholder": "name@example.com",
+            "saveAndSend": "บันทึกและส่ง",
+            "validation": {
+                "codeRequired": "กรุณากรอกรหัส 6 หลัก"
+            },
+            "notification": {
+                "codeSent": "รหัสถูกส่งไปยัง {{email}}",
+                "sendFailed": "ไม่สามารถส่งรหัส",
+                "openingEmail": "กำลังเปิดแอปอีเมล...",
+                "verificationSuccess": "ยืนยันอีเมลสำเร็จ",
+                "invalidCode": "รหัสไม่ถูกต้อง กรุณาลองใหม่"
+            }
+        },
+        "verifyPhone": {
+            "title": "ยืนยันโทรศัพท์",
+            "subtitle": "กรุณากรอกรหัสยืนยันที่ส่งไปยังโทรศัพท์ของคุณ",
+            "code": "รหัสยืนยัน",
+            "submit": "ยืนยันโทรศัพท์",
+            "resendCode": "ส่งรหัสอีกครั้ง",
+            "resendSuccess": "รหัสยืนยันถูกส่ง",
+            "success": "ยืนยันโทรศัพท์สำเร็จ",
+            "successMessage": "หมายเลขโทรศัพท์ของคุณได้รับการยืนยัน"
+        },
+        "mfa": {
+            "title": "การยืนยันตัวตนสองปัจจัย",
+            "subtitle": "กรอกรหัส 6 หลักจากแอปยืนยันตัวตนของคุณ",
+            "code": "รหัสยืนยัน",
+            "submit": "ยืนยัน",
+            "useBackup": "ใช้รหัสสำรองแทน",
+            "resendCode": "ส่งรหัสอีกครั้ง",
+            "backupCode": "รหัสสำรอง",
+            "success": "ยืนยันสำเร็จ",
+            "setupTitle": "ตั้งค่าการยืนยันตัวตนสองปัจจัย",
+            "scanQr": "สแกน QR นี้ด้วยแอปยืนยันตัวตนของคุณ",
+            "manualEntry": "หรือกรอกรหัสนี้ด้วยตนเอง",
+            "enterCode": "กรอกรหัส 6 หลักจากแอปของคุณ",
+            "confirmSetup": "ยืนยันการตั้งค่า",
+            "backupCodesTitle": "รหัสสำรอง",
+            "backupCodesDescription": "บันทึกรหัสสำรองเหล่านี้ในที่ปลอดภัย คุณสามารถใช้ได้หากสูญเสียการเข้าถึงแอปยืนยันตัวตน",
+            "copyCodes": "คัดลอกรหัส",
+            "done": "เสร็จสิ้น",
+            "invalidCode": "รหัสไม่ถูกต้อง กรุณาลองใหม่",
+            "tooManyAttempts": "พยายามผิดมากเกินไป กรุณาลองใหม่"
+        },
+        "passkey": {
+            "title": "การยืนยันตัวตนด้วย Passkey",
+            "subtitle": "เข้าสู่ระบบด้วย passkey ของคุณ",
+            "usePasskey": "ใช้ Passkey",
+            "addPasskey": "เพิ่ม Passkey",
+            "removePasskey": "ลบ Passkey",
+            "passkeyAdded": "เพิ่ม Passkey สำเร็จ",
+            "passkeyRemoved": "Passkey ถูกลบแล้ว",
+            "error": "เกิดข้อผิดพลาด passkey"
+        },
+        "consent": {
+            "title": "ต้องการความยินยอม",
+            "subtitle": "แอปขอเข้าถึงบัญชีของคุณ",
+            "permissions": "สิทธิ์",
+            "approve": "อนุมัติ",
+            "deny": "ปฏิเสธ",
+            "scopes": {
+                "openid": "OpenID Connect",
+                "profile": "ดูโปรไฟล์ของคุณ",
+                "email": "ดูที่อยู่อีเมลของคุณ",
+                "phone": "ดูหมายเลขโทรศัพท์ของคุณ"
+            }
+        },
+        "interaction": {
+            "title": "ต้องการการยืนยันตัวตน",
+            "subtitle": "กรุณาดำเนินการยืนยันตัวตนให้เสร็จสิ้น",
+            "continue": "ดำเนินการต่อ",
+            "cancel": "ยกเลิก"
+        },
+        "Callback": {
+            "processing": "กำลังประมวลผลการยืนยันตัวตน...",
+            "success": "การยืนยันตัวตนสำเร็จ",
+            "error": "การยืนยันตัวตนไม่สำเร็จ"
+        },
+        "signedOut": {
+            "title": "ออกจากระบบแล้ว",
+            "subtitle": "คุณได้ออกจากระบบสำเร็จแล้ว",
+            "signInAgain": "เข้าสู่ระบบอีกครั้ง",
+            "returnHome": "กลับไปยังหน้าหลัก"
+        },
+        "session": {
+            "expired": "เซสชันของคุณหมดอายุ",
+            "expiredMessage": "กรุณาเข้าสู่ระบบเพื่อดำเนินการต่อ",
+            "expiredAction": "เข้าสู่ระบบ"
+        }
+    },
+    "dashboard": {
+        "welcome": "ยินดีต้อนรับกลับ, {{name}}!",
+        "overview": "ภาพรวมแดชบอร์ด",
+        "quickActions": "การดำเนินการด่วน",
+        "recentActivity": "กิจกรรมล่าสุด",
+        "notifications": "การแจ้งเตือน",
+        "settings": "การตั้งค่า",
+        "profile": "โปรไฟล์ของฉัน",
+        "security": "ความปลอดภัย",
+        "wallet": "กระเป๋าเงิน",
+        "help": "ความช่วยเหลือและการสนับสนุน"
+    },
+    "profile": {
+        "title": "การตั้งค่าโปรไฟล์",
+        "personal": {
+            "title": "ข้อมูลส่วนตัว",
+            "firstName": "ชื่อ",
+            "lastName": "นามสกุล",
+            "email": "ที่อยู่อีเมล",
+            "phone": "หมายเลขโทรศัพท์",
+            "dateOfBirth": "วันเกิด",
+            "nationality": "สัญชาติ",
+            "save": "บันทึก",
+            "cancel": "ยกเลิก"
+        }
+    }
+}

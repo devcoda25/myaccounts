@@ -1,0 +1,508 @@
+{
+    "app": {
+        "name": "EVzone Akun Saya",
+        "tagline": "Akun terpadu Anda untuk semua layanan EVzone"
+    },
+    "common": {
+        "actions": {
+            "save": "Simpan",
+            "cancel": "Batal",
+            "delete": "Hapus",
+            "edit": "Edit",
+            "submit": "Kirim",
+            "close": "Tutup",
+            "back": "Kembali",
+            "next": "Lanjut",
+            "confirm": "Konfirmasi",
+            "search": "Cari",
+            "filter": "Filter",
+            "clear": "Hapus",
+            "reset": "Reset",
+            "refresh": "Segarkan",
+            "retry": "Coba lagi",
+            "continue": "Lanjutkan",
+            "done": "Selesai",
+            "send": "Kirim",
+            "download": "Unduh",
+            "upload": "Unggah",
+            "copy": "Salin",
+            "view": "Lihat",
+            "hide": "Sembunyikan",
+            "show": "Tampilkan",
+            "expand": "Perluas",
+            "collapse": "Tutup",
+            "select": "Pilih",
+            "selectAll": "Pilih Semua",
+            "deselectAll": "Batalkan Semua",
+            "add": "Tambah",
+            "remove": "Hapus",
+            "update": "Perbarui",
+            "create": "Buat",
+            "signIn": "Masuk",
+            "signOut": "Keluar",
+            "signUp": "Daftar",
+            "login": "Login",
+            "logout": "Logout",
+            "register": "Daftar"
+        },
+        "errors": {
+            "required": "Kolom ini wajib diisi",
+            "invalidEmail": "Masukkan alamat email yang valid",
+            "invalidPhone": "Masukkan nomor telepon yang valid",
+            "passwordTooShort": "Kata sandi minimal 8 karakter",
+            "passwordRequiresUppercase": "Kata sandi harus mengandung huruf besar",
+            "passwordRequiresLowercase": "Kata sandi harus mengandung huruf kecil",
+            "passwordRequiresNumber": "Kata sandi harus mengandung angka",
+            "passwordRequiresSpecial": "Kata sandi harus mengandung karakter khusus",
+            "passwordsDoNotMatch": "Kata sandi tidak cocok",
+            "networkError": "Kesalahan jaringan. Silakan coba lagi.",
+            "serverError": "Kesalahan server. Silakan coba lagi nanti.",
+            "unknownError": "Terjadi kesalahan yang tidak terduga.",
+            "sessionExpired": "Sesi Anda telah berakhir. Silakan masuk lagi.",
+            "invalidCredentials": "Kredensial tidak valid. Silakan coba lagi.",
+            "tooManyAttempts": "Terlalu banyak percobaan. Silakan coba lagi nanti.",
+            "accountLocked": "Akun Anda telah dikunci.",
+            "emailAlreadyExists": "Akun dengan email ini sudah ada.",
+            "userNotFound": "Pengguna tidak ditemukan.",
+            "unauthorized": "Anda tidak diizinkan untuk melakukan tindakan ini.",
+            "forbidden": "Akses ditolak.",
+            "notFound": "Sumber daya yang diminta tidak ditemukan.",
+            "badRequest": "Permintaan tidak valid.",
+            "internalServerError": "Kesalahan server internal.",
+            "serviceUnavailable": "Layanan sementara tidak tersedia.",
+            "validationError": "Silakan periksa input Anda dan coba lagi."
+        },
+        "loading": {
+            "loading": "Memuat...",
+            "pleaseWait": "Silakan tunggu...",
+            "processing": "Memproses...",
+            "saving": "Menyimpan...",
+            "deleting": "Menghapus...",
+            "updating": "Memperbarui...",
+            "signingIn": "Masuk...",
+            "signingOut": "Keluar..."
+        },
+        "validation": {
+            "confirmDelete": "Apakah Anda yakin ingin menghapus item ini?",
+            "unsavedChanges": "Anda memiliki perubahan yang belum disimpan. Apakah Anda ingin keluar?",
+            "minLength": "Minimal {{count}} karakter",
+            "maxLength": "Maksimal {{count}} karakter",
+            "minValue": "Nilai minimal {{count}}",
+            "maxValue": "Nilai maksimal {{count}}"
+        },
+        "placeholders": {
+            "email": "Masukkan email Anda",
+            "phone": "Masukkan nomor telepon Anda",
+            "password": "Masukkan kata sandi Anda",
+            "newPassword": "Masukkan kata sandi baru",
+            "confirmPassword": "Konfirmasi kata sandi Anda",
+            "search": "Cari...",
+            "selectOption": "Pilih opsi"
+        }
+    },
+    "loading": {
+        "session": "Menginisialisasi sesi aman..."
+    },
+    "error": {
+        "title": "Kesalahan Autentikasi",
+        "sessionFailed": "Gagal menginisialisasi sesi aman.",
+        "retry": "Coba lagi"
+    },
+    "password": {
+        "weak": "Lemah",
+        "fair": "Cukup",
+        "good": "Baik",
+        "strong": "Kuat",
+        "veryStrong": "Sangat kuat"
+    },
+    "header": {
+        "title": "Akun EVzone",
+        "subtitle": "Buat Identitas EVzone Anda"
+    },
+    "auth": {
+        "common": {
+            "loading": "Memuat...",
+            "or": "atau",
+            "email": "Email",
+            "phone": "Telepon",
+            "terms": "Ketentuan",
+            "privacy": "Privasi",
+            "help": "Bantuan",
+            "signIn": "Masuk",
+            "signUp": "Daftar",
+            "switchToLight": "Beralih ke Mode Terang",
+            "switchToDark": "Beralih ke Mode Gelap",
+            "continue": "Lanjutkan",
+            "back": "Kembali",
+            "cancel": "Batal",
+            "save": "Simpan",
+            "submit": "Kirim",
+            "verify": "Verifikasi",
+            "send": "Kirim"
+        },
+        "signIn": {
+            "title": "Masuk",
+            "subtitle": "Selamat datang kembali! Silakan masuk untuk melanjutkan.",
+            "emailOrPhone": "Email atau Telepon",
+            "password": "Kata Sandi",
+            "forgotPassword": "Lupa Kata Sandi?",
+            "rememberMe": "Ingat saya",
+            "submit": "Masuk",
+            "noAccount": "Tidak punya akun?",
+            "signUp": "Daftar",
+            "orContinueWith": "atau lanjutkan dengan",
+            "checking": "Memeriksa...",
+            "unavailable": "Tidak Tersedia",
+            "errors": {
+                "enterEmailOrPhone": "Masukkan email atau nomor telepon Anda.",
+                "enterPassword": "Masukkan kata sandi Anda untuk melanjutkan.",
+                "invalidCredentials": "Kredensial tidak valid. Silakan coba lagi.",
+                "locked": "Terkunci. Coba lagi dalam {{seconds}}s"
+            },
+            "verifying": "Memverifikasi kredensial...",
+            "failed": "Gagal Masuk",
+            "left": {
+                "title": "Satu akun untuk semua hal EVzone",
+                "subtitle": "Akses Charging, Marketplace, dan Bayar dengan satu identitas aman dengan mudah.",
+                "demoNote": "Pra-isi untuk demo: example@mail.com"
+            },
+            "right": {
+                "subtitle": "untuk melanjutkan ke Portal EVzone"
+            },
+            "features": {
+                "secureSessions": {
+                    "title": "Sesi Aman",
+                    "desc": "Pemantauan keamanan tingkat bank 24/7."
+                },
+                "passkeys": {
+                    "title": "Passkey & Biometrik",
+                    "desc": "Masuk dengan TouchID atau FaceID."
+                },
+                "privacy": {
+                    "title": "Privasi Utama",
+                    "desc": "Kami memaksimalkan privasi data Anda."
+                }
+            },
+            "showPassword": "Tampilkan kata sandi",
+            "hidePassword": "Sembunyikan kata sandi",
+            "switchingToPassword": "Beralih ke kata sandi...",
+            "placeholders": {
+                "email": "name@example.com"
+            },
+            "useOtpTitle": "Gunakan Kode Sekali Pakai",
+            "useOtpSubtitle": "Tidak ada kata sandi? Gunakan kode ajaib.",
+            "comingSoon": "Segera Hadir",
+            "otpComingSoon": "Masuk dengan kode sekali pakai sedang diintegrasikan.",
+            "sendCode": "Kirim Kode",
+            "termsAgree": "Dengan melanjutkan, Anda menyetujui Ketentuan & Privasi EVzone.",
+            "locked": "Terkunci. Coba lagi dalam {{seconds}}s"
+        },
+        "signUp": {
+            "sectionTitle": "Pembuatan Akun",
+            "sectionSubtitle": "Buat ID aman tunggal Anda untuk semua layanan EVzone.",
+            "secureIdentity": "Identitas Aman",
+            "secureIdentityDesc": "Keamanan tingkat bank untuk aset Anda.",
+            "clearPermissions": "Izin Jelas",
+            "clearPermissionsDesc": "Anda mengontrol berbagi data Anda.",
+            "backToSignIn": "Kembali ke Masuk",
+            "createAccount": "Buat Akun",
+            "getStarted": "Mulai dengan EVzone",
+            "continueWithGoogle": "Lanjutkan dengan Google",
+            "continueWithApple": "Lanjutkan dengan Apple",
+            "firstName": "Nama Depan",
+            "firstNamePlaceholder": "mis., Jane",
+            "otherNames": "Nama Lainnya",
+            "otherNamesPlaceholder": "mis., Doe",
+            "email": "Alamat Email",
+            "emailPlaceholder": "name@example.com",
+            "phone": "Nomor Telepon",
+            "phonePlaceholder": "081 000 000",
+            "createWithOtp": "Buat dengan Kode Sekali Pakai",
+            "createWithOtpDesc": "Tidak perlu kata sandi. Kami akan memverifikasi telepon Anda.",
+            "createPassword": "Buat Kata Sandi",
+            "confirmPassword": "Konfirmasi Kata Sandi",
+            "otpInfo": "Anda akan menerima OTP untuk memverifikasi akun Anda.",
+            "inviteCode": "Kode Undangan (Opsional)",
+            "inviteCodePlaceholder": "mis., EVZ-123",
+            "termsAgreement": "Saya menyetujui Ketentuan Layanan dan Kebijakan Privasi.",
+            "continue": "Lanjutkan",
+            "switchToSignIn": "Beralih ke Masuk",
+            "verifyContactInfo": "Verifikasi informasi kontak Anda di langkah berikutnya.",
+            "validation": {
+                "firstNameRequired": "Masukkan nama depan Anda.",
+                "otherNamesRequired": "Masukkan nama lainnya Anda.",
+                "emailOrPhoneRequired": "Berikan setidaknya email atau nomor telepon.",
+                "validEmailRequired": "Masukkan alamat email yang valid.",
+                "termsRequired": "Anda harus menerima Ketentuan dan Kebijakan Privasi.",
+                "passwordRequired": "Buat kata sandi.",
+                "passwordMinLength": "Kata sandi minimal 8 karakter.",
+                "passwordsDoNotMatch": "Kata sandi tidak cocok."
+            },
+            "notification": {
+                "registrationInfo": "Info Pendaftaran",
+                "accountCreated": "Akun Dibuat",
+                "accountCreatedSuccess": "Akun berhasil dibuat! Memasukkannya dengan aman...",
+                "verifyEmail": "Verifikasi Email Anda",
+                "verifyEmailSuccess": "Akun dibuat! Silakan periksa inbox Anda untuk link verifikasi.",
+                "registrationFailed": "Pendaftaran Gagal",
+                "registrationFailedMessage": "Gagal membuat akun. Silakan coba lagi."
+            }
+        },
+        "forgotPassword": {
+            "subtitle": "Lupa Kata Sandi",
+            "resetAccess": "Reset Akses",
+            "resetAccessDesc": "Pulihkan akun Anda menggunakan email atau telepon terverifikasi.",
+            "rateLimiting": "Pembatasan Tingkat",
+            "rateLimitingDesc": "Tunggu 30s antar permintaan.",
+            "secureLink": "Tautan Aman",
+            "secureLinkDesc": "Kami mengirim link atau kode ajaib.",
+            "backToSignIn": "Kembali ke Masuk",
+            "checkContact": "Periksa {{type}} Anda",
+            "instructionsSent": "Kami mengirim instruksi ke {{mask}} melalui {{method}}.",
+            "nextSteps": "Langkah Selanjutnya",
+            "nextStepsDesc": "Klik link atau masukkan kode untuk mereset.",
+            "enterResetCode": "Masukkan Kode Reset",
+            "resendIn": "Kirim ulang dalam {{seconds}}s",
+            "sendAgain": "Kirim Lagi",
+            "changeContactInfo": "Ubah Info Kontak",
+            "needHelp": "Butuh Bantuan?",
+            "title": "Lupa Kata Sandi",
+            "enterToRecover": "Masukkan email atau telepon untuk memulihkan akun.",
+            "identifierLabel": "Masukkan email atau telepon",
+            "identifierPlaceholder": "name@example.com",
+            "validIdentifierHint": "Masukkan email atau telepon yang valid.",
+            "deliveryMethod": "Metode Pengiriman",
+            "captchaLabel": "Saya manusia",
+            "captchaDesc": "Selesaikan pemeriksaan captcha.",
+            "accountRecoveryHelp": "Bantuan Pemulihan Akun",
+            "spamTip": "Tips: Periksa folder spam jika Anda tidak melihat email.",
+            "confirmSend": "Konfirmasi Kirim",
+            "sendTo": "Kirim instruksi pemulihan ke:",
+            "viaMethod": "melalui {{method}}",
+            "invalidatePrevious": "Ini akan membatalkan link sebelumnya.",
+            "sendInstructions": "Kirim Instruksi",
+            "delivery": {
+                "emailLink": "Link Email",
+                "emailLinkDesc": "Kirim link ajaib ke email Anda.",
+                "smsCode": "Kode SMS",
+                "smsCodeDesc": "Kirim kode 6 digit ke telepon Anda.",
+                "whatsappCode": "Kode WhatsApp",
+                "whatsappCodeDesc": "Kirim kode via WhatsApp."
+            },
+            "phoneMethodsHint": "Metode telepon tersedia jika Anda memasukkan nomor telepon.",
+            "validation": {
+                "enterIdentifier": "Masukkan email atau telepon",
+                "validIdentifier": "Masukkan email atau telepon yang valid.",
+                "waitCooldown": "Silakan tunggu {{seconds}}s",
+                "completeCaptcha": "Silakan selesaikan captcha."
+            },
+            "notification": {
+                "sentSuccess": "Berhasil dikirim melalui {{via}}.",
+                "sendFailed": "Gagal mengirim permintaan. Silakan coba lagi."
+            }
+        },
+        "resetPassword": {
+            "subtitle": "Reset Kata Sandi",
+            "createNewPassword": "Buat Kata Sandi Baru",
+            "enterNewPassword": "Masukkan kata sandi baru untuk akun Anda.",
+            "navigateToForgot": "Navigasi ke /auth/forgot-password",
+            "backToForgotPassword": "Kembali ke Lupa Kata Sandi",
+            "title": "Reset Kata Sandi",
+            "enterDetails": "Masukkan detail Anda untuk mereset kata sandi.",
+            "tokenTab": "Token",
+            "codeTab": "Kode",
+            "resetToken": "Token Reset",
+            "tokenPlaceholder": "Masukkan token",
+            "tokenHelperText": "Periksa email Anda untuk token.",
+            "verifyToken": "Verifikasi Token",
+            "identifierLabel": "Email atau Telepon",
+            "identifierPlaceholder": "Masukkan email atau telepon",
+            "identifierHelper": "Kami akan menentukan metode berdasarkan input Anda.",
+            "deliveryMethod": "Metode Pengiriman",
+            "codeSent": "Kode Terkirim",
+            "sendCode": "Kirim Kode",
+            "resendCode": "Kirim Ulang Kode",
+            "verifyCode": "Verifikasi Kode",
+            "newPassword": "Kata Sandi Baru",
+            "confirmPassword": "Konfirmasi Kata Sandi",
+            "requirements": "Persyaratan",
+            "signOutAll": "Keluar dari semua perangkat lain",
+            "resetButton": "Reset Kata Sandi",
+            "passwordUpdated": "Kata Sandi Diperbarui",
+            "passwordChangedSuccess": "Kata sandi Anda telah berhasil diubah.",
+            "goToSignIn": "Pergi ke Masuk",
+            "accountRecoveryHelp": "Bantuan Pemulihan Akun",
+            "navigateToHelp": "Navigasi ke /auth/account-recovery-help",
+            "channel": {
+                "email": "Email",
+                "emailDesc": "Kirim ke email",
+                "sms": "SMS",
+                "smsDesc": "Kirim via SMS",
+                "whatsapp": "WhatsApp",
+                "whatsappDesc": "Kirim via WhatsApp"
+            },
+            "phoneChannelsDisabled": "Saluran telepon dinonaktifkan untuk pengguna email.",
+            "req": {
+                "length": "Minimal 8 karakter",
+                "uppercase": "Satu huruf besar",
+                "lowercase": "Satu huruf kecil",
+                "number": "Satu angka",
+                "special": "Satu karakter khusus",
+                "match": "Kata sandi cocok"
+            },
+            "validation": {
+                "tokenRequired": "Silakan masukkan token reset.",
+                "identifierRequired": "Silakan masukkan email atau telepon Anda.",
+                "invalidIdentifier": "Email atau telepon tidak valid.",
+                "codeRequired": "Silakan masukkan kode 6 digit.",
+                "passwordRequired": "Silakan masukkan kata sandi.",
+                "passwordStrength": "Kata sandi harus lebih kuat.",
+                "passwordsDoNotMatch": "Kata sandi tidak cocok."
+            },
+            "notification": {
+                "codeSentEmail": "Kode dikirim ke email.",
+                "codeSentVia": "Kode dikirim melalui {{channel}}.",
+                "sendFailed": "Gagal mengirim kode.",
+                "resetSuccessSignedOut": "Reset kata sandi. Anda telah keluar.",
+                "resetSuccess": "Kata sandi berhasil direset.",
+                "resetFailed": "Gagal mereset kata sandi. Kode/token tidak valid."
+            }
+        },
+        "verifyEmail": {
+            "pageTitle": "Verifikasi Alamat Email",
+            "checkInbox": "Periksa Inbox Anda",
+            "codeSentTo": "Kami mengirim kode ke {{email}}.",
+            "openEmailApp": "Buka Aplikasi Email",
+            "openEmailAppDesc": "Ketuk untuk membuka klien mail Anda.",
+            "resendCode": "Kirim Ulang Kode",
+            "resendCodeDesc": "Klik di bawah untuk mengirim kode baru.",
+            "openEmail": "Buka Email",
+            "changeEmail": "Ubah Email",
+            "emailVerified": "Email Terverifikasi",
+            "verificationSuccessDesc": "Anda telah berhasil memverifikasi {{email}}.",
+            "nextSteps": "Langkah Selanjutnya",
+            "nextStepsDesc": "Lanjutkan untuk memverifikasi telepon Anda.",
+            "title": "Verifikasi Alamat Email",
+            "verify": "Verifikasi",
+            "resendIn": "Kirim ulang dalam {{seconds}}s",
+            "needHelp": "Butuh Bantuan?",
+            "changeEmailDialog": "Ubah Alamat Email",
+            "changeEmailDesc": "Masukkan di bawah untuk menerima kode di alamat email baru.",
+            "emailLabel": "Alamat Email",
+            "emailPlaceholder": "name@example.com",
+            "saveAndSend": "Simpan & Kirim",
+            "validation": {
+                "codeRequired": "Silakan masukkan kode 6 digit."
+            },
+            "notification": {
+                "codeSent": "Kode dikirim ke {{email}}.",
+                "sendFailed": "Gagal mengirim kode",
+                "openingEmail": "Membuka aplikasi email...",
+                "verificationSuccess": "Email berhasil diverifikasi.",
+                "invalidCode": "Kode tidak valid. Silakan coba lagi."
+            }
+        },
+        "verifyPhone": {
+            "title": "Verifikasi Telepon",
+            "subtitle": "Silakan masukkan kode verifikasi yang dikirim ke telepon Anda.",
+            "code": "Kode Verifikasi",
+            "submit": "Verifikasi Telepon",
+            "resendCode": "Kirim Ulang Kode",
+            "resendSuccess": "Kode verifikasi terkirim",
+            "success": "Telepon berhasil diverifikasi",
+            "successMessage": "Nomor telepon Anda telah diverifikasi."
+        },
+        "mfa": {
+            "title": "Autentikasi Dua Faktor",
+            "subtitle": "Masukkan kode 6 digit dari aplikasi autentikator Anda",
+            "code": "Kode Verifikasi",
+            "submit": "Verifikasi",
+            "useBackup": "Gunakan kode cadangan sebagai gantinya",
+            "resendCode": "Kirim ulang kode",
+            "backupCode": "Kode Cadangan",
+            "success": "Verifikasi berhasil",
+            "setupTitle": "Siapkan Autentikasi Dua Faktor",
+            "scanQr": "Pindai QR ini dengan aplikasi autentikator Anda",
+            "manualEntry": "Atau masukkan kode ini secara manual",
+            "enterCode": "Masukkan kode 6 digit dari aplikasi Anda",
+            "confirmSetup": "Konfirmasi Setup",
+            "backupCodesTitle": "Kode Cadangan",
+            "backupCodesDescription": "Simpan kode cadangan ini di tempat yang aman. Anda dapat menggunakannya jika kehilangan akses ke autentikator Anda.",
+            "copyCodes": "Salin Kode",
+            "done": "Selesai",
+            "invalidCode": "Kode tidak valid. Silakan coba lagi.",
+            "tooManyAttempts": "Terlalu banyak percobaan salah. Silakan coba lagi."
+        },
+        "passkey": {
+            "title": "Autentikasi Passkey",
+            "subtitle": "Masuk dengan passkey Anda",
+            "usePasskey": "Gunakan Passkey",
+            "addPasskey": "Tambah Passkey",
+            "removePasskey": "Hapus Passkey",
+            "passkeyAdded": "Passkey berhasil ditambahkan",
+            "passkeyRemoved": "Passkey dihapus",
+            "error": "Terjadi kesalahan passkey"
+        },
+        "consent": {
+            "title": "Persetujuan Diperlukan",
+            "subtitle": "Aplikasi meminta akses ke akun Anda",
+            "permissions": "Izin",
+            "approve": "Setuju",
+            "deny": "Tolak",
+            "scopes": {
+                "openid": "OpenID Connect",
+                "profile": "Lihat profil Anda",
+                "email": "Lihat alamat email Anda",
+                "phone": "Lihat nomor telepon Anda"
+            }
+        },
+        "interaction": {
+            "title": "Autentikasi Diperlukan",
+            "subtitle": "Silakan selesaikan autentikasi",
+            "continue": "Lanjutkan",
+            "cancel": "Batal"
+        },
+        "Callback": {
+            "processing": "Memproses autentikasi...",
+            "success": "Autentikasi berhasil",
+            "error": "Autentikasi gagal"
+        },
+        "signedOut": {
+            "title": "Keluar",
+            "subtitle": "Anda telah berhasil keluar",
+            "signInAgain": "Masuk Lagi",
+            "returnHome": "Kembali ke Beranda"
+        },
+        "session": {
+            "expired": "Sesi Anda telah berakhir",
+            "expiredMessage": "Silakan masuk lagi untuk melanjutkan.",
+            "expiredAction": "Masuk"
+        }
+    },
+    "dashboard": {
+        "welcome": "Selamat datang kembali, {{name}}!",
+        "overview": "Gambaran Dasbor",
+        "quickActions": "Tindakan Cepat",
+        "recentActivity": "Aktivitas Terbaru",
+        "notifications": "Notifikasi",
+        "settings": "Pengaturan",
+        "profile": "Profil Saya",
+        "security": "Keamanan",
+        "wallet": "Dompet",
+        "help": "Bantuan & Dukungan"
+    },
+    "profile": {
+        "title": "Pengaturan Profil",
+        "personal": {
+            "title": "Informasi Pribadi",
+            "firstName": "Nama Depan",
+            "lastName": "Nama Belakang",
+            "email": "Alamat Email",
+            "phone": "Nomor Telepon",
+            "dateOfBirth": "Tanggal Lahir",
+            "nationality": "Kewarganegaraan",
+            "save": "Simpan",
+            "cancel": "Batal"
+        }
+    }
+}
