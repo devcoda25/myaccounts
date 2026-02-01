@@ -3,18 +3,21 @@
  * XSS prevention utilities
  */
 
+const htmlEscapes: Record<string, string> = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+  '/': '&#x2F;'
+};
+
 /**
  * Sanitize user input to prevent XSS attacks
  * Escapes HTML special characters
  */
 export function sanitizeInput(input: string): string {
-    return input
-        .replace(/&/g, '&')
-        .replace(/</g, '<')
-        .replace(/>/g, '>')
-        .replace(/"/g, '"')
-        .replace(/'/g, '&#x27;')
-        .replace(/\//g, '&#x2F;');
+    return input.replace(/[&<>"'/]/g, match => htmlEscapes[match]);
 }
 
 /**
