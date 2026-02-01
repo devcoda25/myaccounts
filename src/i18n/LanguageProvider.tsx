@@ -11,15 +11,24 @@ import {
 
 // Import translation files
 import enCommon from '../../public/locales/en/common.json';
+import enTranslation from '../../public/locales/en/translation.json';
 import swCommon from '../../public/locales/sw/common.json';
+import swTranslation from '../../public/locales/sw/translation.json';
 import arCommon from '../../public/locales/ar/common.json';
+import arTranslation from '../../public/locales/ar/translation.json';
 import frCommon from '../../public/locales/fr/common.json';
+import frTranslation from '../../public/locales/fr/translation.json';
 import jaCommon from '../../public/locales/ja/common.json';
+import jaTranslation from '../../public/locales/ja/translation.json';
 import koCommon from '../../public/locales/ko/common.json';
+import koTranslation from '../../public/locales/ko/translation.json';
 import zhCNCommon from '../../public/locales/zh-CN/common.json';
+import zhCNTranslation from '../../public/locales/zh-CN/translation.json';
 import zhCommon from '../../public/locales/zh/common.json';
+import zhTranslation from '../../public/locales/zh/translation.json';
 import zhTWCommon from '../../public/locales/zh-TW/common.json';
 import esCommon from '../../public/locales/es/common.json';
+import esTranslation from '../../public/locales/es/translation.json';
 import deCommon from '../../public/locales/ge/common.json';
 import ruCommon from '../../public/locales/ru/common.json';
 import hiCommon from '../../public/locales/hi/common.json';
@@ -31,16 +40,16 @@ import ptCommon from '../../public/locales/pt/common.json';
 
 // Initialize i18next
 const resources = {
-    en: { common: enCommon },
-    sw: { common: swCommon },
-    ar: { common: arCommon },
-    fr: { common: frCommon },
-    ja: { common: jaCommon },
-    ko: { common: koCommon },
-    'zh-CN': { common: zhCNCommon },
-    zh: { common: zhCommon },
+    en: { common: enCommon, translation: enTranslation },
+    sw: { common: swCommon, translation: swTranslation },
+    ar: { common: arCommon, translation: arTranslation },
+    fr: { common: frCommon, translation: frTranslation },
+    ja: { common: jaCommon, translation: jaTranslation },
+    ko: { common: koCommon, translation: koTranslation },
+    'zh-CN': { common: zhCNCommon, translation: zhCNTranslation },
+    zh: { common: zhCommon, translation: zhTranslation },
     'zh-TW': { common: zhTWCommon },
-    es: { common: esCommon },
+    es: { common: esCommon, translation: esTranslation },
     ge: { common: deCommon },
     ru: { common: ruCommon },
     hi: { common: hiCommon },
