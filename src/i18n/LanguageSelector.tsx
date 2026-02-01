@@ -21,7 +21,7 @@ import {
 import { supportedLocales, type LocaleCode } from './settings';
 
 export const LanguageSelector: React.FC<{
-    variant?: 'dropdown' | 'compact' | 'menu';
+    variant?: 'dropdown' | 'compact' | 'menu' | 'minimal';
     showName?: boolean;
     onLanguageChange?: (language: string) => void;
     className?: string;
@@ -65,6 +65,72 @@ export const LanguageSelector: React.FC<{
             { name: 'Expanded', locales: supportedLocales.filter(l => l.priority === 2) },
             { name: 'More', locales: supportedLocales.filter(l => l.priority === 3) },
         ];
+
+        if (variant === 'minimal') {
+            return (
+                <Box className={className}>
+                    <Button
+                        ref={anchorRef}
+                        onClick={handleClick}
+                        sx={{
+                            minWidth: 'auto',
+                            p: 0.5,
+                            borderRadius: 1,
+                            color: theme.palette.text.primary,
+                            '&:hover': {
+                                bgcolor: alpha(theme.palette.primary.main, 0.08),
+                            },
+                        }}
+                    >
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <Typography variant="body1">{currentLocale.flag}</Typography>
+                            <ChevronDown size={14} />
+                        </Box>
+                    </Button>
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                        PaperProps={{
+                            sx: {
+                                mt: 0.5,
+                                minWidth: 180,
+                                maxHeight: 350,
+                                bgcolor: theme.palette.background.paper,
+                                border: `1px solid ${theme.palette.divider}`,
+                                boxShadow: theme.shadows[3],
+                            }
+                        }}
+                    >
+                        {supportedLocales.map((lang) => (
+                            <MenuItem
+                                key={lang.code}
+                                onClick={() => handleLanguageChange(lang.code)}
+                                selected={language === lang.code}
+                                sx={{
+                                    py: 1,
+                                    px: 2,
+                                    bgcolor: language === lang.code
+                                        ? alpha(theme.palette.primary.main, 0.08)
+                                        : 'transparent',
+                                    '&:hover': {
+                                        bgcolor: alpha(theme.palette.primary.main, 0.12),
+                                    },
+                                }}
+                            >
+                                <Typography variant="body2" sx={{ mr: 1 }}>{lang.flag}</Typography>
+                                <Typography variant="body2">{lang.nativeName}</Typography>
+                                {language === lang.code && (
+                                    <Check size={14} color={theme.palette.primary.main} style={{ marginLeft: 'auto' }} />
+                                )}
+                            </MenuItem>
+                        ))}
+                    </Menu>
+                </Box>
+            );
+        }
 
         if (variant === 'compact') {
             return (
