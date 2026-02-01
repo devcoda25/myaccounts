@@ -331,4 +331,3 @@ export default function AuditLogs() {
         </motion.div>
     );
 }
-}
