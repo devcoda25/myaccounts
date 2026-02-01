@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import i18n from 'i18next';
 import {
     Box,
@@ -11,14 +11,14 @@ import {
     alpha,
     useTheme,
     Divider,
-    Chip,
 } from '@mui/material';
 import {
     Globe,
     Check,
     ChevronDown,
 } from 'lucide-react';
-import { supportedLocales, type LocaleCode } from './settings';
+import { supportedLocales } from './settings';
+import { useLanguage } from './LanguageProvider';
 
 export const LanguageSelector: React.FC<{
     variant?: 'dropdown' | 'compact' | 'menu' | 'minimal';
@@ -32,11 +32,11 @@ export const LanguageSelector: React.FC<{
     className = ''
 }) => {
         const theme = useTheme();
+        const { language, setLanguage } = useLanguage();
         const anchorRef = useRef<HTMLButtonElement>(null);
         const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
         const open = Boolean(anchorEl);
 
-        const language = i18n.language || 'en';
         const currentLocale = supportedLocales.find(l => l.code === language) || supportedLocales[0];
 
         const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -48,14 +48,8 @@ export const LanguageSelector: React.FC<{
         };
 
         const handleLanguageChange = (newLang: string) => {
-            i18n.changeLanguage(newLang);
+            setLanguage(newLang);
             onLanguageChange?.(newLang);
-
-            // Update document direction for RTL languages
-            const isRTL = newLang === 'ar';
-            document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
-            document.documentElement.lang = newLang;
-
             handleClose();
         };
 
