@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import i18n from 'i18next';
 import {
     Box,
@@ -18,7 +18,7 @@ import {
     ChevronDown,
 } from 'lucide-react';
 import { supportedLocales } from './settings';
-import { useLanguage } from './LanguageProvider';
+import { LanguageContext, useLanguage } from './LanguageProvider';
 
 export const LanguageSelector: React.FC<{
     variant?: 'dropdown' | 'compact' | 'menu' | 'minimal';
@@ -32,7 +32,31 @@ export const LanguageSelector: React.FC<{
     className = ''
 }) => {
         const theme = useTheme();
-        const { language, setLanguage } = useLanguage();
+
+        // Try to use LanguageContext, fall back to direct i18n if not available
+        let language: string;
+        let setLanguageFn: (lang: string) => void;
+
+        try {
+            const context = useContext(LanguageContext);
+            if (context) {
+                language = context.language;
+                setLanguageFn = context.setLanguage;
+            } else {
+                throw new Error('No context');
+            }
+        } catch {
+            // Fallback when used outside LanguageProvider (e.g., in tests)
+            language = i18n.language || 'en';
+            setLanguageFn = (lang: string) => {
+                i18n.changeLanguage(lang);
+                // Update document direction for RTL languages
+                const isRTL = lang === 'ar';
+                document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+                document.documentElement.lang = lang;
+            };
+        }
+
         const anchorRef = useRef<HTMLButtonElement>(null);
         const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
         const open = Boolean(anchorEl);
@@ -48,7 +72,7 @@ export const LanguageSelector: React.FC<{
         };
 
         const handleLanguageChange = (newLang: string) => {
-            setLanguage(newLang);
+            setLanguageFn(newLang);
             onLanguageChange?.(newLang);
             handleClose();
         };

@@ -90,7 +90,7 @@ interface LanguageContextType {
     availableLanguages: Array<{ code: string; name: string; nativeName: string }>;
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+export const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 // Provider component
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
