@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import {
     Box,
     IconButton,
@@ -13,19 +13,16 @@ import {
     Typography,
     useTheme,
     alpha,
-    ClickAwayListener
 } from '@mui/material';
 import {
     Menu as MenuIcon,
     Search as SearchIcon,
-    RefreshCw as RefreshIcon,
     Sun as SunIcon,
     Moon as MoonIcon,
     Bell,
     User as UserIcon,
     Settings,
     LogOut,
-    Globe,
     Shield
 } from 'lucide-react';
 import { useAuth } from 'react-oidc-context';
@@ -70,23 +67,13 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
     const handleNotifClose = () => setOpenNotif(false);
 
     // Profile Menu State
-    const anchorRef = useRef<HTMLButtonElement>(null);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const openMenu = Boolean(anchorEl);
 
-    const handleMenuClick = () => {
-        setAnchorEl(anchorRef.current);
-    };
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-    };
     const handleProfileClick = () => {
-        handleMenuClose();
+        setAnchorEl(null);
         navigate('/app/profile');
     };
-
-
-
 
     return (
         <Box sx={{
@@ -177,7 +164,7 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
                         anchorEl={notifRef.current}
                         open={openNotif}
                         onClose={handleNotifClose}
-                        onClick={handleNotifClose} // Close on item click optional
+                        onClick={handleNotifClose}
                         PaperProps={{
                             elevation: 0,
                             sx: {
@@ -203,17 +190,15 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
                         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                     >
-                        {/* We prevent closing when clicking inside the popover content itself if handled internally, but Menu handles outside clicks */}
                         <Box onClick={(e) => e.stopPropagation()}>
                             <NotificationsPopover onClose={handleNotifClose} />
                         </Box>
                     </Menu>
                 </Box>
 
-                <Box>
+                <Box sx={{ position: 'relative' }}>
                     <IconButton
-                        ref={anchorRef}
-                        onClick={handleMenuClick}
+                        onClick={(e) => setAnchorEl(e.currentTarget)}
                         size="small"
                         aria-controls={openMenu ? 'account-menu' : undefined}
                         aria-haspopup="true"
@@ -224,78 +209,76 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
                             sx={{ width: 32, height: 32, border: `2px solid ${alpha(theme.palette.primary.main, 0.2)}` }}
                         />
                     </IconButton>
-                    <ClickAwayListener onClickAway={handleMenuClose}>
-                        <Menu
-                            disableScrollLock
-                            anchorEl={anchorEl}
-                            id="account-menu"
-                            open={openMenu}
-                            onClose={handleMenuClose}
-                            onClick={handleMenuClose}
-                            PaperProps={{
-                                elevation: 0,
-                                sx: {
-                                    overflow: 'visible',
-                                    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                                    mt: 1.5,
-                                    width: 220,
-                                    borderRadius: '12px',
-                                    '& .MuiAvatar-root': { width: 32, height: 32, ml: -0.5, mr: 1 },
-                                    '&:before': {
-                                        content: '""',
-                                        display: 'block',
-                                        position: 'absolute',
-                                        top: 0,
-                                        right: 14,
-                                        width: 10,
-                                        height: 10,
-                                        bgcolor: 'background.paper',
-                                        transform: 'translateY(-50%) rotate(45deg)',
-                                        zIndex: 0,
-                                    },
+                    <Menu
+                        disableScrollLock
+                        anchorEl={anchorEl}
+                        id="account-menu"
+                        open={openMenu}
+                        onClose={() => setAnchorEl(null)}
+                        onClick={() => setAnchorEl(null)}
+                        PaperProps={{
+                            elevation: 0,
+                            sx: {
+                                overflow: 'visible',
+                                filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                                mt: 1.5,
+                                width: 220,
+                                borderRadius: '12px',
+                                '& .MuiAvatar-root': { width: 32, height: 32, ml: -0.5, mr: 1 },
+                                '&:before': {
+                                    content: '""',
+                                    display: 'block',
+                                    position: 'absolute',
+                                    top: 0,
+                                    right: 14,
+                                    width: 10,
+                                    height: 10,
+                                    bgcolor: 'background.paper',
+                                    transform: 'translateY(-50%) rotate(45deg)',
+                                    zIndex: 0,
                                 },
-                            }}
-                            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                        >
-                            <Box sx={{ p: 2, pt: 1.5, pb: 1 }}>
-                                <Typography variant="subtitle2" fontWeight={700} noWrap>
-                                    {user ? `${user.firstName} ${user.otherNames}` : 'Guest'}
+                            },
+                        }}
+                        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                    >
+                        <Box sx={{ p: 2, pt: 1.5, pb: 1 }}>
+                            <Typography variant="subtitle2" fontWeight={700} noWrap>
+                                {user ? `${user.firstName} ${user.otherNames}` : 'Guest'}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary" noWrap display="block">
+                                {user?.email || ''}
+                            </Typography>
+                            {user?.id && (
+                                <Typography variant="caption" sx={{ color: EVZONE.orange, fontWeight: 700, fontFamily: 'monospace' }}>
+                                    ID: {formatUserId(user.id)}
                                 </Typography>
-                                <Typography variant="caption" color="text.secondary" noWrap display="block">
-                                    {user?.email || ''}
-                                </Typography>
-                                {user?.id && (
-                                    <Typography variant="caption" sx={{ color: EVZONE.orange, fontWeight: 700, fontFamily: 'monospace' }}>
-                                        ID: {formatUserId(user.id)}
-                                    </Typography>
-                                )}
-                            </Box>
-                            <Divider />
-                            {user && (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') && (
-                                <>
-                                    <MenuItem onClick={() => { handleMenuClose(); navigate('/admin'); }} sx={{ py: 1.5, color: EVZONE.orange, fontWeight: 600 }}>
-                                        <ListItemIcon><Shield size={18} color={EVZONE.orange} /></ListItemIcon>
-                                        Admin Dashboard
-                                    </MenuItem>
-                                    <Divider />
-                                </>
                             )}
-                            <MenuItem onClick={handleProfileClick} sx={{ py: 1.5 }}>
-                                <ListItemIcon><UserIcon size={18} /></ListItemIcon>
-                                Profile
-                            </MenuItem>
-                            <MenuItem onClick={() => { handleMenuClose(); navigate('/app/settings'); }} sx={{ py: 1.5 }}>
-                                <ListItemIcon><Settings size={18} /></ListItemIcon>
-                                Settings
-                            </MenuItem>
-                            <Divider />
-                            <MenuItem onClick={() => { handleMenuClose(); logout(); }} sx={{ py: 1.5, color: 'error.main' }}>
-                                <ListItemIcon><LogOut size={18} color={theme.palette.error.main} /></ListItemIcon>
-                                Sign Out
-                            </MenuItem>
-                        </Menu>
-                    </ClickAwayListener>
+                        </Box>
+                        <Divider />
+                        {user && (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') && (
+                            <>
+                                <MenuItem onClick={() => { setAnchorEl(null); navigate('/admin'); }} sx={{ py: 1.5, color: EVZONE.orange, fontWeight: 600 }}>
+                                    <ListItemIcon><Shield size={18} color={EVZONE.orange} /></ListItemIcon>
+                                    Admin Dashboard
+                                </MenuItem>
+                                <Divider />
+                            </>
+                        )}
+                        <MenuItem onClick={handleProfileClick} sx={{ py: 1.5 }}>
+                            <ListItemIcon><UserIcon size={18} /></ListItemIcon>
+                            Profile
+                        </MenuItem>
+                        <MenuItem onClick={() => { setAnchorEl(null); navigate('/app/settings'); }} sx={{ py: 1.5 }}>
+                            <ListItemIcon><Settings size={18} /></ListItemIcon>
+                            Settings
+                        </MenuItem>
+                        <Divider />
+                        <MenuItem onClick={() => { setAnchorEl(null); logout(); }} sx={{ py: 1.5, color: 'error.main' }}>
+                            <ListItemIcon><LogOut size={18} color={theme.palette.error.main} /></ListItemIcon>
+                            Sign Out
+                        </MenuItem>
+                    </Menu>
                 </Box>
             </Stack>
         </Box>
