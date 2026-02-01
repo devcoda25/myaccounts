@@ -56,16 +56,20 @@ vi.mock('react-oidc-context', () => ({
 }));
 
 // Mock LanguageProvider/i18n
-vi.mock('../i18n/LanguageProvider', () => ({
-  LanguageProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  useLanguage: () => ({
-    language: 'en',
-    setLanguage: vi.fn(),
-    t: (key: string) => key,
-    isRTL: false,
-    availableLanguages: [],
-  }),
-}));
+vi.mock('../i18n/LanguageProvider', async () => {
+  const actual = await import('../i18n/LanguageProvider');
+  return {
+    ...actual,
+    LanguageProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    useLanguage: () => ({
+      language: 'en',
+      setLanguage: vi.fn(),
+      t: (key: string) => key,
+      isRTL: false,
+      availableLanguages: [],
+    }),
+  };
+});
 
 import AppComp from '../features/dashboard/Index'
 import AppAppsComp from '../features/apps/Apps'
