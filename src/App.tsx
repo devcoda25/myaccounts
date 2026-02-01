@@ -7,7 +7,8 @@ import { useIdleTimer } from './hooks/useIdleTimer';
 import { AuthProvider, useAuth } from 'react-oidc-context';
 import { oidcConfig, userManager } from './auth/oidcConfig';
 import { NotificationProvider } from './context/NotificationContext';
-import './i18n/index';
+// Initialize i18n before any i18n-dependent components
+import './i18n/LanguageProvider';
 
 export default function App() {
   // Auto-logout after 30 minutes of inactivity

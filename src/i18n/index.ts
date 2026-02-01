@@ -14,3 +14,5 @@ export {
 
 // Settings and utilities
 export * from './settings';
+
+export { default as i18n } from './i18n';
