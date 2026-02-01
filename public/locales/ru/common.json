@@ -1,0 +1,721 @@
+{
+  "app": {
+    "name": "Мои аккаунты EVzone",
+    "tagline": "Единый аккаунт для всех сервисов EVzone"
+  },
+  "common": {
+    "actions": {
+      "save": "Сохранить",
+      "cancel": "Отмена",
+      "delete": "Удалить",
+      "edit": "Редактировать",
+      "submit": "Отправить",
+      "close": "Закрыть",
+      "back": "Назад",
+      "next": "Далее",
+      "confirm": "Подтвердить",
+      "search": "Поиск",
+      "filter": "Фильтр",
+      "clear": "Очистить",
+      "reset": "Сбросить",
+      "refresh": "Обновить",
+      "retry": "Повторить",
+      "continue": "Продолжить",
+      "done": "Готово",
+      "send": "Отправить",
+      "download": "Скачать",
+      "upload": "Загрузить",
+      "copy": "Копировать",
+      "view": "Просмотр",
+      "hide": "Скрыть",
+      "show": "Показать",
+      "expand": "Развернуть",
+      "collapse": "Свернуть",
+      "select": "Выбрать",
+      "selectAll": "Выбрать все",
+      "deselectAll": "Снять выделение",
+      "add": "Добавить",
+      "remove": "Удалить",
+      "update": "Обновить",
+      "create": "Создать",
+      "signIn": "Войти",
+      "signOut": "Выйти",
+      "signUp": "Регистрация",
+      "login": "Вход",
+      "logout": "Выход",
+      "register": "Зарегистрироваться"
+    },
+    "errors": {
+      "required": "Это поле обязательно",
+      "invalidEmail": "Введите корректный адрес e-mail",
+      "invalidPhone": "Введите корректный номер телефона",
+      "passwordTooShort": "Пароль должен содержать не менее 8 символов",
+      "passwordRequiresUppercase": "Пароль должен содержать заглавную букву",
+      "passwordRequiresLowercase": "Пароль должен содержать строчную букву",
+      "passwordRequiresNumber": "Пароль должен содержать цифру",
+      "passwordRequiresSpecial": "Пароль должен содержать специальный символ",
+      "passwordsDoNotMatch": "Пароли не совпадают",
+      "networkError": "Ошибка сети. Попробуйте ещё раз.",
+      "serverError": "Ошибка сервера. Попробуйте позже.",
+      "unknownError": "Произошла непредвиденная ошибка.",
+      "sessionExpired": "Сеанс истёк. Войдите снова.",
+      "invalidCredentials": "Неверные учетные данные. Попробуйте ещё раз.",
+      "tooManyAttempts": "Слишком много попыток. Попробуйте позже.",
+      "accountLocked": "Ваш аккаунт заблокирован.",
+      "emailAlreadyExists": "Аккаунт с этим адресом электронной почты уже существует.",
+      "userNotFound": "Пользователь не найден.",
+      "unauthorized": "У вас нет прав для выполнения этого действия.",
+      "forbidden": "Доступ запрещён.",
+      "notFound": "Запрошенный ресурс не найден.",
+      "badRequest": "Неверный запрос.",
+      "internalServerError": "Внутренняя ошибка сервера.",
+      "serviceUnavailable": "Сервис временно недоступен.",
+      "validationError": "Проверьте введённые данные и попробуйте снова."
+    },
+    "loading": {
+      "loading": "Загрузка...",
+      "pleaseWait": "Пожалуйста, подождите...",
+      "processing": "Обработка...",
+      "saving": "Сохранение...",
+      "deleting": "Удаление...",
+      "updating": "Обновление...",
+      "signingIn": "Выполняется вход...",
+      "signingOut": "Выполняется выход..."
+    },
+    "validation": {
+      "confirmDelete": "Вы уверены, что хотите удалить этот элемент?",
+      "unsavedChanges": "У вас есть несохранённые изменения. Хотите выйти?",
+      "minLength": "Должно быть не менее {{count}} символов",
+      "maxLength": "Должно быть не более {{count}} символов",
+      "minValue": "Значение должно быть не меньше {{count}}",
+      "maxValue": "Значение должно быть не больше {{count}}"
+    },
+    "placeholders": {
+      "email": "Введите e-mail",
+      "phone": "Введите номер телефона",
+      "password": "Введите пароль",
+      "newPassword": "Введите новый пароль",
+      "confirmPassword": "Подтвердите пароль",
+      "search": "Поиск...",
+      "selectOption": "Выберите вариант"
+    }
+  },
+  "loading": {
+    "session": "Инициализация безопасного сеанса..."
+  },
+  "error": {
+    "title": "Ошибка аутентификации",
+    "sessionFailed": "Не удалось инициализировать безопасный сеанс.",
+    "retry": "Повторить"
+  },
+  "password": {
+    "weak": "Слабый",
+    "fair": "Средний",
+    "good": "Хороший",
+    "strong": "Сильный",
+    "veryStrong": "Очень сильный"
+  },
+  "header": {
+    "title": "Аккаунты EVzone",
+    "subtitle": "Создайте вашу идентичность EVzone"
+  },
+  "auth": {
+    "common": {
+      "loading": "Загрузка...",
+      "or": "или",
+      "email": "E-mail",
+      "phone": "Телефон",
+      "terms": "Условия",
+      "privacy": "Конфиденциальность",
+      "help": "Помощь",
+      "signIn": "Войти",
+      "signUp": "Регистрация",
+      "switchToLight": "Переключить на светлую тему",
+      "switchToDark": "Переключить на тёмную тему",
+      "continue": "Продолжить",
+      "back": "Назад",
+      "cancel": "Отмена",
+      "save": "Сохранить",
+      "submit": "Отправить",
+      "verify": "Подтвердить",
+      "send": "Отправить"
+    },
+    "signIn": {
+      "title": "Войти",
+      "subtitle": "С возвращением! Войдите, чтобы продолжить.",
+      "emailOrPhone": "E-mail или телефон",
+      "password": "Пароль",
+      "forgotPassword": "Забыли пароль?",
+      "rememberMe": "Запомнить меня",
+      "submit": "Войти",
+      "noAccount": "Нет аккаунта?",
+      "signUp": "Регистрация",
+      "orContinueWith": "или продолжить с",
+      "checking": "Проверка...",
+      "unavailable": "Недоступно",
+      "errors": {
+        "enterEmailOrPhone": "Введите e-mail или номер телефона.",
+        "enterPassword": "Введите пароль, чтобы продолжить.",
+        "invalidCredentials": "Неверные учетные данные. Попробуйте ещё раз.",
+        "locked": "Заблокировано. Повторите через {{seconds}}с"
+      },
+      "verifying": "Проверяем учетные данные...",
+      "failed": "Не удалось войти",
+      "left": {
+        "title": "Один аккаунт для всего в EVzone",
+        "subtitle": "Получайте доступ к Charging, Marketplace и Pay с единой безопасной идентичностью.",
+        "demoNote": "Предзаполнено для демо: example@mail.com"
+      },
+      "right": {
+        "subtitle": "чтобы продолжить в EVzone Portal"
+      },
+      "features": {
+        "secureSessions": {
+          "title": "Безопасные сеансы",
+          "desc": "Круглосуточный мониторинг безопасности банковского уровня."
+        },
+        "passkeys": {
+          "title": "Ключи доступа и биометрия",
+          "desc": "Войти с TouchID или FaceID."
+        },
+        "privacy": {
+          "title": "Конфиденциальность прежде всего",
+          "desc": "Мы максимально защищаем вашу конфиденциальность данных."
+        }
+      },
+      "showPassword": "Показать пароль",
+      "hidePassword": "Скрыть пароль",
+      "switchingToPassword": "Переключение на пароль...",
+      "placeholders": {
+        "email": "name@example.com"
+      },
+      "useOtpTitle": "Использовать одноразовый код",
+      "useOtpSubtitle": "Нет пароля? Используйте магический код.",
+      "comingSoon": "Скоро",
+      "otpComingSoon": "Вход по одноразовому коду интегрируется.",
+      "sendCode": "Отправить код",
+      "termsAgree": "Продолжая, вы соглашаетесь с условиями и политикой конфиденциальности EVzone.",
+      "locked": "Заблокировано. Повторите через {{seconds}}с"
+    },
+    "signUp": {
+      "sectionTitle": "Создание аккаунта",
+      "sectionSubtitle": "Создайте единый безопасный ID для всех сервисов EVzone.",
+      "secureIdentity": "Безопасная идентичность",
+      "secureIdentityDesc": "Банковский уровень безопасности для ваших активов.",
+      "clearPermissions": "Очистить разрешения",
+      "clearPermissionsDesc": "Вы контролируете, как вы делитесь данными.",
+      "backToSignIn": "Назад ко входу",
+      "createAccount": "Создать аккаунт",
+      "getStarted": "Начните с EVzone",
+      "continueWithGoogle": "Продолжить с Google",
+      "continueWithApple": "Продолжить с Apple",
+      "firstName": "Имя",
+      "firstNamePlaceholder": "напр. Jane",
+      "otherNames": "Другие имена",
+      "otherNamesPlaceholder": "напр. Doe",
+      "email": "Адрес e-mail",
+      "emailPlaceholder": "name@example.com",
+      "phone": "Номер телефона",
+      "phonePlaceholder": "700 000 000",
+      "createWithOtp": "Создать с одноразовым кодом",
+      "createWithOtpDesc": "Пароль не требуется. Мы подтвердим ваш телефон.",
+      "createPassword": "Создать пароль",
+      "confirmPassword": "Подтвердить пароль",
+      "otpInfo": "Вы получите OTP, чтобы подтвердить аккаунт.",
+      "inviteCode": "Код приглашения (необязательно)",
+      "inviteCodePlaceholder": "напр. EVZ-123",
+      "termsAgreement": "Я согласен(на) с условиями обслуживания и политикой конфиденциальности.",
+      "continue": "Продолжить",
+      "switchToSignIn": "Перейти ко входу",
+      "verifyContactInfo": "Подтвердите контактные данные на следующем шаге.",
+      "validation": {
+        "firstNameRequired": "Введите имя.",
+        "otherNamesRequired": "Введите другие имена.",
+        "emailOrPhoneRequired": "Укажите хотя бы e-mail или номер телефона.",
+        "validEmailRequired": "Введите корректный адрес e-mail.",
+        "termsRequired": "Вы должны принять условия и политику конфиденциальности.",
+        "passwordRequired": "Создайте пароль.",
+        "passwordMinLength": "Пароль должен содержать не менее 8 символов.",
+        "passwordsDoNotMatch": "Пароли не совпадают."
+      },
+      "notification": {
+        "registrationInfo": "Информация о регистрации",
+        "accountCreated": "Аккаунт создан",
+        "accountCreatedSuccess": "Аккаунт успешно создан! Выполняем безопасный вход...",
+        "verifyEmail": "Подтвердите ваш e-mail",
+        "verifyEmailSuccess": "Аккаунт создан! Проверьте почту, чтобы найти ссылку для подтверждения.",
+        "registrationFailed": "Регистрация не удалась",
+        "registrationFailedMessage": "Не удалось создать аккаунт. Попробуйте ещё раз."
+      }
+    },
+    "forgotPassword": {
+      "subtitle": "Забыли пароль",
+      "resetAccess": "Сбросить доступ",
+      "resetAccessDesc": "Восстановите аккаунт с помощью подтверждённого e-mail или телефона.",
+      "rateLimiting": "Ограничение частоты",
+      "rateLimitingDesc": "Подождите 30 секунд между запросами.",
+      "secureLink": "Безопасная ссылка",
+      "secureLinkDesc": "Мы отправим магическую ссылку или код.",
+      "backToSignIn": "Назад ко входу",
+      "checkContact": "Проверьте {{type}}",
+      "instructionsSent": "Мы отправили инструкции на {{mask}} через {{method}}.",
+      "nextSteps": "Следующие шаги",
+      "nextStepsDesc": "Нажмите на ссылку или введите код, чтобы сбросить пароль.",
+      "enterResetCode": "Введите код сброса",
+      "resendIn": "Отправить снова через {{seconds}}с",
+      "sendAgain": "Отправить снова",
+      "changeContactInfo": "Изменить контактные данные",
+      "needHelp": "Нужна помощь?",
+      "title": "Забыли пароль",
+      "enterToRecover": "Введите e-mail или телефон, чтобы восстановить аккаунт.",
+      "identifierLabel": "Введите e-mail или телефон",
+      "identifierPlaceholder": "name@example.com",
+      "validIdentifierHint": "Введите корректный e-mail или номер телефона.",
+      "deliveryMethod": "Способ доставки",
+      "captchaLabel": "Я человек",
+      "captchaDesc": "Пройдите проверку CAPTCHA.",
+      "accountRecoveryHelp": "Помощь по восстановлению аккаунта",
+      "spamTip": "Совет: проверьте папку «Спам», если не видите письмо.",
+      "confirmSend": "Подтвердить отправку",
+      "sendTo": "Отправить инструкции по восстановлению на:",
+      "viaMethod": "через {{method}}",
+      "invalidatePrevious": "Это сделает предыдущие ссылки недействительными.",
+      "sendInstructions": "Отправить инструкции",
+      "delivery": {
+        "emailLink": "Ссылка e-mail",
+        "emailLinkDesc": "Отправить магическую ссылку на ваш e-mail.",
+        "smsCode": "SMS-код",
+        "smsCodeDesc": "Отправить 6-значный код на ваш телефон.",
+        "whatsappCode": "Код WhatsApp",
+        "whatsappCodeDesc": "Отправить код через WhatsApp."
+      },
+      "phoneMethodsHint": "Телефонные методы доступны, если вы введёте номер телефона.",
+      "validation": {
+        "enterIdentifier": "Введите e-mail или телефон",
+        "validIdentifier": "Введите корректный e-mail или номер телефона.",
+        "waitCooldown": "Подождите {{seconds}}с",
+        "completeCaptcha": "Завершите CAPTCHA."
+      },
+      "notification": {
+        "sentSuccess": "Успешно отправлено через {{via}}.",
+        "sendFailed": "Не удалось отправить запрос. Попробуйте ещё раз."
+      }
+    },
+    "resetPassword": {
+      "subtitle": "Сбросить пароль",
+      "createNewPassword": "Создать новый пароль",
+      "enterNewPassword": "Введите новый пароль для вашего аккаунта.",
+      "navigateToForgot": "Перейти к /auth/forgot-password",
+      "backToForgotPassword": "Назад к «Забыли пароль»",
+      "title": "Сбросить пароль",
+      "enterDetails": "Введите данные, чтобы сбросить пароль.",
+      "tokenTab": "Токен",
+      "codeTab": "Код",
+      "resetToken": "Токен сброса",
+      "tokenPlaceholder": "Введите токен",
+      "tokenHelperText": "Проверьте почту, чтобы найти токен.",
+      "verifyToken": "Подтвердить токен",
+      "identifierLabel": "E-mail или телефон",
+      "identifierPlaceholder": "Введите e-mail или телефон",
+      "identifierHelper": "Мы определим способ на основе введённых данных.",
+      "deliveryMethod": "Способ доставки",
+      "codeSent": "Код отправлен",
+      "sendCode": "Отправить код",
+      "resendCode": "Отправить код ещё раз",
+      "verifyCode": "Подтвердить код",
+      "newPassword": "Новый пароль",
+      "confirmPassword": "Подтвердить пароль",
+      "requirements": "Требования",
+      "signOutAll": "Выйти на всех других устройствах",
+      "resetButton": "Сбросить пароль",
+      "passwordUpdated": "Пароль обновлён",
+      "passwordChangedSuccess": "Ваш пароль успешно изменён.",
+      "goToSignIn": "Перейти ко входу",
+      "accountRecoveryHelp": "Помощь по восстановлению аккаунта",
+      "navigateToHelp": "Перейти к /auth/account-recovery-help",
+      "channel": {
+        "email": "E-mail",
+        "emailDesc": "Отправить на e-mail",
+        "sms": "SMS",
+        "smsDesc": "Отправить через SMS",
+        "whatsapp": "WhatsApp",
+        "whatsappDesc": "Отправить через WhatsApp"
+      },
+      "phoneChannelsDisabled": "Телефонные каналы отключены для пользователей e-mail.",
+      "req": {
+        "length": "Не менее 8 символов",
+        "uppercase": "Одна заглавная буква",
+        "lowercase": "Одна строчная буква",
+        "number": "Одна цифра",
+        "special": "Один специальный символ",
+        "match": "Пароли совпадают"
+      },
+      "validation": {
+        "tokenRequired": "Введите токен сброса.",
+        "identifierRequired": "Введите ваш e-mail или телефон.",
+        "invalidIdentifier": "Неверный e-mail или телефон.",
+        "codeRequired": "Введите 6-значный код.",
+        "passwordRequired": "Введите пароль.",
+        "passwordStrength": "Пароль должен быть надёжнее.",
+        "passwordsDoNotMatch": "Пароли не совпадают."
+      },
+      "notification": {
+        "codeSentEmail": "Код отправлен на e-mail.",
+        "codeSentVia": "Код отправлен через {{channel}}.",
+        "sendFailed": "Не удалось отправить код.",
+        "resetSuccessSignedOut": "Пароль сброшен. Вы вышли из системы.",
+        "resetSuccess": "Пароль успешно сброшен.",
+        "resetFailed": "Не удалось сбросить пароль. Неверный код/токен."
+      }
+    },
+    "verifyEmail": {
+      "pageTitle": "Подтвердить адрес e-mail",
+      "checkInbox": "Проверьте входящие",
+      "codeSentTo": "Мы отправили код на {{email}}.",
+      "openEmailApp": "Открыть почтовое приложение",
+      "openEmailAppDesc": "Нажмите, чтобы открыть почтовый клиент.",
+      "resendCode": "Отправить код ещё раз",
+      "resendCodeDesc": "Нажмите ниже, чтобы отправить новый код.",
+      "openEmail": "Открыть почту",
+      "changeEmail": "Изменить e-mail",
+      "emailVerified": "E-mail подтверждён",
+      "verificationSuccessDesc": "Вы успешно подтвердили {{email}}.",
+      "nextSteps": "Следующие шаги",
+      "nextStepsDesc": "Продолжить к подтверждению телефона.",
+      "title": "Подтвердить адрес e-mail",
+      "verify": "Подтвердить",
+      "resendIn": "Отправить снова через {{seconds}}с",
+      "needHelp": "Нужна помощь?",
+      "changeEmailDialog": "Изменить адрес e-mail",
+      "changeEmailDesc": "Введите ниже новый адрес e-mail, чтобы получить код.",
+      "emailLabel": "Адрес e-mail",
+      "emailPlaceholder": "name@example.com",
+      "saveAndSend": "Сохранить и отправить",
+      "validation": {
+        "codeRequired": "Введите 6-значный код."
+      },
+      "notification": {
+        "codeSent": "Код отправлен на {{email}}.",
+        "sendFailed": "Не удалось отправить код",
+        "openingEmail": "Открываем почтовое приложение...",
+        "verificationSuccess": "E-mail успешно подтверждён.",
+        "invalidCode": "Неверный код. Попробуйте ещё раз."
+      }
+    },
+    "verifyPhone": {
+      "title": "Подтвердить телефон",
+      "subtitle": "Введите код подтверждения, отправленный на ваш телефон.",
+      "code": "Код подтверждения",
+      "submit": "Подтвердить телефон",
+      "resendCode": "Отправить код ещё раз",
+      "resendSuccess": "Код подтверждения отправлен",
+      "success": "Телефон успешно подтверждён",
+      "successMessage": "Ваш номер телефона подтверждён."
+    },
+    "mfa": {
+      "title": "Двухфакторная аутентификация",
+      "subtitle": "Введите 6-значный код из приложения-аутентификатора",
+      "code": "Код подтверждения",
+      "submit": "Подтвердить",
+      "useBackup": "Использовать резервный код вместо этого",
+      "resendCode": "Отправить код ещё раз",
+      "backupCode": "Резервный код",
+      "success": "Подтверждение успешно",
+      "setupTitle": "Настроить двухфакторную аутентификацию",
+      "scanQr": "Отсканируйте этот QR-код в приложении-аутентификаторе",
+      "manualEntry": "Или введите этот код вручную",
+      "enterCode": "Введите 6-значный код из приложения",
+      "confirmSetup": "Подтвердить настройку",
+      "backupCodesTitle": "Резервные коды",
+      "backupCodesDescription": "Сохраните эти резервные коды в безопасном месте. Вы сможете использовать их, если потеряете доступ к аутентификатору.",
+      "copyCodes": "Копировать коды",
+      "done": "Готово",
+      "invalidCode": "Неверный код. Попробуйте ещё раз.",
+      "tooManyAttempts": "Слишком много неверных попыток. Попробуйте снова."
+    },
+    "passkey": {
+      "title": "Аутентификация по ключу доступа",
+      "subtitle": "Войти с ключом доступа",
+      "usePasskey": "Использовать ключ доступа",
+      "addPasskey": "Добавить ключ доступа",
+      "removePasskey": "Удалить ключ доступа",
+      "passkeyAdded": "Ключ доступа успешно добавлен",
+      "passkeyRemoved": "Ключ доступа удалён",
+      "error": "Произошла ошибка ключа доступа"
+    },
+    "consent": {
+      "title": "Требуется согласие",
+      "subtitle": "Приложение запрашивает доступ к вашему аккаунту",
+      "permissions": "Разрешения",
+      "approve": "Одобрить",
+      "deny": "Отклонить",
+      "scopes": {
+        "openid": "OpenID Connect",
+        "profile": "Просмотреть профиль",
+        "email": "Просмотреть ваш e-mail",
+        "phone": "Просмотреть ваш номер телефона"
+      }
+    },
+    "interaction": {
+      "title": "Требуется аутентификация",
+      "subtitle": "Завершите аутентификацию",
+      "continue": "Продолжить",
+      "cancel": "Отмена"
+    },
+    "Callback": {
+      "processing": "Обработка аутентификации...",
+      "success": "Аутентификация успешна",
+      "error": "Аутентификация не удалась"
+    },
+    "signedOut": {
+      "title": "Вы вышли",
+      "subtitle": "Вы успешно вышли из системы",
+      "signInAgain": "Войти снова",
+      "returnHome": "Вернуться на главную"
+    },
+    "session": {
+      "expired": "Сеанс истёк",
+      "expiredMessage": "Войдите снова, чтобы продолжить.",
+      "expiredAction": "Войти"
+    }
+  },
+  "dashboard": {
+    "welcome": "С возвращением, {{name}}!",
+    "overview": "Обзор панели",
+    "quickActions": "Быстрые действия",
+    "recentActivity": "Недавняя активность",
+    "notifications": "Уведомления",
+    "settings": "Настройки",
+    "profile": "Мой профиль",
+    "security": "Безопасность",
+    "wallet": "Кошелёк",
+    "help": "Помощь и поддержка"
+  },
+  "profile": {
+    "title": "Настройки профиля",
+    "personal": {
+      "title": "Личная информация",
+      "firstName": "Имя",
+      "lastName": "Фамилия",
+      "email": "Адрес e-mail",
+      "phone": "Номер телефона",
+      "save": "Сохранить изменения"
+    },
+    "contact": {
+      "title": "Контактная информация",
+      "address": "Адрес",
+      "city": "Город",
+      "country": "Страна",
+      "postalCode": "Почтовый индекс"
+    },
+    "linkedAccounts": {
+      "title": "Связанные аккаунты",
+      "description": "Управляйте подключенными аккаунтами",
+      "google": "Google",
+      "apple": "Apple",
+      "connect": "Подключить",
+      "disconnect": "Отключить",
+      "connected": "Подключено",
+      "notConnected": "Не подключено"
+    }
+  },
+  "security": {
+    "title": "Настройки безопасности",
+    "password": {
+      "title": "Пароль",
+      "current": "Текущий пароль",
+      "new": "Новый пароль",
+      "confirm": "Подтвердить новый пароль",
+      "update": "Обновить пароль",
+      "success": "Пароль успешно обновлён",
+      "error": "Не удалось обновить пароль"
+    },
+    "twoFactor": {
+      "title": "Двухфакторная аутентификация",
+      "enabled": "Включено",
+      "disabled": "Отключено",
+      "enable": "Включить 2FA",
+      "disable": "Отключить 2FA",
+      "setup": "Настроить 2FA",
+      "description": "Добавьте дополнительный уровень защиты для вашего аккаунта"
+    },
+    "sessions": {
+      "title": "Активные сеансы",
+      "description": "Управляйте активными сеансами",
+      "current": "Текущий сеанс",
+      "other": "Другие сеансы",
+      "revoke": "Отозвать",
+      "revokeAll": "Отозвать все другие сеансы"
+    },
+    "activity": {
+      "title": "Активность входа",
+      "description": "Просмотреть недавнюю активность входа",
+      "recentLogins": "Недавние входы",
+      "location": "Местоположение",
+      "device": "Устройство",
+      "time": "Время"
+    },
+    "passkeys": {
+      "title": "Ключи доступа",
+      "description": "Управляйте ключами доступа для входа без пароля",
+      "add": "Добавить ключ доступа",
+      "remove": "Удалить",
+      "lastUsed": "Последнее использование"
+    },
+    "recoveryCodes": {
+      "title": "Коды восстановления",
+      "description": "Используйте эти коды, чтобы получить доступ к аккаунту, если вы потеряете устройство 2FA",
+      "generate": "Сгенерировать новые коды",
+      "copied": "Коды скопированы в буфер обмена"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Панель администратора",
+      "users": "Всего пользователей",
+      "active": "Активные пользователи",
+      "revenue": "Доход",
+      "systemHealth": "Состояние системы"
+    },
+    "users": {
+      "title": "Управление пользователями",
+      "search": "Поиск пользователей...",
+      "add": "Добавить пользователя",
+      "edit": "Редактировать пользователя",
+      "delete": "Удалить пользователя",
+      "status": "Статус",
+      "active": "Активно",
+      "inactive": "Неактивно",
+      "suspended": "Приостановлено"
+    },
+    "apps": {
+      "title": "Управление приложениями",
+      "add": "Зарегистрировать приложение",
+      "edit": "Редактировать приложение",
+      "delete": "Удалить приложение",
+      "clientId": "ID клиента",
+      "redirectUris": "Redirect URI"
+    },
+    "audit": {
+      "title": "Журналы аудита",
+      "filter": "Фильтровать журналы",
+      "export": "Экспорт"
+    },
+    "kyc": {
+      "title": "Проверка KYC",
+      "pending": "В ожидании",
+      "approved": "Одобрено",
+      "rejected": "Отклонено"
+    }
+  },
+  "wallet": {
+    "title": "Мой кошелёк",
+    "balance": "Баланс",
+    "currency": "USD",
+    "addFunds": "Пополнить",
+    "withdraw": "Вывести",
+    "transactions": "Транзакции",
+    "history": "История транзакций",
+    "pending": "В ожидании",
+    "completed": "Завершено",
+    "failed": "Ошибка",
+    "deposit": "Пополнение",
+    "payment": "Платёж",
+    "refund": "Возврат"
+  },
+  "support": {
+    "title": "Помощь и поддержка",
+    "faq": "Часто задаваемые вопросы",
+    "contact": "Связаться со службой поддержки",
+    "submitTicket": "Создать тикет",
+    "myTickets": "Мои тикеты",
+    "openTickets": "Открытые тикеты",
+    "closedTickets": "Закрытые тикеты",
+    "securityReport": {
+      "title": "Сообщить о проблеме безопасности",
+      "subtitle": "Помогите нам обеспечить безопасность EVzone, сообщая об уязвимостях",
+      "type": "Тип проблемы",
+      "url": "URL, где была обнаружена проблема",
+      "description": "Описание",
+      "steps": "Шаги для воспроизведения"
+    }
+  },
+  "legal": {
+    "terms": {
+      "title": "Условия обслуживания",
+      "lastUpdated": "Последнее обновление {{date}}",
+      "accept": "Я принимаю условия обслуживания"
+    },
+    "privacy": {
+      "title": "Политика конфиденциальности",
+      "lastUpdated": "Последнее обновление {{date}}"
+    },
+    "cookies": {
+      "title": "Политика использования cookie",
+      "lastUpdated": "Последнее обновление {{date}}",
+      "description": "Этот сайт использует cookie для улучшения вашего опыта.",
+      "acceptAll": "Принять все",
+      "rejectAll": "Отклонить все",
+      "customize": "Настроить"
+    },
+    "consent": {
+      "title": "Согласие на конфиденциальность",
+      "description": "Управляйте настройками конфиденциальности",
+      "necessary": "Необходимые",
+      "functional": "Функциональные",
+      "analytics": "Аналитика",
+      "marketing": "Маркетинг",
+      "savePreferences": "Сохранить настройки"
+    }
+  },
+  "errors": {
+    "403": {
+      "title": "Доступ запрещён",
+      "subtitle": "У вас нет разрешения на доступ к этой странице.",
+      "description": "Возможно, у вас нет необходимых разрешений для просмотра этого содержимого.",
+      "action": "Перейти к панели"
+    },
+    "404": {
+      "title": "Страница не найдена",
+      "subtitle": "Страница, которую вы ищете, не существует.",
+      "description": "Запрошенная вами страница не найдена. Возможно, она была перемещена или удалена.",
+      "action": "На главную"
+    },
+    "429": {
+      "title": "Слишком много запросов",
+      "subtitle": "Пожалуйста, помедленнее",
+      "description": "Вы сделали слишком много запросов за короткое время. Подождите немного и попробуйте снова.",
+      "action": "Попробовать снова"
+    },
+    "500": {
+      "title": "Что-то пошло не так",
+      "subtitle": "Произошла непредвиденная ошибка",
+      "description": "Извините, что-то пошло не так. Наша команда уведомлена.",
+      "action": "Перейти к панели",
+      "support": "Связаться со службой поддержки"
+    }
+  },
+  "footer": {
+    "copyright": "© {{year}} EVzone. Все права защищены.",
+    "terms": "Условия обслуживания",
+    "privacy": "Политика конфиденциальности",
+    "cookies": "Политика использования cookie",
+    "contact": "Связаться с нами",
+    "help": "Центр помощи",
+    "about": "О EVzone",
+    "careers": "Карьера",
+    "press": "Пресса",
+    "social": "Подписывайтесь на нас"
+  },
+  "accessibility": {
+    "skipToContent": "Перейти к основному содержимому",
+    "menuToggle": "Переключить меню",
+    "closeMenu": "Закрыть меню",
+    "openSearch": "Открыть поиск",
+    "closeSearch": "Закрыть поиск",
+    "previous": "Назад",
+    "next": "Далее",
+    "expandSection": "Развернуть раздел",
+    "collapseSection": "Свернуть раздел"
+  }
+}

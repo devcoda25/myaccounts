@@ -22,6 +22,8 @@ export const supportedLocales = [
     { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt', dir: 'ltr', flag: '🇻🇳', priority: 3 },
     { code: 'pt', name: 'Portuguese', nativeName: 'Português', dir: 'ltr', flag: '🇧🇷', priority: 3 },
     { code: 'es', name: 'Spanish', nativeName: 'Español', dir: 'ltr', flag: '🇪🇸', priority: 3 },
+    { code: 'ge', name: 'German', nativeName: 'Deutsch', dir: 'ltr', flag: '🇩🇪', priority: 3 },
+    { code: 'ru', name: 'Russian', nativeName: 'Русский', dir: 'ltr', flag: '🇷🇺', priority: 3 },
 ] as const;
 
 export type LocaleCode = typeof supportedLocales[number]['code'];
@@ -123,6 +125,8 @@ export const getCurrencyByLocale = (locale: LocaleCode): string => {
         'vi': 'VND',
         'pt': 'BRL',
         'es': 'EUR',
+        'ge': 'EUR',
+        'ru': 'RUB',
     };
     return currencyMap[locale] || 'USD';
 };

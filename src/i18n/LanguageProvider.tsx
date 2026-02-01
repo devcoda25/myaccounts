@@ -19,6 +19,8 @@ import koCommon from '../../public/locales/ko/common.json';
 import zhCNCommon from '../../public/locales/zh-CN/common.json';
 import zhCommon from '../../public/locales/zh/common.json';
 import esCommon from '../../public/locales/es/common.json';
+import deCommon from '../../public/locales/ge/common.json';
+import ruCommon from '../../public/locales/ru/common.json';
 
 // Initialize i18next
 const resources = {
@@ -31,6 +33,8 @@ const resources = {
     'zh-CN': { common: zhCNCommon },
     zh: { common: zhCommon },
     es: { common: esCommon },
+    ge: { common: deCommon },
+    ru: { common: ruCommon },
 };
 
 // Initialize i18n instance
