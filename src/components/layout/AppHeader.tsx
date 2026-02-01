@@ -73,8 +73,8 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const openMenu = Boolean(anchorEl);
 
-    const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
+    const handleMenuClick = () => {
+        setAnchorEl(anchorRef.current);
     };
     const handleMenuClose = () => {
         setAnchorEl(null);
