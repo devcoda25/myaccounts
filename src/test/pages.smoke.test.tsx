@@ -55,6 +55,18 @@ vi.mock('react-oidc-context', () => ({
   AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
+// Mock LanguageProvider/i18n
+vi.mock('../i18n/LanguageProvider', () => ({
+  LanguageProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useLanguage: () => ({
+    language: 'en',
+    setLanguage: vi.fn(),
+    t: (key: string) => key,
+    isRTL: false,
+    availableLanguages: [],
+  }),
+}));
+
 import AppComp from '../features/dashboard/Index'
 import AppAppsComp from '../features/apps/Apps'
 import AppAppsPermissionsComp from '../features/apps/AppsPermissions'
