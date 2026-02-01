@@ -3,18 +3,23 @@
  * XSS prevention utilities
  */
 
+const htmlEscapes: Record<string, string> = {
+    "&": "&",
+    "<": "<",
+    ">": ">",
+    "\"": "&quot;",
+    "/": "&#x2F;"
+};
+
 /**
  * Sanitize user input to prevent XSS attacks
  * Escapes HTML special characters
  */
 export function sanitizeInput(input: string): string {
-    return input
-        .replace(/&/g, '&')
-        .replace(/</g, '<')
-        .replace(/>/g, '>')
-        .replace(/"/g, '"')
-        .replace(/'/g, '&#x27;')
-        .replace(/\//g, '&#x2F;');
+    // First replace single quote separately
+    let result = input.replace(/'/g, "&#39;");
+    // Then replace all other characters
+    return result.replace(/[&<>"\/]/g, (match) => htmlEscapes[match]);
 }
 
 /**
@@ -30,7 +35,7 @@ export function sanitizeHtml(html: string): string {
  * Strip all HTML tags from a string
  */
 export function stripHtmlTags(html: string): string {
-    return html.replace(/<[^>]*>/g, '');
+    return html.replace(/<[^>]*>/g, "");
 }
 
 /**
@@ -38,10 +43,10 @@ export function stripHtmlTags(html: string): string {
  */
 export function sanitizeForJs(value: string): string {
     return value
-        .replace(/\\/g, '\\\\')
+        .replace(/\\/g, "\\\\")
         .replace(/'/g, "\\'")
         .replace(/"/g, '\\"')
-        .replace(/\n/g, '\\n')
-        .replace(/\r/g, '\\r')
-        .replace(/\t/g, '\\t');
+        .replace(/\n/g, "\\n")
+        .replace(/\r/g, "\\r")
+        .replace(/\t/g, "\\t");
 }
