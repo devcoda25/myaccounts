@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     Box,
     IconButton,
@@ -12,7 +12,8 @@ import {
     Divider,
     Typography,
     useTheme,
-    alpha
+    alpha,
+    ClickAwayListener
 } from '@mui/material';
 import {
     Menu as MenuIcon,
@@ -69,17 +70,18 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
 
     // Profile Menu State
     const anchorRef = useRef<HTMLButtonElement>(null);
-    const [openMenu, setOpenMenu] = useState(false);
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const openMenu = Boolean(anchorEl);
 
-    const handleMenuClick = () => {
-        setOpenMenu(true);
+    const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
     };
     const handleMenuClose = () => {
-        setOpenMenu(false);
+        setAnchorEl(null);
     };
     const handleProfileClick = () => {
-        navigate('/app/profile');
         handleMenuClose();
+        navigate('/app/profile');
     };
 
 
@@ -218,76 +220,78 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
                             sx={{ width: 32, height: 32, border: `2px solid ${alpha(theme.palette.primary.main, 0.2)}` }}
                         />
                     </IconButton>
-                    <Menu
-                        disableScrollLock
-                        anchorEl={anchorRef.current}
-                        id="account-menu"
-                        open={openMenu}
-                        onClose={handleMenuClose}
-                        onClick={handleMenuClose}
-                        PaperProps={{
-                            elevation: 0,
-                            sx: {
-                                overflow: 'visible',
-                                filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                                mt: 1.5,
-                                width: 220,
-                                borderRadius: '12px',
-                                '& .MuiAvatar-root': { width: 32, height: 32, ml: -0.5, mr: 1 },
-                                '&:before': {
-                                    content: '""',
-                                    display: 'block',
-                                    position: 'absolute',
-                                    top: 0,
-                                    right: 14,
-                                    width: 10,
-                                    height: 10,
-                                    bgcolor: 'background.paper',
-                                    transform: 'translateY(-50%) rotate(45deg)',
-                                    zIndex: 0,
+                    <ClickAwayListener onClickAway={handleMenuClose}>
+                        <Menu
+                            disableScrollLock
+                            anchorEl={anchorEl}
+                            id="account-menu"
+                            open={openMenu}
+                            onClose={handleMenuClose}
+                            onClick={handleMenuClose}
+                            PaperProps={{
+                                elevation: 0,
+                                sx: {
+                                    overflow: 'visible',
+                                    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                                    mt: 1.5,
+                                    width: 220,
+                                    borderRadius: '12px',
+                                    '& .MuiAvatar-root': { width: 32, height: 32, ml: -0.5, mr: 1 },
+                                    '&:before': {
+                                        content: '""',
+                                        display: 'block',
+                                        position: 'absolute',
+                                        top: 0,
+                                        right: 14,
+                                        width: 10,
+                                        height: 10,
+                                        bgcolor: 'background.paper',
+                                        transform: 'translateY(-50%) rotate(45deg)',
+                                        zIndex: 0,
+                                    },
                                 },
-                            },
-                        }}
-                        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                    >
-                        <Box sx={{ p: 2, pt: 1.5, pb: 1 }}>
-                            <Typography variant="subtitle2" fontWeight={700} noWrap>
-                                {user ? `${user.firstName} ${user.otherNames}` : 'Guest'}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary" noWrap display="block">
-                                {user?.email || ''}
-                            </Typography>
-                            {user?.id && (
-                                <Typography variant="caption" sx={{ color: EVZONE.orange, fontWeight: 700, fontFamily: 'monospace' }}>
-                                    ID: {formatUserId(user.id)}
+                            }}
+                            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                        >
+                            <Box sx={{ p: 2, pt: 1.5, pb: 1 }}>
+                                <Typography variant="subtitle2" fontWeight={700} noWrap>
+                                    {user ? `${user.firstName} ${user.otherNames}` : 'Guest'}
                                 </Typography>
+                                <Typography variant="caption" color="text.secondary" noWrap display="block">
+                                    {user?.email || ''}
+                                </Typography>
+                                {user?.id && (
+                                    <Typography variant="caption" sx={{ color: EVZONE.orange, fontWeight: 700, fontFamily: 'monospace' }}>
+                                        ID: {formatUserId(user.id)}
+                                    </Typography>
+                                )}
+                            </Box>
+                            <Divider />
+                            {user && (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') && (
+                                <>
+                                    <MenuItem onClick={() => { handleMenuClose(); navigate('/admin'); }} sx={{ py: 1.5, color: EVZONE.orange, fontWeight: 600 }}>
+                                        <ListItemIcon><Shield size={18} color={EVZONE.orange} /></ListItemIcon>
+                                        Admin Dashboard
+                                    </MenuItem>
+                                    <Divider />
+                                </>
                             )}
-                        </Box>
-                        <Divider />
-                        {user && (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') && (
-                            <>
-                                <MenuItem onClick={() => { navigate('/admin'); handleMenuClose(); }} sx={{ py: 1.5, color: EVZONE.orange, fontWeight: 600 }}>
-                                    <ListItemIcon><Shield size={18} color={EVZONE.orange} /></ListItemIcon>
-                                    Admin Dashboard
-                                </MenuItem>
-                                <Divider />
-                            </>
-                        )}
-                        <MenuItem onClick={handleProfileClick} sx={{ py: 1.5 }}>
-                            <ListItemIcon><UserIcon size={18} /></ListItemIcon>
-                            Profile
-                        </MenuItem>
-                        <MenuItem onClick={() => { navigate('/app/settings'); handleMenuClose(); }} sx={{ py: 1.5 }}>
-                            <ListItemIcon><Settings size={18} /></ListItemIcon>
-                            Settings
-                        </MenuItem>
-                        <Divider />
-                        <MenuItem onClick={logout} sx={{ py: 1.5, color: 'error.main' }}>
-                            <ListItemIcon><LogOut size={18} color={theme.palette.error.main} /></ListItemIcon>
-                            Sign Out
-                        </MenuItem>
-                    </Menu>
+                            <MenuItem onClick={handleProfileClick} sx={{ py: 1.5 }}>
+                                <ListItemIcon><UserIcon size={18} /></ListItemIcon>
+                                Profile
+                            </MenuItem>
+                            <MenuItem onClick={() => { handleMenuClose(); navigate('/app/settings'); }} sx={{ py: 1.5 }}>
+                                <ListItemIcon><Settings size={18} /></ListItemIcon>
+                                Settings
+                            </MenuItem>
+                            <Divider />
+                            <MenuItem onClick={() => { handleMenuClose(); logout(); }} sx={{ py: 1.5, color: 'error.main' }}>
+                                <ListItemIcon><LogOut size={18} color={theme.palette.error.main} /></ListItemIcon>
+                                Sign Out
+                            </MenuItem>
+                        </Menu>
+                    </ClickAwayListener>
                 </Box>
             </Stack>
         </Box>

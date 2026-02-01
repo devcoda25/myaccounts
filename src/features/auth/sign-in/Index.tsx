@@ -127,7 +127,7 @@ function runSelfTestsOnce() {
 }
 
 export default function SignInPage() {
-  const { t } = useTranslation();
+  const { t } = useTranslation("common");
   const navigate = useNavigate();
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
