@@ -33,7 +33,6 @@ import { useSocialLogin } from "@/hooks/useSocialLogin";
 import AuthHeader from "@/components/layout/AuthHeader";
 import { EVZONE } from "@/theme/evzone";
 import { useNotification } from "@/context/NotificationContext";
-import { useTranslation } from "@/i18n";
 
 import {
   Severity
@@ -91,7 +90,7 @@ function safeRandomBytes(n: number): Uint8Array {
 async function tryWebAuthnGet(): Promise<{ ok: boolean; message: string }> {
   try {
     const nav: any = navigator as any;
-    if(!nav?.credentials?.get) return { ok: false, message: "WebAuthn is not available." };
+    if (!nav?.credentials?.get) return { ok: false, message: "WebAuthn is not available." };
 
     await nav.credentials.get({
       publicKey: {
@@ -102,7 +101,7 @@ async function tryWebAuthnGet(): Promise<{ ok: boolean; message: string }> {
     });
 
     return { ok: true, message: "Passkey verified. Signed in (demo)." };
-  } catch(e: any) {
+  } catch (e: any) {
     const name = e?.name || "Error";
     return { ok: false, message: `${name}: passkey prompt was cancelled or not allowed in this environment.` };
   }
