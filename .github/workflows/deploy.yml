@@ -49,7 +49,7 @@ jobs:
             VITE_APPLE_CLIENT_ID=${{ secrets.VITE_APPLE_CLIENT_ID }}
             EOF
 
-            export NODE_OPTIONS="--max-old-space-size=5096"
+            export NODE_OPTIONS="--max-old-space-size=4096"
             npm run build
 
             # Optional: only if your user can sudo without a password

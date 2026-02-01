@@ -1,115 +1,364 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import i18n from 'i18next';
-import { supportedLocales, isRTL, type LocaleCode } from './settings';
+import {
+    Box,
+    Button,
+    Menu,
+    MenuItem,
+    Typography,
+    ListItemIcon,
+    ListItemText,
+    alpha,
+    useTheme,
+    Divider,
+    Chip,
+} from '@mui/material';
+import {
+    Globe,
+    Check,
+    ChevronDown,
+} from 'lucide-react';
+import { supportedLocales, type LocaleCode } from './settings';
 
 export const LanguageSelector: React.FC<{
-    variant?: 'dropdown' | 'buttons' | 'minimal';
+    variant?: 'dropdown' | 'compact' | 'menu';
+    showName?: boolean;
     onLanguageChange?: (language: string) => void;
     className?: string;
-}> = ({ variant = 'dropdown', onLanguageChange, className = '' }) => {
-    const language = i18n.language || 'en';
+}> = ({
+    variant = 'dropdown',
+    showName = true,
+    onLanguageChange,
+    className = ''
+}) => {
+        const theme = useTheme();
+        const anchorRef = useRef<HTMLButtonElement>(null);
+        const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+        const open = Boolean(anchorEl);
 
-    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const newLang = e.target.value;
-        i18n.changeLanguage(newLang);
-        onLanguageChange?.(newLang);
-        // Update document direction for RTL languages
-        const isRTL = newLang === 'ar';
-        document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
-        document.documentElement.lang = newLang;
-    };
+        const language = i18n.language || 'en';
+        const currentLocale = supportedLocales.find(l => l.code === language) || supportedLocales[0];
 
-    const currentIsRTL = language === 'ar';
-    const availableLanguages = supportedLocales.map(l => ({
-        code: l.code,
-        name: l.name,
-        nativeName: l.nativeName,
-    }));
+        const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+            setAnchorEl(event.currentTarget);
+        };
 
-    if (variant === 'buttons') {
-        return (
-            <div className={`flex flex-wrap gap-2 ${className}`} role="group" aria-label="Language selector">
-                {availableLanguages.slice(0, 4).map((lang) => (
-                    <button
-                        key={lang.code}
-                        onClick={() => i18n.changeLanguage(lang.code)}
-                        className={`px-3 py-1.5 text-sm rounded-md transition-colors ${language === lang.code
-                                ? 'bg-primary-600 text-white'
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            }`}
-                        aria-pressed={language === lang.code}
-                        aria-label={`Switch to ${lang.name}`}
+        const handleClose = () => {
+            setAnchorEl(null);
+        };
+
+        const handleLanguageChange = (newLang: string) => {
+            i18n.changeLanguage(newLang);
+            onLanguageChange?.(newLang);
+
+            // Update document direction for RTL languages
+            const isRTL = newLang === 'ar';
+            document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+            document.documentElement.lang = newLang;
+
+            handleClose();
+        };
+
+        // Group languages by priority
+        const priorityGroups = [
+            { name: 'Popular', locales: supportedLocales.filter(l => l.priority === 1) },
+            { name: 'Expanded', locales: supportedLocales.filter(l => l.priority === 2) },
+            { name: 'More', locales: supportedLocales.filter(l => l.priority === 3) },
+        ];
+
+        if (variant === 'compact') {
+            return (
+                <Box className={className}>
+                    <Button
+                        ref={anchorRef}
+                        onClick={handleClick}
+                        startIcon={<Globe size={18} />}
+                        endIcon={<ChevronDown size={16} />}
+                        sx={{
+                            textTransform: 'none',
+                            color: theme.palette.text.primary,
+                            fontWeight: 500,
+                            px: 1.5,
+                            py: 0.5,
+                            borderRadius: 1.5,
+                            '&:hover': {
+                                bgcolor: alpha(theme.palette.primary.main, 0.08),
+                            },
+                        }}
                     >
-                        {supportedLocales.find(l => l.code === lang.code)?.flag} {lang.nativeName}
-                    </button>
-                ))}
-            </div>
-        );
-    }
+                        {currentLocale.flag}
+                    </Button>
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        PaperProps={{
+                            sx: {
+                                mt: 0.5,
+                                minWidth: 200,
+                                maxHeight: 400,
+                                bgcolor: theme.palette.background.paper,
+                                border: `1px solid ${theme.palette.divider}`,
+                                boxShadow: theme.shadows[3],
+                            }
+                        }}
+                    >
+                        {supportedLocales.map((lang) => (
+                            <MenuItem
+                                key={lang.code}
+                                onClick={() => handleLanguageChange(lang.code)}
+                                selected={language === lang.code}
+                                sx={{
+                                    py: 1,
+                                    px: 2,
+                                    bgcolor: language === lang.code
+                                        ? alpha(theme.palette.primary.main, 0.08)
+                                        : 'transparent',
+                                    '&:hover': {
+                                        bgcolor: alpha(theme.palette.primary.main, 0.12),
+                                    },
+                                }}
+                            >
+                                <ListItemIcon sx={{ minWidth: 36 }}>
+                                    <Typography variant="body1">{lang.flag}</Typography>
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={lang.nativeName}
+                                    secondary={lang.name}
+                                    primaryTypographyProps={{
+                                        variant: 'body2',
+                                        fontWeight: language === lang.code ? 600 : 400,
+                                    }}
+                                    secondaryTypographyProps={{
+                                        variant: 'caption',
+                                        color: 'text.secondary',
+                                    }}
+                                />
+                                {language === lang.code && (
+                                    <Check size={16} color={theme.palette.primary.main} />
+                                )}
+                            </MenuItem>
+                        ))}
+                    </Menu>
+                </Box>
+            );
+        }
 
-    if (variant === 'minimal') {
+        if (variant === 'menu') {
+            return (
+                <Box className={className}>
+                    <Button
+                        ref={anchorRef}
+                        onClick={handleClick}
+                        startIcon={<Globe size={18} />}
+                        endIcon={<ChevronDown size={18} />}
+                        sx={{
+                            textTransform: 'none',
+                            color: theme.palette.text.primary,
+                            fontWeight: 500,
+                            px: 2,
+                            py: 1,
+                            borderRadius: 1.5,
+                            border: `1px solid ${theme.palette.divider}`,
+                            bgcolor: theme.palette.background.paper,
+                            '&:hover': {
+                                bgcolor: alpha(theme.palette.primary.main, 0.08),
+                                borderColor: theme.palette.primary.main,
+                            },
+                        }}
+                    >
+                        {showName && (
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Typography>{currentLocale.flag}</Typography>
+                                <Typography variant="body2">{currentLocale.nativeName}</Typography>
+                            </Box>
+                        )}
+                        {!showName && <Typography>{currentLocale.flag}</Typography>}
+                    </Button>
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                        PaperProps={{
+                            sx: {
+                                mt: 0.5,
+                                minWidth: 220,
+                                maxHeight: 450,
+                                bgcolor: theme.palette.background.paper,
+                                border: `1px solid ${theme.palette.divider}`,
+                                boxShadow: theme.shadows[3],
+                            }
+                        }}
+                    >
+                        {priorityGroups.map((group, groupIndex) => (
+                            <React.Fragment key={group.name}>
+                                {groupIndex > 0 && (
+                                    <Divider sx={{ my: 0.5 }} />
+                                )}
+                                <Box sx={{ px: 2, py: 1 }}>
+                                    <Typography
+                                        variant="caption"
+                                        sx={{
+                                            color: 'text.secondary',
+                                            fontWeight: 600,
+                                            textTransform: 'uppercase',
+                                            letterSpacing: 0.5,
+                                        }}
+                                    >
+                                        {group.name}
+                                    </Typography>
+                                </Box>
+                                {group.locales.map((lang) => (
+                                    <MenuItem
+                                        key={lang.code}
+                                        onClick={() => handleLanguageChange(lang.code)}
+                                        selected={language === lang.code}
+                                        sx={{
+                                            py: 1,
+                                            px: 2,
+                                            bgcolor: language === lang.code
+                                                ? alpha(theme.palette.primary.main, 0.08)
+                                                : 'transparent',
+                                            '&:hover': {
+                                                bgcolor: alpha(theme.palette.primary.main, 0.12),
+                                            },
+                                        }}
+                                    >
+                                        <ListItemIcon sx={{ minWidth: 36 }}>
+                                            <Typography variant="body1">{lang.flag}</Typography>
+                                        </ListItemIcon>
+                                        <ListItemText
+                                            primary={lang.nativeName}
+                                            secondary={lang.name}
+                                            primaryTypographyProps={{
+                                                variant: 'body2',
+                                                fontWeight: language === lang.code ? 600 : 400,
+                                            }}
+                                            secondaryTypographyProps={{
+                                                variant: 'caption',
+                                                color: 'text.secondary',
+                                            }}
+                                        />
+                                        {language === lang.code && (
+                                            <Check size={16} color={theme.palette.primary.main} />
+                                        )}
+                                    </MenuItem>
+                                ))}
+                            </React.Fragment>
+                        ))}
+                    </Menu>
+                </Box>
+            );
+        }
+
+        // Default: dropdown variant with globe icon
         return (
-            <select
-                value={language}
-                onChange={handleChange}
-                className={`text-sm bg-transparent border-0 p-0 focus:ring-0 ${className}`}
-                dir={currentIsRTL ? 'rtl' : 'ltr'}
-                aria-label="Select language"
-            >
-                {availableLanguages.map((lang) => (
-                    <option key={lang.code} value={lang.code}>
-                        {supportedLocales.find(l => l.code === lang.code)?.flag} {lang.name}
-                    </option>
-                ))}
-            </select>
-        );
-    }
-
-    // Default: dropdown variant
-    return (
-        <div className={`relative ${className}`}>
-            <label htmlFor="language-select" className="sr-only">
-                Select Language
-            </label>
-            <select
-                id="language-select"
-                value={language}
-                onChange={handleChange}
-                className={`appearance-none w-full px-3 py-2 pr-8 text-sm bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${currentIsRTL ? 'text-right' : 'text-left'
-                    }`}
-                dir={currentIsRTL ? 'rtl' : 'ltr'}
-                aria-label="Select language"
-            >
-                {availableLanguages.map((lang) => (
-                    <option key={lang.code} value={lang.code}>
-                        {supportedLocales.find(l => l.code === lang.code)?.flag} {lang.nativeName}
-                    </option>
-                ))}
-            </select>
-            <div
-                className={`absolute inset-y-0 flex items-center pointer-events-none ${currentIsRTL ? 'left-0 pl-2' : 'right-0 pr-2'
-                    }`}
-            >
-                <svg
-                    className="w-4 h-4 text-gray-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
+            <Box className={className}>
+                <Button
+                    ref={anchorRef}
+                    onClick={handleClick}
+                    startIcon={<Globe size={18} />}
+                    endIcon={<ChevronDown size={18} />}
+                    sx={{
+                        textTransform: 'none',
+                        color: theme.palette.text.primary,
+                        fontWeight: 500,
+                        px: 2,
+                        py: 1,
+                        borderRadius: 1.5,
+                        border: `1px solid ${theme.palette.divider}`,
+                        bgcolor: theme.palette.background.paper,
+                        '&:hover': {
+                            bgcolor: alpha(theme.palette.primary.main, 0.08),
+                            borderColor: theme.palette.primary.main,
+                        },
+                    }}
                 >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d={currentIsRTL
-                            ? "M15 19l-7-7 7-7"
-                            : "M9 5l7 7-7 7"
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography>{currentLocale.flag}</Typography>
+                        <Typography variant="body2">{currentLocale.nativeName}</Typography>
+                    </Box>
+                </Button>
+                <Menu
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleClose}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                    transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                    PaperProps={{
+                        sx: {
+                            mt: 0.5,
+                            minWidth: 220,
+                            maxHeight: 450,
+                            bgcolor: theme.palette.background.paper,
+                            border: `1px solid ${theme.palette.divider}`,
+                            boxShadow: theme.shadows[3],
                         }
-                    />
-                </svg>
-            </div>
-        </div>
-    );
-};
+                    }}
+                >
+                    {priorityGroups.map((group, groupIndex) => (
+                        <React.Fragment key={group.name}>
+                            {groupIndex > 0 && (
+                                <Divider sx={{ my: 0.5 }} />
+                            )}
+                            <Box sx={{ px: 2, py: 1 }}>
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: 'text.secondary',
+                                        fontWeight: 600,
+                                        textTransform: 'uppercase',
+                                        letterSpacing: 0.5,
+                                    }}
+                                >
+                                    {group.name}
+                                </Typography>
+                            </Box>
+                            {group.locales.map((lang) => (
+                                <MenuItem
+                                    key={lang.code}
+                                    onClick={() => handleLanguageChange(lang.code)}
+                                    selected={language === lang.code}
+                                    sx={{
+                                        py: 1,
+                                        px: 2,
+                                        bgcolor: language === lang.code
+                                            ? alpha(theme.palette.primary.main, 0.08)
+                                            : 'transparent',
+                                        '&:hover': {
+                                            bgcolor: alpha(theme.palette.primary.main, 0.12),
+                                        },
+                                    }}
+                                >
+                                    <ListItemIcon sx={{ minWidth: 36 }}>
+                                        <Typography variant="body1">{lang.flag}</Typography>
+                                    </ListItemIcon>
+                                    <ListItemText
+                                        primary={lang.nativeName}
+                                        secondary={lang.name}
+                                        primaryTypographyProps={{
+                                            variant: 'body2',
+                                            fontWeight: language === lang.code ? 600 : 400,
+                                        }}
+                                        secondaryTypographyProps={{
+                                            variant: 'caption',
+                                            color: 'text.secondary',
+                                        }}
+                                    />
+                                    {language === lang.code && (
+                                        <Check size={16} color={theme.palette.primary.main} />
+                                    )}
+                                </MenuItem>
+                            ))}
+                        </React.Fragment>
+                    ))}
+                </Menu>
+            </Box>
+        );
+    };
 
 export default LanguageSelector;
