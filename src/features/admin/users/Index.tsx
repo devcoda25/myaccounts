@@ -214,7 +214,7 @@ export default function AdminUsersList() {
             fetchUsers();
         }, 300); // Debounce search
         return () => clearTimeout(timer);
-    }, [page, rowsPerPage, q, typeFilter, statusFilter]);
+    }, [page, rowsPerPage, q, typeFilter, statusFilter, riskFilter]);
 
     const handleExport = () => {
         if (!rows.length) return;
@@ -384,6 +384,7 @@ export default function AdminUsersList() {
             if (pending.kind === 'DELETE_USER') {
                 await api(`/users/${pending.userId}`, { method: 'DELETE' });
                 setRows((prev) => prev.filter((u) => u.id !== pending.userId));
+                setTotal((prev) => Math.max(0, prev - 1));
                 showNotification({ type: "success", title: "User Deleted", message: `User ${pendingUser.name} deleted.` });
             } else if (pending.kind === 'LOCK') {
                 await api(`/users/${pending.userId}`, {
