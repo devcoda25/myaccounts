@@ -396,9 +396,15 @@ export default function AdminUsersList() {
             // If re-auth success, proceed with action
             if (pending.kind === 'DELETE_USER') {
                 await api(`/users/${pending.userId}`, { method: 'DELETE' });
-                showNotification({ type: "success", title: "User Deleted", message: `User ${pendingUser.name} deleted.` });
-                // Refresh the user list to maintain pagination consistency
-                fetchUsers();
+                showNotification({
+                    type: "success",
+                    title: "User Deleted",
+                    message: `User ${pendingUser.name} deleted.`
+                });
+                // Force page reload to ensure clean state after deletion
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
             } else if (pending.kind === 'LOCK') {
                 await api(`/users/${pending.userId}`, {
                     method: 'PATCH',
