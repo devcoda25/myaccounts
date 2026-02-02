@@ -582,7 +582,7 @@ export default function SignInPage() {
                     <TextField
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      label={t('common.labels.password')}
+                      label={t('auth.signIn.password')}
                       type={showPassword ? "text" : "password"}
                       fullWidth
                       InputProps={{
