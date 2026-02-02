@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import { StatusModal, StatusType } from '../components/ui/StatusModal';
 
-interface NotificationOptions {
+export interface NotificationOptions {
     title: string;
     message: string;
     type: StatusType;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from "react-i18next";
 import { api } from "@/utils/api";
+import { NotificationOptions } from '@/context/NotificationContext';
 import {
     Box,
     Button,
@@ -71,14 +72,14 @@ export default function Administrators() {
     } | null>(null);
 
     // Update notification helper
-    const updateNotification = (updates: Partial<typeof options>) => {
-        setOptions(prev => prev ? { ...prev, ...updates } as any : null);
+    const updateNotification = (updates: Partial<NotificationOptions>) => {
+        setOptions(prev => prev ? { ...prev, ...updates } : null);
     };
 
     const { showNotification: showSimpleNotification, hideNotification } = useNotification();
 
     // Wrapper for simple notifications - clears delete options first
-    const showNotification = (opts: any) => {
+    const showNotification = (opts: NotificationOptions) => {
         setOptions(null);
         showSimpleNotification(opts);
     };

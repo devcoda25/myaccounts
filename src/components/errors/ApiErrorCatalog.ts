@@ -7,13 +7,24 @@ export const ErrorCatalog: Record<string, string> = {
     "UNKNOWN_ERROR": "An unexpected error occurred.",
 };
 
-export const getFriendlyMessage = (error: any): string => {
+interface ApiError {
+    response?: {
+        status?: number;
+        data?: {
+            message?: string;
+        };
+    };
+    request?: unknown;
+    message?: string;
+}
+
+export const getFriendlyMessage = (error: ApiError): string => {
     if (error.response) {
         const status = error.response.status;
         const message = error.response.data?.message;
 
         // Map status codes to friendly messages
-        if (ErrorCatalog[status]) {
+        if (status && ErrorCatalog[status]) {
             return ErrorCatalog[status];
         }
 

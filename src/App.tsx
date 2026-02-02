@@ -32,7 +32,7 @@ export default function App() {
 function AuthProviderWrapper({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
-  const onSigninCallback = (_user: any) => {
+  const onSigninCallback = (_user: unknown) => {
     // Clear OIDC params from URL and navigate to app
     window.history.replaceState({}, document.title, window.location.pathname);
     navigate('/app', { replace: true });
