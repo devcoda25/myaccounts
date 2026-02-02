@@ -729,6 +729,12 @@
     "systemStatus": "État du système",
     "profile": "Profil",
     "settings": "Paramètres",
-    "signOut": "Se déconnecter"
+    "signOut": "Se déconnecter",
+    "overview": "Aperçu",
+    "security": "Sécurité",
+    "parentalControls": "Contrôle parental",
+    "support": "Support",
+    "terms": "Conditions générales",
+    "privacy": "Confidentialité"
   }
 }

@@ -517,6 +517,12 @@
         "systemStatus": "सिस्टम स्थिति",
         "profile": "प्रोफ़ाइल",
         "settings": "सेटिंग्स",
-        "signOut": "साइन आउट"
+        "signOut": "साइन आउट",
+        "overview": "अवलोकन",
+        "security": "सुरक्षा",
+        "parentalControls": "पैरेंटल नियंत्रण",
+        "support": "सहायता",
+        "terms": "नियम और शर्तें",
+        "privacy": "गोपनीयता"
     }
 }

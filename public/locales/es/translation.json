@@ -729,6 +729,12 @@
     "systemStatus": "Estado del sistema",
     "profile": "Perfil",
     "settings": "Configuración",
-    "signOut": "Cerrar sesión"
+    "signOut": "Cerrar sesión",
+    "overview": "Resumen",
+    "security": "Seguridad",
+    "parentalControls": "Control parental",
+    "support": "Soporte",
+    "terms": "Términos y condiciones",
+    "privacy": "Privacidad"
   }
 }

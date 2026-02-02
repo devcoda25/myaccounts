@@ -729,6 +729,12 @@
         "systemStatus": "System status",
         "profile": "Profile",
         "settings": "Settings",
-        "signOut": "Sign Out"
+        "signOut": "Sign Out",
+        "overview": "Overview",
+        "security": "Security",
+        "parentalControls": "Parental Controls",
+        "support": "Support",
+        "terms": "Terms",
+        "privacy": "Privacy"
     }
 }

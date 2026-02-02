@@ -729,6 +729,12 @@
     "systemStatus": "系统状态",
     "profile": "个人资料",
     "settings": "设置",
-    "signOut": "退出登录"
+    "signOut": "退出登录",
+    "overview": "概览",
+    "security": "安全",
+    "parentalControls": "家长控制",
+    "support": "支持",
+    "terms": "服务条款",
+    "privacy": "隐私"
   }
 }

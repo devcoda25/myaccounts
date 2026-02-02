@@ -729,6 +729,12 @@
     "systemStatus": "حالة النظام",
     "profile": "الملف الشخصي",
     "settings": "الإعدادات",
-    "signOut": "تسجيل الخروج"
+    "signOut": "تسجيل الخروج",
+    "overview": "نظرة عامة",
+    "security": "الأمان",
+    "parentalControls": "الرقابة الأبوية",
+    "support": "الدعم",
+    "terms": "الشروط والأحكام",
+    "privacy": "الخصوصية"
   }
 }

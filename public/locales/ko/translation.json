@@ -729,6 +729,12 @@
     "systemStatus": "시스템 상태",
     "profile": "프로필",
     "settings": "설정",
-    "signOut": "로그아웃"
+    "signOut": "로그아웃",
+    "overview": "개요",
+    "security": "보안",
+    "parentalControls": "부모 관리",
+    "support": "지원",
+    "terms": "이용약관",
+    "privacy": "개인정보"
   }
 }

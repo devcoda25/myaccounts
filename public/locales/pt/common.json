@@ -517,6 +517,12 @@
         "systemStatus": "Status do Sistema",
         "profile": "Perfil",
         "settings": "Configurações",
-        "signOut": "Sair"
+        "signOut": "Sair",
+        "overview": "Visão geral",
+        "security": "Segurança",
+        "parentalControls": "Controle dos pais",
+        "support": "Suporte",
+        "terms": "Termos e condições",
+        "privacy": "Privacidade"
     }
 }

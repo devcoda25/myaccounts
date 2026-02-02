@@ -729,6 +729,12 @@
     "systemStatus": "システムステータス",
     "profile": "プロフィール",
     "settings": "設定",
-    "signOut": "ログアウト"
+    "signOut": "ログアウト",
+    "overview": "概要",
+    "security": "セキュリティ",
+    "parentalControls": "保護者管理",
+    "support": "サポート",
+    "terms": "利用規約",
+    "privacy": "プライバシー"
   }
 }

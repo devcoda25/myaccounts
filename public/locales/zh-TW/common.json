@@ -517,6 +517,12 @@
         "systemStatus": "系統狀態",
         "profile": "個人資料",
         "settings": "設定",
-        "signOut": "登出"
+        "signOut": "登出",
+        "overview": "概覽",
+        "security": "安全",
+        "parentalControls": "家長控制",
+        "support": "支援",
+        "terms": "服務條款",
+        "privacy": "隱私"
     }
 }

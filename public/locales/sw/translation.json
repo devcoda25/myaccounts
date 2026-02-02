@@ -729,6 +729,12 @@
     "systemStatus": "Hali ya mfumo",
     "profile": "Wasifu",
     "settings": "Mipangilio",
-    "signOut": "Toka"
+    "signOut": "Toka",
+    "overview": "Maelezo",
+    "security": "Usalama",
+    "parentalControls": "Udhibiti wa wazazi",
+    "support": "Msaada",
+    "terms": "Sheria na Masharti",
+    "privacy": "Faragha"
   }
 }

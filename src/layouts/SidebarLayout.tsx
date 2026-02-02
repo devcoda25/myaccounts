@@ -34,26 +34,28 @@ import { alpha } from '@mui/material/styles';
 import AppHeader from "@/components/layout/AppHeader";
 import { useAuthStore } from '../stores/authStore';
 import { useAuth } from "react-oidc-context";
+import { useTranslation } from 'react-i18next';
 
 const DRAWER_WIDTH = 280;
 
 const NAV_ITEMS = [
-    { label: 'Overview', path: '/app', icon: <LayoutDashboard size={20} /> },
-    // { label: 'Wallet', path: 'https://wallet.evzone.app', icon: <Wallet size={20} />, external: true },
-    { label: 'Security', path: '/app/security', icon: <Shield size={20} /> },
-    // { label: 'Orgs', path: 'https://orgs.evzone.app', icon: <Users size={20} />, external: true },
-    { label: 'Apps', path: '/app/apps', icon: <Grid size={20} /> },
+    { labelKey: 'navigation.overview', path: '/app', icon: <LayoutDashboard size={20} /> },
+    // { labelKey: 'navigation.wallet', path: 'https://wallet.evzone.app', icon: <Wallet size={20} />, external: true },
+    { labelKey: 'navigation.security', path: '/app/security', icon: <Shield size={20} /> },
+    // { labelKey: 'navigation.orgs', path: 'https://orgs.evzone.app', icon: <Users size={20} />, external: true },
+    { labelKey: 'navigation.apps', path: '/app/apps', icon: <Grid size={20} /> },
 ];
 
 const SECONDARY_NAV_ITEMS = [
-    { label: "Parental Controls", path: "/app/parental-controls", icon: <Lock size={20} /> },
-    // { label: "Developer", path: "https://developers.evzone.app", icon: <Code size={20} />, external: true },
-    { label: "Support", path: "/app/support", icon: <HelpCircle size={20} /> },
-    { label: "Terms", path: "/legal/terms", icon: <FileText size={20} />, external: true },
-    { label: "Privacy", path: "/legal/privacy", icon: <Shield size={20} />, external: true },
+    { labelKey: 'navigation.parentalControls', path: "/app/parental-controls", icon: <Lock size={20} /> },
+    // { labelKey: 'navigation.developer', path: "https://developers.evzone.app", icon: <Code size={20} />, external: true },
+    { labelKey: 'navigation.support', path: "/app/support", icon: <HelpCircle size={20} /> },
+    { labelKey: 'navigation.terms', path: "/legal/terms", icon: <FileText size={20} />, external: true },
+    { labelKey: 'navigation.privacy', path: "/legal/privacy", icon: <Shield size={20} />, external: true },
 ];
 
 export default function SidebarLayout() {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
     const theme = useTheme();
@@ -99,7 +101,7 @@ export default function SidebarLayout() {
 
             <Box sx={{ px: 3, mb: 1 }}>
                 <Typography variant="caption" fontWeight="bold" color="text.secondary" sx={{ opacity: 0.7, letterSpacing: "0.05em" }}>
-                    MENU
+                    {t('navigation.menu')}
                 </Typography>
             </Box>
 
@@ -127,7 +129,7 @@ export default function SidebarLayout() {
                                 <ListItemIcon sx={{ minWidth: 40, color: isActive ? "primary.main" : "inherit" }}>
                                     {item.icon}
                                 </ListItemIcon>
-                                <ListItemText primaryTypographyProps={{ fontWeight: isActive ? 600 : 500, fontSize: "0.95rem" }} primary={item.label} />
+                                <ListItemText primaryTypographyProps={{ fontWeight: isActive ? 600 : 500, fontSize: "0.95rem" }} primary={t(item.labelKey)} />
                             </ListItemButton>
                         </ListItem>
                     );
@@ -147,7 +149,7 @@ export default function SidebarLayout() {
                             sx={{ borderRadius: "10px", py: 1.5, color: "text.secondary" }}
                         >
                             <ListItemIcon sx={{ minWidth: 40, color: "inherit" }}>{item.icon}</ListItemIcon>
-                            <ListItemText primaryTypographyProps={{ fontWeight: 500, fontSize: "0.95rem" }} primary={item.label} />
+                            <ListItemText primaryTypographyProps={{ fontWeight: 500, fontSize: "0.95rem" }} primary={t(item.labelKey)} />
                         </ListItemButton>
                     </ListItem>
                 ))}
@@ -168,7 +170,7 @@ export default function SidebarLayout() {
                         "&:hover": { borderColor: theme.palette.text.primary, color: theme.palette.text.primary }
                     }}
                 >
-                    Sign out
+                    {t('navigation.signOut')}
                 </Button>
             </Box>
         </Box>
@@ -275,8 +277,8 @@ export default function SidebarLayout() {
                 >
                     {NAV_ITEMS.map((item, index) => (
                         <BottomNavigationAction
-                            key={item.label}
-                            label={item.label}
+                            key={item.labelKey}
+                            label={t(item.labelKey)}
                             icon={item.icon}
                             sx={{
                                 '& .MuiBottomNavigationAction-label': {

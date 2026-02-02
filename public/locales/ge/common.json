@@ -730,6 +730,12 @@
     "systemStatus": "Systemstatus",
     "profile": "Profil",
     "settings": "Einstellungen",
-    "signOut": "Abmelden"
+    "signOut": "Abmelden",
+    "overview": "Übersicht",
+    "security": "Sicherheit",
+    "parentalControls": "Kindersicherung",
+    "support": "Support",
+    "terms": "AGB",
+    "privacy": "Datenschutz"
   }
 }

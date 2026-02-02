@@ -517,6 +517,12 @@
         "systemStatus": "Trạng thái hệ thống",
         "profile": "Hồ sơ",
         "settings": "Cài đặt",
-        "signOut": "Đăng xuất"
+        "signOut": "Đăng xuất",
+        "overview": "Tổng quan",
+        "security": "Bảo mật",
+        "parentalControls": "Kiểm soát của phụ huynh",
+        "support": "Hỗ trợ",
+        "terms": "Điều khoản",
+        "privacy": "Quyền riêng tư"
     }
 }

@@ -517,6 +517,12 @@
         "systemStatus": "Status Sistem",
         "profile": "Profil",
         "settings": "Pengaturan",
-        "signOut": "Keluar"
+        "signOut": "Keluar",
+        "overview": "Ringkasan",
+        "security": "Keamanan",
+        "parentalControls": "Kontrol Orang Tua",
+        "support": "Dukungan",
+        "terms": "Syarat dan Ketentuan",
+        "privacy": "Privasi"
     }
 }
