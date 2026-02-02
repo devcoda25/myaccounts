@@ -505,5 +505,18 @@
             "save": "Simpan",
             "cancel": "Batal"
         }
+    },
+    "navigation": {
+        "menu": "Menu",
+        "dashboard": "Dasbor",
+        "users": "Pengguna",
+        "disputes": "Perselisihan",
+        "apps": "Aplikasi",
+        "auditLogs": "Log Audit",
+        "administrators": "Administrator",
+        "systemStatus": "Status Sistem",
+        "profile": "Profil",
+        "settings": "Pengaturan",
+        "signOut": "Keluar"
     }
 }

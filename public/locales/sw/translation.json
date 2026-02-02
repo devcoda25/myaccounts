@@ -717,5 +717,18 @@
     "next": "Inayofuata",
     "expandSection": "Panua sehemu",
     "collapseSection": "Kunja sehemu"
+  },
+  "navigation": {
+    "menu": "Menyu",
+    "dashboard": "Dashibodi",
+    "users": "Watumiaji",
+    "disputes": "Mgongano",
+    "apps": "Programu",
+    "auditLogs": "Rekodi ya ukaguzi",
+    "administrators": "Msimamizi",
+    "systemStatus": "Hali ya mfumo",
+    "profile": "Wasifu",
+    "settings": "Mipangilio",
+    "signOut": "Toka"
   }
 }

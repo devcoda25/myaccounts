@@ -717,5 +717,18 @@
     "next": "Suivant",
     "expandSection": "Développer la section",
     "collapseSection": "Réduire la section"
+  },
+  "navigation": {
+    "menu": "Menu",
+    "dashboard": "Tableau de bord",
+    "users": "Utilisateurs",
+    "disputes": "Litiges",
+    "apps": "Applications",
+    "auditLogs": "Journaux d'audit",
+    "administrators": "Administrateurs",
+    "systemStatus": "État du système",
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "signOut": "Se déconnecter"
   }
 }

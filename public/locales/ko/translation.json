@@ -717,5 +717,18 @@
     "next": "다음",
     "expandSection": "섹션 펼치기",
     "collapseSection": "섹션 접기"
+  },
+  "navigation": {
+    "menu": "메뉴",
+    "dashboard": "대시보드",
+    "users": "사용자",
+    "disputes": "분쟁",
+    "apps": "앱",
+    "auditLogs": "감사 로그",
+    "administrators": "관리자",
+    "systemStatus": "시스템 상태",
+    "profile": "프로필",
+    "settings": "설정",
+    "signOut": "로그아웃"
   }
 }

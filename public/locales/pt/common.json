@@ -505,5 +505,18 @@
             "save": "Salvar",
             "cancel": "Cancelar"
         }
+    },
+    "navigation": {
+        "menu": "Menu",
+        "dashboard": "Painel",
+        "users": "Usuários",
+        "disputes": "Disputas",
+        "apps": "Aplicativos",
+        "auditLogs": "Logs de Auditoria",
+        "administrators": "Administradores",
+        "systemStatus": "Status do Sistema",
+        "profile": "Perfil",
+        "settings": "Configurações",
+        "signOut": "Sair"
     }
 }

@@ -717,5 +717,18 @@
     "next": "التالي",
     "expandSection": "توسيع القسم",
     "collapseSection": "طي القسم"
+  },
+  "navigation": {
+    "menu": "القائمة",
+    "dashboard": "لوحة التحكم",
+    "users": "المستخدمون",
+    "disputes": "النزاعات",
+    "apps": "التطبيقات",
+    "auditLogs": "سجلات التدقيق",
+    "administrators": "المسؤولون",
+    "systemStatus": "حالة النظام",
+    "profile": "الملف الشخصي",
+    "settings": "الإعدادات",
+    "signOut": "تسجيل الخروج"
   }
 }

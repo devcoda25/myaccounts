@@ -505,5 +505,18 @@
             "save": "Lưu",
             "cancel": "Hủy"
         }
+    },
+    "navigation": {
+        "menu": "Menu",
+        "dashboard": "Bảng điều khiển",
+        "users": "Người dùng",
+        "disputes": "Tranh chấp",
+        "apps": "Ứng dụng",
+        "auditLogs": "Nhật ký kiểm toán",
+        "administrators": "Quản trị viên",
+        "systemStatus": "Trạng thái hệ thống",
+        "profile": "Hồ sơ",
+        "settings": "Cài đặt",
+        "signOut": "Đăng xuất"
     }
 }

@@ -718,5 +718,18 @@
     "next": "Weiter",
     "expandSection": "Abschnitt erweitern",
     "collapseSection": "Abschnitt einklappen"
+  },
+  "navigation": {
+    "menu": "Menü",
+    "dashboard": "Dashboard",
+    "users": "Benutzer",
+    "disputes": "Streitigkeiten",
+    "apps": "Apps",
+    "auditLogs": "Prüfprotokolle",
+    "administrators": "Administratoren",
+    "systemStatus": "Systemstatus",
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "signOut": "Abmelden"
   }
 }

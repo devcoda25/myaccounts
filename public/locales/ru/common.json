@@ -718,5 +718,18 @@
     "next": "Далее",
     "expandSection": "Развернуть раздел",
     "collapseSection": "Свернуть раздел"
+  },
+  "navigation": {
+    "menu": "Меню",
+    "dashboard": "Панель управления",
+    "users": "Пользователи",
+    "disputes": "Споры",
+    "apps": "Приложения",
+    "auditLogs": "Журналы аудита",
+    "administrators": "Администраторы",
+    "systemStatus": "Статус системы",
+    "profile": "Профиль",
+    "settings": "Настройки",
+    "signOut": "Выйти"
   }
 }

@@ -505,5 +505,18 @@
             "save": "บันทึก",
             "cancel": "ยกเลิก"
         }
+    },
+    "navigation": {
+        "menu": "เมนู",
+        "dashboard": "แดชบอร์ด",
+        "users": "ผู้ใช้",
+        "disputes": "ข้อพิพาท",
+        "apps": "แอป",
+        "auditLogs": "บันทึกการตรวจสอบ",
+        "administrators": "ผู้ดูแลระบบ",
+        "systemStatus": "สถานะระบบ",
+        "profile": "โปรไฟล์",
+        "settings": "การตั้งค่า",
+        "signOut": "ออกจากระบบ"
     }
 }

@@ -505,5 +505,18 @@
             "save": "सहेजें",
             "cancel": "रद्द करें"
         }
+    },
+    "navigation": {
+        "menu": "मेन्यू",
+        "dashboard": "डैशबोर्ड",
+        "users": "उपयोगकर्ता",
+        "disputes": "विवाद",
+        "apps": "ऐप्स",
+        "auditLogs": "ऑडिट लॉग",
+        "administrators": "प्रशासक",
+        "systemStatus": "सिस्टम स्थिति",
+        "profile": "प्रोफ़ाइल",
+        "settings": "सेटिंग्स",
+        "signOut": "साइन आउट"
     }
 }

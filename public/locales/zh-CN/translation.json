@@ -717,5 +717,18 @@
     "next": "下一步",
     "expandSection": "展开部分",
     "collapseSection": "收起部分"
+  },
+  "navigation": {
+    "menu": "菜单",
+    "dashboard": "仪表板",
+    "users": "用户",
+    "disputes": "争议",
+    "apps": "应用程序",
+    "auditLogs": "审计日志",
+    "administrators": "管理员",
+    "systemStatus": "系统状态",
+    "profile": "个人资料",
+    "settings": "设置",
+    "signOut": "退出登录"
   }
 }
