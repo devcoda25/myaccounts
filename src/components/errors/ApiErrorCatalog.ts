@@ -7,7 +7,7 @@ export const ErrorCatalog: Record<string, string> = {
     "UNKNOWN_ERROR": "An unexpected error occurred.",
 };
 
-interface ApiError {
+export interface ApiError {
     response?: {
         status?: number;
         data?: {

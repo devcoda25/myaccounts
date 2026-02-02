@@ -1,7 +1,7 @@
 // api.ts
 import axios, { AxiosRequestConfig, AxiosError, InternalAxiosRequestConfig } from "axios";
 import axiosRetry from "axios-retry";
-import { getFriendlyMessage } from "../components/errors/ApiErrorCatalog";
+import { getFriendlyMessage, ApiError } from "../components/errors/ApiErrorCatalog";
 import { userManager } from "../auth/oidcConfig";
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL || "/api/v1"; // better default than "/api"
@@ -78,7 +78,13 @@ const apiBase = async <T>(path: string, options: ApiOptions = {}): Promise<T> =>
         console.warn("[API] 401 Unauthorized. Session might be expired or invalid.");
       }
 
-      const msg = getFriendlyMessage(error as AxiosError);
+      const msg = getFriendlyMessage({
+        response: {
+          status: error.response?.status,
+          data: error.response?.data as { message?: string } | undefined,
+        },
+        message: error.message,
+      });
       throw new AppApiError(msg, error.response?.status || 500, error.code, error);
     }
 
