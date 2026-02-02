@@ -28,6 +28,7 @@ import {
 import AdminHeader from "@/components/layout/AdminHeader";
 import { useAdminAuthStore } from '../stores/adminAuthStore';
 import { useAuth } from "react-oidc-context";
+import { useLanguage } from '@/i18n/LanguageProvider';
 
 const EVZONE = { green: "#03cd8c", orange: "#f77f00" } as const;
 const SIDEBAR_WIDTH = 260;
@@ -47,6 +48,7 @@ export default function AdminLayout() {
 
     const { checkPermission, user, isLoading } = useAdminAuthStore();
     const auth = useAuth();
+    const { t } = useLanguage();
     const logout = async () => {
         try {
             await auth.signoutRedirect();
@@ -69,15 +71,13 @@ export default function AdminLayout() {
     }
 
     const menuItems = [
-        { label: "Dashboard", icon: <LayoutIcon size={18} />, route: "/admin/dashboard", permission: "view_dashboard" },
-        { label: "Users", icon: <ShieldIcon size={18} />, route: "/admin/users", permission: "manage_users" },
-
-
-        { label: "Disputes", icon: <GavelIcon size={18} />, route: "/admin/disputes", permission: "view_disputes" },
-        { label: "Apps", icon: <LayoutIcon size={18} />, route: "/admin/apps", permission: "manage_apps" },
-        { label: "Audit logs", icon: <ClipboardIcon size={18} />, route: "/admin/audit", permission: "view_audit_logs" },
-        { label: "Administrators", icon: <ShieldIcon size={18} />, route: "/admin/administrators", permission: "manage_admins" }, // New
-        { label: "System status", icon: <ShieldIcon size={18} />, route: "/admin/status", permission: "view_status" },
+        { label: t('navigation.dashboard'), icon: <LayoutIcon size={18} />, route: "/admin/dashboard", permission: "view_dashboard" },
+        { label: t('navigation.users'), icon: <ShieldIcon size={18} />, route: "/admin/users", permission: "manage_users" },
+        { label: t('navigation.disputes'), icon: <GavelIcon size={18} />, route: "/admin/disputes", permission: "view_disputes" },
+        { label: t('navigation.apps'), icon: <LayoutIcon size={18} />, route: "/admin/apps", permission: "manage_apps" },
+        { label: t('navigation.auditLogs'), icon: <ClipboardIcon size={18} />, route: "/admin/audit", permission: "view_audit_logs" },
+        { label: t('navigation.administrators'), icon: <ShieldIcon size={18} />, route: "/admin/administrators", permission: "manage_admins" },
+        { label: t('navigation.systemStatus'), icon: <ShieldIcon size={18} />, route: "/admin/status", permission: "view_status" },
     ].filter(item => checkPermission(item.permission));
 
     // Sync bottom nav state with current path

@@ -33,6 +33,7 @@ import { useThemeStore } from '../../stores/themeStore';
 import { useAuthStore } from '../../stores/authStore';
 import { formatUserId } from '../../utils/format';
 import { LanguageSelector } from '../../i18n';
+import { useLanguage } from '../../i18n/LanguageProvider';
 
 interface AppHeaderProps {
     onDrawerToggle?: () => void;
@@ -49,6 +50,7 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
     // Use store
     const { user, logout: storeLogout } = useAuthStore();
     const auth = useAuth();
+    const { t } = useLanguage();
 
     const logout = async () => {
         try {
@@ -260,23 +262,23 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
                             <>
                                 <MenuItem onClick={() => { setAnchorEl(null); navigate('/admin'); }} sx={{ py: 1.5, color: EVZONE.orange, fontWeight: 600 }}>
                                     <ListItemIcon><Shield size={18} color={EVZONE.orange} /></ListItemIcon>
-                                    Admin Dashboard
+                                    {t('admin.dashboard.title')}
                                 </MenuItem>
                                 <Divider />
                             </>
                         )}
                         <MenuItem onClick={handleProfileClick} sx={{ py: 1.5 }}>
                             <ListItemIcon><UserIcon size={18} /></ListItemIcon>
-                            Profile
+                            {t('navigation.profile')}
                         </MenuItem>
                         <MenuItem onClick={() => { setAnchorEl(null); navigate('/app/settings'); }} sx={{ py: 1.5 }}>
                             <ListItemIcon><Settings size={18} /></ListItemIcon>
-                            Settings
+                            {t('navigation.settings')}
                         </MenuItem>
                         <Divider />
                         <MenuItem onClick={() => { setAnchorEl(null); logout(); }} sx={{ py: 1.5, color: 'error.main' }}>
                             <ListItemIcon><LogOut size={18} color={theme.palette.error.main} /></ListItemIcon>
-                            Sign Out
+                            {t('navigation.signOut')}
                         </MenuItem>
                     </Menu>
                 </Box>

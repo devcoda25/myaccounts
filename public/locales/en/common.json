@@ -718,5 +718,18 @@
         "next": "Next",
         "expandSection": "Expand section",
         "collapseSection": "Collapse section"
+    },
+    "navigation": {
+        "menu": "Menu",
+        "dashboard": "Dashboard",
+        "users": "Users",
+        "disputes": "Disputes",
+        "apps": "Apps",
+        "auditLogs": "Audit logs",
+        "administrators": "Administrators",
+        "systemStatus": "System status",
+        "profile": "Profile",
+        "settings": "Settings",
+        "signOut": "Sign Out"
     }
 }

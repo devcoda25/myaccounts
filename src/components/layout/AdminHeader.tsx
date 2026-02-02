@@ -30,6 +30,7 @@ import { EVZONE } from '../../theme/evzone';
 import { useAdminAuthStore } from '../../stores/adminAuthStore';
 import { useThemeStore } from '../../stores/themeStore';
 import NotificationsPopover from './NotificationsPopover';
+import { useLanguage } from '../../i18n/LanguageProvider';
 
 
 interface AdminHeaderProps {
@@ -43,6 +44,7 @@ export default function AdminHeader({ onDrawerToggle, showMobileToggle = false }
     const { mode, toggleMode } = useThemeStore();
     const { user, logout: storeLogout } = useAdminAuthStore();
     const auth = useAuth();
+    const { t } = useLanguage();
 
     const logout = async () => {
         try {
@@ -263,16 +265,16 @@ export default function AdminHeader({ onDrawerToggle, showMobileToggle = false }
                         <Divider />
                         <MenuItem onClick={handleProfileClick} sx={{ py: 1.5 }}>
                             <ListItemIcon><User size={18} /></ListItemIcon>
-                            Profile
+                            {t('navigation.profile')}
                         </MenuItem>
                         <MenuItem onClick={() => { navigate('/admin/settings'); handleMenuClose(); }} sx={{ py: 1.5 }}>
                             <ListItemIcon><Settings size={18} /></ListItemIcon>
-                            Settings
+                            {t('navigation.settings')}
                         </MenuItem>
                         <Divider />
                         <MenuItem onClick={() => { handleMenuClose(); logout(); }} sx={{ py: 1.5, color: 'error.main' }}>
                             <ListItemIcon><LogOut size={18} color={theme.palette.error.main} /></ListItemIcon>
-                            Sign Out
+                            {t('navigation.signOut')}
                         </MenuItem>
                     </Menu>
                 </Box>
