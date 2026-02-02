@@ -515,7 +515,7 @@ export default function SignInPage() {
                         disabled={isGoogleLoading}
                         sx={{ ...googleBtnSx, borderRadius: 14, textTransform: "none", fontWeight: 800 }}
                       >
-                        {isGoogleLoading ? t('common.loading.loading') : t('auth.signIn.continueWithGoogle')}
+                        {isGoogleLoading ? t('common.loading.loading') : t('auth.signUp.continueWithGoogle')}
                       </Button>
                       <Button
                         fullWidth
@@ -525,7 +525,7 @@ export default function SignInPage() {
                         disabled={isAppleLoading}
                         sx={{ ...appleBtnSx, borderRadius: 14, textTransform: "none", fontWeight: 800 }}
                       >
-                        {isAppleLoading ? t('common.loading.loading') : t('auth.signIn.continueWithApple')}
+                        {isAppleLoading ? t('common.loading.loading') : t('auth.signUp.continueWithApple')}
                       </Button>
                     </Stack>
 
