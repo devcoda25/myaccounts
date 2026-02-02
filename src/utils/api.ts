@@ -4,7 +4,34 @@ import axiosRetry from "axios-retry";
 import { getFriendlyMessage, ApiError } from "../components/errors/ApiErrorCatalog";
 import { userManager } from "../auth/oidcConfig";
 
-const baseUrl = import.meta.env.VITE_API_BASE_URL || "/api/v1"; // better default than "/api"
+const baseUrl = import.meta.env.VITE_API_BASE_URL || "/api/v1";
+const CSRF_TOKEN_KEY = 'x-csrf-token';
+const CSRF_COOKIE_KEY = 'evzone-csrf';
+
+/**
+ * [Security] Generate a random CSRF token
+ */
+function generateCsrfToken(): string {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * [Security] Get CSRF token from cookie or generate new one
+ */
+function getCsrfToken(): string {
+  const cookies = document.cookie.split(';');
+  for (const cookie of cookies) {
+    const [name, value] = cookie.trim().split('=');
+    if (name === CSRF_COOKIE_KEY) return value;
+  }
+  // If no token exists, generate one
+  const newToken = generateCsrfToken();
+  // Set cookie with SameSite=Strict for maximum CSRF protection
+  document.cookie = `${CSRF_COOKIE_KEY}=${newToken}; path=/; SameSite=Strict; Secure`;
+  return newToken;
+}
 
 export class AppApiError extends Error {
   public status: number;
@@ -24,6 +51,9 @@ const instance = axios.create({
   baseURL: baseUrl,
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
+  // [Security] Configure CSRF protection
+  xsrfCookieName: CSRF_COOKIE_KEY,
+  xsrfHeaderName: CSRF_TOKEN_KEY,
 });
 
 axiosRetry(instance, {
@@ -33,7 +63,7 @@ axiosRetry(instance, {
     axiosRetry.isNetworkOrIdempotentRequestError(error) || error.response?.status === 503,
 });
 
-// Attach access token if present
+// Attach access token and CSRF token for state-changing requests
 instance.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
   try {
     const user = await userManager.getUser();
@@ -43,6 +73,14 @@ instance.interceptors.request.use(async (config: InternalAxiosRequestConfig) => 
   } catch {
     // ignore
   }
+
+  // [Security] Add CSRF token for state-changing methods
+  const isStateChanging = ['post', 'put', 'patch', 'delete'].includes(config.method?.toLowerCase() || '');
+  if (isStateChanging && !config.headers[CSRF_TOKEN_KEY]) {
+    const csrfToken = getCsrfToken();
+    config.headers[CSRF_TOKEN_KEY] = csrfToken;
+  }
+
   return config;
 });
 
