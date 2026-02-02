@@ -337,6 +337,17 @@ export default function AdminUsersList() {
     const closeAction = () => {
         setActionOpen(false);
         setPending(null);
+        // Reset form state to prevent stale data on next open
+        setStep(0);
+        setReason("");
+        setNotifyUser(true);
+        setReauthMode("password");
+        setAdminPassword("");
+        setMfaChannel("Authenticator");
+        setCodeSent(false);
+        setCooldown(0);
+        setOtp("");
+        setGeneratedTempPassword(null);
     };
 
     const pendingUser = useMemo(() => {
@@ -401,7 +412,9 @@ export default function AdminUsersList() {
                     title: "User Deleted",
                     message: `User ${pendingUser.name} deleted.`
                 });
-                // Force page reload to ensure clean state after deletion
+                // Close modal first, then reload to ensure clean state after deletion
+                closeAction();
+                setTimeout(() => window.location.reload(), 300);
                 setTimeout(() => {
                     window.location.reload();
                 }, 1500);
