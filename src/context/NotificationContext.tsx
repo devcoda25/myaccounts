@@ -7,6 +7,7 @@ interface NotificationOptions {
     type: StatusType;
     actionText?: string;
     onAction?: () => void;
+    loading?: boolean;
 }
 
 interface NotificationContextType {
@@ -39,6 +40,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
                     title={options.title}
                     message={options.message}
                     actionText={options.actionText}
+                    loading={options.loading}
                     onClose={hideNotification}
                     onAction={() => {
                         if (options.onAction) options.onAction();

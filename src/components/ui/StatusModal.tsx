@@ -8,7 +8,8 @@ import {
     Stack,
     alpha,
     useTheme,
-    IconButton
+    IconButton,
+    CircularProgress
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -16,7 +17,8 @@ import {
     AlertCircle,
     AlertTriangle,
     Info,
-    X
+    X,
+    Loader2
 } from 'lucide-react';
 import { EVZONE } from '../../theme/evzone';
 
@@ -30,6 +32,7 @@ interface StatusModalProps {
     onClose: () => void;
     actionText?: string;
     onAction?: () => void;
+    loading?: boolean;
 }
 
 const statusConfig = {
@@ -62,7 +65,8 @@ export const StatusModal: React.FC<StatusModalProps> = ({
     message,
     onClose,
     actionText = 'Got it',
-    onAction
+    onAction,
+    loading = false
 }) => {
     const theme = useTheme();
     const isDark = theme.palette.mode === 'dark';
@@ -130,7 +134,11 @@ export const StatusModal: React.FC<StatusModalProps> = ({
                         margin: '0 auto 24px',
                     }}
                 >
-                    <Icon size={40} strokeWidth={2.5} />
+                    {loading ? (
+                        <CircularProgress size={40} sx={{ color: config.color }} />
+                    ) : (
+                        <Icon size={40} strokeWidth={2.5} />
+                    )}
                 </Box>
 
                 <Typography variant="h5" sx={{ mb: 1, fontWeight: 950 }}>
@@ -154,6 +162,7 @@ export const StatusModal: React.FC<StatusModalProps> = ({
                         fullWidth
                         variant="contained"
                         onClick={onAction || onClose}
+                        disabled={loading}
                         sx={{
                             bgcolor: config.color,
                             color: '#FFFFFF',
@@ -168,7 +177,14 @@ export const StatusModal: React.FC<StatusModalProps> = ({
                             }
                         }}
                     >
-                        {actionText}
+                        {loading ? (
+                            <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
+                                <CircularProgress size={20} sx={{ color: '#FFFFFF' }} />
+                                <span>Loading...</span>
+                            </Stack>
+                        ) : (
+                            actionText
+                        )}
                     </Button>
                 </Stack>
             </Box>

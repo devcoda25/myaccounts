@@ -38,6 +38,7 @@ import {
 import { EVZONE } from "@/theme/evzone";
 import { AdminRole } from '@/types';
 import { useNotification } from '@/context/NotificationContext';
+import { StatusModal } from '@/components/ui/StatusModal';
 
 interface AdminMember {
     id: string;
@@ -58,7 +59,29 @@ export default function Administrators() {
     const [openInvite, setOpenInvite] = useState(false);
     const [inviteEmail, setInviteEmail] = useState('');
     const [inviteRole, setInviteRole] = useState<AdminRole>('Admin');
-    const { showNotification } = useNotification();
+
+    // Notification options state for delete confirmation dialog
+    const [options, setOptions] = useState<{
+        type: 'warning' | 'success' | 'error' | 'info';
+        title: string;
+        message: string;
+        actionText?: string;
+        loading?: boolean;
+        onAction?: () => void;
+    } | null>(null);
+
+    // Update notification helper
+    const updateNotification = (updates: Partial<typeof options>) => {
+        setOptions(prev => prev ? { ...prev, ...updates } as any : null);
+    };
+
+    const { showNotification: showSimpleNotification, hideNotification } = useNotification();
+
+    // Wrapper for simple notifications - clears delete options first
+    const showNotification = (opts: any) => {
+        setOptions(null);
+        showSimpleNotification(opts);
+    };
 
     const fetchAdmins = async () => {
         try {
@@ -89,15 +112,18 @@ export default function Administrators() {
         }
     };
 
-    const handleDelete = async (id: string) => {
-        showNotification({
+    const handleDelete = (id: string) => {
+        setOptions({
             type: 'warning',
             title: 'Remove Administrator',
             message: 'Are you sure you want to remove this administrator? They will lose access to the portal immediately.',
             actionText: 'Remove',
+            loading: false,
             onAction: async () => {
+                updateNotification({ loading: true });
                 try {
                     await api.delete(`/admin/members/${id}`);
+                    hideNotification();
                     showNotification({
                         type: 'success',
                         title: 'Admin Removed',
@@ -105,6 +131,7 @@ export default function Administrators() {
                     });
                     fetchAdmins();
                 } catch (error) {
+                    hideNotification();
                     const msg = error instanceof Error ? error.message : "Unknown error";
                     showNotification({
                         type: 'error',
@@ -224,6 +251,23 @@ export default function Administrators() {
                     <Button variant="contained" onClick={handleInvite} sx={orangeContained}>Send Invite</Button>
                 </DialogActions>
             </Dialog>
+
+            {/* StatusModal for delete confirmation */}
+            {options && (
+                <StatusModal
+                    open={!!options}
+                    type={options.type}
+                    title={options.title}
+                    message={options.message}
+                    actionText={options.actionText}
+                    loading={options.loading}
+                    onClose={() => setOptions(null)}
+                    onAction={() => {
+                        if (options.onAction) options.onAction();
+                        setOptions(null);
+                    }}
+                />
+            )}
         </Stack>
     );
 }
