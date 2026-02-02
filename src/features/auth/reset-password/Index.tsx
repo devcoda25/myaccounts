@@ -347,7 +347,7 @@ export default function ResetPasswordPageV2() {
 
   // Password setting step
   const s = strengthScore(pw);
-  const label = s <= 1 ? t("auth.password.weak") : s === 2 ? t("auth.password.fair") : s === 3 ? t("auth.password.good") : s === 4 ? t("auth.password.strong") : t("auth.password.veryStrong");
+  const label = s <= 1 ? t("password.weak") : s === 2 ? t("password.fair") : s === 3 ? t("password.good") : s === 4 ? t("password.strong") : t("password.veryStrong");
   const r = reqs(pw);
   const canReset = s >= 3 && pw === confirm;
 
@@ -424,10 +424,10 @@ export default function ResetPasswordPageV2() {
             transition: "all 160ms ease",
             "&:hover": enabled
               ? {
-                  backgroundColor: base,
-                  borderColor: base,
-                  color: "#FFFFFF",
-                }
+                backgroundColor: base,
+                borderColor: base,
+                color: "#FFFFFF",
+              }
               : undefined,
           }}
         >

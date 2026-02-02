@@ -217,7 +217,7 @@ export default function SignUpPageV3() {
   } as const;
 
   const pwScore = scorePassword(password);
-  const pwLabel = pwScore <= 1 ? t("auth.password.weak") : pwScore === 2 ? t("auth.password.fair") : pwScore === 3 ? t("auth.password.good") : pwScore === 4 ? t("auth.password.strong") : t("auth.password.veryStrong");
+  const pwLabel = pwScore <= 1 ? t("password.weak") : pwScore === 2 ? t("password.fair") : pwScore === 3 ? t("password.good") : pwScore === 4 ? t("password.strong") : t("password.veryStrong");
 
   const validate = () => {
     const fn = firstName.trim();

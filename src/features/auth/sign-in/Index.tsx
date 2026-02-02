@@ -515,7 +515,7 @@ export default function SignInPage() {
                         disabled={isGoogleLoading}
                         sx={{ ...googleBtnSx, borderRadius: 14, textTransform: "none", fontWeight: 800 }}
                       >
-                        {isGoogleLoading ? t('common.loading.loading') : t('auth.socialLogin.google')}
+                        {isGoogleLoading ? t('common.loading.loading') : t('auth.signIn.continueWithGoogle')}
                       </Button>
                       <Button
                         fullWidth
@@ -525,7 +525,7 @@ export default function SignInPage() {
                         disabled={isAppleLoading}
                         sx={{ ...appleBtnSx, borderRadius: 14, textTransform: "none", fontWeight: 800 }}
                       >
-                        {isAppleLoading ? t('common.loading.loading') : t('auth.socialLogin.apple')}
+                        {isAppleLoading ? t('common.loading.loading') : t('auth.signIn.continueWithApple')}
                       </Button>
                     </Stack>
 
@@ -615,7 +615,7 @@ export default function SignInPage() {
                             sx={{ color: alpha(EVZONE.orange, 0.7), "&.Mui-checked": { color: EVZONE.orange } }}
                           />
                         }
-                        label={<Typography variant="body2">{t('common.labels.rememberMe')}</Typography>}
+                        label={<Typography variant="body2">{t('auth.signIn.rememberMe')}</Typography>}
                       />
                       <Button variant="text" sx={orangeTextSx} onClick={() => navigate("/auth/forgot-password")}>
                         {t('auth.signIn.forgotPassword')}
