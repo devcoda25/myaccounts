@@ -4,9 +4,9 @@
  */
 
 const htmlEscapes: Record<string, string> = {
-    "&": "&",
-    "<": "<",
-    ">": ">",
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
     "\"": "&quot;",
     "/": "&#x2F;"
 };
