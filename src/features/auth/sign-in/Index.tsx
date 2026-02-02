@@ -634,7 +634,7 @@ export default function SignInPage() {
                         {isLocked ? t('auth.signIn.locked', { seconds: secondsLeft }) : t('auth.signIn.submit')}
                       </Button>
                       <Button fullWidth variant="outlined" onClick={() => navigate(uid ? `/auth/sign-up?uid=${uid}` : "/auth/sign-up")} sx={orangeOutlinedSx}>
-                        {t('auth.signUp.title')}
+                        {t('auth.signUp.createAccount')}
                       </Button>
                     </Stack>
 
