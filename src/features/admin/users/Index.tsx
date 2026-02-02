@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "@/utils/api";
 import { formatUserId } from "@/utils/format";
@@ -151,6 +151,9 @@ export default function AdminUsersList() {
     const [rows, setRows] = useState<UserRow[]>([]);
     const [total, setTotal] = useState(0);
 
+    // Use ref to track in-flight requests and prevent race conditions
+    const fetchUsersRef = useRef<{ controller: AbortController | null; timestamp: number }>({ controller: null, timestamp: 0 });
+
     const mapUserToRow = (u: BackendUser): UserRow => {
 
         return {
@@ -169,43 +172,53 @@ export default function AdminUsersList() {
     };
 
     const fetchUsers = async () => {
+        // Cancel any in-flight request to prevent race conditions
+        if (fetchUsersRef.current.controller) {
+            fetchUsersRef.current.controller.abort();
+        }
+
+        const controller = new AbortController();
+        fetchUsersRef.current.controller = controller;
+
         setLoading(true);
         try {
             const skip = page * rowsPerPage;
-            // Clean filters
             const rParams: any = {};
             if (q) rParams.query = q;
 
-            // Map Frontend filters to Backend values
-            // Type Filter
             if (typeFilter !== 'All') {
                 if (typeFilter === 'Org Admin') rParams.role = 'SUPER_ADMIN';
                 else if (typeFilter === 'Agent') rParams.role = 'ADMIN';
                 else if (typeFilter === 'User') rParams.role = 'USER';
-                // Provider? -> USER for now
             }
 
-            // Status Filter
-            // Backend accepts 'Active' (emailVerified=true) or 'Disabled' (false)
             if (statusFilter !== 'All') {
                 if (statusFilter === 'Active') rParams.status = 'Active';
                 if (statusFilter === 'Disabled') rParams.status = 'Disabled';
-                if (statusFilter === 'Locked') rParams.status = 'Disabled'; // Map Locked to Disabled
+                if (statusFilter === 'Locked') rParams.status = 'Disabled';
             }
 
             const queryStr = new URLSearchParams(rParams).toString();
             const url = `/users?skip=${skip}&take=${rowsPerPage}&${queryStr}`;
 
-            const res = await api<{ users: BackendUser[]; total: number }>(url);
+            const res = await api<{ users: BackendUser[]; total: number }>(url, {
+                signal: controller.signal
+            });
+
             if (res && Array.isArray(res.users)) {
                 setRows(res.users.map(mapUserToRow));
                 setTotal(res.total || 0);
             }
         } catch (err: unknown) {
+            // Ignore aborted requests
+            if (err instanceof Error && err.name === 'AbortError') {
+                return;
+            }
             console.error(err);
             showNotification({ type: 'error', title: 'Load Failed', message: 'Failed to load users' });
         } finally {
             setLoading(false);
+            fetchUsersRef.current.controller = null;
         }
     };
 
