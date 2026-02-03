@@ -28,6 +28,7 @@ import { useThemeStore } from "@/stores/themeStore";
 import { useAuthStore } from "@/stores/authStore";
 import { EVZONE } from "@/theme/evzone";
 import { api } from "@/utils/api";
+import { sanitizeUrl } from "@/sanitizers/url";
 
 interface IApp {
   id: string;
@@ -126,7 +127,7 @@ export default function Dashboard() {
                   <motion.div variants={itemVars}>
                     <Paper
                       component="a"
-                      href={app.url}
+                      href={sanitizeUrl(app.url)}
                       target="_blank"
                       rel="noopener noreferrer"
                       sx={{
