@@ -319,8 +319,7 @@ export default function AppsPermissionsPage() {
     };
 
     const restore = (id: string) => {
-      setApps((prev) => prev.map((a) => (a.id === id ? { ...a, revoked: false, lastUsedAt: Date.now() } : a)));
-      setSnack({ open: true, severity: "success", msg: "Access restored (demo)." });
+      setSnack({ open: true, severity: "info", msg: "To restore access, please re-authenticate with the app through the Apps page." });
     };
 
     const avatarFor = (kind: AppKind) => {
@@ -357,7 +356,7 @@ export default function AppsPermissionsPage() {
                         <Button variant="outlined" sx={orangeOutlined} onClick={() => navigate("/app/apps")}>
                           Back to apps
                         </Button>
-                        <Button variant="contained" color="secondary" sx={orangeContained} startIcon={<ShieldCheckIcon size={18} />} onClick={() => setSnack({ open: true, severity: "info", msg: "Review security settings (demo)." })}>
+                        <Button variant="contained" color="secondary" sx={orangeContained} startIcon={<ShieldCheckIcon size={18} />} onClick={() => navigate("/app/security")}>
                           Security
                         </Button>
                       </Stack>
@@ -428,7 +427,7 @@ export default function AppsPermissionsPage() {
                               Restore
                             </Button>
                           )}
-                          <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: "View app details (demo)." })}>
+                          <Button variant="outlined" sx={orangeOutlined} onClick={() => setSnack({ open: true, severity: "info", msg: `View details for ${a.name}. Visit the app directly for more information.` })}>
                             Details
                           </Button>
                         </Stack>
@@ -450,7 +449,7 @@ export default function AppsPermissionsPage() {
                       <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => navigate("/app/apps")}>
                         Apps
                       </Button>
-                      <Button fullWidth variant="contained" color="secondary" sx={orangeContained} onClick={() => setSnack({ open: true, severity: "info", msg: "Review login activity (demo)." })}>
+                      <Button fullWidth variant="contained" color="secondary" sx={orangeContained} onClick={() => navigate("/app/security/activity")}>
                         Activity
                       </Button>
                     </Stack>

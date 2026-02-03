@@ -226,7 +226,7 @@ export default function ConnectedAppsPage() {
 
     // Self-tests effect removed
 
-    const [tab, setTab] = useState<0 | 1 | 2>(0);
+    const [tab, setTab] = useState<0 | 1 | 2>(1); // Default to Connected tab
     const [search, setSearch] = useState("");
 
     const [apps, setApps] = useState<AppTile[]>([]);
@@ -248,7 +248,8 @@ export default function ConnectedAppsPage() {
       const fetchApps = async () => {
         try {
           setLoading(true);
-          const data = await api.get<any[]>("/apps");
+          // Use /apps/connected to get only apps the user has actually accessed
+          const data = await api.get<any[]>("/apps/connected");
 
           // Transform backend data to frontend tile
           const mapped: AppTile[] = data.map((d) => ({
@@ -381,7 +382,7 @@ export default function ConnectedAppsPage() {
                         <Button variant="outlined" sx={orangeOutlined} startIcon={<ShieldIcon size={18} />} onClick={() => navigate("/app/apps/permissions")}>
                           Permissions
                         </Button>
-                        <Button variant="contained" color="secondary" sx={orangeContained} startIcon={<AppsIcon size={18} />} onClick={() => setSnack({ open: true, severity: "info", msg: "Open app launcher (demo)." })}>
+                        <Button variant="contained" color="secondary" sx={orangeContained} startIcon={<AppsIcon size={18} />} onClick={() => setSnack({ open: true, severity: "info", msg: "Use the app cards below to launch individual apps." })}>
                           App launcher
                         </Button>
                       </Stack>
@@ -480,7 +481,7 @@ export default function ConnectedAppsPage() {
                       <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={() => navigate("/app/apps/permissions")}>
                         Permissions
                       </Button>
-                      <Button fullWidth variant="contained" color="secondary" sx={orangeContained} onClick={() => setSnack({ open: true, severity: "info", msg: "Open app launcher (demo)." })}>
+                      <Button fullWidth variant="contained" color="secondary" sx={orangeContained} onClick={() => setSnack({ open: true, severity: "info", msg: "Use the app cards below to launch individual apps." })}>
                         Launcher
                       </Button>
                     </Stack>
