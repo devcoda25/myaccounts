@@ -47,6 +47,7 @@ import {
 } from 'lucide-react';
 import { exportToCsv } from "@/utils/export";
 import { Snackbar } from "@mui/material";
+import { sanitizeUrl } from "@/sanitizers/url";
 
 const EVZONE = { green: "#03cd8c", orange: "#f77f00", red: "#d32f2f" };
 
@@ -355,7 +356,7 @@ export default function KycQueue() {
                                                 // If URL is already absolute, use it. Otherwise, assume relative.
                                                 // If we have VITE_API_BASE_URL (and it's not just /api), prepending it might be safer if proxy is flaky.
                                                 // But /uploads proxy is standard. Let's try to trust the relative path first.
-                                                const src = url.startsWith('http') ? url : url;
+                                                const src = sanitizeUrl(url);
 
                                                 return (
                                                     <Paper key={doc.key} sx={{ width: '100%', maxWidth: 500, height: 320, bgcolor: '#333', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
