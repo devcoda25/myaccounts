@@ -264,9 +264,9 @@ export default function ConnectedAppsPage() {
             ]
           }));
           setApps(mapped);
-        } catch (err: unknown) {
+        } catch (err) {
           console.error(err);
-          setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to load apps" });
+          setSnack({ open: true, severity: "error", msg: err instanceof Error ? err.message : "Failed to load apps" });
         } finally {
           setLoading(false);
         }

@@ -40,17 +40,9 @@ import {
 import { api } from "@/utils/api";
 import { motion } from "framer-motion";
 
-const EVZONE = { green: "#03cd8c", orange: "#f77f00" } as const;
-
-interface OAuthApp {
-    clientId: string;
-    name: string;
-    redirectUris: string[];
-    isFirstParty: boolean;
-    isPublic: boolean;
-    createdAt: string;
-    website?: string;
-}
+import { OAuthApp, AppFormData, CreatedApp, SnackSeverity } from "./types";
+import { EVZONE } from "./constants";
+import { initFormData, populateFormData, buildPayload, copyToClipboard } from "./helpers";
 
 export default function AdminApps() {
     const { t } = useTranslation("common");
@@ -60,21 +52,14 @@ export default function AdminApps() {
 
     const [apps, setApps] = useState<OAuthApp[]>([]);
     const [loading, setLoading] = useState(true);
-    const [snack, setSnack] = useState({ open: false, msg: "", severity: "info" as "info" | "success" | "error" });
+    const [snack, setSnack] = useState({ open: false, msg: "", severity: "info" as SnackSeverity });
 
     const [modalOpen, setModalOpen] = useState(false);
     const [editingApp, setEditingApp] = useState<OAuthApp | null>(null);
-    const [formData, setFormData] = useState({
-        name: "",
-        clientId: "",
-        type: "confidential" as "confidential" | "public",
-        redirectUris: "",
-        website: "",
-        isFirstParty: false,
-    });
+    const [formData, setFormData] = useState<AppFormData>(initFormData());
 
     const [secretModalOpen, setSecretModalOpen] = useState(false);
-    const [createdApp, setCreatedApp] = useState<{ clientId: string; clientSecret?: string } | null>(null);
+    const [createdApp, setCreatedApp] = useState<CreatedApp | null>(null);
 
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
     const [appToDelete, setAppToDelete] = useState<string | null>(null);
@@ -100,33 +85,16 @@ export default function AdminApps() {
     const handleOpenModal = (app?: OAuthApp) => {
         if (app) {
             setEditingApp(app);
-            setFormData({
-                name: app.name,
-                clientId: app.clientId,
-                type: app.isPublic ? "public" : "confidential",
-                redirectUris: app.redirectUris.join(", "),
-                website: app.website || "",
-                isFirstParty: app.isFirstParty,
-            });
+            setFormData(populateFormData(app));
         } else {
             setEditingApp(null);
-            setFormData({
-                name: "",
-                clientId: "",
-                type: "confidential",
-                redirectUris: "",
-                website: "",
-                isFirstParty: false,
-            });
+            setFormData(initFormData());
         }
         setModalOpen(true);
     };
 
     const handleSave = async () => {
-        const payload = {
-            ...formData,
-            redirectUris: formData.redirectUris.split(",").map(u => u.trim()).filter(Boolean),
-        };
+        const payload = buildPayload(formData);
 
         try {
             if (editingApp) {
@@ -136,7 +104,7 @@ export default function AdminApps() {
                 });
                 setSnack({ open: true, msg: "App updated successfully", severity: "success" });
             } else {
-                const res = await api<{ clientId: string; clientSecret?: string }>('/admin/apps', {
+                const res = await api<CreatedApp>('/admin/apps', {
                     method: 'POST',
                     body: JSON.stringify(payload)
                 });
@@ -159,8 +127,8 @@ export default function AdminApps() {
             const res = await api<{ clientSecret: string }>(`/admin/apps/${editingApp.clientId}/rotate-secret`, { method: 'POST' });
             setCreatedApp({ clientId: editingApp.clientId, clientSecret: res.clientSecret });
             setRegenerateConfirmOpen(false);
-            setModalOpen(false); // Close edit modal
-            setSecretModalOpen(true); // Show new secret
+            setModalOpen(false);
+            setSecretModalOpen(true);
             setSnack({ open: true, msg: "Secret regenerated successfully", severity: "success" });
         } catch (err: any) {
             setSnack({ open: true, msg: "Failed to regenerate secret", severity: "error" });
@@ -184,11 +152,6 @@ export default function AdminApps() {
             setDeleteConfirmOpen(false);
             setAppToDelete(null);
         }
-    };
-
-    const copyToClipboard = (text: string) => {
-        navigator.clipboard.writeText(text);
-        setSnack({ open: true, msg: "Copied to clipboard", severity: "success" });
     };
 
     const orangeContained = {

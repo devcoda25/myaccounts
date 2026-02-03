@@ -41,16 +41,7 @@ import { AdminRole } from '@/types';
 import { useNotification } from '@/context/NotificationContext';
 import { StatusModal } from '@/components/ui/StatusModal';
 
-interface AdminMember {
-    id: string;
-    name: string;
-    email: string;
-    role: AdminRole;
-    lastActive: string;
-    status: 'Active' | 'Invited';
-}
-
-// MOCK_ADMINS removed
+import { AdminMember } from "./types";
 
 export default function Administrators() {
     const { t } = useTranslation("common");
@@ -62,14 +53,7 @@ export default function Administrators() {
     const [inviteRole, setInviteRole] = useState<AdminRole>('Admin');
 
     // Notification options state for delete confirmation dialog
-    const [options, setOptions] = useState<{
-        type: 'warning' | 'success' | 'error' | 'info';
-        title: string;
-        message: string;
-        actionText?: string;
-        loading?: boolean;
-        onAction?: () => void;
-    } | null>(null);
+    const [options, setOptions] = useState<NotificationOptions | null>(null);
 
     // Update notification helper
     const updateNotification = (updates: Partial<NotificationOptions>) => {

@@ -49,26 +49,13 @@ import { useNavigate } from 'react-router-dom';
 import { api } from "@/utils/api";
 import { formatTransactionId } from "@/utils/format";
 
-const EVZONE = { green: "#03cd8c", orange: "#f77f00", red: "#d32f2f", blue: "#2196f3" } as const;
-
-type DisputeStatus = "OPEN" | "UNDER_REVIEW" | "WON" | "LOST" | "CLOSED";
-
-interface DisputeRow {
-    id: string;
-    wallet: { id: string; user: { email: string; firstName: string; otherNames: string } };
-    amount: number;
-    currency: string;
-    reason: string;
-    status: DisputeStatus;
-    createdAt: string;
-    reference: string;
-    txnId?: string;
-}
+import { DisputeStatus, DisputeRow } from "./types";
+import { EVZONE } from "./constants";
+import { statusConfig, formatCurrency, formatDate } from "./helpers";
 
 export default function AdminDisputesList() {
     const { t } = useTranslation("common");
     const theme = useTheme();
-    // const navigate = useNavigate(); // Unused
     const [q, setQ] = useState("");
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -95,7 +82,6 @@ export default function AdminDisputesList() {
             setTotal(data.total);
         } catch (err: unknown) {
             console.error(err);
-            // Fallback for demo if backend not ready
             const msg = err instanceof Error ? err.message : String(err);
             if (msg.includes("404")) {
                 setError("Backend endpoint not found. Ensure server is running and updated.");
@@ -128,22 +114,6 @@ export default function AdminDisputesList() {
         } finally {
             setProcessing(false);
         }
-    };
-
-    const statusConfig = (s: DisputeStatus) => {
-        if (s === "WON") return { color: EVZONE.green, icon: <CheckCircle size={14} />, label: "Resolved (Won)" };
-        if (s === "LOST") return { color: EVZONE.red, icon: <XCircle size={14} />, label: "Resolved (Lost)" };
-        if (s === "CLOSED") return { color: theme.palette.text.secondary, icon: <XCircle size={14} />, label: "Closed" };
-        if (s === "UNDER_REVIEW") return { color: EVZONE.blue, icon: <Clock size={14} />, label: "Under Review" };
-        return { color: EVZONE.orange, icon: <AlertCircle size={14} />, label: "Open" };
-    };
-
-    const formatCurrency = (amount: number, currency: string) => {
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount);
-    };
-
-    const formatDate = (dateStr: string) => {
-        return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(dateStr));
     };
 
     return (
@@ -270,7 +240,6 @@ export default function AdminDisputesList() {
                                         <TableCell>
                                             <Chip
                                                 label={status.label}
-                                                icon={status.icon}
                                                 size="small"
                                                 sx={{
                                                     bgcolor: alpha(status.color, 0.1),

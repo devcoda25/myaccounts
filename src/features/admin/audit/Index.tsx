@@ -37,38 +37,12 @@ import {
     Eye as EyeIcon,
 } from "lucide-react";
 import { formatTransactionId } from "@/utils/format";
-
-// Types
-type Severity = "success" | "info" | "warning" | "error";
-type Outcome = "Success" | "Failed";
-type Risk = "Low" | "Medium" | "High";
-
-type AuditEvent = {
-    id: string;
-    at: number;
-    actor: string;
-    role: string;
-    action: string;
-    target: string;
-    ip: string;
-    outcome: Outcome;
-    risk: Risk;
-    requestId: string;
-    meta: Record<string, string | number | boolean>;
-};
-
-const EVZONE = { green: "#03cd8c", orange: "#f77f00" } as const;
-
-// mkEvents mock removed
-
-function riskTone(r: Risk) {
-    if (r === "High") return "#B42318";
-    if (r === "Medium") return EVZONE.orange;
-    return EVZONE.green;
-}
-
 import { api } from "@/utils/api";
 import { exportToCsv } from "@/utils/export";
+
+import { Severity, Outcome, Risk, AuditEvent } from "./types";
+import { EVZONE } from "./constants";
+import { riskTone } from "./helpers";
 
 export default function AuditLogs() {
     const { t } = useTranslation("common");

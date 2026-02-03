@@ -59,74 +59,9 @@ import { exportToCsv } from "@/utils/export";
 import { useNotification } from "@/context/NotificationContext";
 
 import { BackendUser } from '@/types';
-
-// Types
-type ThemeMode = "light" | "dark";
-
-type AccountType = "User" | "Provider" | "Agent" | "Org Admin";
-type UserStatus = "Active" | "Locked" | "Disabled";
-type Risk = "Low" | "Medium" | "High";
-
-type UserRow = {
-    id: string;
-    name: string;
-    email?: string;
-    phone?: string;
-    type: AccountType;
-    status: UserStatus;
-    currency: string;
-    lastLoginAt?: number;
-    risk: Risk;
-    mfaEnabled: boolean;
-    passkeys: number;
-};
-
-type ReAuthMode = "password" | "mfa";
-type MfaChannel = "Authenticator" | "SMS" | "WhatsApp" | "Email";
-
-type ActionKind = "LOCK" | "UNLOCK" | "RESET_PASSWORD" | "RESET_MFA" | "FORCE_SIGNOUT" | "DELETE_USER";
-
-type PendingAction = {
-    kind: ActionKind;
-    userId: string;
-};
-
-const EVZONE = { green: "#03cd8c", orange: "#f77f00" } as const;
-const WHATSAPP = { green: "#25D366" } as const;
-
-// Helpers
-function mkTempPassword() {
-    const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    const bytes = new Uint8Array(10);
-    try {
-        window.crypto.getRandomValues(bytes);
-    } catch {
-        for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
-    }
-    const s = Array.from(bytes)
-        .map((b) => alphabet[b % alphabet.length])
-        .join("");
-    return `EVZ-${s.slice(0, 4)}-${s.slice(4, 8)}`;
-}
-
-function uid(prefix: string) {
-    return `${prefix}_${Math.random().toString(16).slice(2)}`;
-}
-
-// [Removed] mfaCodeFor mock
-
-function riskTone(r: Risk) {
-    if (r === "High") return "#B42318";
-    if (r === "Medium") return EVZONE.orange;
-    return EVZONE.green;
-}
-
-function statusTone(s: UserStatus) {
-    if (s === "Active") return EVZONE.green;
-    if (s === "Locked") return EVZONE.orange;
-    return "#667085";
-}
-
+import { AccountType, UserStatus, Risk, UserRow, ReAuthMode, MfaChannel, ActionKind, PendingAction } from "./types";
+import { EVZONE, WHATSAPP } from "./constants";
+import { mkTempPassword, riskTone, statusTone, actionTitle, actionSeverity } from "./helpers";
 
 export default function AdminUsersList() {
     const { t } = useTranslation("common");
@@ -155,7 +90,6 @@ export default function AdminUsersList() {
     const fetchUsersRef = useRef<{ controller: AbortController | null; timestamp: number }>({ controller: null, timestamp: 0 });
 
     const mapUserToRow = (u: BackendUser): UserRow => {
-
         return {
             id: u.id,
             name: `${u.firstName || ''} ${u.otherNames || ''}`.trim() || 'Unknown',
@@ -183,7 +117,7 @@ export default function AdminUsersList() {
         setLoading(true);
         try {
             const skip = page * rowsPerPage;
-            const rParams: any = {};
+            const rParams: Record<string, string> = {};
             if (q) rParams.query = q;
 
             if (typeFilter !== 'All') {
@@ -242,7 +176,6 @@ export default function AdminUsersList() {
             currency: 'Currency',
             risk: 'Risk Score'
         });
-        setRows(rows); // or exportToCsv returns what it does
         showNotification({ type: "success", title: "Export Ready", message: "User directory exported successfully" });
     };
 
@@ -281,8 +214,8 @@ export default function AdminUsersList() {
             setCodeSent(true);
             setCooldown(30);
             showNotification({ type: "success", title: "Code Sent", message: `Code sent to ${mfaChannel}` });
-        } catch (err: any) {
-            showNotification({ type: "error", title: "Send Failed", message: err.message || "Failed to send code" });
+        } catch (err) {
+            showNotification({ type: "error", title: "Send Failed", message: err instanceof Error ? err.message : "Failed to send code" });
         }
     };
 
@@ -294,7 +227,7 @@ export default function AdminUsersList() {
     const [newType, setNewType] = useState<AccountType>("User");
     const [newNotify, setNewNotify] = useState(true);
 
-
+    // Button styles
     const orangeContained = {
         backgroundColor: EVZONE.orange,
         color: "#FFFFFF",
@@ -355,24 +288,6 @@ export default function AdminUsersList() {
         return rows.find((r) => r.id === pending.userId) || null;
     }, [pending, rows]);
 
-    const actionTitle = (k: ActionKind) => {
-        if (k === "LOCK") return "Lock account";
-        if (k === "UNLOCK") return "Unlock account";
-        if (k === "RESET_PASSWORD") return "Reset password";
-        if (k === "RESET_MFA") return "Reset MFA";
-        if (k === "DELETE_USER") return "Delete User";
-        return "Force sign out";
-    };
-
-    const actionSeverity = (k: ActionKind): "info" | "warning" | "error" => {
-        if (k === "LOCK") return "warning";
-        if (k === "UNLOCK") return "info";
-        if (k === "RESET_PASSWORD") return "warning";
-        if (k === "RESET_MFA") return "warning";
-        if (k === "DELETE_USER") return "error";
-        return "warning";
-    };
-
     const validateStep0 = () => {
         if (!pending) return false;
         if (reason.trim().length < 8) {
@@ -382,16 +297,12 @@ export default function AdminUsersList() {
         return true;
     };
 
-    // [Removed] validateReauth (using real backend check now)
-
     const applyAction = async () => {
         if (!pending || !pendingUser) return;
 
         try {
             // Re-auth first
             if (reauthMode === "password") {
-                // Verify password via backend - reusing general verify-password or a specific admin one?
-                // Assuming /auth/verify-password works for current user (the admin)
                 await api('/auth/verify-password', { method: 'POST', body: JSON.stringify({ password: adminPassword }) });
             } else {
                 const channelMap: Record<string, 'authenticator' | 'sms' | 'whatsapp' | 'email'> = {
@@ -412,12 +323,8 @@ export default function AdminUsersList() {
                     title: "User Deleted",
                     message: `User ${pendingUser.name} deleted.`
                 });
-                // Close modal first, then reload to ensure clean state after deletion
                 closeAction();
                 setTimeout(() => window.location.reload(), 300);
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
             } else if (pending.kind === 'LOCK') {
                 await api(`/users/${pending.userId}`, {
                     method: 'PATCH',
@@ -479,12 +386,11 @@ export default function AdminUsersList() {
 
         const nameParts = newName.trim().split(' ');
         const firstName = nameParts[0];
-        const otherNames = nameParts.slice(1).join(' ') || '.'; // Backend might require otherNames
+        const otherNames = nameParts.slice(1).join(' ') || '.';
 
         let role = 'USER';
         if (newType === 'Org Admin') role = 'SUPER_ADMIN';
         if (newType === 'Agent') role = 'ADMIN';
-        // Provider -> USER for now
 
         try {
             await api('/users/create', {
@@ -495,15 +401,13 @@ export default function AdminUsersList() {
                     email: newEmail,
                     phone: newPhone || undefined,
                     role,
-                    password: 'Password123!', // Temporary password or auto-generate?
-                    // Ideally we send an invite. For now, hardcode a known temp pw or generate one.
-                    // Let's use a standard one and notify.
+                    password: 'Password123!',
                     acceptTerms: true
                 })
             });
             showNotification({ type: "success", title: "User Created", message: `User ${newName} created successfully.` });
             setCreateOpen(false);
-            fetchUsers(); // Refresh list
+            fetchUsers();
 
             // Reset form
             setNewName("");
@@ -517,7 +421,7 @@ export default function AdminUsersList() {
         }
     };
 
-    const filtered = rows; // Server-side filtering is active
+    const filtered = rows;
 
     const RowActions = ({ r }: { r: UserRow }) => (
         <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ width: { xs: "100%", sm: "auto" } }}>
@@ -557,7 +461,6 @@ export default function AdminUsersList() {
 
     return (
         <Box className="min-h-screen">
-            {/* Body */}
             <Box>
                 <Stack spacing={2.2}>
                     <Card sx={{ borderRadius: 6 }}>
@@ -592,13 +495,13 @@ export default function AdminUsersList() {
                                         fullWidth
                                         sx={{ flexGrow: 1, '& .MuiOutlinedInput-root': { borderRadius: 3 } }}
                                     />
-                                    <TextField select size="small" label="Status" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as any)} sx={{ minWidth: 120, '& .MuiOutlinedInput-root': { borderRadius: 3 } }}>
+                                    <TextField select size="small" label="Status" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as UserStatus | "All")} sx={{ minWidth: 120, '& .MuiOutlinedInput-root': { borderRadius: 3 } }}>
                                         <MenuItem value="All">All</MenuItem>
                                         <MenuItem value="Active">Active</MenuItem>
                                         <MenuItem value="Locked">Locked</MenuItem>
                                         <MenuItem value="Disabled">Disabled</MenuItem>
                                     </TextField>
-                                    <TextField select size="small" label="Type" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value as any)} sx={{ minWidth: 120, '& .MuiOutlinedInput-root': { borderRadius: 3 } }}>
+                                    <TextField select size="small" label="Type" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value as AccountType | "All")} sx={{ minWidth: 120, '& .MuiOutlinedInput-root': { borderRadius: 3 } }}>
                                         <MenuItem value="All">All</MenuItem>
                                         <MenuItem value="User">User</MenuItem>
                                         <MenuItem value="Provider">Provider</MenuItem>
@@ -606,7 +509,7 @@ export default function AdminUsersList() {
                                         <MenuItem value="Org Admin">Org Admin</MenuItem>
                                     </TextField>
 
-                                    <TextField select size="small" label="Risk" value={riskFilter} onChange={(e) => setRiskFilter(e.target.value as any)} sx={{ minWidth: 120, '& .MuiOutlinedInput-root': { borderRadius: 3 } }}>
+                                    <TextField select size="small" label="Risk" value={riskFilter} onChange={(e) => setRiskFilter(e.target.value as Risk | "All")} sx={{ minWidth: 120, '& .MuiOutlinedInput-root': { borderRadius: 3 } }}>
                                         <MenuItem value="All">All</MenuItem>
                                         <MenuItem value="Low">Low</MenuItem>
                                         <MenuItem value="Medium">Medium</MenuItem>
@@ -919,8 +822,6 @@ export default function AdminUsersList() {
                                 <MenuItem value="Agent">Agent</MenuItem>
                                 <MenuItem value="Org Admin">Org Admin</MenuItem>
                             </TextField>
-
-
                         </Stack>
 
                         <FormControlLabel

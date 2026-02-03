@@ -206,9 +206,9 @@ export default function AppsPermissionsPage() {
           setLoading(true);
           const data = await api.get<AppPerm[]>("/apps/permissions");
           setApps(data);
-        } catch (err: unknown) {
+        } catch (err) {
           console.error(err);
-          setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to load permissions" });
+          setSnack({ open: true, severity: "error", msg: err instanceof Error ? err.message : "Failed to load permissions" });
         } finally {
           setLoading(false);
         }
@@ -313,8 +313,8 @@ export default function AppsPermissionsPage() {
         setApps((prev) => prev.map((a) => (a.id === pendingRevoke ? { ...a, revoked: true } : a)));
         setSnack({ open: true, severity: "success", msg: "Access revoked. You will be logged out of that service." });
         closeReauth();
-      } catch (err: unknown) {
-        setSnack({ open: true, severity: "error", msg: (err as Error).message || "Failed to revoke access." });
+      } catch (err) {
+        setSnack({ open: true, severity: "error", msg: err instanceof Error ? err.message : "Failed to revoke access." });
       }
     };
 
