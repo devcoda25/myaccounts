@@ -4,7 +4,7 @@ const EVZONE = {
     orange: "#f77f00",
 } as const;
 
-const COUNTRIES = [
+export const COUNTRIES = [
     { code: "UG", label: "Uganda", dial: "+256" },
     { code: "KE", label: "Kenya", dial: "+254" },
     { code: "TZ", label: "Tanzania", dial: "+255" },
@@ -18,3 +18,5 @@ const COUNTRIES = [
     { code: "IN", label: "India", dial: "+91" },
     { code: "CN", label: "China", dial: "+86" },
 ];
+
+export type Country = typeof COUNTRIES[number];
