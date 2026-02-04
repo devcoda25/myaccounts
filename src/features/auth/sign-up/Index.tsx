@@ -10,11 +10,13 @@ import {
   CardContent,
   Checkbox,
   Divider,
+  FormControl,
   FormControlLabel,
   IconButton,
   InputAdornment,
   MenuItem,
   Select,
+  SelectChangeEvent,
   Stack,
   Switch,
   TextField,
@@ -411,21 +413,25 @@ export default function SignUpPageV3() {
                         }}
                       />
                       <Box sx={{ display: 'flex', gap: 1 }}>
-                        <Select
-                          value={countryCode}
-                          onChange={(e) => setCountryCode(e.target.value)}
-                          sx={{ width: 100, borderRadius: 1.5, '.MuiSelect-select': { display: 'flex', alignItems: 'center' } }}
-                          renderValue={(selected) => <Typography variant="body2">{selected}</Typography>}
-                        >
-                          {COUNTRIES.map((c) => (
-                            <MenuItem key={c.code} value={c.dial}>
-                              <Stack direction="row" justifyContent="space-between" width="100%">
-                                <Typography variant="body2">{c.label}</Typography>
-                                <Typography variant="caption" color="text.secondary">{c.dial}</Typography>
-                              </Stack>
-                            </MenuItem>
-                          ))}
-                        </Select>
+                        <FormControl size="small" sx={{ width: 100 }}>
+                          <Select
+                            value={countryCode}
+                            onChange={(e: SelectChangeEvent<string>) => setCountryCode(e.target.value)}
+                            renderValue={(selected) => <Typography variant="body2">{selected}</Typography>}
+                            IconComponent={(props) => (
+                              <ArrowRightIcon {...props} sx={{ transform: 'rotate(90deg)' }} />
+                            )}
+                          >
+                            {COUNTRIES.map((c) => (
+                              <MenuItem key={c.code} value={c.dial}>
+                                <Stack direction="row" justifyContent="space-between" width="100%" alignItems="center">
+                                  <Typography variant="body2">{c.label}</Typography>
+                                  <Typography variant="caption" color="text.secondary">{c.dial}</Typography>
+                                </Stack>
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
                         <TextField
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
