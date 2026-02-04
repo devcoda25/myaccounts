@@ -10,13 +10,9 @@ import {
   CardContent,
   Checkbox,
   Divider,
-  FormControl,
   FormControlLabel,
   IconButton,
   InputAdornment,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
   Stack,
   Switch,
   TextField,
@@ -413,32 +409,32 @@ export default function SignUpPageV3() {
                         }}
                       />
                       <Box sx={{ display: 'flex', gap: 1 }}>
-                        <FormControl size="small" sx={{ width: 100, zIndex: 1 }}>
-                          <Select
+                        <Box sx={{ position: 'relative', width: 120 }}>
+                          <select
                             value={countryCode}
-                            onChange={(e: SelectChangeEvent<string>) => setCountryCode(e.target.value)}
-                            renderValue={(selected) => <Typography variant="body2">{selected}</Typography>}
-                            IconComponent={(props) => (
-                              <ArrowRightIcon {...props} sx={{ transform: 'rotate(90deg)' }} />
-                            )}
-                            MenuProps={{
-                              anchorOrigin: { vertical: 'bottom', horizontal: 'left' },
-                              transformOrigin: { vertical: 'top', horizontal: 'left' },
-                              PaperProps: {
-                                sx: { maxHeight: 300 }
-                              }
+                            onChange={(e) => setCountryCode(e.target.value)}
+                            style={{
+                              width: '100%',
+                              height: 56,
+                              padding: '0 12px',
+                              borderRadius: 8,
+                              border: '1px solid rgba(0,0,0,0.23)',
+                              backgroundColor: 'transparent',
+                              fontSize: '0.875rem',
+                              cursor: 'pointer',
+                              appearance: 'none',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
                             }}
                           >
                             {COUNTRIES.map((c) => (
-                              <MenuItem key={c.code} value={c.dial}>
-                                <Stack direction="row" justifyContent="space-between" width="100%" alignItems="center">
-                                  <Typography variant="body2">{c.label}</Typography>
-                                  <Typography variant="caption" color="text.secondary">{c.dial}</Typography>
-                                </Stack>
-                              </MenuItem>
+                              <option key={c.code} value={c.dial}>
+                                {c.dial}
+                              </option>
                             ))}
-                          </Select>
-                        </FormControl>
+                          </select>
+                        </Box>
                         <TextField
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
