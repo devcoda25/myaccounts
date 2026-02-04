@@ -16,12 +16,12 @@ export type Country = {
     dial: string;   // Dial code
 };
 
-// Use customArray method which returns full country objects
-const allCountriesArray = countryCodes.customArray();
-console.log('customArray result:', allCountriesArray);
+// Use all method which returns full country objects with all properties
+const allCountriesFull = countryCodes.all();
+console.log('all() result sample:', allCountriesFull?.slice(0, 2));
 
 // Create a formatted countries array from the library
-export const COUNTRIES: Country[] = Array.isArray(allCountriesArray) ? allCountriesArray
+export const COUNTRIES: Country[] = Array.isArray(allCountriesFull) ? allCountriesFull
     .map((country: any) => ({
         code: country.countryCode,
         label: country.name,
@@ -34,8 +34,6 @@ export const COUNTRIES: Country[] = Array.isArray(allCountriesArray) ? allCountr
         return priorityCodes.includes(country.code);
     })
     .sort((a: Country, b: Country) => a.label.localeCompare(b.label)) : [];
-
-console.log('COUNTRIES:', COUNTRIES);
 
 // Helper hook to get country by dial code
 export const getCountryByDial = (dial: string): Country | undefined => {
