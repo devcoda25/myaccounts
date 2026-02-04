@@ -14,7 +14,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          
 
       - run: npm install
       - run: npm run test
@@ -33,19 +32,12 @@ jobs:
           script: |
             set -euo pipefail
 
-            cd /var/www
+            cd /var/www/myaccounts-frontend
 
-            # Clone or update the repo
-            if [ -d "myaccounts-frontend/.git" ]; then
-                cd myaccounts-frontend
-                git fetch origin main
-                git reset --hard origin/main
-                git clean -fd
-            else
-                rm -rf myaccounts-frontend
-                git clone https://github.com/devcoda25/myaccounts.git myaccounts-frontend
-                cd myaccounts-frontend
-            fi
+            # Force repo to match origin/main (prevents package-lock conflicts)
+            git fetch origin main
+            git reset --hard origin/main
+            git clean -fd
 
             # Install deps without rewriting package-lock
             npm ci
@@ -58,7 +50,7 @@ jobs:
             EOF
 
             export NODE_OPTIONS="--max-old-space-size=4096"
-            npm run build:light
+            npm run build
 
             # Optional: only if your user can sudo without a password
             # sudo nginx -t && sudo systemctl reload nginx
