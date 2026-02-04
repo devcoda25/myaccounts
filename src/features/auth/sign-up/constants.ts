@@ -10,15 +10,19 @@ export type Country = {
     dial: string;   // Dial code
 };
 
-// Get all countries as an array using the library's customList method
-const allCountries = countryCodes.customList('countryCode', 'all');
+// Get all countries from the library
+const allCountryData = countryCodes as unknown as Array<{
+    countryCode: string;
+    name: string;
+    tel: string;
+}>;
 
 // Create a formatted countries array from the library
-export const COUNTRIES: Country[] = Object.values(allCountries)
-    .map((country: any) => ({
+export const COUNTRIES: Country[] = allCountryData
+    .map((country) => ({
         code: country.countryCode,
-        label: country.countryNameEn,
-        dial: country.dialCode
+        label: country.name,
+        dial: country.tel
     }))
     // Filter and sort for relevant countries
     .filter((country: Country) => {
