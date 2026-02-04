@@ -33,12 +33,18 @@ jobs:
           script: |
             set -euo pipefail
 
-            cd /var/www/myaccounts-frontend
+            cd /var/www
 
-            # Force repo to match origin/main (prevents package-lock conflicts)
-            git fetch origin main
-            git reset --hard origin/main
-            git clean -fd
+            # Clone or update the repo
+            if [ -d "myaccounts-frontend" ]; then
+                cd myaccounts-frontend
+                git fetch origin main
+                git reset --hard origin/main
+                git clean -fd
+            else
+                git clone https://github.com/devcoda25/myaccounts.git myaccounts-frontend
+                cd myaccounts-frontend
+            fi
 
             # Install deps without rewriting package-lock
             npm ci
