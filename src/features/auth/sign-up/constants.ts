@@ -17,8 +17,7 @@ export type Country = {
 };
 
 // Use all method which returns full country objects with all properties
-const allCountriesFull = countryCodes.all();
-console.log('all() result sample:', allCountriesFull?.slice(0, 2));
+const allCountriesFull = countryCodes.all() || [];
 
 // Create a formatted countries array from the library
 export const COUNTRIES: Country[] = Array.isArray(allCountriesFull) ? allCountriesFull
@@ -28,12 +27,13 @@ export const COUNTRIES: Country[] = Array.isArray(allCountriesFull) ? allCountri
         dial: country.tel
     }))
     // Filter and sort for relevant countries
+    .filter((country: Country) => country.label) // Filter out empty labels
     .filter((country: Country) => {
         // Priority countries for EVzone
         const priorityCodes = ['UG', 'KE', 'TZ', 'RW', 'NG', 'ZA', 'US', 'GB', 'CA', 'AE', 'IN', 'CN'];
         return priorityCodes.includes(country.code);
     })
-    .sort((a: Country, b: Country) => a.label.localeCompare(b.label)) : [];
+    .sort((a: Country, b: Country) => (a.label || '').localeCompare((b.label || ''))) : [];
 
 // Helper hook to get country by dial code
 export const getCountryByDial = (dial: string): Country | undefined => {
