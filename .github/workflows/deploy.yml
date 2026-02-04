@@ -36,12 +36,13 @@ jobs:
             cd /var/www
 
             # Clone or update the repo
-            if [ -d "myaccounts-frontend" ]; then
+            if [ -d "myaccounts-frontend/.git" ]; then
                 cd myaccounts-frontend
                 git fetch origin main
                 git reset --hard origin/main
                 git clean -fd
             else
+                rm -rf myaccounts-frontend
                 git clone https://github.com/devcoda25/myaccounts.git myaccounts-frontend
                 cd myaccounts-frontend
             fi
