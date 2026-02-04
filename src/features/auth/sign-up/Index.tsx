@@ -415,11 +415,19 @@ export default function SignUpPageV3() {
                         }}
                       />
                       <Box sx={{ display: 'flex', gap: 1 }}>
-                        <FormControl size="small">
+                        <FormControl size="small" sx={{ zIndex: 10 }}>
                           <Select
                             value={countryCode}
                             onChange={(e) => setCountryCode(e.target.value)}
                             displayEmpty
+                            MenuProps={{
+                              anchorOrigin: { vertical: 'bottom', horizontal: 'left' },
+                              transformOrigin: { vertical: 'top', horizontal: 'left' },
+                              PaperProps: {
+                                sx: { maxHeight: 300, zIndex: 9999 }
+                              },
+                              disablePortal: true
+                            }}
                           >
                             {COUNTRIES.map((c) => (
                               <MenuItem key={c.code} value={c.dial}>

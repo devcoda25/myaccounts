@@ -212,7 +212,6 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
                         />
                     </IconButton>
                     <Menu
-                        disableScrollLock
                         anchorEl={anchorEl}
                         id="account-menu"
                         open={openMenu}
@@ -226,6 +225,7 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
                                 mt: 1.5,
                                 width: 220,
                                 borderRadius: '12px',
+                                zIndex: 9999,
                                 '& .MuiAvatar-root': { width: 32, height: 32, ml: -0.5, mr: 1 },
                                 '&:before': {
                                     content: '""',
