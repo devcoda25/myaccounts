@@ -212,6 +212,7 @@ export default function AppHeader({ onDrawerToggle, showMobileToggle = false }: 
                         />
                     </IconButton>
                     <Menu
+                        disablePortal
                         anchorEl={anchorEl}
                         id="account-menu"
                         open={openMenu}
