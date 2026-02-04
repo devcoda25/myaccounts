@@ -18,6 +18,9 @@ export type Country = {
 
 // Use all method which returns full country objects with all properties
 const allCountriesFull = countryCodes.all() || [];
+console.log('all() result:', allCountriesFull);
+console.log('Is Array:', Array.isArray(allCountriesFull));
+console.log('Length:', Array.isArray(allCountriesFull) ? allCountriesFull.length : 'N/A');
 
 // Create a formatted countries array from the library
 export const COUNTRIES: Country[] = Array.isArray(allCountriesFull) ? allCountriesFull
@@ -34,6 +37,8 @@ export const COUNTRIES: Country[] = Array.isArray(allCountriesFull) ? allCountri
         return priorityCodes.includes(country.code);
     })
     .sort((a: Country, b: Country) => (a.label || '').localeCompare((b.label || ''))) : [];
+
+console.log('COUNTRIES:', COUNTRIES);
 
 // Helper hook to get country by dial code
 export const getCountryByDial = (dial: string): Country | undefined => {
