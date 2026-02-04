@@ -413,7 +413,7 @@ export default function SignUpPageV3() {
                         }}
                       />
                       <Box sx={{ display: 'flex', gap: 1 }}>
-                        <FormControl size="small" sx={{ width: 100 }}>
+                        <FormControl size="small" sx={{ width: 100, zIndex: 1 }}>
                           <Select
                             value={countryCode}
                             onChange={(e: SelectChangeEvent<string>) => setCountryCode(e.target.value)}
@@ -421,6 +421,13 @@ export default function SignUpPageV3() {
                             IconComponent={(props) => (
                               <ArrowRightIcon {...props} sx={{ transform: 'rotate(90deg)' }} />
                             )}
+                            MenuProps={{
+                              anchorOrigin: { vertical: 'bottom', horizontal: 'left' },
+                              transformOrigin: { vertical: 'top', horizontal: 'left' },
+                              PaperProps: {
+                                sx: { maxHeight: 300 }
+                              }
+                            }}
                           >
                             {COUNTRIES.map((c) => (
                               <MenuItem key={c.code} value={c.dial}>
