@@ -53,21 +53,6 @@ import {
 // -----------------------------
 // Helpers
 // -----------------------------
-function isEmail(v: string) {
-  return /.+@.+\..+/.test(v);
-}
-
-function maskIdentifier(v: string) {
-  const s = v.trim();
-  if (!s) return "";
-  if (isEmail(s)) {
-    const [u, d] = s.split("@");
-    const safeU = u.length <= 2 ? u[0] + "*" : u.slice(0, 2) + "***";
-    return `${safeU}@${d}`;
-  }
-  return s.length > 6 ? `${s.slice(0, 3)}***${s.slice(-3)}` : s;
-}
-
 function supportsPasskeys() {
   try {
     const w = window as any;
@@ -107,25 +92,6 @@ async function tryWebAuthnGet(): Promise<{ ok: boolean; message: string }> {
   }
 }
 
-// --- lightweight self-tests ---
-function runSelfTestsOnce() {
-  try {
-    const w = window as any;
-    if (w.__EVZONE_SIGNIN_V41_TESTS_RAN__) return;
-    w.__EVZONE_SIGNIN_V41_TESTS_RAN__ = true;
-
-    const assert = (name: string, cond: boolean) => {
-      if (!cond) throw new Error(`Test failed: ${name}`);
-    };
-
-    assert("supportsPasskeys boolean", typeof supportsPasskeys() === "boolean");
-    assert("maskIdentifier email", maskIdentifier("ronald@evzone.com").includes("@"));
-
-  } catch (e) {
-    // ignore
-  }
-}
-
 export default function SignInPage() {
   const { t } = useTranslation("common");
   const navigate = useNavigate();
@@ -151,10 +117,6 @@ export default function SignInPage() {
   const [banner, setBanner] = useState<{ severity: "error" | "warning" | "info" | "success"; msg: string } | null>(null);
 
   const { showNotification } = useNotification();
-
-  useEffect(() => {
-    if (typeof window !== "undefined") runSelfTestsOnce();
-  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -331,6 +293,17 @@ export default function SignInPage() {
     setBanner(null);
 
     const id = identifier.trim();
+
+    // Sentinel: Security enhancement - validate input to prevent injection
+    if (/[<>]/.test(id)) {
+      showNotification({
+        type: "warning",
+        title: t('auth.signIn.title'),
+        message: "Invalid characters in email or phone number",
+      });
+      return;
+    }
+
     if (!id) {
       showNotification({
         type: "warning",
