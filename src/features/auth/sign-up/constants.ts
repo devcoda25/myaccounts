@@ -10,16 +10,13 @@ export type Country = {
     dial: string;   // Dial code
 };
 
-// Get all countries from the library
-const allCountryData = countryCodes as unknown as Array<{
-    countryCode: string;
-    name: string;
-    tel: string;
-}>;
+// Get all countries from the library using customList
+// @ts-ignore - Library types are incorrect, actual method supports arrays
+const allCountriesObj = countryCodes.customList('countryCode', ['countryCode', 'name', 'tel']);
 
 // Create a formatted countries array from the library
-export const COUNTRIES: Country[] = allCountryData
-    .map((country) => ({
+export const COUNTRIES: Country[] = Object.values(allCountriesObj as Record<string, unknown>)
+    .map((country: any) => ({
         code: country.countryCode,
         label: country.name,
         dial: country.tel
