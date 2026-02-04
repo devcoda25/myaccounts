@@ -50,7 +50,7 @@ jobs:
             EOF
 
             export NODE_OPTIONS="--max-old-space-size=4096"
-            npm run build
+            npm run build:light
 
             # Optional: only if your user can sudo without a password
             # sudo nginx -t && sudo systemctl reload nginx
