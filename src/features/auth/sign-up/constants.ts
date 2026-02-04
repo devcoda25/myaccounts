@@ -10,12 +10,12 @@ export type Country = {
     dial: string;   // Dial code
 };
 
-// Get all countries from the library using customList with string template
-const allCountriesObj = countryCodes.customList('countryCode', '{ "countryCode": "{countryCode}", "name": "{name}", "tel": "{tel}" }');
+// Get all countries from the library - use Object.values to get all country data
+const allCountryData = countryCodes as unknown as Array<{ countryCode: string; name: string; tel: string }>;
 
 // Create a formatted countries array from the library
-export const COUNTRIES: Country[] = Object.values(allCountriesObj)
-    .map((country: any) => ({
+export const COUNTRIES: Country[] = Array.isArray(allCountryData) ? allCountryData
+    .map((country) => ({
         code: country.countryCode,
         label: country.name,
         dial: country.tel
@@ -26,7 +26,7 @@ export const COUNTRIES: Country[] = Object.values(allCountriesObj)
         const priorityCodes = ['UG', 'KE', 'TZ', 'RW', 'NG', 'ZA', 'US', 'GB', 'CA', 'AE', 'IN', 'CN'];
         return priorityCodes.includes(country.code);
     })
-    .sort((a: Country, b: Country) => a.label.localeCompare(b.label));
+    .sort((a: Country, b: Country) => a.label.localeCompare(b.label)) : [];
 
 // Helper hook to get country by dial code
 export const getCountryByDial = (dial: string): Country | undefined => {
