@@ -3,12 +3,23 @@ import { useMemo } from "react";
 // Import country codes from library
 import countryCodes from 'country-codes-list';
 
+// Debug: Log what the library exports
+console.log('countryCodes:', countryCodes);
+console.log('countryCodes type:', typeof countryCodes);
+console.log('Is Array:', Array.isArray(countryCodes));
+console.log('Keys:', Object.keys(countryCodes).slice(0, 10));
+
 // Define the country type
 export type Country = {
     code: string;  // ISO 2-letter country code
     label: string; // Country name
     dial: string;   // Dial code
 };
+
+// Try different ways to access country data
+// Method 1: Try customList with single property
+const testCustomList = countryCodes.customList('countryCode', 'name');
+console.log('customList result:', testCustomList);
 
 // Get all countries from the library - use Object.values to get all country data
 const allCountryData = countryCodes as unknown as Array<{ countryCode: string; name: string; tel: string }>;
