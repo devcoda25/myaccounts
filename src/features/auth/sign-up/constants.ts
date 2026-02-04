@@ -1,22 +1,39 @@
+import { useMemo } from "react";
 
-const EVZONE = {
-    green: "#03cd8c",
-    orange: "#f77f00",
-} as const;
+// Import country codes from library
+import countryCodes from 'country-codes-list';
 
-export const COUNTRIES = [
-    { code: "UG", label: "Uganda", dial: "+256" },
-    { code: "KE", label: "Kenya", dial: "+254" },
-    { code: "TZ", label: "Tanzania", dial: "+255" },
-    { code: "RW", label: "Rwanda", dial: "+250" },
-    { code: "NG", label: "Nigeria", dial: "+234" },
-    { code: "ZA", label: "South Africa", dial: "+27" },
-    { code: "US", label: "United States", dial: "+1" },
-    { code: "GB", label: "United Kingdom", dial: "+44" },
-    { code: "CA", label: "Canada", dial: "+1" },
-    { code: "AE", label: "UAE", dial: "+971" },
-    { code: "IN", label: "India", dial: "+91" },
-    { code: "CN", label: "China", dial: "+86" },
-];
+// Define the country type
+export type Country = {
+    code: string;  // ISO 2-letter country code
+    label: string; // Country name
+    dial: string;   // Dial code
+};
 
-export type Country = typeof COUNTRIES[number];
+// Get all countries as an array using the library's customList method
+const allCountries = countryCodes.customList('countryCode', 'all');
+
+// Create a formatted countries array from the library
+export const COUNTRIES: Country[] = Object.values(allCountries)
+    .map((country: any) => ({
+        code: country.countryCode,
+        label: country.countryNameEn,
+        dial: country.dialCode
+    }))
+    // Filter and sort for relevant countries
+    .filter((country: Country) => {
+        // Priority countries for EVzone
+        const priorityCodes = ['UG', 'KE', 'TZ', 'RW', 'NG', 'ZA', 'US', 'GB', 'CA', 'AE', 'IN', 'CN'];
+        return priorityCodes.includes(country.code);
+    })
+    .sort((a: Country, b: Country) => a.label.localeCompare(b.label));
+
+// Helper hook to get country by dial code
+export const getCountryByDial = (dial: string): Country | undefined => {
+    return COUNTRIES.find(country => country.dial === dial);
+};
+
+// Helper hook to get country by code
+export const getCountryByCode = (code: string): Country | undefined => {
+    return COUNTRIES.find(country => country.code === code);
+};
