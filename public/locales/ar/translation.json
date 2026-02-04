@@ -120,6 +120,10 @@
     "subtitle": "أنشئ هوية EVzone الخاصة بك"
   },
   "auth": {
+    "header": {
+      "title": "حسابات EVzone",
+      "subtitle": "أنشئ هوية EVzone الخاصة بك"
+    },
     "common": {
       "loading": "جارٍ التحميل...",
       "or": "أو",

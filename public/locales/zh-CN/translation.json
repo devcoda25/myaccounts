@@ -120,6 +120,10 @@
     "subtitle": "创建你的 EVzone 身份"
   },
   "auth": {
+    "header": {
+      "title": "EVzone 账户",
+      "subtitle": "创建你的 EVzone 身份"
+    },
     "common": {
       "loading": "加载中…",
       "or": "或",

@@ -120,6 +120,10 @@
     "subtitle": "Créer votre EVzone Identity"
   },
   "auth": {
+    "header": {
+      "title": "EVzone Comptes",
+      "subtitle": "Créer votre EVzone Identity"
+    },
     "common": {
       "loading": "Chargement...",
       "or": "ou",
