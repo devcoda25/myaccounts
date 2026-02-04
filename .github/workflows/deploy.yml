@@ -42,8 +42,8 @@ jobs:
                 git reset --hard origin/main
                 git clean -fd
             else
-                git clone https://github.com/devcoda25/myaccounts.git 
-                cd /var/www/myaccounts-frontend
+                git clone https://github.com/devcoda25/myaccounts.git myaccounts-frontend
+                cd myaccounts-frontend
             fi
 
             # Install deps without rewriting package-lock
