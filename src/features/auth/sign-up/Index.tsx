@@ -10,9 +10,12 @@ import {
   CardContent,
   Checkbox,
   Divider,
+  FormControl,
   FormControlLabel,
   IconButton,
   InputAdornment,
+  MenuItem,
+  Select,
   Stack,
   Switch,
   TextField,
@@ -45,6 +48,9 @@ import {
 
 import { COUNTRIES } from "./constants";
 import { EVZONE } from "@/theme/evzone";
+
+// Debug: Log COUNTRIES to console
+console.log('COUNTRIES:', COUNTRIES);
 
 function isEmail(v: string) {
   return /.+@.+\..+/.test(v);
@@ -409,32 +415,19 @@ export default function SignUpPageV3() {
                         }}
                       />
                       <Box sx={{ display: 'flex', gap: 1 }}>
-                        <Box sx={{ position: 'relative', width: 120 }}>
-                          <select
+                        <FormControl size="small">
+                          <Select
                             value={countryCode}
                             onChange={(e) => setCountryCode(e.target.value)}
-                            style={{
-                              width: '100%',
-                              height: 56,
-                              padding: '0 12px',
-                              borderRadius: 8,
-                              border: '1px solid rgba(0,0,0,0.23)',
-                              backgroundColor: 'transparent',
-                              fontSize: '0.875rem',
-                              cursor: 'pointer',
-                              appearance: 'none',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center'
-                            }}
+                            displayEmpty
                           >
                             {COUNTRIES.map((c) => (
-                              <option key={c.code} value={c.dial}>
-                                {c.dial}
-                              </option>
+                              <MenuItem key={c.code} value={c.dial}>
+                                {c.label} ({c.dial})
+                              </MenuItem>
                             ))}
-                          </select>
-                        </Box>
+                          </Select>
+                        </FormControl>
                         <TextField
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
