@@ -18,7 +18,7 @@ export type Country = {
 
 // Use all method which returns full country objects with all properties
 const allCountriesFull = countryCodes.all() || [];
-console.log('all() result:', allCountriesFull);
+console.log('all() result sample:', allCountriesFull.slice(0, 2));
 console.log('Is Array:', Array.isArray(allCountriesFull));
 console.log('Length:', Array.isArray(allCountriesFull) ? allCountriesFull.length : 'N/A');
 
@@ -26,11 +26,11 @@ console.log('Length:', Array.isArray(allCountriesFull) ? allCountriesFull.length
 export const COUNTRIES: Country[] = Array.isArray(allCountriesFull) ? allCountriesFull
     .map((country: any) => ({
         code: country.countryCode,
-        label: country.name,
-        dial: country.tel
+        label: country.countryNameEn,
+        dial: country.countryCallingCode
     }))
     // Filter and sort for relevant countries
-    .filter((country: Country) => country.label) // Filter out empty labels
+    .filter((country: Country) => country.label && country.dial) // Filter out empty labels/dial codes
     .filter((country: Country) => {
         // Priority countries for EVzone
         const priorityCodes = ['UG', 'KE', 'TZ', 'RW', 'NG', 'ZA', 'US', 'GB', 'CA', 'AE', 'IN', 'CN'];
