@@ -4,10 +4,10 @@ import { useMemo } from "react";
 import countryCodes from 'country-codes-list';
 
 // Debug: Log what the library exports
-console.log('countryCodes:', countryCodes);
-console.log('countryCodes type:', typeof countryCodes);
-console.log('Is Array:', Array.isArray(countryCodes));
-console.log('Keys:', Object.keys(countryCodes).slice(0, 10));
+// console.log('countryCodes:', countryCodes);
+// console.log('countryCodes type:', typeof countryCodes);
+// console.log('Is Array:', Array.isArray(countryCodes));
+// console.log('Keys:', Object.keys(countryCodes).slice(0, 10));
 
 // Define the country type
 export type Country = {
@@ -16,17 +16,13 @@ export type Country = {
     dial: string;   // Dial code
 };
 
-// Try different ways to access country data
-// Method 1: Try customList with single property
-const testCustomList = countryCodes.customList('countryCode', 'name');
-console.log('customList result:', testCustomList);
-
-// Get all countries from the library - use Object.values to get all country data
-const allCountryData = countryCodes as unknown as Array<{ countryCode: string; name: string; tel: string }>;
+// Use customArray method which returns full country objects
+const allCountriesArray = countryCodes.customArray();
+console.log('customArray result:', allCountriesArray);
 
 // Create a formatted countries array from the library
-export const COUNTRIES: Country[] = Array.isArray(allCountryData) ? allCountryData
-    .map((country) => ({
+export const COUNTRIES: Country[] = Array.isArray(allCountriesArray) ? allCountriesArray
+    .map((country: any) => ({
         code: country.countryCode,
         label: country.name,
         dial: country.tel
@@ -38,6 +34,8 @@ export const COUNTRIES: Country[] = Array.isArray(allCountryData) ? allCountryDa
         return priorityCodes.includes(country.code);
     })
     .sort((a: Country, b: Country) => a.label.localeCompare(b.label)) : [];
+
+console.log('COUNTRIES:', COUNTRIES);
 
 // Helper hook to get country by dial code
 export const getCountryByDial = (dial: string): Country | undefined => {
