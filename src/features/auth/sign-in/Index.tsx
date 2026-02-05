@@ -33,6 +33,7 @@ import { useSocialLogin } from "@/hooks/useSocialLogin";
 import AuthHeader from "@/components/layout/AuthHeader";
 import { EVZONE } from "@/theme/evzone";
 import { useNotification } from "@/context/NotificationContext";
+import { getRandomBytes } from "@/utils/secure-random";
 
 import {
   Severity
@@ -77,16 +78,6 @@ function supportsPasskeys() {
   }
 }
 
-function safeRandomBytes(n: number): Uint8Array {
-  const out = new Uint8Array(n);
-  try {
-    window.crypto.getRandomValues(out);
-  } catch {
-    for (let i = 0; i < n; i++) out[i] = Math.floor(Math.random() * 256);
-  }
-  return out;
-}
-
 async function tryWebAuthnGet(): Promise<{ ok: boolean; message: string }> {
   try {
     const nav: any = navigator as any;
@@ -94,7 +85,7 @@ async function tryWebAuthnGet(): Promise<{ ok: boolean; message: string }> {
 
     await nav.credentials.get({
       publicKey: {
-        challenge: safeRandomBytes(32),
+        challenge: getRandomBytes(32),
         timeout: 60000,
         userVerification: "preferred",
       },
