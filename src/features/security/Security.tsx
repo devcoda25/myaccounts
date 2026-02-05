@@ -245,7 +245,7 @@ export default function SecurityOverviewPage() {
     useEffect(() => {
       Promise.all([
         api<ISecurityOverview>("/security/overview").catch(() => null),
-        api<ISession[]>("/auth/sessions").catch(() => [])
+        api<ISession[]>("/sessions").catch(() => [])
       ]).then(([overviewData, sessionsData]: [ISecurityOverview | null, ISession[]]) => {
         setData(overviewData);
         setSessions(Array.isArray(sessionsData) ? sessionsData : []);
