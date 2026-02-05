@@ -17,7 +17,7 @@ export function populateFormData(app: OAuthApp): AppFormData {
     return {
         name: app.name,
         clientId: app.clientId,
-        type: app.isPublic ? "public" : "confidential",
+        type: app.type === 'dual' ? 'dual' : (app.isPublic ? "public" : "confidential"),
         redirectUris: app.redirectUris.join(", "),
         website: app.website || "",
         isFirstParty: app.isFirstParty,

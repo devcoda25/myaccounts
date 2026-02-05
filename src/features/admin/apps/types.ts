@@ -1,6 +1,6 @@
 // Types for apps module
 
-export type AppType = "confidential" | "public";
+export type AppType = "confidential" | "public" | "dual";
 
 export interface OAuthApp {
     clientId: string;
@@ -8,6 +8,7 @@ export interface OAuthApp {
     redirectUris: string[];
     isFirstParty: boolean;
     isPublic: boolean;
+    type: "confidential" | "public" | "dual";
     createdAt: string;
     website?: string;
 }

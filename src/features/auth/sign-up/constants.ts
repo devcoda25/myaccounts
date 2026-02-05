@@ -1,5 +1,3 @@
-import { useMemo } from "react";
-
 // Import country codes from library
 import countryCodes from 'country-codes-list';
 

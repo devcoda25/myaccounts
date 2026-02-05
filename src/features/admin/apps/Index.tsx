@@ -198,7 +198,7 @@ export default function AdminApps() {
                                     </Box>
 
                                     <Stack direction="row" spacing={1}>
-                                        <Chip label={app.isPublic ? "Public" : "Confidential"} size="small" variant="outlined" sx={{ borderRadius: 2 }} />
+                                        <Chip label={app.type === 'dual' ? "Dual" : (app.isPublic ? "Public" : "Confidential")} size="small" variant="outlined" sx={{ borderRadius: 2 }} />
                                         {app.isFirstParty && <Chip label="First Party" size="small" color="success" sx={{ borderRadius: 2, bgcolor: alpha(EVZONE.green, 0.1), color: EVZONE.green, border: 'none', fontWeight: 700 }} />}
                                     </Stack>
 
@@ -244,6 +244,7 @@ export default function AdminApps() {
                                 <TextField select label="App Type" fullWidth value={formData.type} onChange={e => setFormData({ ...formData, type: e.target.value as any })} SelectProps={{ native: true }}>
                                     <option value="confidential">Confidential (Server-side app)</option>
                                     <option value="public">Public (Single Page App / Mobile)</option>
+                                    <option value="dual">Dual (Frontend + Backend)</option>
                                 </TextField>
                             </>
                         )}
@@ -253,7 +254,7 @@ export default function AdminApps() {
 
                         <FormControlLabel control={<Switch checked={formData.isFirstParty} onChange={e => setFormData({ ...formData, isFirstParty: e.target.checked })} color="success" />} label="First Party App (Skips user consent screen)" />
 
-                        {!editingApp && formData.type === 'confidential' && (
+                        {!editingApp && (formData.type === 'confidential' || formData.type === 'dual') && (
                             <Alert severity="info" sx={{ borderRadius: 3 }}>A client secret will be generated and shown only once after creation.</Alert>
                         )}
 
