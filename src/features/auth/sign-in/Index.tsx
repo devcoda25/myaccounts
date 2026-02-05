@@ -463,7 +463,7 @@ export default function SignInPage() {
       />
 
       {/* Body */}
-      <Box className="mx-auto max-w-md px-4 py-8 md:px-6 md:py-12">
+      <Box className="mx-auto max-w-lg px-4 py-8 md:px-6 md:py-12">
         <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
           {/* Full width */}
           <motion.div className="md:col-span-12" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.05 }}>
