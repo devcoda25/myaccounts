@@ -300,49 +300,7 @@ export default function SignUpPageV3() {
 
       <Box className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">
         <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
-          <motion.div className="hidden md:block md:col-span-5" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
-            <Card>
-              <CardContent className="p-5 md:p-6">
-                <Stack spacing={1.2}>
-                  <Typography variant="h6">{t("auth.signUp.sectionTitle")}</Typography>
-                  <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                    {t("auth.signUp.sectionSubtitle")}
-                  </Typography>
-                  <Divider sx={{ my: 1 }} />
-                  <Stack spacing={1.1}>
-                    <Stack direction="row" spacing={1.1} alignItems="center">
-                      <Box sx={{ width: 36, height: 36, borderRadius: 14, display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, isDark ? 0.16 : 0.10), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
-                        <ShieldCheckIcon size={18} />
-                      </Box>
-                      <Box>
-                        <Typography sx={{ fontWeight: 900 }}>{t("auth.signUp.secureIdentity")}</Typography>
-                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          {t("auth.signUp.secureIdentityDesc")}
-                        </Typography>
-                      </Box>
-                    </Stack>
-                    <Stack direction="row" spacing={1.1} alignItems="center">
-                      <Box sx={{ width: 36, height: 36, borderRadius: 14, display: "grid", placeItems: "center", backgroundColor: alpha(EVZONE.green, isDark ? 0.16 : 0.10), border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}` }}>
-                        <InfoBadgeIcon size={18} />
-                      </Box>
-                      <Box>
-                        <Typography sx={{ fontWeight: 900 }}>{t("auth.signUp.clearPermissions")}</Typography>
-                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          {t("auth.signUp.clearPermissionsDesc")}
-                        </Typography>
-                      </Box>
-                    </Stack>
-                  </Stack>
-                  <Divider sx={{ my: 1 }} />
-                  <Button variant="outlined" startIcon={<ArrowLeftIcon size={18} />} sx={orangeOutlinedSx} onClick={() => navigate(uid ? `/auth/sign-in?uid=${uid}` : "/auth/sign-in")}>
-                    {t("auth.signUp.backToSignIn")}
-                  </Button>
-                </Stack>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div className="md:col-span-7" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.05 }}>
+          <motion.div className="md:col-span-12" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.05 }}>
             <Card>
               <CardContent className="p-5 md:p-7">
                 <Stack spacing={2.0}>

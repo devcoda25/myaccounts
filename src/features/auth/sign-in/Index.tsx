@@ -465,35 +465,8 @@ export default function SignInPage() {
       {/* Body */}
       <Box className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">
         <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
-          {/* Left */}
-          <motion.div className="hidden md:block md:col-span-5" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
-            <Card>
-              <CardContent className="p-5 md:p-6">
-                <Stack spacing={1.2}>
-                  <Typography variant="h6">{t('auth.signIn.left.title')}</Typography>
-                  <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                    {t('auth.signIn.left.subtitle')}
-                  </Typography>
-
-                  <Divider sx={{ my: 1 }} />
-
-                  <Stack spacing={1.1}>
-                    <FeatureRow icon={<ShieldCheckIcon size={18} />} title={t('auth.signIn.features.secureSessions.title')} desc={t('auth.signIn.features.secureSessions.desc')} bg={EVZONE.green} />
-                    <FeatureRow icon={<FingerprintIcon size={18} />} title={t('auth.signIn.features.passkeys.title')} desc={t('auth.signIn.features.passkeys.desc')} bg={EVZONE.green} />
-                    <FeatureRow icon={<LockIcon size={18} />} title={t('auth.signIn.features.privacy.title')} desc={t('auth.signIn.features.privacy.desc')} bg={EVZONE.green} />
-                  </Stack>
-
-                  <Divider sx={{ my: 1 }} />
-                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    {t('auth.signIn.left.demoNote')}
-                  </Typography>
-                </Stack>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Right */}
-          <motion.div className="md:col-span-7" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.05 }}>
+          {/* Full width */}
+          <motion.div className="md:col-span-12" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.05 }}>
             <Card>
               <CardContent className="p-5 md:p-7">
                 <Stack spacing={2.0}>
