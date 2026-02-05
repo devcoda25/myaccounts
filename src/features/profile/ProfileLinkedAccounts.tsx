@@ -859,7 +859,6 @@ export default function LinkedAccountsPage() {
                       </InputAdornment>
                     ),
                   }}
-                  helperText="Demo password: EVzone123!"
                 />
               ) : (
                 <>
