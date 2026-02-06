@@ -4,6 +4,7 @@
  */
 
 import { isEmail, maskEmail } from './validation';
+import { secureRandomBytes, secureRandomString } from './secure-random';
 
 /**
  * Check if value looks like an email
@@ -55,13 +56,7 @@ export function supportsPasskeys(): boolean {
  * Generate cryptographically secure random bytes
  */
 export function safeRandomBytes(n: number): Uint8Array {
-    const out = new Uint8Array(n);
-    try {
-        window.crypto.getRandomValues(out);
-    } catch {
-        for (let i = 0; i < n; i++) out[i] = Math.floor(Math.random() * 256);
-    }
-    return out;
+    return secureRandomBytes(n);
 }
 
 /**
@@ -103,7 +98,7 @@ export function truncate(str: string, maxLength: number): string {
  * Generate a unique ID
  */
 export function generateId(prefix: string = 'id'): string {
-    return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+    return `${prefix}_${Date.now().toString(36)}_${secureRandomString(6, '0123456789abcdefghijklmnopqrstuvwxyz')}`;
 }
 
 /**
