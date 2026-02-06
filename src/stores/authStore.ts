@@ -35,10 +35,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const options = token ? { headers: { Authorization: `Bearer ${token}` } } : undefined;
       const data = await api<IUser>("/users/me", options);
-      console.log("[AuthStore] refreshUser success:", data);
       set({ user: data, isLoading: false });
-    } catch (err) {
-      console.warn("[AuthStore] refreshUser failed:", err);
+    } catch {
       set({ user: null, isLoading: false });
     }
   },

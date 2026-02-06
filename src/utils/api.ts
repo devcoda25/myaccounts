@@ -67,12 +67,11 @@ axiosRetry(instance, {
 instance.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
   try {
     const user = await userManager.getUser();
-    console.log("[API] User from OIDC:", user ? { isAuthenticated: !!user.access_token, hasToken: !!user.access_token } : null);
     if (user?.access_token && !config.headers.Authorization) {
       config.headers.Authorization = `Bearer ${user.access_token}`;
     }
   } catch {
-    console.error("[API] Error getting user from OIDC:");
+    // ignore
   }
 
   // [Security] Add CSRF token for state-changing methods
@@ -102,19 +101,6 @@ export interface ApiFunction {
   patch: <T>(path: string, data?: unknown, config?: AxiosRequestConfig) => Promise<T>;
   delete: <T>(path: string, config?: AxiosRequestConfig) => Promise<T>;
 }
-
-// Debug helper - check cookies
-function getCookie(name: string): string | null {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
-  return null;
-}
-
-console.log("[API] Cookies:", {
-  hasEvzoneToken: !!getCookie('evzone_token'),
-  hasCsrfToken: !!getCookie('evzone-csrf'),
-});
 
 const apiBase = async <T>(path: string, options: ApiOptions = {}): Promise<T> => {
   try {
