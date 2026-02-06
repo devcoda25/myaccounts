@@ -1,24 +1,17 @@
 import { EVZONE } from "./constants";
 import { Risk, UserStatus } from "./types";
+import { secureRandomString } from "@/utils/secure-random";
 
 // Generate a temporary password with EVZ-XXXX-XXXX format
 export function mkTempPassword(): string {
     const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    const bytes = new Uint8Array(10);
-    try {
-        window.crypto.getRandomValues(bytes);
-    } catch {
-        for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
-    }
-    const s = Array.from(bytes)
-        .map((b) => alphabet[b % alphabet.length])
-        .join("");
+    const s = secureRandomString(8, alphabet); // 8 chars used in output (4+4)
     return `EVZ-${s.slice(0, 4)}-${s.slice(4, 8)}`;
 }
 
 // Generate a unique ID with a prefix
 export function uid(prefix: string): string {
-    return `${prefix}_${Math.random().toString(16).slice(2)}`;
+    return `${prefix}_${secureRandomString(10, '0123456789abcdef')}`;
 }
 
 // Get the color tone for a risk level
