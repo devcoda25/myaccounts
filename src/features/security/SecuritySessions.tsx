@@ -142,7 +142,7 @@ export default function ActiveSessionsPage() {
     const fetchSessions = async () => {
       try {
         setLoading(true);
-        const response = await api<{ data: ISession[]; total: number }>("/sessions");
+        const response = await api<{ data: ISession[]; total: number }>("/auth/sessions");
         const data = response.data || [];
         const mapped: ISession[] = (Array.isArray(data) ? data : []).map((s) => ({
           id: s.id,
@@ -214,15 +214,15 @@ export default function ActiveSessionsPage() {
     const applySignOut = async (mode: "one" | "others" | "all", id?: string) => {
       try {
         if (mode === "one" && id) {
-          await api(`/sessions/${id}`, { method: "DELETE" });
+          await api(`/auth/sessions/${id}`, { method: "DELETE" });
           setSessions((prev) => prev.filter((x) => x.id !== id));
           showNotification({ type: "success", title: "Device Removed", message: "The device has been successfully signed out." });
         } else if (mode === "others") {
-          const response = await api<{ revokedCount: number }>("/sessions", { method: "DELETE" });
+          const response = await api<{ revokedCount: number }>("/auth/sessions", { method: "DELETE" });
           setSessions((prev) => prev.filter((x) => x.isCurrent));
           showNotification({ type: "success", title: "Sessions Ended", message: `All other devices have been signed out (${response.revokedCount || 0} sessions).` });
         } else if (mode === "all") {
-          const response = await api<{ revokedCount: number }>("/sessions", { method: "DELETE" });
+          const response = await api<{ revokedCount: number }>("/auth/sessions", { method: "DELETE" });
           setSessions([]);
           showNotification({ type: "success", title: "Signed Out", message: `All active sessions have been revoked (${response.revokedCount || 0} sessions).` });
         }
