@@ -4,6 +4,7 @@
  */
 
 import { isEmail, maskEmail } from './validation';
+import { safeRandomBytes as secureRandomBytes } from './secure-random';
 
 /**
  * Check if value looks like an email
@@ -55,13 +56,7 @@ export function supportsPasskeys(): boolean {
  * Generate cryptographically secure random bytes
  */
 export function safeRandomBytes(n: number): Uint8Array {
-    const out = new Uint8Array(n);
-    try {
-        window.crypto.getRandomValues(out);
-    } catch {
-        for (let i = 0; i < n; i++) out[i] = Math.floor(Math.random() * 256);
-    }
-    return out;
+    return secureRandomBytes(n);
 }
 
 /**
