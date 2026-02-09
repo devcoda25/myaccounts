@@ -26,6 +26,7 @@ import { motion } from "framer-motion";
 import { useThemeStore } from "@/stores/themeStore";
 import { EVZONE } from "@/theme/evzone";
 import { api } from "@/utils/api";
+import { secureRandomBytes } from "@/utils/secure-random";
 
 /**
  * EVzone My Accounts - Two-Factor Authentication Setup v2
@@ -193,26 +194,16 @@ function WhatsAppIcon({ size = 18 }: { size?: number }) {
 // -----------------------------
 // Helpers
 // -----------------------------
-function safeRandomBytes(n: number): Uint8Array {
-  const out = new Uint8Array(n);
-  try {
-    window.crypto.getRandomValues(out);
-  } catch {
-    for (let i = 0; i < n; i++) out[i] = Math.floor(Math.random() * 256);
-  }
-  return out;
-}
-
 function randomBase32(length: number) {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-  const bytes = safeRandomBytes(length);
+  const bytes = secureRandomBytes(length);
   let s = "";
   for (let i = 0; i < length; i++) s += alphabet[bytes[i] % alphabet.length];
   return s;
 }
 
 function generateRecoveryCodes(count = 10) {
-  const bytes = safeRandomBytes(count * 8);
+  const bytes = secureRandomBytes(count * 8);
   const codes = new Set<string>();
   const fmt = (arr: number[]) => {
     const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -224,7 +215,7 @@ function generateRecoveryCodes(count = 10) {
     codes.add(fmt(Array.from(bytes.slice(idx, idx + 8))));
     idx += 8;
   }
-  while (codes.size < count) codes.add(fmt(Array.from(safeRandomBytes(8))));
+  while (codes.size < count) codes.add(fmt(Array.from(secureRandomBytes(8))));
   return Array.from(codes);
 }
 
