@@ -49,8 +49,6 @@ import {
 import { COUNTRIES } from "./constants";
 import { EVZONE } from "@/theme/evzone";
 
-// Debug: Log COUNTRIES to console
-console.log('COUNTRIES:', COUNTRIES);
 
 function isEmail(v: string) {
   return /.+@.+\..+/.test(v);
@@ -298,7 +296,7 @@ export default function SignUpPageV3() {
         subtitle={t("header.subtitle")}
       />
 
-      <Box className="mx-auto max-w-lg px-4 py-8 md:px-6 md:py-12">
+      <Box className="mx-auto max-w-3xl px-4 py-8 md:px-6 md:py-12">
         <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
           <motion.div className="md:col-span-12" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.05 }}>
             <Card>
@@ -382,14 +380,18 @@ export default function SignUpPageV3() {
                               anchorOrigin: { vertical: 'bottom', horizontal: 'left' },
                               transformOrigin: { vertical: 'top', horizontal: 'left' },
                               PaperProps: {
-                                sx: { maxHeight: 300, zIndex: 9999 }
+                                sx: { maxHeight: 400, zIndex: 9999 }
                               },
                               disablePortal: true
                             }}
                           >
                             {COUNTRIES.map((c) => (
                               <MenuItem key={c.code} value={c.dial}>
-                                {c.label} ({c.dial})
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                  <Typography sx={{ fontSize: '1.2rem' }}>{c.flag}</Typography>
+                                  <Typography>{c.label}</Typography>
+                                  <Typography sx={{ color: 'text.secondary', ml: 'auto' }}>{c.dial}</Typography>
+                                </Box>
                               </MenuItem>
                             ))}
                           </Select>

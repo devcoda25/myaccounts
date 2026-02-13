@@ -552,10 +552,6 @@ export default function ParentalControls() {
             </Stack>
           </motion.div>
         </Box>
-        {/* Footer */}
-        <Box sx={{ opacity: 0.92, pb: 4, mt: 4 }}>
-          <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Â© {new Date().getFullYear()} EVzone Group. Parental Controls v2.0</Typography>
-        </Box>
         {/* Context dialog */}
         <ContextSwitcher
           open={contextOpen}
