@@ -48,75 +48,155 @@ import {
 
 import { COUNTRIES, type Country } from "./constants";
 import { EVZONE } from "@/theme/evzone";
+import { supportedLocales, type LocaleCode } from "@/i18n/settings";
+import i18n from "i18next";
 
-// Timezone to country dial code mapping for auto-detection
-const TIMEZONE_COUNTRY_MAP: Record<string, string> = {
+// Build timezone to dial code mapping dynamically from COUNTRIES
+// This ensures we use the actual countries available in our dropdown
+const TIMEZONE_COUNTRY_MAP: Record<string, string> = {};
+
+// Helper to find country by timezone approximation
+function buildTimezoneMapping() {
+  // Known timezone mappings based on common timezones
+  const mappings: Record<string, string> = {
+    // Africa - East Africa (UG, KE, TZ, RW, ET)
+    'Africa/Kampala': '+256', // Uganda
+    'Africa/Nairobi': '+254', // Kenya
+    'Africa/Dar_es_Salaam': '+255', // Tanzania
+    'Africa/Kigali': '+250', // Rwanda
+    'Africa/Addis_Ababa': '+251', // Ethiopia
+    // Africa - West/South
+    'Africa/Lagos': '+234', // Nigeria
+    'Africa/Johannesburg': '+27', // South Africa
+    'Africa/Accra': '+233', // Ghana
+    'Africa/Cairo': '+20', // Egypt
+    'Africa/Casablanca': '+212', // Morocco
+    // Europe
+    'Europe/London': '+44', // UK
+    'Europe/Paris': '+33', // France
+    'Europe/Berlin': '+49', // Germany
+    'Europe/Rome': '+39', // Italy
+    'Europe/Madrid': '+34', // Spain
+    'Europe/Amsterdam': '+31', // Netherlands
+    'Europe/Brussels': '+32', // Belgium
+    'Europe/Vienna': '+43', // Austria
+    'Europe/Stockholm': '+46', // Sweden
+    'Europe/Oslo': '+47', // Norway
+    'Europe/Copenhagen': '+45', // Denmark
+    'Europe/Helsinki': '+358', // Finland
+    'Europe/Warsaw': '+48', // Poland
+    'Europe/Prague': '+420', // Czech Republic
+    'Europe/Budapest': '+36', // Hungary
+    'Europe/Athens': '+30', // Greece
+    'Europe/Lisbon': '+351', // Portugal
+    'Europe/Dublin': '+353', // Ireland
+    'Europe/Zurich': '+41', // Switzerland
+    // Americas
+    'America/New_York': '+1', // USA
+    'America/Los_Angeles': '+1', // USA
+    'America/Chicago': '+1', // USA
+    'America/Denver': '+1', // USA
+    'America/Toronto': '+1', // Canada
+    'America/Vancouver': '+1', // Canada
+    'America/Mexico_City': '+52', // Mexico
+    'America/Sao_Paulo': '+55', // Brazil
+    'America/Buenos_Aires': '+54', // Argentina
+    'America/Lima': '+51', // Peru
+    'America/Bogota': '+57', // Colombia
+    'America/Santiago': '+56', // Chile
+    // Asia
+    'Asia/Shanghai': '+86', // China
+    'Asia/Tokyo': '+81', // Japan
+    'Asia/Seoul': '+82', // South Korea
+    'Asia/Bangkok': '+66', // Thailand
+    'Asia/Singapore': '+65', // Singapore
+    'Asia/Hong_Kong': '+852', // Hong Kong
+    'Asia/Taipei': '+886', // Taiwan
+    'Asia/Jakarta': '+62', // Indonesia
+    'Asia/Kuala_Lumpur': '+60', // Malaysia
+    'Asia/Manila': '+63', // Philippines
+    'Asia/Hanoi': '+84', // Vietnam
+    'Asia/Dubai': '+971', // UAE
+    'Asia/Kolkata': '+91', // India
+    // Oceania
+    'Australia/Sydney': '+61', // Australia
+    'Australia/Melbourne': '+61', // Australia
+    'Australia/Perth': '+61', // Australia
+    'Australia/Brisbane': '+61', // Australia
+    'Pacific/Auckland': '+64', // New Zealand
+  };
+  
+  // Only keep mappings that exist in our COUNTRIES list
+  Object.entries(mappings).forEach(([tz, dial]) => {
+    const country = COUNTRIES.find((c: Country) => c.dial === dial);
+    if (country) {
+      TIMEZONE_COUNTRY_MAP[tz] = dial;
+    }
+  });
+}
+
+// Initialize the mapping
+buildTimezoneMapping();
+
+// Country to language mapping for auto-detection
+const COUNTRY_LANGUAGE_MAP: Record<string, LocaleCode> = {
   // Africa
-  'Africa/Nairobi': '+254', // Kenya
-  'Africa/Kampala': '+256', // Uganda
-  'Africa/Lagos': '+234', // Nigeria
-  'Africa/Johannesburg': '+27', // South Africa
-  'Africa/Kigali': '+250', // Rwanda
-  'Africa/Addis_Ababa': '+251', // Ethiopia
-  'Africa/Dar_es_Salaam': '+255', // Tanzania
-  'Africa/Accra': '+233', // Ghana
-  'Africa/Cairo': '+20', // Egypt
-  'Africa/Casablanca': '+212', // Morocco
+  'KE': 'en', // Kenya - English (official)
+  'UG': 'en', // Uganda - English (official)
+  'TZ': 'sw', // Tanzania - Swahili
+  'NG': 'en', // Nigeria - English
+  'ZA': 'en', // South Africa - English
+  'RW': 'en', // Rwanda - English
+  'ET': 'en', // Ethiopia - English
+  'GH': 'en', // Ghana - English
+  'EG': 'ar', // Egypt - Arabic
+  'MA': 'ar', // Morocco - Arabic
   // Europe
-  'Europe/London': '+44', // UK
-  'Europe/Paris': '+33', // France
-  'Europe/Berlin': '+49', // Germany
-  'Europe/Rome': '+39', // Italy
-  'Europe/Madrid': '+34', // Spain
-  'Europe/Amsterdam': '+31', // Netherlands
-  'Europe/Brussels': '+32', // Belgium
-  'Europe/Vienna': '+43', // Austria
-  'Europe/Stockholm': '+46', // Sweden
-  'Europe/Oslo': '+47', // Norway
-  'Europe/Copenhagen': '+45', // Denmark
-  'Europe/Helsinki': '+358', // Finland
-  'Europe/Warsaw': '+48', // Poland
-  'Europe/Prague': '+420', // Czech Republic
-  'Europe/Budapest': '+36', // Hungary
-  'Europe/Athens': '+30', // Greece
-  'Europe/Lisbon': '+351', // Portugal
-  'Europe/Dublin': '+353', // Ireland
-  'Europe/Zurich': '+41', // Switzerland
+  'GB': 'en', // UK - English
+  'US': 'en', // USA - English
+  'CA': 'en', // Canada - English
+  'FR': 'fr', // France - French
+  'DE': 'ge', // Germany - German
+  'IT': 'en', // Italy - English (for now)
+  'ES': 'es', // Spain - Spanish
+  'NL': 'en', // Netherlands - English
+  'BE': 'en', // Belgium - English
+  'AT': 'ge', // Austria - German
+  'SE': 'en', // Sweden - English
+  'NO': 'en', // Norway - English
+  'DK': 'en', // Denmark - English
+  'FI': 'en', // Finland - English
+  'PL': 'en', // Poland - English
+  'CZ': 'en', // Czech - English
+  'HU': 'en', // Hungary - English
+  'GR': 'en', // Greece - English
+  'PT': 'pt', // Portugal - Portuguese
+  'IE': 'en', // Ireland - English
+  'CH': 'ge', // Switzerland - German
   // Americas
-  'America/New_York': '+1', // USA (Eastern)
-  'America/Los_Angeles': '+1', // USA (Pacific)
-  'America/Chicago': '+1', // USA (Central)
-  'America/Denver': '+1', // USA (Mountain)
-  'America/Toronto': '+1', // Canada
-  'America/Vancouver': '+1', // Canada
-  'America/Mexico_City': '+52', // Mexico
-  'America/Sao_Paulo': '+55', // Brazil
-  'America/Buenos_Aires': '+54', // Argentina
-  'America/Lima': '+51', // Peru
-  'America/Bogota': '+57', // Colombia
-  'America/Santiago': '+56', // Chile
+  'MX': 'es', // Mexico - Spanish
+  'BR': 'pt', // Brazil - Portuguese
+  'AR': 'es', // Argentina - Spanish
+  'PE': 'es', // Peru - Spanish
+  'CO': 'es', // Colombia - Spanish
+  'CL': 'es', // Chile - Spanish
   // Asia
-  'Asia/Shanghai': '+86', // China
-  'Asia/Tokyo': '+81', // Japan
-  'Asia/Seoul': '+82', // South Korea
-  'Asia/Bangkok': '+66', // Thailand
-  'Asia/Singapore': '+65', // Singapore
-  'Asia/Hong_Kong': '+852', // Hong Kong
-  'Asia/Taipei': '+886', // Taiwan
-  'Asia/Jakarta': '+62', // Indonesia
-  'Asia/Kuala_Lumpur': '+60', // Malaysia
-  'Asia/Manila': '+63', // Philippines
-  'Asia/Hanoi': '+84', // Vietnam
-  'Asia/Dubai': '+971', // UAE
-  'Asia/Kolkata': '+91', // India
-  'Asia/Mumbai': '+91', // India
-  'Asia/Bangalore': '+91', // India
+  'CN': 'zh-CN', // China - Chinese Simplified
+  'TW': 'zh-TW', // Taiwan - Chinese Traditional
+  'HK': 'zh-CN', // Hong Kong - Chinese Simplified
+  'JP': 'ja', // Japan - Japanese
+  'KR': 'ko', // South Korea - Korean
+  'TH': 'th', // Thailand - Thai
+  'SG': 'en', // Singapore - English
+  'ID': 'id', // Indonesia - Indonesian
+  'MY': 'ms', // Malaysia - Malay
+  'PH': 'en', // Philippines - English
+  'VN': 'en', // Vietnam - English (for now)
+  'AE': 'ar', // UAE - Arabic
+  'IN': 'hi', // India - Hindi
   // Oceania
-  'Australia/Sydney': '+61', // Australia
-  'Australia/Melbourne': '+61', // Australia
-  'Australia/Perth': '+61', // Australia
-  'Australia/Brisbane': '+61', // Australia
-  'Pacific/Auckland': '+64', // New Zealand
+  'AU': 'en', // Australia - English
+  'NZ': 'en', // New Zealand - English
 };
 
 function isEmail(v: string) {
@@ -178,19 +258,29 @@ export default function SignUpPageV3() {
 
   const { showNotification } = useNotification();
 
-  // Detect location and auto-select country
+  // Detect location, country code, and language
   React.useEffect(() => {
-    const detectCountry = () => {
+    const detectCountryAndLanguage = () => {
       try {
         // First try timezone detection
         const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const detectedCode = TIMEZONE_COUNTRY_MAP[tz];
+        const detectedDialCode = TIMEZONE_COUNTRY_MAP[tz];
 
-        if (detectedCode) {
-          // Verify the country exists in our list
-          const country = COUNTRIES.find(c => c.dial === detectedCode);
+        if (detectedDialCode) {
+          // Find the country in our list
+          const country = COUNTRIES.find((c: Country) => c.dial === detectedDialCode);
           if (country) {
             setCountryCode(country.dial);
+
+            // Auto-detect language based on country
+            const languageCode = COUNTRY_LANGUAGE_MAP[country.code];
+            if (languageCode) {
+              // Check if the language is supported
+              const isSupported = supportedLocales.some(l => l.code === languageCode);
+              if (isSupported) {
+                i18n.changeLanguage(languageCode);
+              }
+            }
             return;
           }
         }
@@ -200,14 +290,22 @@ export default function SignUpPageV3() {
         const countryPart = locale.split('-')[1];
         if (countryPart) {
           const upperCode = countryPart.toUpperCase();
-          const country = COUNTRIES.find(c => c.code === upperCode);
+          const country = COUNTRIES.find((c: Country) => c.code === upperCode);
           if (country) {
             setCountryCode(country.dial);
+
+            const languageCode = COUNTRY_LANGUAGE_MAP[country.code];
+            if (languageCode) {
+              const isSupported = supportedLocales.some(l => l.code === languageCode);
+              if (isSupported) {
+                i18n.changeLanguage(languageCode);
+              }
+            }
             return;
           }
         }
 
-        // Default to Kenya if nothing detected
+        // Default to Kenya (English)
         setCountryCode('+254');
       } catch (e) {
         // Default to Kenya on error
@@ -215,13 +313,13 @@ export default function SignUpPageV3() {
       }
     };
 
-    detectCountry();
+    detectCountryAndLanguage();
   }, []);
 
   const pageBg =
     isDark
       ? "radial-gradient(1200px 600px at 12% 6%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 10%, rgba(3,205,140,0.16), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
-      : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.18), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.12), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
+      : "radial-gradient(1100px 560px at 10% 0%, rgba(3,205,140,0.16), transparent 56%), radial-gradient(1000px 520px at 90% 0%, rgba(3,205,140,0.10), transparent 58%), linear-gradient(180deg, #FFFFFF 0%, #F4FFFB 60%, #ECFFF7 100%)";
 
   // OIDC Integration
   const [searchParams] = useSearchParams();
@@ -343,7 +441,7 @@ export default function SignUpPageV3() {
     }
 
     try {
-      const selectedCountry = COUNTRIES.find(c => c.dial === countryCode);
+      const selectedCountry = COUNTRIES.find((c: Country) => c.dial === countryCode);
       await register({
         firstName,
         otherNames,
@@ -482,7 +580,7 @@ export default function SignUpPageV3() {
                               disablePortal: true
                             }}
                           >
-                            {COUNTRIES.map((c) => (
+                            {COUNTRIES.map((c: Country) => (
                               <MenuItem key={c.code} value={c.dial}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                   <Box component="img" src={c.flagUrl} alt={c.label} sx={{ width: 28, height: 'auto', borderRadius: 0.5 }} />
@@ -597,32 +695,30 @@ export default function SignUpPageV3() {
                     />
 
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                      <Button fullWidth variant="contained" color="secondary" endIcon={<ArrowRightIcon size={18} />} onClick={onContinue} sx={orangeContainedSx}>
+                      <Button
+                        fullWidth
+                        variant="outlined"
+                        onClick={() => navigate(-1)}
+                        startIcon={<ArrowLeftIcon size={18} />}
+                        sx={{ ...orangeOutlinedSx, borderRadius: 14, textTransform: "none", fontWeight: 800, py: 1.5 }}
+                      >
+                        {t("auth.common.back")}
+                      </Button>
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        onClick={onContinue}
+                        endIcon={<ArrowRightIcon size={18} />}
+                        sx={{ ...orangeContainedSx, borderRadius: 14, textTransform: "none", fontWeight: 800, py: 1.5 }}
+                      >
                         {t("auth.signUp.continue")}
                       </Button>
-                      <Button fullWidth variant="outlined" startIcon={<ArrowLeftIcon size={18} />} onClick={() => navigate(uid ? `/auth/sign-in?uid=${uid}` : "/auth/sign-in")} sx={orangeOutlinedSx}>
-                        {t("auth.signUp.switchToSignIn")}
-                      </Button>
                     </Stack>
-
-                    <Divider />
-
-                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      {t("auth.signUp.verifyContactInfo")}
-                    </Typography>
                   </Stack>
                 </Stack>
               </CardContent>
             </Card>
           </motion.div>
-        </Box>
-
-        <Box className="mt-6 flex flex-col gap-2 md:flex-row md:items-center md:justify-between" sx={{ opacity: 0.92 }}>
-          <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>© {new Date().getFullYear()} EVzone Group</Typography>
-          <Stack direction="row" spacing={1.2} alignItems="center">
-            <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/terms", "_blank")}>{t("auth.common.terms")}</Button>
-            <Button size="small" variant="text" sx={orangeTextSx} onClick={() => window.open("/legal/privacy", "_blank")}>{t("auth.common.privacy")}</Button>
-          </Stack>
         </Box>
       </Box>
     </Box>
