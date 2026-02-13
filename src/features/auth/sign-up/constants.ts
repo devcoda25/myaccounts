@@ -2,21 +2,17 @@
 import countryCodes from 'country-codes-list';
 
 // Define the country type with flag
-type Country = {
+export type Country = {
     code: string;      // ISO 2-letter country code
     label: string;     // Country name
     dial: string;      // Dial code
-    flag: string;      // Flag emoji
+    flagUrl: string;  // Flag image URL
 };
 
-// Helper function to get flag emoji from country code
-function getFlagEmoji(countryCode: string): string {
-    const codePoints = countryCode
-        .toUpperCase()
-        .split('')
-        .map(char => 127397 + char.charCodeAt(0));
-    return String.fromCodePoint(...codePoints);
-}
+// Flag CDN URL template (using flagcdn.com)
+const getFlagUrl = (countryCode: string): string => {
+    return `https://flagcdn.com/w40/${countryCode.toLowerCase()}.png`;
+};
 
 // Use all method which returns full country objects with all properties
 const allCountriesFull = countryCodes.all() || [];
@@ -27,7 +23,7 @@ export const COUNTRIES: Country[] = Array.isArray(allCountriesFull) ? allCountri
         code: country.countryCode,
         label: country.countryNameEn,
         dial: country.countryCallingCode,
-        flag: getFlagEmoji(country.countryCode)
+        flagUrl: getFlagUrl(country.countryCode)
     }))
     // Filter out countries without label or dial code
     .filter((country: Country) => country.label && country.dial)

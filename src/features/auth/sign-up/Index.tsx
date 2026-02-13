@@ -46,7 +46,7 @@ import {
   AppleIcon
 } from "@/components/icons";
 
-import { COUNTRIES } from "./constants";
+import { COUNTRIES, type Country } from "./constants";
 import { EVZONE } from "@/theme/evzone";
 
 
@@ -388,7 +388,7 @@ export default function SignUpPageV3() {
                             {COUNTRIES.map((c) => (
                               <MenuItem key={c.code} value={c.dial}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                  <Typography sx={{ fontSize: '1.2rem' }}>{c.flag}</Typography>
+                                  <Box component="img" src={c.flagUrl} alt={c.label} sx={{ width: 28, height: 'auto', borderRadius: 0.5 }} />
                                   <Typography>{c.label}</Typography>
                                   <Typography sx={{ color: 'text.secondary', ml: 'auto' }}>{c.dial}</Typography>
                                 </Box>
