@@ -49,6 +49,75 @@ import {
 import { COUNTRIES, type Country } from "./constants";
 import { EVZONE } from "@/theme/evzone";
 
+// Timezone to country dial code mapping for auto-detection
+const TIMEZONE_COUNTRY_MAP: Record<string, string> = {
+  // Africa
+  'Africa/Nairobi': '+254', // Kenya
+  'Africa/Kampala': '+256', // Uganda
+  'Africa/Lagos': '+234', // Nigeria
+  'Africa/Johannesburg': '+27', // South Africa
+  'Africa/Kigali': '+250', // Rwanda
+  'Africa/Addis_Ababa': '+251', // Ethiopia
+  'Africa/Dar_es_Salaam': '+255', // Tanzania
+  'Africa/Accra': '+233', // Ghana
+  'Africa/Cairo': '+20', // Egypt
+  'Africa/Casablanca': '+212', // Morocco
+  // Europe
+  'Europe/London': '+44', // UK
+  'Europe/Paris': '+33', // France
+  'Europe/Berlin': '+49', // Germany
+  'Europe/Rome': '+39', // Italy
+  'Europe/Madrid': '+34', // Spain
+  'Europe/Amsterdam': '+31', // Netherlands
+  'Europe/Brussels': '+32', // Belgium
+  'Europe/Vienna': '+43', // Austria
+  'Europe/Stockholm': '+46', // Sweden
+  'Europe/Oslo': '+47', // Norway
+  'Europe/Copenhagen': '+45', // Denmark
+  'Europe/Helsinki': '+358', // Finland
+  'Europe/Warsaw': '+48', // Poland
+  'Europe/Prague': '+420', // Czech Republic
+  'Europe/Budapest': '+36', // Hungary
+  'Europe/Athens': '+30', // Greece
+  'Europe/Lisbon': '+351', // Portugal
+  'Europe/Dublin': '+353', // Ireland
+  'Europe/Zurich': '+41', // Switzerland
+  // Americas
+  'America/New_York': '+1', // USA (Eastern)
+  'America/Los_Angeles': '+1', // USA (Pacific)
+  'America/Chicago': '+1', // USA (Central)
+  'America/Denver': '+1', // USA (Mountain)
+  'America/Toronto': '+1', // Canada
+  'America/Vancouver': '+1', // Canada
+  'America/Mexico_City': '+52', // Mexico
+  'America/Sao_Paulo': '+55', // Brazil
+  'America/Buenos_Aires': '+54', // Argentina
+  'America/Lima': '+51', // Peru
+  'America/Bogota': '+57', // Colombia
+  'America/Santiago': '+56', // Chile
+  // Asia
+  'Asia/Shanghai': '+86', // China
+  'Asia/Tokyo': '+81', // Japan
+  'Asia/Seoul': '+82', // South Korea
+  'Asia/Bangkok': '+66', // Thailand
+  'Asia/Singapore': '+65', // Singapore
+  'Asia/Hong_Kong': '+852', // Hong Kong
+  'Asia/Taipei': '+886', // Taiwan
+  'Asia/Jakarta': '+62', // Indonesia
+  'Asia/Kuala_Lumpur': '+60', // Malaysia
+  'Asia/Manila': '+63', // Philippines
+  'Asia/Hanoi': '+84', // Vietnam
+  'Asia/Dubai': '+971', // UAE
+  'Asia/Kolkata': '+91', // India
+  'Asia/Mumbai': '+91', // India
+  'Asia/Bangalore': '+91', // India
+  // Oceania
+  'Australia/Sydney': '+61', // Australia
+  'Australia/Melbourne': '+61', // Australia
+  'Australia/Perth': '+61', // Australia
+  'Australia/Brisbane': '+61', // Australia
+  'Pacific/Auckland': '+64', // New Zealand
+};
 
 function isEmail(v: string) {
   return /.+@.+\..+/.test(v);
@@ -109,16 +178,44 @@ export default function SignUpPageV3() {
 
   const { showNotification } = useNotification();
 
-  // Detect location
+  // Detect location and auto-select country
   React.useEffect(() => {
-    try {
-      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      if (tz.includes("Nairobi") || tz.includes("Kampala")) setCountryCode("+256");
-      else if (tz.includes("New_York") || tz.includes("America")) setCountryCode("+1");
-      else if (tz.includes("London") || tz.includes("Europe")) setCountryCode("+44");
-    } catch (e) {
-      // ignore
-    }
+    const detectCountry = () => {
+      try {
+        // First try timezone detection
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const detectedCode = TIMEZONE_COUNTRY_MAP[tz];
+
+        if (detectedCode) {
+          // Verify the country exists in our list
+          const country = COUNTRIES.find(c => c.dial === detectedCode);
+          if (country) {
+            setCountryCode(country.dial);
+            return;
+          }
+        }
+
+        // Fallback to browser locale detection
+        const locale = navigator.language || 'en-US';
+        const countryPart = locale.split('-')[1];
+        if (countryPart) {
+          const upperCode = countryPart.toUpperCase();
+          const country = COUNTRIES.find(c => c.code === upperCode);
+          if (country) {
+            setCountryCode(country.dial);
+            return;
+          }
+        }
+
+        // Default to Kenya if nothing detected
+        setCountryCode('+254');
+      } catch (e) {
+        // Default to Kenya on error
+        setCountryCode('+254');
+      }
+    };
+
+    detectCountry();
   }, []);
 
   const pageBg =
