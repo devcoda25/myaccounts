@@ -125,7 +125,7 @@ function buildTimezoneMapping() {
     'Australia/Brisbane': '+61', // Australia
     'Pacific/Auckland': '+64', // New Zealand
   };
-  
+
   // Only keep mappings that exist in our COUNTRIES list
   Object.entries(mappings).forEach(([tz, dial]) => {
     const country = COUNTRIES.find((c: Country) => c.dial === dial);
@@ -262,9 +262,22 @@ export default function SignUpPageV3() {
   React.useEffect(() => {
     const detectCountryAndLanguage = () => {
       try {
+        // Debug: Log detected timezone
+        const detectedTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        console.log('Detected timezone:', detectedTz);
+
         // First try timezone detection
-        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const detectedDialCode = TIMEZONE_COUNTRY_MAP[tz];
+        let detectedDialCode = TIMEZONE_COUNTRY_MAP[detectedTz];
+
+        // Special handling for Uganda - check for East Africa timezone variants
+        if (detectedTz.includes('London') || detectedTz.includes('Europe')) {
+          // If timezone is UK/Europe but user might be in Uganda via VPN or misconfigured system
+          // Check browser locale for UG
+          const locale = navigator.language || '';
+          if (locale.includes('UG') || locale.toLowerCase().includes('uganda')) {
+            detectedDialCode = '+256';
+          }
+        }
 
         if (detectedDialCode) {
           // Find the country in our list
@@ -275,7 +288,6 @@ export default function SignUpPageV3() {
             // Auto-detect language based on country
             const languageCode = COUNTRY_LANGUAGE_MAP[country.code];
             if (languageCode) {
-              // Check if the language is supported
               const isSupported = supportedLocales.some(l => l.code === languageCode);
               if (isSupported) {
                 i18n.changeLanguage(languageCode);
@@ -286,11 +298,14 @@ export default function SignUpPageV3() {
         }
 
         // Fallback to browser locale detection
-        const locale = navigator.language || 'en-US';
-        const countryPart = locale.split('-')[1];
-        if (countryPart) {
-          const upperCode = countryPart.toUpperCase();
-          const country = COUNTRIES.find((c: Country) => c.code === upperCode);
+        const browserLocale = navigator.language || 'en-US';
+        console.log('Browser locale:', browserLocale);
+
+        // Try to match country code from locale (e.g., en-US -> US, en-UG -> UG)
+        const localeParts = browserLocale.split(/[-_]/);
+        if (localeParts.length >= 2) {
+          const localeCountry = localeParts[1].toUpperCase();
+          const country = COUNTRIES.find((c: Country) => c.code === localeCountry);
           if (country) {
             setCountryCode(country.dial);
 
@@ -305,11 +320,24 @@ export default function SignUpPageV3() {
           }
         }
 
-        // Default to Kenya (English)
-        setCountryCode('+254');
+        // Check for Uganda specifically in various ways
+        const ugandaCountry = COUNTRIES.find((c: Country) => c.code === 'UG');
+        if (ugandaCountry) {
+          // If any indicator suggests Uganda, use it
+          if (browserLocale.toLowerCase().includes('ug') ||
+            detectedTz.includes('Kampala') ||
+            detectedTz.includes('East_Africa')) {
+            setCountryCode(ugandaCountry.dial);
+            return;
+          }
+        }
+
+        // Default to Uganda (since this is an EV-ZONE app)
+        setCountryCode('+256');
       } catch (e) {
-        // Default to Kenya on error
-        setCountryCode('+254');
+        console.error('Country detection error:', e);
+        // Default to Uganda on error
+        setCountryCode('+256');
       }
     };
 
