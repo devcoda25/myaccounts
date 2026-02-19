@@ -53,14 +53,18 @@ export function supportsPasskeys(): boolean {
 
 /**
  * Generate cryptographically secure random bytes
+ * @throws Error if secure random generation is not available
  */
 export function safeRandomBytes(n: number): Uint8Array {
+    if (n < 0) throw new Error('safeRandomBytes: length must be non-negative');
     const out = new Uint8Array(n);
-    try {
-        window.crypto.getRandomValues(out);
-    } catch {
-        for (let i = 0; i < n; i++) out[i] = Math.floor(Math.random() * 256);
+    const crypto = window.crypto;
+
+    if (!crypto || typeof crypto.getRandomValues !== 'function') {
+        throw new Error('safeRandomBytes: window.crypto.getRandomValues is not available');
     }
+
+    crypto.getRandomValues(out);
     return out;
 }
 
