@@ -1,0 +1,4 @@
+## 2026-02-22 - Insecure Randomness Fallback in Helper Functions
+**Vulnerability:** The `safeRandomBytes` function in `src/utils/helpers.ts` (and its copies in `auth/sign-in` and `security/2fa`) contained a `try-catch` block that fell back to `Math.random()` if `window.crypto.getRandomValues` failed. This silently downgraded security for critical operations like WebAuthn challenges and 2FA secrets.
+**Learning:** "Fail open" mechanisms in security utilities can lead to silent vulnerabilities. If a secure random number generator is unavailable, the application should crash or throw an error ("fail closed") rather than proceeding with insecure entropy.
+**Prevention:** Always ensure cryptographic primitives fail closed. Use linting rules or code reviews to catch insecure fallbacks. Remove duplicate utility functions to ensure fixes are applied globally.
