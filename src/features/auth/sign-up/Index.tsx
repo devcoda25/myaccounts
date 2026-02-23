@@ -380,9 +380,9 @@ export default function SignUpPageV3() {
     );
   }
 
-  // Anti-Flicker: Loading state - consider both OIDC auth and Zustand store user
-  // Only show loading if we're in OIDC flow (uid present) or OIDC is actively managing auth
-  if (!uid && !auth.error && (auth.isLoading || auth.isAuthenticated)) {
+  // Anti-Flicker: Loading state - only for OIDC interaction flow (when uid is present)
+  // For regular signup (no uid), don't show loading based on OIDC auth state
+  if (uid && !auth.error && (auth.isLoading || auth.isAuthenticated)) {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: pageBg }}>
         <CircularProgress />
