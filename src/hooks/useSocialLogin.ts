@@ -126,10 +126,13 @@ export function useSocialLogin() {
     const initGoogleCustomLogin = (uid?: string, onSuccess?: (token: string) => void) => {
         if (!window.google) return;
 
+        console.log('[useSocialLogin] initGoogleCustomLogin called, uid:', uid);
+
         const client = window.google.accounts.oauth2.initTokenClient({
             client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
             scope: 'email profile openid',
             callback: async (response: any) => {
+                console.log('[useSocialLogin] Google OAuth callback received');
                 if (response.access_token) {
                     if (onSuccess) {
                         onSuccess(response.access_token);
@@ -137,7 +140,9 @@ export function useSocialLogin() {
                     }
                     try {
                         setIsGoogleLoading(true);
+                        console.log('[useSocialLogin] Calling socialLogin with access_token');
                         await socialLogin('google', response.access_token, uid);
+                        console.log('[useSocialLogin] socialLogin completed successfully');
                     } catch (err) {
                         console.error('Google Custom Login Error:', err);
                     } finally {

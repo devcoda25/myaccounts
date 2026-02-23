@@ -354,14 +354,19 @@ export default function SignUpPageV3() {
   const uid = searchParams.get("uid");
   const auth = useAuth();
 
+  // OIDC Integration - Only redirect to OIDC if there's a uid (OIDC interaction flow)
+  // For direct social login (Google/Apple buttons), we don't redirect to OIDC
   React.useEffect(() => {
-    if (!uid && !auth.isAuthenticated && !auth.isLoading && !auth.activeNavigator && !auth.error) {
+    // Only redirect to OIDC if there's a uid parameter (meaning we're in an OIDC interaction)
+    // For direct social login, there's no uid, so we don't redirect
+    if (uid && !auth.isAuthenticated && !auth.isLoading && !auth.activeNavigator && !auth.error) {
       auth.signinRedirect().catch(console.error);
     }
   }, [uid, auth]);
 
   // Error Handling: If OIDC fails, show error and allow retry
-  if (auth.error) {
+  // Only show OIDC error when we're in OIDC flow (uid present)
+  if (uid && auth.error) {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: pageBg, p: 4 }}>
         <Typography variant="h5" color="error" gutterBottom>{t("auth.error.title")}</Typography>
@@ -375,7 +380,8 @@ export default function SignUpPageV3() {
     );
   }
 
-  // Anti-Flicker: Loading state
+  // Anti-Flicker: Loading state - consider both OIDC auth and Zustand store user
+  // Only show loading if we're in OIDC flow (uid present) or OIDC is actively managing auth
   if (!uid && !auth.error && (auth.isLoading || auth.isAuthenticated)) {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: pageBg }}>
@@ -450,9 +456,12 @@ export default function SignUpPageV3() {
   const { register, user } = useAuthStore();
   const { initGoogleCustomLogin, initAppleLogin, isGoogleLoading, isAppleLoading } = useSocialLogin();
 
+  // Navigate to /app when user is set (from social login or other flow)
   React.useEffect(() => {
+    console.log('[SignupPage] user state changed:', user);
     if (user) {
       const from = (location.state as any)?.from || "/app";
+      console.log('[SignupPage] Navigating to:', from);
       navigate(from, { replace: true });
     }
   }, [user, navigate, location]);
