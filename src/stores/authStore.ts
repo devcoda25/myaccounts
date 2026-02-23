@@ -32,14 +32,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   refreshUser: async (token?: string) => {
     set({ isLoading: true });
-    console.log("[AuthStore] refreshUser called, token provided:", !!token);
     try {
       const options = token ? { headers: { Authorization: `Bearer ${token}` } } : undefined;
       const data = await api<IUser>("/users/me", options);
-      console.log("[AuthStore] refreshUser got user data:", data);
       set({ user: data, isLoading: false });
-    } catch (error) {
-      console.error("[AuthStore] refreshUser failed:", error);
+    } catch {
       set({ user: null, isLoading: false });
     }
   },
@@ -59,7 +56,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   socialLogin: async (provider: "google" | "apple", token: string, uid?: string) => {
     set({ isLoading: true });
-    console.log("[AuthStore] socialLogin called:", provider, "uid:", uid);
     try {
       const baseUrl = import.meta.env.VITE_API_BASE_URL || "/api/v1";
       const response = await fetch(`${baseUrl}/auth/${provider}`, {
@@ -70,8 +66,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         redirect: "manual",
       });
 
-      console.log("[AuthStore] socialLogin response status:", response.status, "type:", response.type);
-
       // If we got a redirect (from provider.interactionFinished), follow it
       if (response.status === 302 || response.status === 303 || response.type === "opaqueredirect") {
         const locationHeader = response.headers.get("Location");
@@ -79,7 +73,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         let nextUrl = locationHeader || (uid ? `/oidc/auth/${uid}` : "");
 
         if (nextUrl) {
-          console.log("[AuthStore] Social login OIDC redirect:", nextUrl);
           window.location.assign(nextUrl);
           return;
         }
@@ -90,11 +83,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         throw new Error(errData.message || "Social login failed");
       }
 
-      console.log("[AuthStore] Calling refreshUser after successful social login");
       await get().refreshUser();
-      console.log("[AuthStore] refreshUser completed, user should be set now");
     } catch (err) {
-      console.error("[AuthStore] socialLogin error:", err);
       set({ user: null });
       throw err;
     } finally {

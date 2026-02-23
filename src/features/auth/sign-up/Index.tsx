@@ -359,14 +359,15 @@ export default function SignUpPageV3() {
   React.useEffect(() => {
     // Only redirect to OIDC if there's a uid parameter (meaning we're in an OIDC interaction)
     // For direct social login, there's no uid, so we don't redirect
-    if (uid && !auth.isAuthenticated && !auth.isLoading && !auth.activeNavigator && !auth.error) {
+    // Also check that auth is available
+    if (uid && auth && !auth.isAuthenticated && !auth.isLoading && !auth.activeNavigator && !auth.error) {
       auth.signinRedirect().catch(console.error);
     }
   }, [uid, auth]);
 
   // Error Handling: If OIDC fails, show error and allow retry
-  // Only show OIDC error when we're in OIDC flow (uid present)
-  if (uid && auth.error) {
+  // Only show OIDC error when we're in OIDC flow (uid present) and auth is available
+  if (uid && auth && auth.error) {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: pageBg, p: 4 }}>
         <Typography variant="h5" color="error" gutterBottom>{t("auth.error.title")}</Typography>
@@ -382,7 +383,7 @@ export default function SignUpPageV3() {
 
   // Anti-Flicker: Loading state - only for OIDC interaction flow (when uid is present)
   // For regular signup (no uid), don't show loading based on OIDC auth state
-  if (uid && !auth.error && (auth.isLoading || auth.isAuthenticated)) {
+  if (uid && auth && !auth.error && (auth.isLoading || auth.isAuthenticated)) {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: pageBg }}>
         <CircularProgress />
@@ -458,10 +459,8 @@ export default function SignUpPageV3() {
 
   // Navigate to /app when user is set (from social login or other flow)
   React.useEffect(() => {
-    console.log('[SignupPage] user state changed:', user);
     if (user) {
       const from = (location.state as any)?.from || "/app";
-      console.log('[SignupPage] Navigating to:', from);
       navigate(from, { replace: true });
     }
   }, [user, navigate, location]);
