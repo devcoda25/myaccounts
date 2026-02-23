@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /**
  * Common Helper Functions
  * Shared utilities extracted from multiple Index.tsx files
@@ -56,11 +57,16 @@ export function supportsPasskeys(): boolean {
  */
 export function safeRandomBytes(n: number): Uint8Array {
     const out = new Uint8Array(n);
-    try {
-        window.crypto.getRandomValues(out);
-    } catch {
-        for (let i = 0; i < n; i++) out[i] = Math.floor(Math.random() * 256);
+    const crypto =
+        (typeof globalThis !== 'undefined' && (globalThis as any).crypto) ||
+        (typeof window !== 'undefined' && (window.crypto || (window as any).msCrypto)) ||
+        (typeof global !== 'undefined' && (global as any).crypto);
+
+    if (!crypto || !crypto.getRandomValues) {
+        throw new Error("Secure random number generation is not supported in this environment.");
     }
+
+    crypto.getRandomValues(out);
     return out;
 }
 
