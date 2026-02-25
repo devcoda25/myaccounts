@@ -3,6 +3,15 @@
  * URL validation and sanitization utilities
  */
 
+const ALLOWED_DOMAINS = ['evzone.com', 'evzone.app'];
+
+/**
+ * Check if hostname belongs to EVzone ecosystem
+ */
+function isEvzoneDomain(hostname: string): boolean {
+    return ALLOWED_DOMAINS.some(d => hostname === d || hostname.endsWith('.' + d));
+}
+
 /**
  * Validate URL is safe and allowed
  */
@@ -10,7 +19,7 @@ export function isValidUrl(url: string): boolean {
     try {
         const parsed = new URL(url);
         return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+            isEvzoneDomain(parsed.hostname);
     } catch {
         return false;
     }
@@ -26,7 +35,7 @@ export function sanitizeUrl(url: string): string {
     try {
         const parsed = new URL(url);
         // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        if (parsed.protocol !== 'https:' && isEvzoneDomain(parsed.hostname)) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
