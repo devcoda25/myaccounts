@@ -401,7 +401,7 @@ export default function AdminUsersList() {
                     email: newEmail,
                     phone: newPhone || undefined,
                     role,
-                    password: 'Password123!',
+                    password: mkTempPassword(),
                     acceptTerms: true
                 })
             });
@@ -706,7 +706,7 @@ export default function AdminUsersList() {
                                         type="password"
                                         fullWidth
                                         InputProps={{ startAdornment: (<InputAdornment position="start"><LockIcon size={18} /></InputAdornment>) }}
-                                        helperText="Demo password: superadmin-secure-pw"
+                                        helperText="Enter your administrator password"
                                         sx={{ '& .MuiOutlinedInput-root': { borderRadius: 3 }, mt: 2 }}
                                     />
                                 ) : (
