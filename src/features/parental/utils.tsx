@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from "react-i18next";
 import { Chip } from '@mui/material';
+import { safeRandomBytes } from '@/utils/helpers';
 import { ChildStatus } from './types';
 
 export function timeAgo(ts?: number) {
@@ -54,5 +55,6 @@ export const approvalKindChip = (kind: string) => {
 };
 
 export const makeInviteCode = () => {
-    return Array.from({ length: 9 }).map((_, i) => i === 4 ? "-" : String.fromCharCode(65 + Math.floor(Math.random() * 26))).join("");
+    const bytes = safeRandomBytes(9);
+    return Array.from(bytes).map((b, i) => i === 4 ? "-" : String.fromCharCode(65 + (b % 26))).join("");
 };
