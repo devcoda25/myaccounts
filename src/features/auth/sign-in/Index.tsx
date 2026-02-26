@@ -49,6 +49,7 @@ import {
   GoogleGIcon,
   AppleIcon
 } from "@/components/icons";
+import { safeRandomBytes } from "@/utils/helpers";
 
 // -----------------------------
 // Helpers
@@ -75,16 +76,6 @@ function supportsPasskeys() {
   } catch {
     return false;
   }
-}
-
-function safeRandomBytes(n: number): Uint8Array {
-  const out = new Uint8Array(n);
-  try {
-    window.crypto.getRandomValues(out);
-  } catch {
-    for (let i = 0; i < n; i++) out[i] = Math.floor(Math.random() * 256);
-  }
-  return out;
 }
 
 async function tryWebAuthnGet(): Promise<{ ok: boolean; message: string }> {
