@@ -56,11 +56,14 @@ export function supportsPasskeys(): boolean {
  */
 export function safeRandomBytes(n: number): Uint8Array {
     const out = new Uint8Array(n);
-    try {
-        window.crypto.getRandomValues(out);
-    } catch {
-        for (let i = 0; i < n; i++) out[i] = Math.floor(Math.random() * 256);
+    // Support modern browsers, Node.js (via global), and potentially workers
+    const crypto = globalThis.crypto || (window as any).crypto || (global as any).crypto;
+
+    if (!crypto || !crypto.getRandomValues) {
+        throw new Error('Cryptography API not available');
     }
+
+    crypto.getRandomValues(out);
     return out;
 }
 
