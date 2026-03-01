@@ -59,7 +59,7 @@ export function safeRandomBytes(n: number): Uint8Array {
     try {
         window.crypto.getRandomValues(out);
     } catch {
-        for (let i = 0; i < n; i++) out[i] = Math.floor(Math.random() * 256);
+        throw new Error("Cryptography API not available");
     }
     return out;
 }
@@ -103,7 +103,10 @@ export function truncate(str: string, maxLength: number): string {
  * Generate a unique ID
  */
 export function generateId(prefix: string = 'id'): string {
-    return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+    const randomHex = Array.from(safeRandomBytes(4))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+    return `${prefix}_${Date.now().toString(36)}_${randomHex}`;
 }
 
 /**
