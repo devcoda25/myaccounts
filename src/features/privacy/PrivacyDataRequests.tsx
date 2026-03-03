@@ -305,8 +305,15 @@ export default function PrivacyDataRequestsPage() {
                 return;
             }
 
+            const bytes = new Uint8Array(4);
+            if (!window.crypto || !window.crypto.getRandomValues) {
+                throw new Error('Secure random number generation is not supported in this environment.');
+            }
+            window.crypto.getRandomValues(bytes);
+            const randomPart = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 5);
+
             const req: DataRequest = {
-                id: `req_${Math.random().toString(36).slice(2, 7)}`,
+                id: `req_${randomPart}`,
                 type: newType,
                 status: "Pending",
                 createdAt: Date.now(),
