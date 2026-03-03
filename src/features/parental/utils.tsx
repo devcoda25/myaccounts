@@ -54,5 +54,12 @@ export const approvalKindChip = (kind: string) => {
 };
 
 export const makeInviteCode = () => {
-    return Array.from({ length: 9 }).map((_, i) => i === 4 ? "-" : String.fromCharCode(65 + Math.floor(Math.random() * 26))).join("");
+    const bytes = new Uint8Array(8);
+    if (!window.crypto || !window.crypto.getRandomValues) {
+        throw new Error('Secure random number generation is not supported in this environment.');
+    }
+    window.crypto.getRandomValues(bytes);
+    const chars = Array.from(bytes).map(b => String.fromCharCode(65 + (b % 26)));
+    chars.splice(4, 0, "-");
+    return chars.join("");
 };
