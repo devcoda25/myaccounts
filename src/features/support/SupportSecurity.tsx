@@ -34,6 +34,7 @@ import { motion } from "framer-motion";
 import { useThemeStore } from "@/stores/themeStore";
 import { EVZONE } from "@/theme/evzone";
 import { api } from "@/utils/api";
+import { safeRandomBytes } from "@/utils/helpers";
 
 /**
  * EVzone My Accounts - Report a Security Issue
@@ -191,7 +192,9 @@ function timeAgo(ts: number) {
 }
 
 function mkId(prefix: string) {
-  return `${prefix}_${Math.random().toString(16).slice(2, 8).toUpperCase()}`;
+  const bytes = safeRandomBytes(3);
+  const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+  return `${prefix}_${hex}`;
 }
 
 
