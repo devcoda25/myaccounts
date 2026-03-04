@@ -1,0 +1,4 @@
+## 2024-05-15 - [XSS Prevention via dynamic URLs]
+**Vulnerability:** Cross-Site Scripting (XSS) vulnerability found where a dynamically fetched URL from the API was embedded directly into the `href` attribute of a component behaving as an anchor link (`<Paper component="a" href={app.url} />`). This allowed potentially malicious schemas like `javascript:` to be executed if the API returned a crafted URL.
+**Learning:** React escapes text variables, but cannot prevent script execution from malicious URLs embedded directly into the `href` attribute. A dynamically provided url must be sanitized to ensure it's restricted to safe HTTP schemas (`http:`/`https:`).
+**Prevention:** Always validate and sanitize URLs provided via external sources using `sanitizeUrl` (from `src/sanitizers/url.ts`) when passing them into `href` or `src` attributes.
