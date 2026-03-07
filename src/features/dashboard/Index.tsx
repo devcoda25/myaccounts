@@ -31,6 +31,7 @@ import { api } from "@/utils/api";
 
 import { IApp } from "./types";
 import { getGreeting, getContainerVars, getItemVars, getPageBg } from "./helpers";
+import { sanitizeUrl } from "@/sanitizers/url";
 
 export default function Dashboard() {
   const { t } = useTranslation("common");
@@ -99,7 +100,7 @@ export default function Dashboard() {
                 <motion.div variants={itemVars}>
                   <Paper
                     component="a"
-                    href={app.url}
+                    href={sanitizeUrl(app.url)}
                     target="_blank"
                     rel="noopener noreferrer"
                     sx={{
