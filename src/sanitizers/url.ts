@@ -9,8 +9,13 @@
 export function isValidUrl(url: string): boolean {
     try {
         const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        const isAllowedProtocol = ['https:', 'http:'].includes(parsed.protocol);
+        const isAllowedDomain = parsed.hostname === 'evzone.com' ||
+                              parsed.hostname.endsWith('.evzone.com') ||
+                              parsed.hostname === 'evzone.app' ||
+                              parsed.hostname.endsWith('.evzone.app');
+
+        return isAllowedProtocol && isAllowedDomain;
     } catch {
         return false;
     }
@@ -25,12 +30,21 @@ export function sanitizeUrl(url: string): string {
 
     try {
         const parsed = new URL(url);
-        // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+
+        // 🚨 SECURITY: Prevent XSS by blocking dangerous protocols
+        if (['javascript:', 'data:', 'vbscript:', 'file:'].includes(parsed.protocol)) {
+            return '';
+        }
+
+        // Only allow HTTPS for production domains
+        const isEvzoneDomain = parsed.hostname.includes('evzone.com') || parsed.hostname.includes('evzone.app');
+        if (parsed.protocol !== 'https:' && isEvzoneDomain) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
     } catch {
+        // If it's a relative path it might throw, but it shouldn't contain dangerous protocols
+        // Return empty string to be strictly safe as the original implementation did
         return '';
     }
 }
