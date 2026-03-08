@@ -1,0 +1,4 @@
+## 2024-05-24 - [Strict URL Sanitization]
+**Vulnerability:** XSS vulnerability in `src/features/dashboard/Index.tsx` where dynamic app URLs in `href` tag were vulnerable to XSS from `javascript:` schemas, combined with weak `evzone.com` hostname validation using `.includes()` in `src/sanitizers/url.ts`.
+**Learning:** Checking hostnames with `.includes()` allows bypasses like `attacker.com/evzone.com` or `evzone.com.attacker.com`. Dynamic links using `<Paper component="a" href={...}>` evaluate `javascript:` strings on click, leading to XSS vulnerabilities if user-generated URLs are allowed.
+**Prevention:** Use strictly-typed URL parsers (`new URL()`) to validate that the protocol is HTTP/HTTPS, and validate hostnames using exact matches (`===`) or strict suffixes (`.endsWith()`). Always wrap dynamic user-provided URLs in safe React links using a sanitization function (`sanitizeUrl()`) before injecting them into `href` or `src` attributes.
