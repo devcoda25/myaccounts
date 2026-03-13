@@ -1,0 +1,4 @@
+## 2024-05-24 - Insecure Domain Validation and Protocol Mutation
+**Vulnerability:** The URL sanitizer used `.includes('evzone.com')` for domain validation, making it vulnerable to SSRF and Open Redirect via domains like `evzone.com.attacker.com` or `attacker-evzone.com`. Additionally, attempting to mutate `parsed.protocol` fails silently for special schemas like `javascript:`.
+**Learning:** `.includes()` should never be used for hostname validation. The JavaScript URL API silently ignores protocol modification for `javascript:` and other special schemas, making it an unreliable approach for neutralizing malicious URIs.
+**Prevention:** Always use exact matching (`===`) or `.endsWith('.domain.com')` to validate domains. Use an explicit protocol allowlist (e.g., `http:`, `https:`) and reject unapproved protocols instead of trying to fix them by assigning `protocol = 'https:'`.
