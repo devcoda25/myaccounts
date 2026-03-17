@@ -1,0 +1,4 @@
+## 2024-05-18 - [Insecure Math.random Fallbacks]
+**Vulnerability:** The codebase contained multiple instances of `safeRandomBytes` and WebAuthn challenge generation that used an insecure fallback to `Math.random` when `window.crypto.getRandomValues` was unavailable or encountered an error. This made cryptographic operations (like 2FA TOTP secrets, Passkeys challenges, and UUIDs) susceptible to prediction.
+**Learning:** For cryptographic and security-sensitive operations, the application must **fail securely** (fail closed) instead of silently downgrading to an insecure PRNG.
+**Prevention:** Never use `Math.random` for security tokens, passwords, challenges, or identifiers. Always throw an error if a secure cryptographic provider (`window.crypto.getRandomValues` in the browser) is unavailable.
