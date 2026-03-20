@@ -1,0 +1,4 @@
+## 2024-05-17 - Fix XSS and SSRF in URL Sanitization
+**Vulnerability:** XSS and SSRF vulnerabilities in `src/sanitizers/url.ts`. Modifying `url.protocol` to enforce `https:` fails silently for special schemas like `javascript:`, allowing XSS payloads to execute. Validating domains using `.includes('evzone.com')` allowed bypasses using domain structures like `evzone.com.attacker.com`, enabling SSRF.
+**Learning:** `URL.protocol` assignment silently fails for some unsupported or special schemas. `.includes()` is dangerous for URL domain validation since it checks anywhere in the string, instead of enforcing exact match or suffix conditions.
+**Prevention:** Explicitly validate protocol using an allowlist (`['http:', 'https:'].includes(parsed.protocol)`) instead of mutating. Always validate domains using strict exact matching (`===`) or suffix validation (`.endsWith('.evzone.com')`) to prevent bypasses.
