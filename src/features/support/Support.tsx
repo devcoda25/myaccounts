@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { safeRandomBytes } from "../../utils/helpers";
 import { useNavigate } from "react-router-dom";
 import {
   Accordion,
@@ -99,7 +100,9 @@ function toSize(bytes: number) {
 }
 
 function mkId(prefix: string) {
-  return `${prefix}_${Math.random().toString(16).slice(2, 8).toUpperCase()}`;
+  const randomBytes = safeRandomBytes(3);
+  const randomHex = Array.from(randomBytes).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+  return `${prefix}_${randomHex}`;
 }
 
 
