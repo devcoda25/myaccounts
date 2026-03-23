@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { generateId } from "../../utils/helpers";
 import {
     Alert,
     Box,
@@ -306,7 +307,7 @@ export default function PrivacyDataRequestsPage() {
             }
 
             const req: DataRequest = {
-                id: `req_${Math.random().toString(36).slice(2, 7)}`,
+                id: generateId("req"),
                 type: newType,
                 status: "Pending",
                 createdAt: Date.now(),
