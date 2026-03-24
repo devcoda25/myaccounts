@@ -4,13 +4,21 @@
  */
 
 /**
+ * Helper to check if a hostname is an allowed trusted domain
+ */
+function isTrustedDomain(hostname: string): boolean {
+    return hostname === 'evzone.com' || hostname.endsWith('.evzone.com') ||
+           hostname === 'evzone.app' || hostname.endsWith('.evzone.app');
+}
+
+/**
  * Validate URL is safe and allowed
  */
 export function isValidUrl(url: string): boolean {
     try {
         const parsed = new URL(url);
         return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+            isTrustedDomain(parsed.hostname);
     } catch {
         return false;
     }
@@ -25,8 +33,15 @@ export function sanitizeUrl(url: string): string {
 
     try {
         const parsed = new URL(url);
-        // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+
+        // Explicitly reject unapproved protocols (e.g., javascript:)
+        // to prevent XSS since modifying parsed.protocol fails silently.
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return '';
+        }
+
+        // Only allow HTTPS for production trusted domains
+        if (parsed.protocol === 'http:' && isTrustedDomain(parsed.hostname)) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
