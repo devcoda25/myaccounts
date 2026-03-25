@@ -81,8 +81,8 @@ function safeRandomBytes(n: number): Uint8Array {
   const out = new Uint8Array(n);
   try {
     window.crypto.getRandomValues(out);
-  } catch {
-    for (let i = 0; i < n; i++) out[i] = Math.floor(Math.random() * 256);
+  } catch (error) {
+    throw new Error("Cryptographically secure random number generation is not available.");
   }
   return out;
 }
