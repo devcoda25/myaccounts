@@ -1,0 +1,4 @@
+## 2024-03-26 - Fix Insecure Random Number Generation Fallback
+**Vulnerability:** Several helper functions (`safeRandomBytes`, `generateId`) used `Math.random()` as a fallback when `window.crypto.getRandomValues` was unavailable or encountered an error. This introduced insecure, predictable random number generation for pseudo-cryptographic tasks.
+**Learning:** Security functions must not silently degrade to insecure implementations. If a cryptographic dependency (`window.crypto`) is missing, the application should fail securely (e.g., throwing an error) rather than using a vulnerable fallback.
+**Prevention:** Always enforce the availability of `window.crypto` for generating random bytes, tokens, or IDs. Do not use `Math.random()` anywhere in the codebase for generating security-sensitive or unique identifiers.
