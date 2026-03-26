@@ -3,14 +3,21 @@
  * URL validation and sanitization utilities
  */
 
+const isTrustedDomain = (hostname: string): boolean => {
+    return hostname === 'evzone.com' || hostname.endsWith('.evzone.com') ||
+           hostname === 'evzone.app' || hostname.endsWith('.evzone.app');
+};
+
 /**
  * Validate URL is safe and allowed
  */
 export function isValidUrl(url: string): boolean {
     try {
         const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return false;
+        }
+        return isTrustedDomain(parsed.hostname);
     } catch {
         return false;
     }
@@ -25,8 +32,14 @@ export function sanitizeUrl(url: string): string {
 
     try {
         const parsed = new URL(url);
-        // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+
+        // Reject unsafe protocols like javascript: or data: to prevent XSS
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return '';
+        }
+
+        // Only allow HTTPS for production domains
+        if (parsed.protocol !== 'https:' && isTrustedDomain(parsed.hostname)) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();

@@ -1,0 +1,5 @@
+
+## 2024-03-26 - [HIGH] Fix XSS and SSRF risks in URL sanitization
+**Vulnerability:** The `isValidUrl` and `sanitizeUrl` functions used `.includes('evzone.com')` to validate domains. This allows SSRF and Open Redirect bypasses (e.g. `https://evzone.com.attacker.com`). Additionally, `sanitizeUrl` failed silently for unsupported schemas, not removing malicious schemas like `javascript:`, leading to XSS if returned unfiltered.
+**Learning:** When using the JavaScript `URL` API, modifying `url.protocol` fails silently for special schemas like `javascript:`. URL sanitizers must explicitly validate against an allowlist (e.g., `http:`, `https:`) and reject unapproved protocols. Also, domain validation must strictly check domains using exact and suffix matching.
+**Prevention:** Always use an allowlist for supported protocols (`http:`, `https:`) and reject others. When validating domain names, avoid using `.includes()`; instead, use exact matching (`===`) or suffix matching (`.endsWith()`) against trusted domain lists.
