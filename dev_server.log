@@ -1,0 +1,96 @@
+
+> evzone-myaccounts-portal@0.1.0 dev
+> vite
+
+
+  VITE v5.4.2  ready in 330 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/en/common.json instead of /public/locales/en/common.json.
+If you intend to use the URL of that asset, use /locales/en/common.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/en/translation.json instead of /public/locales/en/translation.json.
+If you intend to use the URL of that asset, use /locales/en/translation.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/sw/common.json instead of /public/locales/sw/common.json.
+If you intend to use the URL of that asset, use /locales/sw/common.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/sw/translation.json instead of /public/locales/sw/translation.json.
+If you intend to use the URL of that asset, use /locales/sw/translation.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/ar/common.json instead of /public/locales/ar/common.json.
+If you intend to use the URL of that asset, use /locales/ar/common.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/ar/translation.json instead of /public/locales/ar/translation.json.
+If you intend to use the URL of that asset, use /locales/ar/translation.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/fr/common.json instead of /public/locales/fr/common.json.
+If you intend to use the URL of that asset, use /locales/fr/common.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/fr/translation.json instead of /public/locales/fr/translation.json.
+If you intend to use the URL of that asset, use /locales/fr/translation.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/ja/common.json instead of /public/locales/ja/common.json.
+If you intend to use the URL of that asset, use /locales/ja/common.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/ja/translation.json instead of /public/locales/ja/translation.json.
+If you intend to use the URL of that asset, use /locales/ja/translation.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/ko/common.json instead of /public/locales/ko/common.json.
+If you intend to use the URL of that asset, use /locales/ko/common.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/ko/translation.json instead of /public/locales/ko/translation.json.
+If you intend to use the URL of that asset, use /locales/ko/translation.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/zh-CN/common.json instead of /public/locales/zh-CN/common.json.
+If you intend to use the URL of that asset, use /locales/zh-CN/common.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/zh-CN/translation.json instead of /public/locales/zh-CN/translation.json.
+If you intend to use the URL of that asset, use /locales/zh-CN/translation.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/zh/common.json instead of /public/locales/zh/common.json.
+If you intend to use the URL of that asset, use /locales/zh/common.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/zh/translation.json instead of /public/locales/zh/translation.json.
+If you intend to use the URL of that asset, use /locales/zh/translation.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/zh-TW/common.json instead of /public/locales/zh-TW/common.json.
+If you intend to use the URL of that asset, use /locales/zh-TW/common.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/es/common.json instead of /public/locales/es/common.json.
+If you intend to use the URL of that asset, use /locales/es/common.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/es/translation.json instead of /public/locales/es/translation.json.
+If you intend to use the URL of that asset, use /locales/es/translation.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/ge/common.json instead of /public/locales/ge/common.json.
+If you intend to use the URL of that asset, use /locales/ge/common.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/ru/common.json instead of /public/locales/ru/common.json.
+If you intend to use the URL of that asset, use /locales/ru/common.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/hi/common.json instead of /public/locales/hi/common.json.
+If you intend to use the URL of that asset, use /locales/hi/common.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/id/common.json instead of /public/locales/id/common.json.
+If you intend to use the URL of that asset, use /locales/id/common.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/ms/common.json instead of /public/locales/ms/common.json.
+If you intend to use the URL of that asset, use /locales/ms/common.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/th/common.json instead of /public/locales/th/common.json.
+If you intend to use the URL of that asset, use /locales/th/common.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/vi/common.json instead of /public/locales/vi/common.json.
+If you intend to use the URL of that asset, use /locales/vi/common.json?url.
+Assets in public directory cannot be imported from JavaScript.
+If you intend to import that asset, put the file in the src directory, and use /src/locales/pt/common.json instead of /public/locales/pt/common.json.
+If you intend to use the URL of that asset, use /locales/pt/common.json?url.
+9:19:42 AM [vite] http proxy error: /api/v1/v1/users/me
+Error: unable to verify the first certificate
+    at TLSSocket.onConnectSecure (node:_tls_wrap:1697:34)
+    at TLSSocket.emit (node:events:519:28)
+    at TLSSocket._finishInit (node:_tls_wrap:1095:8)
+    at ssl.onhandshakedone (node:_tls_wrap:881:12)
