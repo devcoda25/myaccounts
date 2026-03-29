@@ -56,11 +56,10 @@ export function supportsPasskeys(): boolean {
  */
 export function safeRandomBytes(n: number): Uint8Array {
     const out = new Uint8Array(n);
-    try {
-        window.crypto.getRandomValues(out);
-    } catch {
-        for (let i = 0; i < n; i++) out[i] = Math.floor(Math.random() * 256);
+    if (!window.crypto || !window.crypto.getRandomValues) {
+        throw new Error("Web Crypto API is not available");
     }
+    window.crypto.getRandomValues(out);
     return out;
 }
 
@@ -103,7 +102,7 @@ export function truncate(str: string, maxLength: number): string {
  * Generate a unique ID
  */
 export function generateId(prefix: string = 'id'): string {
-    return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+    return `${prefix}_${window.crypto.randomUUID()}`;
 }
 
 /**
