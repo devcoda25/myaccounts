@@ -54,5 +54,10 @@ export const approvalKindChip = (kind: string) => {
 };
 
 export const makeInviteCode = () => {
-    return Array.from({ length: 9 }).map((_, i) => i === 4 ? "-" : String.fromCharCode(65 + Math.floor(Math.random() * 26))).join("");
+    return Array.from({ length: 9 }).map((_, i) => {
+        if (i === 4) return "-";
+        const randomValues = new Uint8Array(1);
+        window.crypto.getRandomValues(randomValues);
+        return String.fromCharCode(65 + Math.floor((randomValues[0] / 256) * 26));
+    }).join("");
 };
