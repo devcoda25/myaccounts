@@ -1,0 +1,4 @@
+## 2024-05-24 - [Insecure PRNG Fallback]
+**Vulnerability:** `window.crypto.getRandomValues()` was falling back to `Math.random()` to generate cryptographically secure keys, tokens, and WebAuthn challenges when the browser API failed or was not found in the environment context.
+**Learning:** `Math.random()` is not cryptographically secure, and using it to fallback will make things like WebAuthn challenges, Two-Factor secret seeds, and temporary user passwords predictable, thus breaking the security guarantee of these features completely. The application must "fail securely" instead of attempting to run without `window.crypto`.
+**Prevention:** Remove all fallback usages of `Math.random()` for any security sensitive value generations, throw a hard error like `throw new Error("Secure random number generation is not supported in this environment.")` when `window.crypto` is unavailable so the execution is blocked rather than silently producing a vulnerable value.
