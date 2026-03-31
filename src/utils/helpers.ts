@@ -56,12 +56,11 @@ export function supportsPasskeys(): boolean {
  */
 export function safeRandomBytes(n: number): Uint8Array {
     const out = new Uint8Array(n);
-    try {
+    if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
         window.crypto.getRandomValues(out);
-    } catch {
-        for (let i = 0; i < n; i++) out[i] = Math.floor(Math.random() * 256);
+        return out;
     }
-    return out;
+    throw new Error("Crypto API not available. Cannot generate secure random bytes.");
 }
 
 /**
