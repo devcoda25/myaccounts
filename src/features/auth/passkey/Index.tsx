@@ -138,8 +138,8 @@ async function tryWebAuthnGet(): Promise<{ ok: boolean; message: string }> {
     const random = new Uint8Array(32);
     try {
       window.crypto.getRandomValues(random);
-    } catch {
-      for (let i = 0; i < random.length; i++) random[i] = Math.floor(Math.random() * 256);
+    } catch (e) {
+      throw new Error("Cryptographically secure random number generation is not available.", { cause: e });
     }
 
     await nav.credentials.get({
