@@ -1,0 +1,4 @@
+## 2024-05-15 - URL Protocol Mutability Failure and `.includes()` Hostname Bypass
+**Vulnerability:** XSS and SSRF/Open Redirect in URL sanitization (`src/sanitizers/url.ts`). `isValidUrl` used `.includes('evzone.com')` to validate the hostname, allowing domains like `evzone.com.attacker.com`. `sanitizeUrl` attempted to change protocols of potentially malicious URLs but modifying `url.protocol` fails silently on special schemas like `javascript:`, allowing XSS.
+**Learning:** When using the JavaScript `URL` API, modifying `url.protocol` fails silently for special schemas like `javascript:`. Also, `.includes()` is easily bypassed for hostname validation.
+**Prevention:** URL sanitizers must explicitly validate against an allowlist (e.g., `http:`, `https:`) and reject unapproved protocols instead of attempting mutation. When validating domain names, always use exact matching (`===`) or `.endsWith()` to prevent SSRF and Open Redirect vulnerabilities.
