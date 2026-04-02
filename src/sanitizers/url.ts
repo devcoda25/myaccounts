@@ -7,10 +7,16 @@
  * Validate URL is safe and allowed
  */
 export function isValidUrl(url: string): boolean {
+    if (!url) return false;
+    if (url.startsWith('/') && !url.startsWith('//')) {
+        return true;
+    }
     try {
         const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        const isAllowedDomain =
+            parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com') ||
+            parsed.hostname === 'evzone.app' || parsed.hostname.endsWith('.evzone.app');
+        return ['https:', 'http:'].includes(parsed.protocol) && isAllowedDomain;
     } catch {
         return false;
     }
@@ -23,10 +29,23 @@ export function isValidUrl(url: string): boolean {
 export function sanitizeUrl(url: string): string {
     if (!url) return '';
 
+    if (url.startsWith('/') && !url.startsWith('//')) {
+        return url;
+    }
+
     try {
         const parsed = new URL(url);
+
+        if (!['http:', 'https:'].includes(parsed.protocol)) {
+            return '';
+        }
+
+        const isEvzoneDomain =
+            parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com') ||
+            parsed.hostname === 'evzone.app' || parsed.hostname.endsWith('.evzone.app');
+
         // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        if (parsed.protocol === 'http:' && isEvzoneDomain) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
