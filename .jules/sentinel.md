@@ -1,0 +1,4 @@
+## 2024-04-04 - [Dynamic URL Sanity]
+**Vulnerability:** Dynamic URLs injected into `href` or `src` attributes in React components (e.g., `<Paper component="a">`) must be wrapped in `sanitizeUrl()` to prevent XSS vulnerabilities from malicious schemas like `javascript:`.
+**Learning:** React doesn't automatically protect `href` attributes against malicious schemas like `javascript:`. Unsanitized user inputs in `href` or `src` attributes lead to XSS. Also, `sanitizeUrl` in `src/sanitizers/url.ts` attempts to mutate `parsed.protocol = 'https:'` but modifying protocol fails silently for some special schemas like `javascript:`.
+**Prevention:** Always use `sanitizeUrl` (or a similar validation step) to wrap dynamic `href` properties. Better yet, the URL sanitizer must explicitly validate against an allowlist (e.g., `http:`, `https:`) and reject unapproved protocols instead of attempting mutation.
