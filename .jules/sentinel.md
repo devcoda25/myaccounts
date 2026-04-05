@@ -1,0 +1,4 @@
+## 2025-02-14 - Fix URL Sanitization Bypass (SSRF/Open Redirect/XSS)
+**Vulnerability:** `isValidUrl` used `parsed.hostname.includes('evzone.com')` allowing bypasses like `evzone.com.attacker.com`. `sanitizeUrl` attempted to mutate the protocol of URLs without rejecting unapproved schemas, allowing `javascript:` bypasses.
+**Learning:** Using `.includes()` on hostnames allows arbitrary attacker-controlled suffixes. Furthermore, modifying `url.protocol` fails silently on the `javascript:` schema, allowing XSS.
+**Prevention:** Always use strict exact matching (`===`) or suffix matching (`.endsWith('.domain.com')`) for domain validation. For sanitization, use a strict allowlist of protocols (`http:`, `https:`) and immediately reject any URL that does not conform.
