@@ -17,7 +17,10 @@ export default function PatchOidcResume() {
 
     console.log("[PatchOidcResume] Inspecting path:", path);
 
-    if (segment && segment.length > 20 && !segment.includes("/")) {
+    // Ensure the segment is only alphanumeric (and possibly dashes/underscores), preventing path traversal and open redirects
+    const uidPattern = /^[a-zA-Z0-9_-]{21,}$/;
+
+    if (segment && uidPattern.test(segment)) {
       const target = `/oidc/auth/${segment}${location.search}${location.hash}`;
       console.log("[PatchOidcResume] redirecting to:", target);
       window.location.href = target;
