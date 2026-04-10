@@ -27,6 +27,7 @@ import { motion } from "framer-motion";
 import { useThemeStore } from "@/stores/themeStore";
 import { EVZONE } from "@/theme/evzone";
 import { api } from "@/utils/api";
+import { isSafeRedirect } from "@/sanitizers/url";
 
 /**
  * EVzone My Accounts - Connected EVzone Apps
@@ -329,7 +330,12 @@ export default function ConnectedAppsPage() {
 
         // Allow a small delay for snackbar for better UX
         setTimeout(() => {
-          window.location.href = a.launchUrl!;
+          if (isSafeRedirect(a.launchUrl)) {
+            window.location.href = a.launchUrl!;
+          } else {
+            console.error("Blocked unsafe redirect to:", a.launchUrl);
+            setSnack({ open: true, severity: "error", msg: `Unsafe launch URL blocked.` });
+          }
         }, 800);
         return;
       }

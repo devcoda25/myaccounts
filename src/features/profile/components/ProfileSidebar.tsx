@@ -5,6 +5,7 @@ import { Box, Button, Card, CardContent, Divider, Stack, Typography, useTheme } 
 import { alpha } from "@mui/material/styles";
 import { EVZONE } from "@/theme/evzone";
 import { LinkIcon, LockIcon, MailIcon, ShieldCheckIcon } from "@/components/icons";
+import { isSafeRedirect } from "@/sanitizers/url";
 
 
 
@@ -62,7 +63,11 @@ export const ProfileSidebar = () => {
                                 }
                                 onClick={() => {
                                     if ((item as any).external) {
-                                        window.location.href = (item as any).external;
+                                        if (isSafeRedirect((item as any).external)) {
+                                            window.location.href = (item as any).external;
+                                        } else {
+                                            console.error("Blocked unsafe redirect to:", (item as any).external);
+                                        }
                                     } else {
                                         navigate(item.route!);
                                     }
