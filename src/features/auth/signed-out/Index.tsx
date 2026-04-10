@@ -24,6 +24,7 @@ import {
 
 import AuthHeader from "@/components/layout/AuthHeader";
 import { EVZONE } from "@/theme/evzone";
+import { isSafeRedirect } from "@/sanitizers/url";
 
 /**
  * EVzone My Accounts - Redesigned Signed Out Page
@@ -79,7 +80,12 @@ export default function SignedOutPage() {
 
   const returnToApp = () => {
     if (redirectUri) {
-      window.location.href = redirectUri;
+      if (isSafeRedirect(redirectUri)) {
+        window.location.href = redirectUri;
+      } else {
+        console.error("Blocked unsafe redirect to:", redirectUri);
+        navigate("/auth/sign-in");
+      }
     } else {
       navigate("/auth/sign-in");
     }
