@@ -276,7 +276,13 @@ export default function SignInPage() {
   // Restore redirection to App when API session is established (e.g. via Google Custom Login)
   useEffect(() => {
     if (user) {
-      const from = (location.state as any)?.from?.pathname || "/app";
+      const fromState = (location.state as any)?.from;
+      const from =
+        typeof fromState === 'string'
+          ? fromState
+          : fromState?.pathname
+            ? `${fromState.pathname}${fromState.search || ''}`
+            : "/app";
       navigate(from, { replace: true });
     }
   }, [user, navigate, location]);

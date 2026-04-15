@@ -26,6 +26,12 @@ export interface IUser {
     credentials?: ICredential[];
     country?: string;
     dob?: string | Date | number;
+
+    // Under-18 / guardian status (from My Accounts backend)
+    accountStatus?: string;
+    guardianEmail?: string;
+    guardianUserId?: string;
+
     twoFactorEnabled?: boolean;
     orgMemberships?: Array<{
         id: string;
@@ -37,6 +43,7 @@ export interface IUser {
         }
     }>;
 }
+
 
 export type Severity = "info" | "warning" | "error" | "success";
 

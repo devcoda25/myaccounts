@@ -245,6 +245,8 @@ export default function SignUpPageV3() {
   const [firstName, setFirstName] = useState("");
   const [otherNames, setOtherNames] = useState("");
   const [email, setEmail] = useState("");
+  const [dob, setDob] = useState("");
+  const [parentEmail, setParentEmail] = useState("");
   const [countryCode, setCountryCode] = useState("+256");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -255,6 +257,19 @@ export default function SignUpPageV3() {
   const [createWithOtp, setCreateWithOtp] = useState(false);
   const [inviteCode, setInviteCode] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
+
+  const isMinor = React.useMemo(() => {
+    if (!dob) return false;
+    const d = new Date(dob);
+    if (Number.isNaN(d.getTime())) return false;
+
+    const now = new Date();
+    let age = now.getFullYear() - d.getFullYear();
+    const m = now.getMonth() - d.getMonth();
+    if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age -= 1;
+    return age < 18;
+  }, [dob]);
+
 
   const { showNotification } = useNotification();
 
@@ -443,6 +458,16 @@ export default function SignUpPageV3() {
     if (!ln) return t("auth.signUp.validation.otherNamesRequired");
     if (!e && !p) return t("auth.signUp.validation.emailOrPhoneRequired");
     if (e && !isEmail(e)) return t("auth.signUp.validation.validEmailRequired");
+
+    if (!dob) return 'Date of birth is required';
+    if (dob && Number.isNaN(new Date(dob).getTime())) return 'Enter a valid date of birth';
+
+    if (isMinor) {
+      const pe = parentEmail.trim();
+      if (!pe) return 'Parent/guardian email is required for under-18 accounts';
+      if (!isEmail(pe)) return 'Enter a valid parent/guardian email';
+    }
+
     if (!acceptTerms) return t("auth.signUp.validation.termsRequired");
 
     if (!createWithOtp) {
@@ -478,7 +503,7 @@ export default function SignUpPageV3() {
 
     try {
       const selectedCountry = COUNTRIES.find((c: Country) => c.dial === countryCode);
-      await register({
+      const regRes: any = await register({
         firstName,
         otherNames,
         email,
@@ -486,12 +511,23 @@ export default function SignUpPageV3() {
         country: selectedCountry?.code,
         password,
         inviteCode,
-        acceptTerms
-      });
+        acceptTerms,
+        dob: new Date(dob).toISOString(),
+        parentEmail: isMinor ? parentEmail.trim() : undefined,
+            });
 
       localStorage.setItem('pending_verification_email', email);
 
-      if (uid && !createWithOtp) {
+      if (isMinor) {
+        localStorage.setItem('pending_parent_email', parentEmail.trim());
+        localStorage.setItem('pending_minor_status', regRes?.minor?.status || 'MINOR_PENDING_PARENT');
+      }
+
+      const minorStatus = regRes?.minor?.status || regRes?.user?.accountStatus;
+      const isPendingMinor = minorStatus === 'MINOR_PENDING_PARENT';
+
+
+      if (uid && !createWithOtp && !isPendingMinor) {
         showNotification({
           type: "success",
           title: t("auth.notification.accountCreated"),
@@ -499,6 +535,14 @@ export default function SignUpPageV3() {
         });
         submitOidcInteractionLogin(uid, email, password);
         return;
+      }
+
+      if (isPendingMinor) {
+        showNotification({
+          type: 'info',
+          title: 'Parent approval required',
+          message: `We sent an approval email to ${parentEmail.trim()}. You cannot access EVzone apps until a parent/guardian approves.`,
+        });
       }
 
       showNotification({
@@ -642,6 +686,41 @@ export default function SignUpPageV3() {
                           }}
                         />
                       </Box>
+                    <Box className="grid gap-3 md:grid-cols-2">
+                      <TextField
+                        value={dob}
+                        onChange={(e) => setDob(e.target.value)}
+                        label="Date of Birth"
+                        type="date"
+                        fullWidth
+                        InputLabelProps={{ shrink: true }}
+                      />
+                      {isMinor ? (
+                        <TextField
+                          value={parentEmail}
+                          onChange={(e) => setParentEmail(e.target.value)}
+                          label="Parent / Guardian Email"
+                          placeholder="parent@example.com"
+                          fullWidth
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <ShieldCheckIcon size={18} />
+                              </InputAdornment>
+                            ),
+                          }}
+                        />
+                      ) : (
+                        <Box />
+                      )}
+                    </Box>
+
+                    {isMinor && (
+                      <Alert severity="info">
+                        Under-18 accounts require parent/guardian approval. EVzone apps (like Charging) will be blocked until approval is completed.
+                      </Alert>
+                    )}
+
                     </Box>
 
                     <Box sx={{ borderRadius: 18, border: `1px solid ${alpha(theme.palette.text.primary, 0.10)}`, backgroundColor: alpha(theme.palette.background.paper, 0.45), p: 1.4 }}>

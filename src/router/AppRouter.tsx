@@ -51,6 +51,7 @@ const AuthCallback = lazy(() => import('../features/auth/Callback'))
 const AuthSignIn = lazy(() => import('../features/auth/sign-in/Index'))
 const AuthSignInOtp = lazy(() => import('../features/auth/sign-in/Otp'))
 const AuthSignUp = lazy(() => import('../features/auth/sign-up/Index'))
+const AuthParentApprove = lazy(() => import('../features/auth/parent-approve/Index'))
 const AuthSignedOut = lazy(() => import('../features/auth/signed-out/Index'))
 const AuthInteraction = lazy(() => import('../features/auth/interaction/Index'))
 const AuthVerifyEmail = lazy(() => import('../features/auth/verify-email/Index'))
@@ -132,6 +133,7 @@ export default function AppRouter() {
           <Route path="/auth/sign-in" element={<AuthSignIn />} />
           <Route path="/auth/sign-in/otp" element={<AuthSignInOtp />} />
           <Route path="/auth/sign-up" element={<AuthSignUp />} />
+          <Route path="/auth/parent-approve" element={<AuthParentApprove />} />
           <Route path="/admin/auth/*" element={<AdminAuthRouter />} />
           <Route path="/auth/signed-out" element={<AuthSignedOut />} />
           <Route path="/interaction/:uid" element={<AuthInteraction />} />

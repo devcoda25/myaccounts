@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+﻿import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import i18n from 'i18next';
+import Backend from 'i18next-http-backend';
 import { initReactI18next } from 'react-i18next';
 import type { LocaleCode } from './settings';
 import {
@@ -9,75 +10,45 @@ import {
     supportedLocales
 } from './settings';
 
-// Import translation files
-import enCommon from '../../public/locales/en/common.json';
-import enTranslation from '../../public/locales/en/translation.json';
-import swCommon from '../../public/locales/sw/common.json';
-import swTranslation from '../../public/locales/sw/translation.json';
-import arCommon from '../../public/locales/ar/common.json';
-import arTranslation from '../../public/locales/ar/translation.json';
-import frCommon from '../../public/locales/fr/common.json';
-import frTranslation from '../../public/locales/fr/translation.json';
-import jaCommon from '../../public/locales/ja/common.json';
-import jaTranslation from '../../public/locales/ja/translation.json';
-import koCommon from '../../public/locales/ko/common.json';
-import koTranslation from '../../public/locales/ko/translation.json';
-import zhCNCommon from '../../public/locales/zh-CN/common.json';
-import zhCNTranslation from '../../public/locales/zh-CN/translation.json';
-import zhCommon from '../../public/locales/zh/common.json';
-import zhTranslation from '../../public/locales/zh/translation.json';
-import zhTWCommon from '../../public/locales/zh-TW/common.json';
-import esCommon from '../../public/locales/es/common.json';
-import esTranslation from '../../public/locales/es/translation.json';
-import deCommon from '../../public/locales/ge/common.json';
-import ruCommon from '../../public/locales/ru/common.json';
-import hiCommon from '../../public/locales/hi/common.json';
-import idCommon from '../../public/locales/id/common.json';
-import msCommon from '../../public/locales/ms/common.json';
-import thCommon from '../../public/locales/th/common.json';
-import viCommon from '../../public/locales/vi/common.json';
-import ptCommon from '../../public/locales/pt/common.json';
+const DEFAULT_NS = 'common';
 
-// Initialize i18next
-const resources = {
-    en: { common: enCommon, translation: enTranslation },
-    sw: { common: swCommon, translation: swTranslation },
-    ar: { common: arCommon, translation: arTranslation },
-    fr: { common: frCommon, translation: frTranslation },
-    ja: { common: jaCommon, translation: jaTranslation },
-    ko: { common: koCommon, translation: koTranslation },
-    'zh-CN': { common: zhCNCommon, translation: zhCNTranslation },
-    zh: { common: zhCommon, translation: zhTranslation },
-    'zh-TW': { common: zhTWCommon },
-    es: { common: esCommon, translation: esTranslation },
-    ge: { common: deCommon },
-    ru: { common: ruCommon },
-    hi: { common: hiCommon },
-    id: { common: idCommon },
-    ms: { common: msCommon },
-    th: { common: thCommon },
-    vi: { common: viCommon },
-    pt: { common: ptCommon },
-};
+let i18nInitStarted = false;
+function ensureI18nInitialized() {
+    if (i18nInitStarted) return;
+    i18nInitStarted = true;
 
-// Initialize i18n instance
-i18n.use(initReactI18next).init({
-    resources,
-    lng: getDefaultLanguage(),
-    fallbackLng: 'en',
-    debug: import.meta.env.DEV,
-    interpolation: {
-        escapeValue: false,
-    },
-    react: {
-        useSuspense: false,
-    },
-});
+    i18n
+        .use(Backend)
+        .use(initReactI18next)
+        .init({
+            lng: getDefaultLanguage(),
+            fallbackLng: 'en',
+            supportedLngs: supportedLocales.map(l => l.code),
+            ns: [DEFAULT_NS],
+            defaultNS: DEFAULT_NS,
+            debug: import.meta.env.DEV,
+            interpolation: {
+                escapeValue: false,
+            },
+            backend: {
+                // Vite serves `public/` at the site root.
+                loadPath: '/locales/{{lng}}/{{ns}}.json',
+            },
+            react: {
+                // Keep this disabled to avoid suspending the whole app on initial translation fetch.
+                useSuspense: false,
+            },
+        });
+}
+
+// Ensure i18n is wired up before any components call `useTranslation()`
+ensureI18nInitialized();
 
 // Update document direction for RTL languages
 const updateDirection = (language: string): void => {
-    const isRTL = language === 'ar';
-    document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+    const locale = supportedLocales.find(l => l.code === language);
+    const dir = locale?.dir || 'ltr';
+    document.documentElement.dir = dir;
     document.documentElement.lang = language;
 };
 
@@ -98,8 +69,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         return getSavedLanguage() || getDefaultLanguage();
     });
 
-    // Initialize i18n language
     useEffect(() => {
+        ensureI18nInitialized();
         i18n.changeLanguage(language);
         updateDirection(language);
     }, [language]);
@@ -123,7 +94,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         language,
         setLanguage,
         t: i18n.t,
-        isRTL: language === 'ar',
+        isRTL: (supportedLocales.find(l => l.code === language)?.dir || 'ltr') === 'rtl',
         availableLanguages,
     };
 
