@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { isValidUrl } from "@/sanitizers/url";
 import {
   Alert,
   Box,
@@ -38,7 +39,10 @@ export default function SignedOutPage() {
   const [searchParams] = useSearchParams();
 
   const appName = searchParams.get("app") || "EVzone Portal";
-  const redirectUri = searchParams.get("redirect_uri") || "";
+  let redirectUri = searchParams.get("redirect_uri") || "";
+  if (redirectUri && !isValidUrl(redirectUri)) {
+      redirectUri = "";
+  }
 
   const pageBg = isDark
     ? "radial-gradient(1200px 600px at 12% 6%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 10%, rgba(3,205,140,0.16), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
