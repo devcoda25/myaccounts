@@ -1,0 +1,5 @@
+
+## 2024-05-15 - Open Redirect & Weak URL Validation via `.includes()`
+**Vulnerability:** Weak domain validation using `.includes('evzone.com')` allowed bypasses via domains like `evzone.com.attacker.com`. Additionally, sanitization via assigning `url.protocol = 'https:'` fails silently on URLs with the `javascript:` schema, creating XSS vectors. The open redirects were present in `/auth/signed-out` and `/auth/continue` where unvalidated `redirectUri` parameters were passed directly to `window.location.href`.
+**Learning:** Checking for substrings like `.includes()` in hostnames is insecure as it matches anywhere in the string. Furthermore, modifying the `protocol` property of the `URL` object doesn't throw errors for certain schemas (like `javascript:`), leaving the original malicious schema intact.
+**Prevention:** Validate domains using strictly `.endsWith('.example.com')` or exact matching `=== 'example.com'`. For URL sanitization, reject non-whitelisted protocols (e.g., allow only `http:` and `https:`) outright instead of attempting mutation. Always validate redirect URIs before assigning to `window.location.href`.
