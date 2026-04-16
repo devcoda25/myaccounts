@@ -1,0 +1,4 @@
+## 2024-05-18 - Prevent Open Redirect via Strict Redirect URI Validation
+**Vulnerability:** Open Redirect vulnerability via loosely validated `redirect_uri` parameter in authentication flows.
+**Learning:** `new URL()` validation inside `isValidUrl` can be bypassed if domain checking uses `.includes()`. Additionally, any `redirect_uri` assignments (e.g. to `window.location.href`) without validation can be leveraged for open redirect attacks where an attacker redirects users from a trusted page to an external malicious domain. It must be strictly sanitized or validated using exact host checks or `endsWith`.
+**Prevention:** Always strictly validate the `redirect_uri` using a comprehensive domain whitelist checking (like exact matches or `.endsWith`) before dynamically assigning it. Ensure `javascript:` protocol payloads are rejected.
