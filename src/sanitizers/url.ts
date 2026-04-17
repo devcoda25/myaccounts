@@ -9,8 +9,9 @@
 export function isValidUrl(url: string): boolean {
     try {
         const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        if (!['https:', 'http:'].includes(parsed.protocol)) return false;
+        return parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com') ||
+               parsed.hostname === 'evzone.app' || parsed.hostname.endsWith('.evzone.app');
     } catch {
         return false;
     }
@@ -25,13 +26,25 @@ export function sanitizeUrl(url: string): string {
 
     try {
         const parsed = new URL(url);
-        // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        // Block dangerous protocols
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return '';
+        }
+
+        const isEvzone = parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com') ||
+                         parsed.hostname === 'evzone.app' || parsed.hostname.endsWith('.evzone.app');
+
+        // Only allow HTTPS for production domains
+        if (parsed.protocol !== 'https:' && isEvzone) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
     } catch {
-        return '';
+        // Fallback for relative URLs, check for dangerous protocols
+        if (url.trim().toLowerCase().startsWith('javascript:') || url.trim().toLowerCase().startsWith('data:')) {
+            return '';
+        }
+        return url;
     }
 }
 
