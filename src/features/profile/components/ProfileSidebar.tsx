@@ -1,3 +1,4 @@
+import { isValidUrl } from "@/sanitizers/url";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -62,7 +63,10 @@ export const ProfileSidebar = () => {
                                 }
                                 onClick={() => {
                                     if ((item as any).external) {
-                                        window.location.href = (item as any).external;
+
+                                        if (isValidUrl((item as any).external)) {
+                                            window.location.href = (item as any).external;
+                                        }
                                     } else {
                                         navigate(item.route!);
                                     }
