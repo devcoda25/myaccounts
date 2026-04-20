@@ -1,0 +1,4 @@
+## 2024-05-24 - URL Validation and Sanitization Bypass
+**Vulnerability:** URL validation `isValidUrl` used `hostname.includes('evzone.com')` without checking for exact matches or properly ending subdomains, allowing bypasses like `evzone.com.attacker.net`. The `sanitizeUrl` function also allowed dangerous protocols like `javascript:`.
+**Learning:** Checking for `.includes()` in domain names is a common pitfall that enables trivial domain spoofing/bypassing. When sanitizing URLs, dangerous schemes must be blocked explicitly, as failing to check the protocol can lead to XSS via `javascript:` payloads in attributes like `href`.
+**Prevention:** Use the browser's built-in `URL` API and strictly check the protocol against an allowlist (e.g. `['http:', 'https:']`) and the `hostname` for exact matches or `hostname.endsWith('.domain.com')` to ensure valid domains.
