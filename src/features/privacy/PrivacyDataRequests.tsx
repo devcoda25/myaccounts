@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { safeRandomBytes } from "@/utils/helpers";
 import {
     Alert,
     Box,
@@ -305,8 +306,10 @@ export default function PrivacyDataRequestsPage() {
                 return;
             }
 
+            const bytes = safeRandomBytes(3);
+            const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
             const req: DataRequest = {
-                id: `req_${Math.random().toString(36).slice(2, 7)}`,
+                id: `req_${hex}`,
                 type: newType,
                 status: "Pending",
                 createdAt: Date.now(),

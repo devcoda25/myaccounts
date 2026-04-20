@@ -49,6 +49,7 @@ import {
   sanitizeInput,
   MAX_LENGTHS,
 } from "@/utils/validation";
+import { safeRandomBytes } from "@/utils/helpers";
 
 /**
  * EVzone My Accounts - Help & Support Center
@@ -99,7 +100,9 @@ function toSize(bytes: number) {
 }
 
 function mkId(prefix: string) {
-  return `${prefix}_${Math.random().toString(16).slice(2, 8).toUpperCase()}`;
+  const bytes = safeRandomBytes(3);
+  const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+  return `${prefix}_${hex}`;
 }
 
 
