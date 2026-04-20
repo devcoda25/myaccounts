@@ -56,12 +56,32 @@ export function supportsPasskeys(): boolean {
  */
 export function safeRandomBytes(n: number): Uint8Array {
     const out = new Uint8Array(n);
-    try {
+    if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
         window.crypto.getRandomValues(out);
-    } catch {
-        for (let i = 0; i < n; i++) out[i] = Math.floor(Math.random() * 256);
+        return out;
     }
-    return out;
+    // Fallback if unavailable - DO NOT use Math.random() as it is insecure
+    throw new Error('Secure random number generation is not available in this environment');
+}
+
+/**
+ * Generate recovery codes
+ */
+export function generateRecoveryCodes(count = 10): string[] {
+    const bytes = safeRandomBytes(count * 8);
+    const codes = new Set<string>();
+    const fmt = (arr: number[]) => {
+        const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        const s = arr.map((b) => alphabet[b % alphabet.length]).join("");
+        return `${s.slice(0, 4)}-${s.slice(4, 8)}`;
+    };
+    let idx = 0;
+    while (codes.size < count && idx + 8 <= bytes.length) {
+        codes.add(fmt(Array.from(bytes.slice(idx, idx + 8))));
+        idx += 8;
+    }
+    while (codes.size < count) codes.add(fmt(Array.from(safeRandomBytes(8))));
+    return Array.from(codes);
 }
 
 /**
