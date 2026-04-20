@@ -1,0 +1,5 @@
+
+## 2024-05-23 - URL Sanitizer Bypass allowing XSS and SSRF
+**Vulnerability:** The `sanitizeUrl` and `isValidUrl` functions in `src/sanitizers/url.ts` had critical bypasses. `isValidUrl` used `.includes('evzone.com')` allowing bypasses via domains like `evzone.com.attacker.com`. Additionally, `sanitizeUrl` attempted to mutate the protocol property of URLs without verifying the existing protocol wasn't a special un-mutable schema like `javascript:`.
+**Learning:** The JavaScript `URL` object behaves inconsistently with certain schemas (e.g. `javascript:`, `data:`). Assigning a value to `parsed.protocol` on a URL with a `javascript:` protocol does nothing silently, keeping the dangerous protocol intact and leading to potential XSS when the URL is passed to dynamic links like `href={app.url}`.
+**Prevention:** 1) Always validate URLs against an explicit allowlist of acceptable protocols (e.g., `http:`, `https:`) before any modification or sanitization logic. 2) Never use `.includes` for domain validation; strictly use exact matches or `.endsWith` with the preceding dot (e.g., `.endsWith('.evzone.com')`) to prevent sub-domain spoofing and SSRF.
