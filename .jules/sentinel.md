@@ -1,0 +1,4 @@
+## 2024-05-20 - [XSS and Domain Takeover Risk in URL Sanitization]
+**Vulnerability:** `isValidUrl` allows bypasses like `https://evzone.com.attacker.com` because it checks `parsed.hostname.includes('evzone.com')` instead of an exact match or valid subdomain. Additionally, `sanitizeUrl` does not explicitly block the `javascript:` protocol, allowing XSS execution if user input like `javascript:alert(1)` is passed.
+**Learning:** Checking substring inclusion `.includes()` on domain names is insufficient for validation. Unsafe protocols need explicit allow-listing (e.g., `https:` and `http:`) to prevent XSS.
+**Prevention:** Use strictly-bound matching for hostnames (e.g. `===` or `.endsWith('.evzone.com')`) and actively allow-list safe protocols in sanitization functions. Ensure `evzone.app` is also trusted alongside `evzone.com`.
