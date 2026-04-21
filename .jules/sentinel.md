@@ -1,0 +1,4 @@
+## 2025-03-10 - Secure Random Generation Fallback Vulnerability
+**Vulnerability:** The `safeRandomBytes` function and `generateId` utilities fell back to the insecure `Math.random()` when `window.crypto` was unavailable. In security contexts (like 2FA secret generation or Passkey challenges), this could lead to predictable secrets and complete bypass of protections.
+**Learning:** Cryptographic functions should "fail securely" (fail closed) by throwing an error rather than silently degrading to insecure methods. Developers often add fallbacks to prevent app crashes, ignoring the security implications for critical features.
+**Prevention:** Never use `Math.random()` for security-sensitive operations. Enforce strict checks for `window.crypto` and throw explicit errors to fail securely if it is missing.
