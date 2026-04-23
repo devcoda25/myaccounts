@@ -1,0 +1,4 @@
+## 2024-11-06 - [Insecure Random Number Generation]
+**Vulnerability:** The application used an insecure fallback to `Math.random()` when generating cryptographically secure random bytes if `window.crypto.getRandomValues()` failed or was unavailable. `Math.random()` is predictable and not suitable for generating security-sensitive values like Passkey challenges, 2FA secrets, or MFA tokens.
+**Learning:** Security features like authentication and 2FA should never fall back to weak entropy sources. A failure to generate secure random numbers must be treated as a fatal error to prevent prediction attacks. In modern environments, `window.crypto` is universally supported, but the fallback exposed a critical conceptual flaw.
+**Prevention:** Always fail securely by throwing an exception when a cryptographically secure random number generator is unavailable, rather than silently degrading security.
