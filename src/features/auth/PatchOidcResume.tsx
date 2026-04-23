@@ -17,8 +17,17 @@ export default function PatchOidcResume() {
 
     console.log("[PatchOidcResume] Inspecting path:", path);
 
+    // Ensure the segment and search/hash do not contain path traversal sequences
+    // or invalid protocol schemes to prevent Open Redirects / SSRF.
     if (segment && segment.length > 20 && !segment.includes("/")) {
       const target = `/oidc/auth/${segment}${location.search}${location.hash}`;
+
+      // Reject any target that contains a backslash or double slash which could be used for protocol-relative bypass
+      if (target.includes("\\") || target.includes("//")) {
+        console.error("[PatchOidcResume] Rejected potentially unsafe redirect target:", target);
+        return;
+      }
+
       console.log("[PatchOidcResume] redirecting to:", target);
       window.location.href = target;
     } else {
