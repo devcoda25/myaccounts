@@ -1,0 +1,4 @@
+## 2024-03-12 - Insecure fallback for cryptographically secure random number generation
+**Vulnerability:** The application used `Math.random()` as a fallback when `window.crypto.getRandomValues` was unavailable or failed. This can lead to predictable IDs, passwords, and other security tokens, compromising the application's security.
+**Learning:** Security functions must not fall back to insecure methods when secure methods are unavailable. Failing securely (e.g., throwing an error) prevents the system from operating in a vulnerable state.
+**Prevention:** Always rely strictly on cryptographically secure APIs like `window.crypto.getRandomValues`. If the API is missing, fail securely by throwing an exception instead of using predictable sources like `Math.random()`. (Note: specific exceptions exist, such as `Error500.tsx`, to avoid crash loops, but these are edge cases.)
