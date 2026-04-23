@@ -490,7 +490,21 @@
     "profile": "Mein Profil",
     "security": "Sicherheit",
     "wallet": "Wallet",
-    "help": "Hilfe & Support"
+    "help": "Hilfe und Support",
+    "greeting": {
+      "morning": "Guten Morgen",
+      "afternoon": "Guten Tag",
+      "evening": "Guten Abend"
+    },
+    "subtitle": "Greifen Sie auf Ihre Anwendungen zu und verwalten Sie Ihre EVZone-Identität.",
+    "launchApp": "App starten",
+    "accountSecurity": "Konto und Sicherheit",
+    "securitySettings": "Sicherheitseinstellungen",
+    "securityDesc": "2FA, Passwort, Sitzungen",
+    "profilePreferences": "Profil und Einstellungen",
+    "profileDesc": "Persönliche Informationen, Sprache, Design",
+    "myOrganizations": "Meine Organisationen",
+    "orgRole": "Rolle"
   },
   "profile": {
     "title": "Profileinstellungen",
@@ -736,6 +750,7 @@
     "parentalControls": "Kindersicherung",
     "support": "Support",
     "terms": "AGB",
-    "privacy": "Datenschutz"
+    "privacy": "Datenschutz",
+    "notifications": "Benachrichtigungen"
   }
 }

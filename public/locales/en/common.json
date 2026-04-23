@@ -43,7 +43,9 @@
             "signUp": "Sign Up",
             "login": "Login",
             "logout": "Logout",
-            "register": "Register"
+            "register": "Register",
+            "manage": "Manage",
+            "help": "Help"
         },
         "errors": {
             "required": "This field is required",
@@ -730,6 +732,13 @@
         "systemStatus": "System status",
         "profile": "Profile",
         "settings": "Settings",
-        "signOut": "Sign Out"
+        "signOut": "Sign Out",
+        "overview": "Overview",
+        "security": "Security",
+        "parentalControls": "Parental Controls",
+        "support": "Support",
+        "terms": "Terms",
+        "privacy": "Privacy",
+        "notifications": "Notifications"
     }
 }

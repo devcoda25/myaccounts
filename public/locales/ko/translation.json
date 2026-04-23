@@ -489,7 +489,21 @@
     "profile": "프로필",
     "security": "보안",
     "wallet": "지갑",
-    "help": "도움말 & 지원"
+    "help": "도움말 및 지원",
+    "greeting": {
+      "morning": "좋은 아침",
+      "afternoon": "좋은 오후",
+      "evening": "좋은 저녁"
+    },
+    "subtitle": "애플리케이션에 액세스하고 EVZone 신원을 관리하세요.",
+    "launchApp": "앱 실행",
+    "accountSecurity": "계정 및 보안",
+    "securitySettings": "보안 설정",
+    "securityDesc": "2FA, 비밀번호, 세션",
+    "profilePreferences": "프로필 및 환경설정",
+    "profileDesc": "개인정보, 언어, 테마",
+    "myOrganizations": "내 조직",
+    "orgRole": "역할"
   },
   "profile": {
     "title": "프로필 설정",
@@ -736,5 +750,91 @@
     "support": "지원",
     "terms": "이용약관",
     "privacy": "개인정보"
+  },
+  "settings": {
+    "title": "설정",
+    "subtitle": "계정, 환경설정 및 개인 정보를 관리하세요.",
+    "groups": {
+      "account": "계정",
+      "privacyLegal": "개인정보 및 법률",
+      "appPreferences": "앱 환경설정",
+      "support": "지원"
+    },
+    "items": {
+      "personalProfile": "개인 프로필",
+      "personalProfileDesc": "이름, 연락처 및 환경설정",
+      "security": "보안",
+      "securityDesc": "비밀번호, 2FA 및 활성 세션",
+      "notifications": "알림",
+      "notificationsDesc": "이메일 및 푸시 알림 관리",
+      "privacyCenter": "개인정보 센터",
+      "privacyCenterDesc": "데이터 다운로드 및 동의 관리",
+      "termsOfService": "서비스 이용약관",
+      "termsOfServiceDesc": "이용약관 읽기",
+      "privacyPolicy": "개인정보 처리방침",
+      "privacyPolicyDesc": "개인정보 처리방침 읽기",
+      "appearance": "외관",
+      "appearanceDescDark": "다크 모드가 켜져 있습니다",
+      "appearanceDescLight": "라이트 모드가 켜져 있습니다",
+      "helpSupport": "도움말 및 지원",
+      "helpSupportDesc": "지원 및 자주 묻는 질문에 문의"
+    }
+  },
+  "notifications": {
+    "title": "알림 설정",
+    "subtitle": "수신内容和 방법을 선택하세요. 보안 알림은 항상 켜두는 것이 좋습니다.",
+    "resetRecommended": "권장 설정으로 재설정",
+    "resetApplied": "권장 설정이 적용되었습니다.",
+    "unsavedChanges": "저장되지 않은 변경 사항",
+    "saved": "저장됨",
+    "security": "보안",
+    "product": "제품",
+    "marketing": "마케팅",
+    "quietHours": "방해 금지 모드",
+    "securityAlwaysOn": "보안 알림은 항상 켜두는 것이 좋습니다.",
+    "pushLater": "푸시 알림은 곧 제공됩니다.",
+    "minOneChannel": "최소 하나의 채널이 필요합니다.",
+    "securityChannelRequired": "보안 알림에는 최소 하나의 채널이 필요합니다.",
+    "delivery": "전송",
+    "enableQuietHours": "방해 금지 모드 활성화",
+    "start": "시작",
+    "end": "종료",
+    "securityAlertsThrough": "보안 알림은 계속 제공됩니다.",
+    "transactionSecurity": "거래 및 보안 메시지는 항상 전송됩니다.",
+    "on": "켜기",
+    "off": "끄기",
+    "email": "이메일",
+    "sms": "문자",
+    "push": "푸시",
+    "alwaysOn": "항상 켜기",
+    "later": "나중에",
+    "channel": {
+      "emailDesc": "상세 알림에 권장.",
+      "smsDesc": "긴급 보안 이벤트를 위한 빠른 알림.",
+      "pushDesc": "모바일 푸시 알림 (곧 제공)."
+    },
+    "categories": {
+      "security": {
+        "title": "보안 알림",
+        "description": "의심스러운 로그인, 비밀번호 변경, 새 기기 로그인."
+      },
+      "product": {
+        "title": "제품 업데이트",
+        "description": "새로운 기능, 릴리스 노트, 서비스 업그레이드."
+      },
+      "marketing": {
+        "title": "마케팅",
+        "description": "프로모션, 파트너 혜택, 이벤트. 언제든지 구독을 취소할 수 있습니다."
+      },
+      "quietHours": {
+        "title": "방해 금지 모드",
+        "description": "원하는 시간에 긴급하지 않은 메시지를 줄입니다."
+      }
+    },
+    "digest": {
+      "instant": "즉시",
+      "daily": "매일",
+      "weekly": "매주"
+    }
   }
 }

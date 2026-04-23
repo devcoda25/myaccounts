@@ -52,7 +52,7 @@ function IconBase({ size = 18, children }: { size?: number; children: React.Reac
 }
 
 export default function SettingsPage() {
-    const { t } = useTranslation("common");
+    const { t } = useTranslation("translation");
     const navigate = useNavigate();
     const theme = useTheme();
     const { mode, toggleMode } = useThemeStore();
@@ -65,61 +65,60 @@ export default function SettingsPage() {
 
     const SETTINGS_GROUPS = [
         {
-            title: "Account",
+            title: t("settings.groups.account"),
             items: [
                 {
-                    label: "Personal Profile",
-                    desc: "Name, contact info, and preferences",
+                    label: t("settings.items.personalProfile"),
+                    desc: t("settings.items.personalProfileDesc"),
                     icon: <User size={20} />,
                     onClick: () => navigate("/app/profile"),
                 },
                 {
-                    label: "Security",
-                    desc: "Password, 2FA, and active sessions",
+                    label: t("settings.items.security"),
+                    desc: t("settings.items.securityDesc"),
                     icon: <Shield size={20} />,
                     onClick: () => navigate("/app/security"),
                 },
                 {
-                    label: "Notifications",
-                    desc: "Manage email and push alerts",
+                    label: t("settings.items.notifications"),
+                    desc: t("settings.items.notificationsDesc"),
                     icon: <Bell size={20} />,
                     onClick: () => navigate("/app/notifications"),
                 },
             ],
         },
         {
-            title: "Privacy & Legal",
+            title: t("settings.groups.privacyLegal"),
             items: [
                 {
-                    label: "Privacy Center",
-                    desc: "Data download and consent management",
+                    label: t("settings.items.privacyCenter"),
+                    desc: t("settings.items.privacyCenterDesc"),
                     icon: <Lock size={20} />,
                     onClick: () => navigate("/app/privacy/consents"),
                 },
                 {
-                    label: "Terms of Service",
-                    desc: "Read our terms of use",
+                    label: t("settings.items.termsOfService"),
+                    desc: t("settings.items.termsOfServiceDesc"),
                     icon: <FileText size={20} />,
                     onClick: () => window.open("/legal/terms", "_blank"),
                 },
                 {
-                    label: "Privacy Policy",
-                    desc: "Read our privacy policy",
-                    icon: <FileText size={20} />, // Reusing FileText or Shield
+                    label: t("settings.items.privacyPolicy"),
+                    desc: t("settings.items.privacyPolicyDesc"),
+                    icon: <FileText size={20} />,
                     onClick: () => window.open("/legal/privacy", "_blank"),
                 },
             ],
         },
         {
-            title: "App Preferences",
+            title: t("settings.groups.appPreferences"),
             items: [
                 {
-                    label: "Appearance",
-                    desc: isDark ? "Dark mode is on" : "Light mode is on",
+                    label: t("settings.items.appearance"),
+                    desc: isDark ? t("settings.items.appearanceDescDark") : t("settings.items.appearanceDescLight"),
                     icon: isDark ? <Moon size={20} /> : <Sun size={20} />,
                     onClick: () => {
                         toggleMode();
-                        // Sync theme preference
                         const newMode = isDark ? "light" : "dark";
                         api("/users/me/settings", {
                             method: "PATCH",
@@ -157,11 +156,11 @@ export default function SettingsPage() {
             ],
         },
         {
-            title: "Support",
+            title: t("settings.groups.support"),
             items: [
                 {
-                    label: "Help & Support",
-                    desc: "Contact support and FAQs",
+                    label: t("settings.items.helpSupport"),
+                    desc: t("settings.items.helpSupportDesc"),
                     icon: <HelpCircle size={20} />,
                     onClick: () => navigate("/app/support"),
                 },
@@ -180,10 +179,10 @@ export default function SettingsPage() {
                         transition={{ duration: 0.35 }}
                     >
                         <Typography variant="h4" sx={{ fontWeight: 800, mb: 1 }}>
-                            Settings
+                            {t("settings.title")}
                         </Typography>
                         <Typography variant="body1" sx={{ color: theme.palette.text.secondary, mb: 4 }}>
-                            Manage your account, preferences, and privacy.
+                            {t("settings.subtitle")}
                         </Typography>
 
                         <Stack spacing={4}>

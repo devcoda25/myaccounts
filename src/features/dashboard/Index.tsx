@@ -30,10 +30,10 @@ import { EVZONE } from "@/theme/evzone";
 import { api } from "@/utils/api";
 
 import { IApp } from "./types";
-import { getGreeting, getContainerVars, getItemVars, getPageBg } from "./helpers";
+import { getContainerVars, getItemVars, getPageBg } from "./helpers";
 
 export default function Dashboard() {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("translation");
   const navigate = useNavigate();
   const theme = useTheme();
   const { mode } = useThemeStore();
@@ -42,7 +42,12 @@ export default function Dashboard() {
 
   const containerVars = getContainerVars();
   const itemVars = getItemVars();
-  const greeting = getGreeting();
+  const getGreetingKey = () => {
+    const hr = new Date().getHours();
+    if (hr < 12) return t("dashboard.greeting.morning");
+    if (hr < 18) return t("dashboard.greeting.afternoon");
+    return t("dashboard.greeting.evening");
+  };
 
   const [apps, setApps] = useState<IApp[]>([]);
 
@@ -84,10 +89,10 @@ export default function Dashboard() {
           <Box sx={{ mb: 6, textAlign: 'center' }}>
             <motion.div variants={itemVars}>
               <Typography variant="h3" sx={{ fontWeight: 800, letterSpacing: '-0.02em', mb: 1, color: 'text.primary' }}>
-                {greeting}, {user?.firstName}
+                {getGreetingKey()}, {user?.firstName}
               </Typography>
               <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 400 }}>
-                Access your applications and manage your EVZone identity.
+                {t("dashboard.subtitle")}
               </Typography>
             </motion.div>
           </Box>
@@ -152,7 +157,7 @@ export default function Dashboard() {
                         }
                       }}
                     >
-                      Launch App
+                      {t("dashboard.launchApp")}
                     </Button>
                   </Paper>
                 </motion.div>
@@ -163,7 +168,7 @@ export default function Dashboard() {
           {/* Account & Security Quick Links */}
           <Box sx={{ mb: 6 }}>
             <Typography variant="h6" sx={{ mb: 3, fontWeight: 700, color: 'text.primary' }}>
-              Account & Security
+              {t("dashboard.accountSecurity")}
             </Typography>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
@@ -185,8 +190,8 @@ export default function Dashboard() {
                       <ShieldCheck size={24} />
                     </Box>
                     <Box>
-                      <Typography variant="subtitle1" fontWeight={700}>Security Settings</Typography>
-                      <Typography variant="caption" color="text.secondary">2FA, Password, Sessions</Typography>
+                      <Typography variant="subtitle1" fontWeight={700}>{t("dashboard.securitySettings")}</Typography>
+                      <Typography variant="caption" color="text.secondary">{t("dashboard.securityDesc")}</Typography>
                     </Box>
                   </Paper>
                 </motion.div>
@@ -210,8 +215,8 @@ export default function Dashboard() {
                       <Settings size={24} />
                     </Box>
                     <Box>
-                      <Typography variant="subtitle1" fontWeight={700}>Profile & Preferences</Typography>
-                      <Typography variant="caption" color="text.secondary">Personal info, Language, Theme</Typography>
+                      <Typography variant="subtitle1" fontWeight={700}>{t("dashboard.profilePreferences")}</Typography>
+                      <Typography variant="caption" color="text.secondary">{t("dashboard.profileDesc")}</Typography>
                     </Box>
                   </Paper>
                 </motion.div>
@@ -223,7 +228,7 @@ export default function Dashboard() {
           {user?.orgMemberships && user.orgMemberships.length > 0 && (
             <Box sx={{ mb: 4 }}>
               <Typography variant="h6" sx={{ mb: 3, fontWeight: 700, color: 'text.primary' }}>
-                My Organizations
+                {t("dashboard.myOrganizations")}
               </Typography>
               <Grid container spacing={2}>
                 {user.orgMemberships.map((m) => (

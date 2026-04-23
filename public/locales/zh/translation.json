@@ -493,7 +493,21 @@
     "profile": "我的資料",
     "security": "安全",
     "wallet": "錢包",
-    "help": "幫助與支援"
+    "help": "幫助與支援",
+    "greeting": {
+      "morning": "早安",
+      "afternoon": "午安",
+      "evening": "晚安"
+    },
+    "subtitle": "存取您的應用程式並管理您的 EVZone 身份。",
+    "launchApp": "啟動應用程式",
+    "accountSecurity": "帳戶與安全",
+    "securitySettings": "安全設定",
+    "securityDesc": "2FA、密碼、工作階段",
+    "profilePreferences": "個人資料與偏好",
+    "profileDesc": "個人資訊、語言、主題",
+    "myOrganizations": "我的組織",
+    "orgRole": "角色"
   },
   "profile": {
     "title": "個人資料設定",
@@ -740,5 +754,91 @@
     "support": "支援",
     "terms": "服務條款",
     "privacy": "隱私"
+  },
+  "settings": {
+    "title": "設定",
+    "subtitle": "管理您的帳戶、偏好設定和隱私。",
+    "groups": {
+      "account": "帳戶",
+      "privacyLegal": "隱私與法律",
+      "appPreferences": "應用程式偏好",
+      "support": "支援"
+    },
+    "items": {
+      "personalProfile": "個人資料",
+      "personalProfileDesc": "姓名、聯絡資訊和偏好設定",
+      "security": "安全",
+      "securityDesc": "密碼、雙重驗證和作用中工作階段",
+      "notifications": "通知",
+      "notificationsDesc": "管理電子郵件和推播通知",
+      "privacyCenter": "隱私中心",
+      "privacyCenterDesc": "資料下載和同意管理",
+      "termsOfService": "服務條款",
+      "termsOfServiceDesc": "閱讀我們的使用條款",
+      "privacyPolicy": "隱私政策",
+      "privacyPolicyDesc": "閱讀我們的隱私政策",
+      "appearance": "外觀",
+      "appearanceDescDark": "深色模式已開啟",
+      "appearanceDescLight": "淺色模式已開啟",
+      "helpSupport": "說明與支援",
+      "helpSupportDesc": "聯繫支援和常見問題"
+    }
+  },
+  "notifications": {
+    "title": "通知偏好",
+    "subtitle": "選擇您要接收的內容和方式。建議始終開啟安全提醒。",
+    "resetRecommended": "重設為建議",
+    "resetApplied": "已套用建議設定。",
+    "unsavedChanges": "未儲存的變更",
+    "saved": "已儲存",
+    "security": "安全",
+    "product": "產品",
+    "marketing": "行銷",
+    "quietHours": "安靜時段",
+    "securityAlwaysOn": "建議始終開啟安全提醒。",
+    "pushLater": "推播通知即將推出。",
+    "minOneChannel": "至少需要一個管道。",
+    "securityChannelRequired": "安全提醒至少需要一個管道。",
+    "delivery": "傳送方式",
+    "enableQuietHours": "啟用安靜時段",
+    "start": "開始",
+    "end": "結束",
+    "securityAlertsThrough": "安全提醒仍會傳送。",
+    "transactionSecurity": "交易和安全訊息始終會傳送。",
+    "on": "開",
+    "off": "關",
+    "email": "電子郵件",
+    "sms": "簡訊",
+    "push": "推播",
+    "alwaysOn": "始終開啟",
+    "later": "稍後",
+    "channel": {
+      "emailDesc": "建議用於詳細提醒。",
+      "smsDesc": "緊急安全事件的快速提醒。",
+      "pushDesc": "行動推播通知（即將推出）。"
+    },
+    "categories": {
+      "security": {
+        "title": "安全提醒",
+        "description": "可疑登入、密碼變更、新裝置登入。"
+      },
+      "product": {
+        "title": "產品更新",
+        "description": "新功能、版本說明、服務升級。"
+      },
+      "marketing": {
+        "title": "行銷",
+        "description": "促銷、合作夥伴優惠、活動。您可以隨時取消訂閱。"
+      },
+      "quietHours": {
+        "title": "安靜時段",
+        "description": "在您偏好的時段減少非緊急訊息。"
+      }
+    },
+    "digest": {
+      "instant": "立即",
+      "daily": "每日",
+      "weekly": "每週"
+    }
   }
 }

@@ -1,13 +1,5 @@
 import { MotionVariants } from "./types";
 
-// Get greeting based on current hour
-export function getGreeting(): string {
-    const hr = new Date().getHours();
-    if (hr < 12) return "Good morning";
-    if (hr < 18) return "Good afternoon";
-    return "Good evening";
-}
-
 // Animation variants for container
 export function getContainerVars(): MotionVariants {
     return {

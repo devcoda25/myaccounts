@@ -493,7 +493,21 @@
         "profile": "My Profile",
         "security": "Security",
         "wallet": "Wallet",
-        "help": "Help & Support"
+        "help": "Help & Support",
+        "greeting": {
+            "morning": "Good morning",
+            "afternoon": "Good afternoon",
+            "evening": "Good evening"
+        },
+        "subtitle": "Access your applications and manage your EVZone identity.",
+        "launchApp": "Launch App",
+        "accountSecurity": "Account & Security",
+        "securitySettings": "Security Settings",
+        "securityDesc": "2FA, Password, Sessions",
+        "profilePreferences": "Profile & Preferences",
+        "profileDesc": "Personal info, Language, Theme",
+        "myOrganizations": "My Organizations",
+        "orgRole": "Role"
     },
     "profile": {
         "title": "Profile Settings",
@@ -525,6 +539,10 @@
     },
     "security": {
         "title": "Security Settings",
+        "overview": "Security overview",
+        "score": "Security score",
+        "scoreDesc": "Higher scores reduce account takeover risk. Enable MFA for the biggest improvement.",
+        "description": "Manage password, MFA, passkeys, recovery options, and devices.",
         "password": {
             "title": "Password",
             "current": "Current Password",
@@ -532,7 +550,11 @@
             "confirm": "Confirm New Password",
             "update": "Update Password",
             "success": "Password updated successfully",
-            "error": "Failed to update password"
+            "error": "Failed to update password",
+            "compromised": "Password appears in a breach. Change it immediately.",
+            "guidance": "Password guidance",
+            "logoutOthers": "Log out other devices",
+            "lastChanged": "Last changed {{days}} days ago"
         },
         "twoFactor": {
             "title": "Two-Factor Authentication",
@@ -541,7 +563,40 @@
             "enable": "Enable 2FA",
             "disable": "Disable 2FA",
             "setup": "Set Up 2FA",
-            "description": "Add an extra layer of security to your account"
+            "setupTitle": "Two-factor authentication setup",
+            "description": "Add an extra layer of security to your account",
+            "chooseMethod": "Choose your method",
+            "yourMethods": "Your methods",
+            "recoveryCodes": "Recovery codes",
+            "available": "Available",
+            "addBackup": "Add backup method",
+            "confirmIt'sYou": "Confirm it's you",
+            "chooseChannel": "Choose a channel",
+            "verifyCode": "Verify code",
+            "resend": "Resend",
+            "enterCode": "Please enter the code you received.",
+            "saveCodes": "Save your recovery codes. You will need them if you lose access.",
+            "recommendation": "We recommend saving these in a password manager. Do not share them.",
+            "goToManage": "Go to Manage 2FA",
+            "backToSecurity": "Back to Security",
+            "authenticator": "Authenticator",
+            "authenticatorDesc": "Best security, works offline.",
+            "sms": "SMS",
+            "smsDesc": "Code sent to your phone number.",
+            "whatsapp": "WhatsApp",
+            "whatsappDesc": "Code delivered via WhatsApp.",
+            "whatsappNote": "WhatsApp becomes available when enabled in your contact settings.",
+            "setUpMethod": "Set up {{method}}",
+            "setUpDesc": "Follow the steps below, then verify the code.",
+            "useAuthApp": "Use Google Authenticator or any TOTP app.",
+            "useAppCode": "Use your authenticator app to get the code.",
+            "sendVerify": "Send & Verify",
+            "sendToPhone": "We'll send a code to {{phone}}.",
+            "verifyYourCode": "Verify your code",
+            "enterCodeFrom": "Enter the 6-digit code from {{source}}.",
+            "noCodesAvailable": "No codes available. Regenerate to get new ones.",
+            "regenerateWarning": "Regenerating codes invalidates all previous codes immediately.",
+            "backToManage2fa": "Back to Manage 2FA"
         },
         "sessions": {
             "title": "Active Sessions",
@@ -549,7 +604,13 @@
             "current": "Current Session",
             "other": "Other Sessions",
             "revoke": "Revoke",
-            "revokeAll": "Revoke All Other Sessions"
+            "revokeAll": "Revoke All Other Sessions",
+            "activeDevices": "Active devices & sessions",
+            "activeDesc": "Active sessions",
+            "includesSessions": "Includes web and mobile sessions.",
+            "riskySessions": "Risky sessions",
+            "riskyDesc": "New locations or suspicious events.",
+            "currentDevice": "Current device"
         },
         "activity": {
             "title": "Login Activity",
@@ -557,20 +618,165 @@
             "recentLogins": "Recent Logins",
             "location": "Location",
             "device": "Device",
-            "time": "Time"
+            "time": "Time",
+            "loginActivity": "Login activity",
+            "last24hours": "Last 24 hours",
+            "totalAttempts": "Total attempts",
+            "failuresBlocked": "Failures/blocked",
+            "needsReview": "Needs review",
+            "suspicious": "Suspicious",
+            "flaggedByRisk": "Flagged by risk engine",
+            "timeline": "Timeline",
+            "reportSuspicious": "Report suspicious activity",
+            "all": "All",
+            "success": "Success",
+            "failure": "Failure",
+            "blocked": "Blocked"
         },
         "passkeys": {
             "title": "Passkeys",
             "description": "Manage your passkeys for passwordless login",
             "add": "Add Passkey",
             "remove": "Remove",
-            "lastUsed": "Last Used"
+            "removePasskey": "Remove passkey",
+            "lastUsed": "Last Used",
+            "working": "Working…",
+            "yourPasskeys": "Your passkeys",
+            "noPasskeys": "No passkeys yet. Create one to sign in faster.",
+            "willBeRemoved": "This passkey will no longer be able to sign in.",
+            "count": "{{count}} passkey(s)",
+            "info": "Passkeys provide phishing-resistant sign-in. Optional for now.",
+            "copyFailed": "Copy failed.",
+            "copied": "Copied codes."
         },
         "recoveryCodes": {
             "title": "Recovery Codes",
             "description": "Use these codes to access your account if you lose your 2FA device",
             "generate": "Generate New Codes",
-            "copied": "Codes copied to clipboard"
+            "copied": "Codes copied to clipboard",
+            "reauthenticate": "Re-authenticate to continue",
+            "copy": "Copy",
+            "downloadPdf": "Download PDF",
+            "backToSecurity": "Back to security",
+            "regenerate": "Regenerate recovery codes",
+            "regenerateDesc": "This will invalidate all previous recovery codes.",
+            "proceedWarning": "Proceed only if your codes were exposed or lost."
+        },
+        "recovery": {
+            "desc": "{{emails}} verified email(s), {{phones}} verified phone(s)",
+            "emails": "{{count}} email",
+            "phones": "{{count}} phone",
+            "addContact": "Add recovery contact"
+        },
+        "devices": "Devices",
+        "devicesDesc": "Review sign-ins and trusted devices.",
+        "reviewDevices": "Review devices",
+        "passwordLabel": "Password",
+        "multiFactorLabel": "Multi-factor authentication",
+        "passkeysLabel": "Passkeys",
+        "recoveryOptions": "Recovery options",
+        "changePassword": "Change password",
+        "enableMfa": "Enable MFA",
+        "reviewDevices": "Review devices",
+        "strength": {
+            "weak": "Weak",
+            "fair": "Fair",
+            "good": "Good",
+            "strong": "Strong",
+            "veryStrong": "Very strong"
+        },
+        "timeAgo": {
+            "justNow": "Just now",
+            "minAgo": "{{count}} min ago",
+            "hrAgo": "{{count}} hr ago",
+            "dayAgo": "{{count}} day ago",
+            "daysAgo": "{{count}} days ago"
+        },
+        "device": {
+            "unknown": "Unknown Device",
+            "locationUnknown": "Unknown Location",
+            "trusted": "Trusted",
+            "blocked": "Blocked",
+            "manage": "Manage sessions",
+            "export": "Export report"
+        },
+        "status": {
+            "good": "Good",
+            "needsAttention": "Needs attention",
+            "optional": "Optional",
+            "alwaysOn": "Always on",
+            "later": "Later"
+        },
+        "riskAlerts": {
+            "mfaDisabled": "2FA not enabled",
+            "mfaDisabledDesc": "Enable MFA to protect your wallet and account.",
+            "passwordAging": "Password aging",
+            "passwordAgingDesc": "Your password was last changed {{days}} days ago.",
+            "suspiciousActivity": "Suspicious activity",
+            "suspiciousActivityDesc": "We blocked a login attempt from a new device."
+        },
+        "channels": {
+            "email": "Email",
+            "sms": "SMS",
+            "push": "Push",
+            "whatsapp": "WhatsApp"
+        },
+        "copied": "Copied."
+    },
+    "notifications": {
+        "title": "Notification preferences",
+        "subtitle": "Choose what you receive and how. Security alerts are recommended always on.",
+        "resetRecommended": "Reset to recommended",
+        "resetApplied": "Applied recommended settings.",
+        "unsavedChanges": "Unsaved changes",
+        "saved": "Saved",
+        "security": "Security",
+        "product": "Product",
+        "marketing": "Marketing",
+        "quietHours": "Quiet hours",
+        "alwaysOn": "Always on",
+        "later": "Later",
+        "email": "Email",
+        "sms": "SMS",
+        "push": "Push",
+        "on": "On",
+        "off": "Off",
+        "categories": {
+            "security": {
+                "title": "Security alerts",
+                "description": "Suspicious login, password changes, new device sign-in."
+            },
+            "product": {
+                "title": "Product updates",
+                "description": "New features, release notes, service upgrades."
+            },
+            "marketing": {
+                "title": "Marketing",
+                "description": "Promotions, partner offers, events. You can opt out anytime."
+            },
+            "quietHours": {
+                "title": "Quiet hours",
+                "description": "Reduce non-urgent messages during your preferred hours."
+            }
+        },
+        "channel": {
+            "emailDesc": "Recommended for detailed alerts.",
+            "smsDesc": "Fast alerts for urgent security events.",
+            "pushDesc": "Mobile push notifications (coming soon)."
+        },
+        "securityAlwaysOn": "Security alerts are recommended always on. Push notifications will be available later.",
+        "minOneChannel": "Minimum one channel required.",
+        "securityRequired": "Security alerts require at least one channel.",
+        "delivery": "Delivery",
+        "enableQuietHours": "Enable quiet hours",
+        "start": "Start",
+        "end": "End",
+        "securityAlertsThrough": "Security alerts still come through.",
+        "transactionSecurity": "Transaction and security messages are always delivered.",
+        "digest": {
+            "instant": "Instant",
+            "daily": "Daily",
+            "weekly": "Weekly"
         }
     },
     "admin": {
@@ -739,6 +945,67 @@
         "parentalControls": "Parental Controls",
         "support": "Support",
         "terms": "Terms",
-        "privacy": "Privacy"
+        "privacy": "Privacy",
+        "notifications": "Notifications"
+    },
+    "settings": {
+        "title": "Settings",
+        "subtitle": "Manage your account, preferences, and privacy.",
+        "groups": {
+            "account": "Account",
+            "privacyLegal": "Privacy & Legal",
+            "appPreferences": "App Preferences",
+            "support": "Support"
+        },
+        "items": {
+            "personalProfile": "Personal Profile",
+            "personalProfileDesc": "Name, contact info, and preferences",
+            "security": "Security",
+            "securityDesc": "Password, 2FA, and active sessions",
+            "notifications": "Notifications",
+            "notificationsDesc": "Manage email and push alerts",
+            "privacyCenter": "Privacy Center",
+            "privacyCenterDesc": "Data download and consent management",
+            "termsOfService": "Terms of Service",
+            "termsOfServiceDesc": "Read our terms of use",
+            "privacyPolicy": "Privacy Policy",
+            "privacyPolicyDesc": "Read our privacy policy",
+            "appearance": "Appearance",
+            "appearanceDescDark": "Dark mode is on",
+            "appearanceDescLight": "Light mode is on",
+            "helpSupport": "Help & Support",
+            "helpSupportDesc": "Contact support and FAQs"
+        }
+    },
+    "notifications": {
+        "title": "Notification preferences",
+        "subtitle": "Choose what you receive and how. Security alerts are recommended always on.",
+        "resetRecommended": "Reset to recommended",
+        "unsavedChanges": "Unsaved changes",
+        "saved": "Saved",
+        "security": "Security",
+        "product": "Product",
+        "marketing": "Marketing",
+        "quietHours": "Quiet hours",
+        "securityAlwaysOn": "Security alerts are recommended always on.",
+        "pushLater": "Push notifications will be available later.",
+        "minOneChannel": "Minimum one channel required.",
+        "securityChannelRequired": "Security alerts require at least one channel.",
+        "delivery": "Delivery",
+        "enableQuietHours": "Enable quiet hours",
+        "start": "Start",
+        "end": "End",
+        "securityAlertsThrough": "Security alerts still come through.",
+        "transactionSecurity": "Transaction and security messages are always delivered.",
+        "on": "On",
+        "off": "Off",
+        "email": "Email",
+        "sms": "SMS",
+        "push": "Push",
+        "channel": {
+            "emailDesc": "Recommended for detailed alerts.",
+            "smsDesc": "Fast alerts for urgent security events.",
+            "pushDesc": "Mobile push notifications (coming soon)."
+        }
     }
 }

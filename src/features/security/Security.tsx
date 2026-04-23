@@ -208,7 +208,7 @@ function timeAgo(ts: number) {
 }
 
 export default function SecurityOverviewPage() {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("translation");
   {
     const theme = useTheme();
     const { mode } = useThemeStore();
@@ -272,7 +272,7 @@ export default function SecurityOverviewPage() {
       }));
     }, [sessions]);
 
-    const passwordStrengthLabel = password.strength <= 2 ? "Weak" : password.strength === 3 ? "Good" : password.strength === 4 ? "Strong" : "Very strong";
+    const passwordStrengthLabel = password.strength <= 2 ? t("security.strength.weak") : password.strength === 3 ? t("security.strength.good") : password.strength === 4 ? t("security.strength.strong") : t("security.strength.veryStrong");
 
     const overallScore = useMemo(() => {
       let score = 0;
@@ -286,31 +286,31 @@ export default function SecurityOverviewPage() {
     const riskAlerts = useMemo(() => {
       const arr: Array<{ id: string; severity: Severity; title: string; msg: string; action?: string }> = [];
       if (!mfa.enabled) {
-        arr.push({ id: "mfa", severity: "warning", title: "2FA not enabled", msg: "Enable MFA to protect your wallet and account.", action: "Enable MFA" });
+        arr.push({ id: "mfa", severity: "warning", title: t("security.riskAlerts.mfaDisabled"), msg: t("security.riskAlerts.mfaDisabledDesc"), action: t("security.riskAlerts.mfaAction") });
       }
       if (password.lastChangedDays > 30) {
-        arr.push({ id: "pw", severity: "info", title: "Password aging", msg: `Your password was last changed ${password.lastChangedDays} days ago.`, action: "Change password" });
+        arr.push({ id: "pw", severity: "info", title: t("security.riskAlerts.passwordAging"), msg: t("security.riskAlerts.passwordAgingDesc", { days: password.lastChangedDays }), action: t("security.riskAlerts.passwordAction") });
       }
-      arr.push({ id: "sus", severity: "error", title: "Suspicious activity", msg: "We blocked a login attempt from a new device.", action: "Review devices" });
+      arr.push({ id: "sus", severity: "error", title: t("security.riskAlerts.suspiciousActivity"), msg: t("security.riskAlerts.suspiciousActivityDesc"), action: t("security.riskAlerts.reviewAction") });
       return arr;
-    }, [mfa.enabled, password.lastChangedDays]);
+    }, [mfa.enabled, password.lastChangedDays, t]);
 
     const navigate = useNavigate();
 
-    const action = (label: string) => {
-      if (label === "Change password") {
+    const action = (labelKey: string) => {
+      if (labelKey === "security.changePassword") {
         navigate("/app/security/change-password");
         return;
       }
-      if (label === "Enable MFA") {
+      if (labelKey === "security.twoFactor.enable" || labelKey === "security.twoFactor.setup") {
         navigate("/app/security/2fa");
         return;
       }
-      if (label === "Review devices") {
+      if (labelKey === "security.reviewDevices") {
         navigate("/app/security/sessions");
         return;
       }
-      setSnack({ open: true, severity: "info", msg: `${label} (demo).` });
+      setSnack({ open: true, severity: "info", msg: `${t(labelKey)} (demo).` });
     };
 
     const mutedCardSx = {
@@ -332,20 +332,20 @@ export default function SecurityOverviewPage() {
                 <CardContent className="p-5 md:p-6">
                   <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ xs: "flex-start", md: "center" }} justifyContent="space-between">
                     <Box>
-                      <Typography variant="h5">Security overview</Typography>
+                      <Typography variant="h5">{t("security.overview")}</Typography>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                        Manage password, MFA, passkeys, recovery options, and devices.
+                        {t("security.description")}
                       </Typography>
                     </Box>
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ width: { xs: "100%", md: "auto" } }}>
-                      <Button variant="contained" color="secondary" sx={evOrangeContainedSx} startIcon={<LockIcon size={18} />} onClick={() => action("Change password")}>
-                        Change password
+                      <Button variant="contained" color="secondary" sx={evOrangeContainedSx} startIcon={<LockIcon size={18} />} onClick={() => action("security.changePassword")}>
+                        {t("security.changePassword")}
                       </Button>
-                      <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<ShieldCheckIcon size={18} />} onClick={() => action("Enable MFA")}>
-                        {mfa.enabled ? "Manage MFA" : "Enable MFA"}
+                      <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<ShieldCheckIcon size={18} />} onClick={() => action(mfa.enabled ? "security.twoFactor.setup" : "security.twoFactor.enable")}>
+                        {mfa.enabled ? t("security.twoFactor.setup") : t("security.twoFactor.enable")}
                       </Button>
-                      <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<DevicesIcon size={18} />} onClick={() => action("Review devices")}>
-                        Review devices
+                      <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<DevicesIcon size={18} />} onClick={() => action("security.reviewDevices")}>
+                        {t("security.reviewDevices")}
                       </Button>
                     </Stack>
                   </Stack>
@@ -353,14 +353,14 @@ export default function SecurityOverviewPage() {
                   <Divider sx={{ my: 2 }} />
 
                   <Stack spacing={1}>
-                    <Typography sx={{ fontWeight: 950 }}>Security score</Typography>
+                    <Typography sx={{ fontWeight: 950 }}>{t("security.score")}</Typography>
                     <LinearProgress
                       variant="determinate"
                       value={overallScore}
                       sx={{ height: 10, borderRadius: "4px", backgroundColor: alpha(EVZONE.green, mode === "dark" ? 0.12 : 0.10), "& .MuiLinearProgress-bar": { backgroundColor: EVZONE.orange, borderRadius: "4px" } }}
                     />
                     <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                      Higher scores reduce account takeover risk. Enable MFA for the biggest improvement.
+                      {t("security.scoreDesc")}
                     </Typography>
                   </Stack>
                 </CardContent>
@@ -397,22 +397,22 @@ export default function SecurityOverviewPage() {
                           <LockIcon size={18} />
                         </Box>
                         <Box flex={1}>
-                          <Typography sx={{ fontWeight: 950 }}>Password</Typography>
+                          <Typography sx={{ fontWeight: 950 }}>{t("security.passwordLabel")}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Last changed {password.lastChangedDays} days ago
+                            {t("security.password.lastChanged", { days: password.lastChangedDays })}
                           </Typography>
                         </Box>
                         <Chip label={passwordStrengthLabel} color={password.strength >= 4 ? "success" : password.strength === 3 ? "info" : "warning"} size="small" />
                       </Stack>
 
-                      {password.compromised ? <Alert severity="error">Password appears in a breach. Change it immediately.</Alert> : null}
+                      {password.compromised ? <Alert severity="error">{t("security.password.compromised")}</Alert> : null}
 
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                        <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={() => action("Change password")} endIcon={<ArrowRightIcon size={18} />}>
-                          Change password
+                        <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={() => action("security.changePassword")} endIcon={<ArrowRightIcon size={18} />}>
+                          {t("security.changePassword")}
                         </Button>
                         <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => navigate("/app/security/sessions")}>
-                          Active sessions
+                          {t("security.sessions.title")}
                         </Button>
                       </Stack>
                     </Stack>
@@ -428,12 +428,12 @@ export default function SecurityOverviewPage() {
                           <ShieldCheckIcon size={18} />
                         </Box>
                         <Box flex={1}>
-                          <Typography sx={{ fontWeight: 950 }}>Multi-factor authentication</Typography>
+                          <Typography sx={{ fontWeight: 950 }}>{t("security.multiFactorLabel")}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            {mfa.enabled ? "Enabled" : "Not enabled"}
+                            {mfa.enabled ? t("security.twoFactor.enabled") : t("security.twoFactor.disabled")}
                           </Typography>
                         </Box>
-                        <Chip label={mfa.enabled ? "Enabled" : "Disabled"} color={mfa.enabled ? "success" : "warning"} size="small" />
+                        <Chip label={mfa.enabled ? t("security.twoFactor.enabled") : t("security.twoFactor.disabled")} color={mfa.enabled ? "success" : "warning"} size="small" />
                       </Stack>
 
                       <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
@@ -445,15 +445,15 @@ export default function SecurityOverviewPage() {
                             sx={m === "WhatsApp" ? { border: `1px solid ${alpha(WHATSAPP.green, 0.6)}`, color: WHATSAPP.green, backgroundColor: alpha(WHATSAPP.green, 0.10) } : undefined}
                           />
                         ))}
-                        {mfa.recoveryCodesRemaining > 0 ? <Chip label={`${mfa.recoveryCodesRemaining} recovery codes`} size="small" /> : null}
+                        {mfa.recoveryCodesRemaining > 0 ? <Chip label={`${mfa.recoveryCodesRemaining} ${t("security.recoveryCodes.title")}`} size="small" /> : null}
                       </Stack>
 
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
-                        <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={() => action("Enable MFA")} endIcon={<ArrowRightIcon size={18} />}>
-                          {mfa.enabled ? "Manage MFA" : "Set up MFA"}
+                        <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={() => action(mfa.enabled ? "security.twoFactor.setup" : "security.twoFactor.enable")} endIcon={<ArrowRightIcon size={18} />}>
+                          {mfa.enabled ? t("security.twoFactor.setup") : t("security.twoFactor.enable")}
                         </Button>
                         <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => navigate("/app/security/recovery-codes")}>
-                          Recovery codes
+                          {t("security.recoveryCodes.title")}
                         </Button>
                       </Stack>
                     </Stack>
@@ -469,24 +469,24 @@ export default function SecurityOverviewPage() {
                           <FingerprintIcon size={18} />
                         </Box>
                         <Box flex={1}>
-                          <Typography sx={{ fontWeight: 950 }}>Passkeys</Typography>
+                          <Typography sx={{ fontWeight: 950 }}>{t("security.passkeysLabel")}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            {passkeys.enabled ? `${passkeys.count} passkey(s)` : "Not enabled"}
+                            {passkeys.enabled ? t("security.passkeys.count", { count: passkeys.count }) : t("security.twoFactor.disabled")}
                           </Typography>
                         </Box>
-                        <Chip label={passkeys.enabled ? "Enabled" : "Optional"} size="small" />
+                        <Chip label={passkeys.enabled ? t("security.twoFactor.enabled") : t("security.status.optional")} size="small" />
                       </Stack>
 
                       <Alert severity="info">
-                        Passkeys provide phishing-resistant sign-in. Optional for now.
+                        {t("security.passkeys.info")}
                       </Alert>
 
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                         <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={() => navigate("/app/security/passkeys")}>
-                          Add passkey
+                          {t("security.passkeys.add")}
                         </Button>
                         <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => navigate("/app/security/passkeys")}>
-                          Manage
+                          {t("common.actions.manage")}
                         </Button>
                       </Stack>
                     </Stack>
@@ -502,17 +502,17 @@ export default function SecurityOverviewPage() {
                           <KeyIcon size={18} />
                         </Box>
                         <Box flex={1}>
-                          <Typography sx={{ fontWeight: 950 }}>Recovery options</Typography>
+                          <Typography sx={{ fontWeight: 950 }}>{t("security.recoveryOptions")}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            {recovery.verifiedEmails} verified email(s), {recovery.verifiedPhones} verified phone(s)
+                            {t("security.recovery.desc", { emails: recovery.verifiedEmails, phones: recovery.verifiedPhones })}
                           </Typography>
                         </Box>
-                        <Chip label={recovery.verifiedEmails + recovery.verifiedPhones >= 2 ? "Good" : "Needs attention"} color={recovery.verifiedEmails + recovery.verifiedPhones >= 2 ? "success" : "warning"} size="small" />
+                        <Chip label={recovery.verifiedEmails + recovery.verifiedPhones >= 2 ? t("security.status.good") : t("security.status.needsAttention")} color={recovery.verifiedEmails + recovery.verifiedPhones >= 2 ? "success" : "warning"} size="small" />
                       </Stack>
 
                       <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                        <Chip size="small" label={`${recovery.verifiedEmails} email`} />
-                        <Chip size="small" label={`${recovery.verifiedPhones} phone`} />
+                        <Chip size="small" label={t("security.recovery.emails", { count: recovery.verifiedEmails })} />
+                        <Chip size="small" label={t("security.recovery.phones", { count: recovery.verifiedPhones })} />
                         <Chip
                           size="small"
                           label="WhatsApp"
@@ -522,10 +522,29 @@ export default function SecurityOverviewPage() {
 
                       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                         <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={() => navigate("/app/profile/contact")}>
-                          Manage contacts
+                          {t("security.recovery.addContact")}
                         </Button>
                         <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => navigate("/auth/account-recovery-help")}>
-                          Recovery help
+                          {t("common.actions.help")}
+                        </Button>
+                      </Stack>
+
+                      <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                        <Chip size="small" label={`${recovery.verifiedEmails} ${t("security.channel.email")}`} />
+                        <Chip size="small" label={`${recovery.verifiedPhones} ${t("security.channel.phone")}`} />
+                        <Chip
+                          size="small"
+                          label={t("security.channels.whatsapp")}
+                          sx={{ border: `1px solid ${alpha(WHATSAPP.green, 0.6)}`, color: WHATSAPP.green, backgroundColor: alpha(WHATSAPP.green, 0.10) }}
+                        />
+                      </Stack>
+
+                      <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
+                        <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={() => navigate("/app/profile/contact")}>
+                          {t("security.recovery.addContact")}
+                        </Button>
+                        <Button variant="outlined" sx={evOrangeOutlinedSx} onClick={() => navigate("/auth/account-recovery-help")}>
+                          {t("common.actions.help")}
                         </Button>
                       </Stack>
                     </Stack>
@@ -539,13 +558,13 @@ export default function SecurityOverviewPage() {
                   <Stack spacing={1.4}>
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} alignItems={{ xs: "flex-start", sm: "center" }} justifyContent="space-between">
                       <Box>
-                        <Typography variant="h6">Devices</Typography>
+                        <Typography variant="h6">{t("security.devices")}</Typography>
                         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                          Review sign-ins and trusted devices.
+                          {t("security.devicesDesc")}
                         </Typography>
                       </Box>
-                      <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<DevicesIcon size={18} />} onClick={() => action("Review devices")}>
-                        Review devices
+                      <Button variant="outlined" sx={evOrangeOutlinedSx} startIcon={<DevicesIcon size={18} />} onClick={() => action("security.reviewDevices")}>
+                        {t("security.reviewDevices")}
                       </Button>
                     </Stack>
 
@@ -553,7 +572,7 @@ export default function SecurityOverviewPage() {
 
                     <List disablePadding>
                       {devices.map((d) => (
-                        <ListItem key={d.id} sx={{ px: 0, py: 1.2, borderBottom: `1px solid ${alpha(theme.palette.text.primary, 0.08)}` }} secondaryAction={<Chip label={d.status === "trusted" ? "Trusted" : "Blocked"} color={d.status === "trusted" ? "success" : "error"} size="small" />}>
+                        <ListItem key={d.id} sx={{ px: 0, py: 1.2, borderBottom: `1px solid ${alpha(theme.palette.text.primary, 0.08)}` }} secondaryAction={<Chip label={d.status === "trusted" ? t("security.device.trusted") : t("security.device.blocked")} color={d.status === "trusted" ? "success" : "error"} size="small" />}>
                           <ListItemAvatar>
                             <Avatar sx={{ bgcolor: alpha(EVZONE.green, 0.18), color: theme.palette.text.primary }}>
                               <DevicesIcon size={18} />
@@ -574,10 +593,10 @@ export default function SecurityOverviewPage() {
 
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                       <Button variant="contained" color="secondary" sx={evOrangeContainedSx} onClick={() => navigate("/app/security/sessions")}>
-                        Manage sessions
+                        {t("security.device.manage")}
                       </Button>
                       <Button variant="outlined" sx={evOrangeOutlinedSx} disabled>
-                        Export report
+                        {t("security.device.export")}
                       </Button>
                     </Stack>
                   </Stack>

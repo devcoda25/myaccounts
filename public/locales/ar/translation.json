@@ -484,16 +484,30 @@
     }
   },
   "dashboard": {
-    "welcome": "مرحباً رجوع, ف0!",
-    "overview": "لوحة التحكم وفيرفييو",
-    "quickActions": "كويك اكشنس",
-    "recentActivity": "ريكينت اكتيفيتي",
-    "notifications": "إشعارات",
+    "welcome": "مرحباً بعودتك، {{name}}!",
+    "overview": "نظرة عامة على لوحة التحكم",
+    "quickActions": "إجراءات سريعة",
+    "recentActivity": "النشاط الأخير",
+    "notifications": "الإشعارات",
     "settings": "الإعدادات",
-    "profile": "مي الملف الشخصي",
+    "profile": "ملفي الشخصي",
     "security": "الأمان",
-    "wallet": "محفظة",
-    "help": "مساعدة و سوببورت"
+    "wallet": "المحفظة",
+    "help": "المساعدة والدعم",
+    "greeting": {
+      "morning": "صباح الخير",
+      "afternoon": "مساء الخير",
+      "evening": "مساء الخير"
+    },
+    "subtitle": "قم بالوصول إلى تطبيقاتك وإدارة هويتك في EVZone.",
+    "launchApp": "تشغيل التطبيق",
+    "accountSecurity": "الحساب والأمان",
+    "securitySettings": "إعدادات الأمان",
+    "securityDesc": "المصادقة الثنائية، كلمة المرور، الجلسات",
+    "profilePreferences": "الملف الشخصي والتفضيلات",
+    "profileDesc": "المعلومات الشخصية، اللغة، السمة",
+    "myOrganizations": "منظماتي",
+    "orgRole": "الدور"
   },
   "profile": {
     "title": "الملف الشخصي الإعدادات",
@@ -740,5 +754,91 @@
     "support": "الدعم",
     "terms": "الشروط والأحكام",
     "privacy": "الخصوصية"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "subtitle": "إدارة حسابك وتفضيلاتك وخصوصيتك.",
+    "groups": {
+      "account": "الحساب",
+      "privacyLegal": "الخصوصية والقانون",
+      "appPreferences": "تفضيلات التطبيق",
+      "support": "الدعم"
+    },
+    "items": {
+      "personalProfile": "الملف الشخصي",
+      "personalProfileDesc": "الاسم ومعلومات الاتصال والتفضيلات",
+      "security": "الأمان",
+      "securityDesc": "كلمة المرور والمصادقة الثنائية والجلسات النشطة",
+      "notifications": "الإشعارات",
+      "notificationsDesc": "إدارة تنبيهات البريد الإلكتروني والإشعارات",
+      "privacyCenter": "مركز الخصوصية",
+      "privacyCenterDesc": "تنزيل البيانات وإدارة الموافقة",
+      "termsOfService": "شروط الخدمة",
+      "termsOfServiceDesc": "اقرأ شروط الاستخدام الخاصة بنا",
+      "privacyPolicy": "سياسة الخصوصية",
+      "privacyPolicyDesc": "اقرأ سياسة الخصوصية الخاصة بنا",
+      "appearance": "المظهر",
+      "appearanceDescDark": "الوضع الداكن مفعّل",
+      "appearanceDescLight": "الوضع الفاتح مفعّل",
+      "helpSupport": "المساعدة والدعم",
+      "helpSupportDesc": "اتصل بالد_support والأسئلة الشائعة"
+    }
+  },
+  "notifications": {
+    "title": "تفضيلات الإشعارات",
+    "subtitle": "اختر ما تستلمه وكيفية ذلك. يُنصح بتشغيل تنبيهات الأمان دائماً.",
+    "resetRecommended": "إعادة تعيين للموصى به",
+    "resetApplied": "تم تطبيق الإعدادات الموصى بها.",
+    "unsavedChanges": "تغييرات غير محفوظة",
+    "saved": "محفوظ",
+    "security": "الأمان",
+    "product": "المنتج",
+    "marketing": "التسويق",
+    "quietHours": "الساعات الهادئة",
+    "securityAlwaysOn": "يُنصح بتشغيل تنبيهات الأمان دائماً.",
+    "pushLater": "الإشعارات.Push متاحة قريباً.",
+    "minOneChannel": "مطلوب قناة واحدة على الأقل.",
+    "securityChannelRequired": "تتطلب تنبيهات الأمان قناة واحدة على الأقل.",
+    "delivery": "التسليم",
+    "enableQuietHours": "تفعيل الساعات الهادئة",
+    "start": "البداية",
+    "end": "النهاية",
+    "securityAlertsThrough": "تنبيهات الأمان لا تزال تصل.",
+    "transactionSecurity": "رسائل المعاملات والأمان دائماً يتم تسليمها.",
+    "on": "تشغيل",
+    "off": "إيقاف",
+    "email": "البريد الإلكتروني",
+    "sms": "الرسائل النصية",
+    "push": "Push",
+    "alwaysOn": "مفعّل دائماً",
+    "later": "لاحقاً",
+    "channel": {
+      "emailDesc": "موصى به للتنبيهات المفصلة.",
+      "smsDesc": "تنبيهات سريعة لأحداث الأمان العاجلة.",
+      "pushDesc": "إشعارات Push للهاتف (قريباً)."
+    },
+    "categories": {
+      "security": {
+        "title": "تنبيهات الأمان",
+        "description": "تسجيل مشبوه وتغييرات كلمة مرور وتسجيل دخول من جهاز جديد."
+      },
+      "product": {
+        "title": "تحديثات المنتج",
+        "description": "ميزات جديدة وإصدارات وترقيات الخدمة."
+      },
+      "marketing": {
+        "title": "التسويق",
+        "description": "عروض ترويجية وعروض الشركاء والفعاليات. يمكنك إلغاء الاشتراك في أي وقت."
+      },
+      "quietHours": {
+        "title": "الساعات الهادئة",
+        "description": "قلل الرسائل غير العاجلة خلال ساعاتك المفضلة."
+      }
+    },
+    "digest": {
+      "instant": "فوري",
+      "daily": "يومي",
+      "weekly": "أسبوعي"
+    }
   }
 }

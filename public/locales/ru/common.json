@@ -736,6 +736,32 @@
     "parentalControls": "Родительский контроль",
     "support": "Поддержка",
     "terms": "Условия использования",
-    "privacy": "Конфиденциальность"
-  }
-}
+    "privacy": "Конфиденциальность",
+    "notifications": "Уведомления"
+  },
+  "dashboard": {
+    "welcome": "С возвращением, {{name}}!",
+    "overview": "Обзор панели",
+    "quickActions": "Быстрые действия",
+    "recentActivity": "Недавняя активность",
+    "notifications": "Уведомления",
+    "settings": "Настройки",
+    "profile": "Мой профиль",
+    "security": "Безопасность",
+    "wallet": "Кошелек",
+    "help": "Помощь и поддержка",
+    "greeting": {
+      "morning": "Доброе утро",
+      "afternoon": "Добрый день",
+      "evening": "Добрый вечер"
+    },
+    "subtitle": "Получите доступ к своим приложениям и управляйте идентификатором EVZone.",
+    "launchApp": "Запустить приложение",
+    "accountSecurity": "Учетная запись и безопасность",
+    "securitySettings": "Настройки безопасности",
+    "securityDesc": "2FA, Пароль, Сессии",
+    "profilePreferences": "Профиль и настройки",
+    "profileDesc": "Личная информация, Язык, Тема",
+    "myOrganizations": "Мои организации",
+    "orgRole": "Роль"
+  },

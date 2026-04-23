@@ -493,7 +493,21 @@
     "profile": "我的资料",
     "security": "安全",
     "wallet": "钱包",
-    "help": "帮助与支持"
+    "help": "帮助与支持",
+    "greeting": {
+      "morning": "早上好",
+      "afternoon": "下午好",
+      "evening": "晚上好"
+    },
+    "subtitle": "访问您的应用程序并管理您的EVZone身份。",
+    "launchApp": "启动应用",
+    "accountSecurity": "账户与安全",
+    "securitySettings": "安全设置",
+    "securityDesc": "双因素认证、密码、会话",
+    "profilePreferences": "个人资料与偏好",
+    "profileDesc": "个人信息、语言、主题",
+    "myOrganizations": "我的组织",
+    "orgRole": "角色"
   },
   "profile": {
     "title": "个人资料设置",
@@ -740,5 +754,91 @@
     "support": "支持",
     "terms": "服务条款",
     "privacy": "隐私"
+  },
+  "settings": {
+    "title": "设置",
+    "subtitle": "管理您的账户、偏好设置和隐私。",
+    "groups": {
+      "account": "账户",
+      "privacyLegal": "隐私和法律",
+      "appPreferences": "应用偏好",
+      "support": "支持"
+    },
+    "items": {
+      "personalProfile": "个人资料",
+      "personalProfileDesc": "姓名、联系方式和偏好设置",
+      "security": "安全",
+      "securityDesc": "密码、双因素认证和活动会话",
+      "notifications": "通知",
+      "notificationsDesc": "管理电子邮件和推送提醒",
+      "privacyCenter": "隐私中心",
+      "privacyCenterDesc": "数据下载和同意管理",
+      "termsOfService": "服务条款",
+      "termsOfServiceDesc": "阅读我们的使用条款",
+      "privacyPolicy": "隐私政策",
+      "privacyPolicyDesc": "阅读我们的隐私政策",
+      "appearance": "外观",
+      "appearanceDescDark": "深色模式已开启",
+      "appearanceDescLight": "浅色模式已开启",
+      "helpSupport": "帮助与支持",
+      "helpSupportDesc": "联系支持团队和常见问题"
+    }
+  },
+  "notifications": {
+    "title": "通知偏好",
+    "subtitle": "选择您想要接收的内容和方式。建议始终开启安全提醒。",
+    "resetRecommended": "重置为推荐",
+    "resetApplied": "已应用推荐设置。",
+    "unsavedChanges": "未保存的更改",
+    "saved": "已保存",
+    "security": "安全",
+    "product": "产品",
+    "marketing": "营销",
+    "quietHours": "安静时间",
+    "securityAlwaysOn": "建议始终开启安全提醒。",
+    "pushLater": "推送通知即将推出。",
+    "minOneChannel": "至少需要一个渠道。",
+    "securityChannelRequired": "安全提醒至少需要一个渠道。",
+    "delivery": "发送方式",
+    "enableQuietHours": "启用安静时间",
+    "start": "开始",
+    "end": "结束",
+    "securityAlertsThrough": "安全提醒仍然会发送。",
+    "transactionSecurity": "交易和安全消息始终会发送。",
+    "on": "开启",
+    "off": "关闭",
+    "email": "电子邮件",
+    "sms": "短信",
+    "push": "推送",
+    "alwaysOn": "始终开启",
+    "later": "稍后",
+    "channel": {
+      "emailDesc": "推荐用于详细提醒。",
+      "smsDesc": "紧急安全事件的快速提醒。",
+      "pushDesc": "移动推送通知（即将推出）。"
+    },
+    "categories": {
+      "security": {
+        "title": "安全提醒",
+        "description": "可疑登录、密码更改、新设备登录。"
+      },
+      "product": {
+        "title": "产品更新",
+        "description": "新功能、发布说明、服务升级。"
+      },
+      "marketing": {
+        "title": "营销",
+        "description": "促销、合作伙伴优惠、活动。您可以随时退订。"
+      },
+      "quietHours": {
+        "title": "安静时间",
+        "description": "在您指定的时间减少非紧急消息。"
+      }
+    },
+    "digest": {
+      "instant": "即时",
+      "daily": "每日",
+      "weekly": "每周"
+    }
   }
 }

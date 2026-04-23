@@ -480,16 +480,30 @@
     }
   },
   "dashboard": {
-    "welcome": "ウエルクオムエ 戻る, {{name}}!",
-    "overview": "ダッシュボード オヴエルヴイエウ",
-    "quickActions": "クウイクク アクションス",
-    "recentActivity": "ルエクエント アクトイヴイトイ",
+    "welcome": "おかえりなさい、{{name}}さん！",
+    "overview": "ダッシュボード概要",
+    "quickActions": "クイックアクション",
+    "recentActivity": "最近のアクティビティ",
     "notifications": "通知",
     "settings": "設定",
-    "profile": "ムイ プロフィール",
+    "profile": "マイプロフィール",
     "security": "セキュリティ",
     "wallet": "ウォレット",
-    "help": "ハエルプ & サポート"
+    "help": "ヘルプとサポート",
+    "greeting": {
+      "morning": "おはようございます",
+      "afternoon": "こんにちは",
+      "evening": "こんばんは"
+    },
+    "subtitle": "アプリケーションにアクセスし、EVZone IDを管理します。",
+    "launchApp": "アプリを起動",
+    "accountSecurity": "アカウントとセキュリティ",
+    "securitySettings": "セキュリティ設定",
+    "securityDesc": "2FA、パスワード、セッション",
+    "profilePreferences": "プロフィールと設定",
+    "profileDesc": "個人情報、言語、テーマ",
+    "myOrganizations": "所属組織",
+    "orgRole": "役割"
   },
   "profile": {
     "title": "プロフィール 設定",
@@ -736,5 +750,91 @@
     "support": "サポート",
     "terms": "利用規約",
     "privacy": "プライバシー"
+  },
+  "settings": {
+    "title": "設定",
+    "subtitle": "アカウント、設定、プライバシーを管理します。",
+    "groups": {
+      "account": "アカウント",
+      "privacyLegal": "プライバシーと法律",
+      "appPreferences": "アプリ設定",
+      "support": "サポート"
+    },
+    "items": {
+      "personalProfile": "個人プロフィール",
+      "personalProfileDesc": "名前、連絡先、設定",
+      "security": "セキュリティ",
+      "securityDesc": "パスワード、2FA、アクティブセッション",
+      "notifications": "通知",
+      "notificationsDesc": "メールとプッシュ通知を管理",
+      "privacyCenter": "プライバシーセンター",
+      "privacyCenterDesc": "データのダウンロードと同意の管理",
+      "termsOfService": "利用規約",
+      "termsOfServiceDesc": "利用規約を読む",
+      "privacyPolicy": "プライバシーポリシー",
+      "privacyPolicyDesc": "プライバシーポリシーを読む",
+      "appearance": "外観",
+      "appearanceDescDark": "ダークモードが有効です",
+      "appearanceDescLight": "ライトモードが有効です",
+      "helpSupport": "ヘルプとサポート",
+      "helpSupportDesc": "サポートとFAQに連絡"
+    }
+  },
+  "notifications": {
+    "title": "通知設定",
+    "subtitle": "受け取るものと方法を選択してください。セキュリティアラートは常に有効にすることをお勧めします。",
+    "resetRecommended": "推奨にリセット",
+    "resetApplied": "推奨設定を適用しました。",
+    "unsavedChanges": "未保存の変更",
+    "saved": "保存済み",
+    "security": "セキュリティ",
+    "product": "製品",
+    "marketing": "マーケティング",
+    "quietHours": "おやすみモード",
+    "securityAlwaysOn": "セキュリティアラートは常に有効にすることをお勧めします。",
+    "pushLater": "プッシュ通知はまもなく利用可能になります。",
+    "minOneChannel": "少なくとも1つのチャンネルが必要です。",
+    "securityChannelRequired": "セキュリティアラートには少なくとも1つのチャンネルが必要です。",
+    "delivery": "配信",
+    "enableQuietHours": "おやすみモードを有効にする",
+    "start": "開始",
+    "end": "終了",
+    "securityAlertsThrough": "セキュリティアラートは引き続き届きます。",
+    "transactionSecurity": "取引とセキュリティのメッセージは常に配信されます。",
+    "on": "オン",
+    "off": "オフ",
+    "email": "メール",
+    "sms": "SMS",
+    "push": "プッシュ",
+    "alwaysOn": "常にオン",
+    "later": "後ほど",
+    "channel": {
+      "emailDesc": "詳細なアラートに推奨。",
+      "smsDesc": "緊急のセキュリティイベントの 빠른 알림.",
+      "pushDesc": "モバイルプッシュ通知（近日公開）。"
+    },
+    "categories": {
+      "security": {
+        "title": "セキュリティアラート",
+        "description": "不審なログイン、パスワード変更、新しいデバイスからのサインイン。"
+      },
+      "product": {
+        "title": "製品アップデート",
+        "description": "新機能、リリースノート、サービスアップグレード。"
+      },
+      "marketing": {
+        "title": "マーケティング",
+        "description": "プロモーショ 파트너向けオファー、イベント。いつでもオプトアウトできます。"
+      },
+      "quietHours": {
+        "title": "おやすみモード",
+        "description": "希望の時間に入力緊急でないメッセージを減らします。"
+      }
+    },
+    "digest": {
+      "instant": "即時",
+      "daily": "毎日",
+      "weekly": "毎週"
+    }
   }
 }

@@ -480,16 +480,30 @@
     }
   },
   "dashboard": {
-    "welcome": "welacome bak, {{name}}!",
-    "overview": "Dashibodi overaview",
-    "quickActions": "kwik acshenis",
-    "recentActivity": "recenat acativity",
-    "notifications": "notificashenis",
-    "settings": "settingis",
-    "profile": "Yangu Wasifu",
+    "welcome": "karibu tena, {{name}}!",
+    "overview": "Muhtasari wa Dashibodi",
+    "quickActions": "Vitendo vya Haraka",
+    "recentActivity": "Shughuli hivi karibuni",
+    "notifications": "Taarifa",
+    "settings": "Mipangilio",
+    "profile": "Wasifu wangu",
     "security": "Usalama",
-    "wallet": "Waleti",
-    "help": "Msaada & Msaada"
+    "wallet": "Wallet",
+    "help": "Msaada na Usaidizi",
+    "greeting": {
+      "morning": "Asubuhi njema",
+      "afternoon": "Mchana mwema",
+      "evening": "Jioni njema"
+    },
+    "subtitle": "Fikia programu zako na usimamishe utambulisho wako wa EVZone.",
+    "launchApp": "Anzisha Programu",
+    "accountSecurity": "Akaunti na Usalama",
+    "securitySettings": "Mipangilio ya Usalama",
+    "securityDesc": "2FA, Nywila, Vikao",
+    "profilePreferences": "Wasifu na Mapendeleo",
+    "profileDesc": "Taarifa binafsi, Lugha, Mandhari",
+    "myOrganizations": "Mashirika Yangu",
+    "orgRole": "Jukumu"
   },
   "profile": {
     "title": "Wasifu settingis",
@@ -736,5 +750,91 @@
     "support": "Msaada",
     "terms": "Sheria na Masharti",
     "privacy": "Faragha"
+  },
+  "settings": {
+    "title": "Mipangilio",
+    "subtitle": "Dhibiti akaunti yako, mapendekezo, na faragha.",
+    "groups": {
+      "account": "Akaunti",
+      "privacyLegal": "Faragha na Kisheria",
+      "appPreferences": "Mapendekezo ya Programu",
+      "support": "Msaada"
+    },
+    "items": {
+      "personalProfile": "Wasifu wa Kibinafsi",
+      "personalProfileDesc": "Jina, taarifa za mawasiliano, na mapendekezo",
+      "security": "Usalama",
+      "securityDesc": "Nenosiri, 2FA, na vikao vya kawaida",
+      "notifications": "Arifa",
+      "notificationsDesc": "Dhibiti arifa za barua pepe na push",
+      "privacyCenter": "Kituo cha Faragha",
+      "privacyCenterDesc": "Upakuaji wa data na usimamizi wa ridhaa",
+      "termsOfService": "Sheria za Huduma",
+      "termsOfServiceDesc": "Soma sheria zetu za matumizi",
+      "privacyPolicy": "Sera ya Faragha",
+      "privacyPolicyDesc": "Soma sera yetu ya faragha",
+      "appearance": "Muonekano",
+      "appearanceDescDark": "Giza mode imewashwa",
+      "appearanceDescLight": "Mwanga mode imewashwa",
+      "helpSupport": "Msaada na Usaidizi",
+      "helpSupportDesc": "Wasiliana na msaada na maswali yanayoulizwa mara kwa mara"
+    }
+  },
+  "notifications": {
+    "title": "Mapendekezo ya Arifa",
+    "subtitle": "Chagua unachopokea na jinsi. Arifa za usalama zinapendekezwa kuwa daima ziwashwe.",
+    "resetRecommended": "Weka upya kwenye iliyopendekezwa",
+    "resetApplied": "Mipangilio iliyopendekezwa imetumika.",
+    "unsavedChanges": "Mabadiliko yasiyohifadhiwa",
+    "saved": "Imehifadhiwa",
+    "security": "Usalama",
+    "product": "Bidii",
+    "marketing": "Mauzo",
+    "quietHours": "Saa za utulivu",
+    "securityAlwaysOn": "Arifa za usalama zinapendekezwa kuwa daima ziwashwe.",
+    "pushLater": "Arifa za push za simu zitakuwa hivi karibuni.",
+    "minOneChannel": "Angalau kanaliki moja inahitajika.",
+    "securityChannelRequired": "Arifa za usalama zinahitaji angalau kanaliki moja.",
+    "delivery": "Ukaguzi",
+    "enableQuietHours": "Washa Saa za Utulivu",
+    "start": "Anza",
+    "end": "Mwisho",
+    "securityAlertsThrough": "Arifa za usalama zinabaki kuja.",
+    "transactionSecurity": "Maswala ya muamala na usalama daima yanawasilishwa.",
+    "on": "Washa",
+    "off": "Zima",
+    "email": "Barua pepe",
+    "sms": "SMS",
+    "push": "Push",
+    "alwaysOn": "Daima Washa",
+    "later": "Baadaye",
+    "channel": {
+      "emailDesc": "Inapendekezwa kwa arifa za kina.",
+      "smsDesc": "Arifa za haraka kwa matukio ya usalama ya haraka.",
+      "pushDesc": "Arifa za push za simu (itarudi hivi karibuni)."
+    },
+    "categories": {
+      "security": {
+        "title": "Arifa za Usalama",
+        "description": "Kuingia шубӗ, mabadiliko ya nenosiri, kuingia kwa kifaa kipya."
+      },
+      "product": {
+        "title": "Masasisho ya Bidii",
+        "description": "Vipengele vipya, maelezo ya toleo, uboreshaji wa huduma."
+      },
+      "marketing": {
+        "title": "Mauzo",
+        "description": "Miradi, ofa za washirika, matukio. Unaweza kuchoka wakati wowote."
+      },
+      "quietHours": {
+        "title": "Saa za Utulivu",
+        "description": "Punguza ujumbe wasio wa kawaida wakati wa saa zako za kuchagua."
+      }
+    },
+    "digest": {
+      "instant": "Papokea",
+      "daily": "Kila siku",
+      "weekly": "Kila wiki"
+    }
   }
 }

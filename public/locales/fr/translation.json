@@ -484,16 +484,30 @@
     }
   },
   "dashboard": {
-    "welcome": "Bon retour, {{name}} !",
-    "overview": "Tableau de bord Overview",
+    "welcome": "Bienvenue, {{name}} !",
+    "overview": "Aperçu du tableau de bord",
     "quickActions": "Actions rapides",
-    "recentActivity": "Récent Activité",
+    "recentActivity": "Activité récente",
     "notifications": "Notifications",
     "settings": "Paramètres",
     "profile": "Mon profil",
     "security": "Sécurité",
     "wallet": "Portefeuille",
-    "help": "Aide et support"
+    "help": "Aide et support",
+    "greeting": {
+      "morning": "Bonjour",
+      "afternoon": "Bon après-midi",
+      "evening": "Bonsoir"
+    },
+    "subtitle": "Accédez à vos applications et gérez votre identité EVZone.",
+    "launchApp": "Lancer l'application",
+    "accountSecurity": "Compte et sécurité",
+    "securitySettings": "Paramètres de sécurité",
+    "securityDesc": "2FA, Mot de passe, Sessions",
+    "profilePreferences": "Profil et préférences",
+    "profileDesc": "Infos personnelles, Langue, Thème",
+    "myOrganizations": "Mes organisations",
+    "orgRole": "Rôle"
   },
   "profile": {
     "title": "Paramètres du profil",
@@ -740,5 +754,91 @@
     "support": "Support",
     "terms": "Conditions générales",
     "privacy": "Confidentialité"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "subtitle": "Gérez votre compte, vos préférences et votre confidentialité.",
+    "groups": {
+      "account": "Compte",
+      "privacyLegal": "Confidentialité et juridique",
+      "appPreferences": "Préférences de l'application",
+      "support": "Support"
+    },
+    "items": {
+      "personalProfile": "Profil personnel",
+      "personalProfileDesc": "Nom, informations de contact et préférences",
+      "security": "Sécurité",
+      "securityDesc": "Mot de passe, 2FA et sessions actives",
+      "notifications": "Notifications",
+      "notificationsDesc": "Gérer les alertes e-mail et push",
+      "privacyCenter": "Centre de confidentialité",
+      "privacyCenterDesc": "Téléchargement des données et gestion des consentements",
+      "termsOfService": "Conditions d'utilisation",
+      "termsOfServiceDesc": "Lire nos conditions d'utilisation",
+      "privacyPolicy": "Politique de confidentialité",
+      "privacyPolicyDesc": "Lire notre politique de confidentialité",
+      "appearance": "Apparence",
+      "appearanceDescDark": "Le mode sombre est activé",
+      "appearanceDescLight": "Le mode clair est activé",
+      "helpSupport": "Aide et support",
+      "helpSupportDesc": "Contacter le support et FAQ"
+    }
+  },
+  "notifications": {
+    "title": "Préférences de notification",
+    "subtitle": "Choisissez ce que vous recevez et comment. Les alertes de sécurité sont recommandées toujours activées.",
+    "resetRecommended": "Réinitialiser par défaut",
+    "resetApplied": "Paramètres recommandés appliqués.",
+    "unsavedChanges": "Modifications non enregistrées",
+    "saved": "Enregistré",
+    "security": "Sécurité",
+    "product": "Produit",
+    "marketing": "Marketing",
+    "quietHours": "Heures calmes",
+    "securityAlwaysOn": "Les alertes de sécurité sont recommandées toujours activées.",
+    "pushLater": "Les notifications push seront disponibles plus tard.",
+    "minOneChannel": "Au moins un canal requis.",
+    "securityChannelRequired": "Les alertes de sécurité nécessitent au moins un canal.",
+    "delivery": "Livraison",
+    "enableQuietHours": "Activer les heures calmes",
+    "start": "Début",
+    "end": "Fin",
+    "securityAlertsThrough": "Les alertes de sécurité passent toujours.",
+    "transactionSecurity": "Les messages de transaction et de sécurité sont toujours livrés.",
+    "on": "Activé",
+    "off": "Désactivé",
+    "email": "E-mail",
+    "sms": "SMS",
+    "push": "Push",
+    "alwaysOn": "Toujours activé",
+    "later": "Plus tard",
+    "channel": {
+      "emailDesc": "Recommandé pour les alertes détaillées.",
+      "smsDesc": "Alertes rapides pour les événements de sécurité urgents.",
+      "pushDesc": "Notifications push mobiles (bientôt disponible)."
+    },
+    "categories": {
+      "security": {
+        "title": "Alertes de sécurité",
+        "description": "Connexion suspecte, changements de mot de passe, nouvelle connexion appareil."
+      },
+      "product": {
+        "title": "Mises à jour produit",
+        "description": "Nouvelles fonctionnalités, notes de version, mises à niveau de service."
+      },
+      "marketing": {
+        "title": "Marketing",
+        "description": "Promotions, offres partenaires, événements. Vous pouvez vous désabonner à tout moment."
+      },
+      "quietHours": {
+        "title": "Heures calmes",
+        "description": "Réduire les messages non urgents pendant vos heures préférées."
+      }
+    },
+    "digest": {
+      "instant": "Instantané",
+      "daily": "Quotidien",
+      "weekly": "Hebdomadaire"
+    }
   }
 }

@@ -161,7 +161,7 @@ function countEnabled(c: Channels) {
 }
 
 export default function NotificationPreferencesPage() {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("translation");
   {
     const { mode } = useThemeStore();
     const theme = useTheme();
@@ -270,14 +270,14 @@ export default function NotificationPreferencesPage() {
     const resetRecommended = () => {
       setPrefs(RECOMMENDED);
       setDirty(true);
-      setSnack({ open: true, severity: "info", msg: "Applied recommended settings." });
+      setSnack({ open: true, severity: "info", msg: t("notifications.resetApplied") });
     };
 
-    const securitySummary = `${prefs.security.email ? "Email" : ""}${prefs.security.email && prefs.security.sms ? ", " : ""}${prefs.security.sms ? "SMS" : ""}` || "Email";
+    const securitySummary = `${prefs.security.email ? t("notifications.email") : ""}${prefs.security.email && prefs.security.sms ? ", " : ""}${prefs.security.sms ? t("notifications.sms") : ""}` || t("notifications.email");
 
     const banner = (
       <Alert severity="info" icon={<ShieldIcon size={18} />}>
-        Security alerts are recommended always on. Push notifications will be available later.
+        {t("notifications.securityAlwaysOn")}
       </Alert>
     );
 
@@ -353,24 +353,24 @@ export default function NotificationPreferencesPage() {
                     <Stack spacing={1.2}>
                       <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ xs: "flex-start", md: "center" }} justifyContent="space-between">
                         <Box>
-                          <Typography variant="h5">Notification preferences</Typography>
+                          <Typography variant="h5">{t("notifications.title")}</Typography>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Choose what you receive and how. Security alerts are recommended always on.
+                            {t("notifications.subtitle")}
                           </Typography>
                           <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 1 }}>
-                            <Chip size="small" icon={<ShieldIcon size={16} />} label={`Security: ${securitySummary}`} variant="outlined" sx={{ borderRadius: "4px", "& .MuiChip-icon": { color: "inherit" } }} />
-                            <Chip size="small" icon={<SparklesIcon size={16} />} label={`Product: ${countEnabled(prefs.product) ? "On" : "Off"}`} variant="outlined" sx={{ borderRadius: "4px", "& .MuiChip-icon": { color: "inherit" } }} />
-                            <Chip size="small" icon={<BellIcon size={16} />} label={`Marketing: ${countEnabled(prefs.marketing) ? "On" : "Off"}`} variant="outlined" sx={{ borderRadius: "4px", "& .MuiChip-icon": { color: "inherit" } }} />
-                            {dirty ? <Chip size="small" color="warning" label="Unsaved changes" sx={{ borderRadius: "4px" }} /> : <Chip size="small" color="success" label="Saved" sx={{ borderRadius: "4px" }} />}
+                            <Chip size="small" icon={<ShieldIcon size={16} />} label={`${t("notifications.security")}: ${securitySummary}`} variant="outlined" sx={{ borderRadius: "4px", "& .MuiChip-icon": { color: "inherit" } }} />
+                            <Chip size="small" icon={<SparklesIcon size={16} />} label={`${t("notifications.product")}: ${countEnabled(prefs.product) ? t("notifications.on") : t("notifications.off")}`} variant="outlined" sx={{ borderRadius: "4px", "& .MuiChip-icon": { color: "inherit" } }} />
+                            <Chip size="small" icon={<BellIcon size={16} />} label={`${t("notifications.marketing")}: ${countEnabled(prefs.marketing) ? t("notifications.on") : t("notifications.off")}`} variant="outlined" sx={{ borderRadius: "4px", "& .MuiChip-icon": { color: "inherit" } }} />
+                            {dirty ? <Chip size="small" color="warning" label={t("notifications.unsavedChanges")} sx={{ borderRadius: "4px" }} /> : <Chip size="small" color="success" label={t("notifications.saved")} sx={{ borderRadius: "4px" }} />}
                           </Stack>
                         </Box>
 
                         <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ width: { xs: "100%", md: "auto" } }}>
                           <Button variant="outlined" sx={orangeOutlined} onClick={resetRecommended}>
-                            Reset to recommended
+                            {t("notifications.resetRecommended")}
                           </Button>
                           <Button variant="contained" sx={orangeContained} onClick={saveNow}>
-                            Save
+                            {t("common.actions.save")}
                           </Button>
                         </Stack>
                       </Stack>
@@ -390,40 +390,40 @@ export default function NotificationPreferencesPage() {
                         <Stack spacing={1.4}>
                           <Stack direction="row" spacing={1} alignItems="center">
                             <ShieldIcon size={18} />
-                            <Typography variant="h6">Security alerts</Typography>
-                            <Chip size="small" color="success" label="Always on" sx={{ borderRadius: "4px" }} />
+                            <Typography variant="h6">{t("notifications.categories.security.title")}</Typography>
+                            <Chip size="small" color="success" label={t("notifications.alwaysOn")} sx={{ borderRadius: "4px" }} />
                           </Stack>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Suspicious login, password changes, new device sign-in.
+                            {t("notifications.categories.security.description")}
                           </Typography>
                           <Divider />
 
                           <ChannelRow
-                            label="Email"
-                            desc="Recommended for detailed alerts."
+                            label={t("notifications.email")}
+                            desc={t("notifications.channel.emailDesc")}
                             icon={<MailIcon size={18} />}
                             value={prefs.security.email}
                             onChange={(v) => setChannel("security", "email", v)}
                           />
                           <ChannelRow
-                            label="SMS"
-                            desc="Fast alerts for urgent security events."
+                            label={t("notifications.sms")}
+                            desc={t("notifications.channel.smsDesc")}
                             icon={<SmsIcon size={18} />}
                             value={prefs.security.sms}
                             onChange={(v) => setChannel("security", "sms", v)}
                           />
                           <ChannelRow
-                            label="Push"
-                            desc="Mobile push notifications (coming soon)."
+                            label={t("notifications.push")}
+                            desc={t("notifications.channel.pushDesc")}
                             icon={<PhoneIcon size={18} />}
                             value={false}
                             onChange={() => { }}
                             disabled
-                            suffix={<Chip size="small" variant="outlined" label="Later" sx={{ borderRadius: "4px" }} />}
+                            suffix={<Chip size="small" variant="outlined" label={t("notifications.later")} sx={{ borderRadius: "4px" }} />}
                           />
 
                           <Alert severity="info" icon={<ShieldIcon size={18} />}>
-                            Minimum one channel required.
+                            {t("notifications.minOneChannel")}
                           </Alert>
                         </Stack>
                       </CardContent>
@@ -437,16 +437,16 @@ export default function NotificationPreferencesPage() {
                         <Stack spacing={1.4}>
                           <Stack direction="row" spacing={1} alignItems="center">
                             <SparklesIcon size={18} />
-                            <Typography variant="h6">Product updates</Typography>
+                            <Typography variant="h6">{t("notifications.categories.product.title")}</Typography>
                           </Stack>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            New features, release notes, service upgrades.
+                            {t("notifications.categories.product.description")}
                           </Typography>
                           <Divider />
 
                           <ChannelRow
-                            label="Email"
-                            desc="Release notes and product announcements."
+                            label={t("notifications.email")}
+                            desc={t("notifications.channel.emailDesc")}
                             icon={<MailIcon size={18} />}
                             value={prefs.product.email}
                             onChange={(v: boolean) => {
@@ -455,8 +455,8 @@ export default function NotificationPreferencesPage() {
                             }}
                           />
                           <ChannelRow
-                            label="SMS"
-                            desc="Short important updates only."
+                            label={t("notifications.sms")}
+                            desc={t("notifications.channel.smsDesc")}
                             icon={<SmsIcon size={18} />}
                             value={prefs.product.sms}
                             onChange={(v: boolean) => {
@@ -465,19 +465,19 @@ export default function NotificationPreferencesPage() {
                             }}
                           />
                           <ChannelRow
-                            label="Push"
-                            desc="Mobile push notifications (coming soon)."
+                            label={t("notifications.push")}
+                            desc={t("notifications.channel.pushDesc")}
                             icon={<PhoneIcon size={18} />}
                             value={false}
                             onChange={() => { }}
                             disabled
-                            suffix={<Chip size="small" variant="outlined" label="Later" sx={{ borderRadius: "4px" }} />}
+                            suffix={<Chip size="small" variant="outlined" label={t("notifications.later")} sx={{ borderRadius: "4px" }} />}
                           />
 
-                          <TextField select label="Delivery" value={prefs.productDigest} onChange={(e) => setDigest("productDigest", e.target.value as Digest)} fullWidth>
+                          <TextField select label={t("notifications.delivery")} value={prefs.productDigest} onChange={(e) => setDigest("productDigest", e.target.value as Digest)} fullWidth>
                             {(["Instant", "Daily", "Weekly"] as Digest[]).map((d) => (
                               <MenuItem key={d} value={d}>
-                                {d}
+                                {t(`notifications.digest.${d.toLowerCase()}`)}
                               </MenuItem>
                             ))}
                           </TextField>
@@ -493,16 +493,16 @@ export default function NotificationPreferencesPage() {
                         <Stack spacing={1.4}>
                           <Stack direction="row" spacing={1} alignItems="center">
                             <BellIcon size={18} />
-                            <Typography variant="h6">Marketing</Typography>
+                            <Typography variant="h6">{t("notifications.categories.marketing.title")}</Typography>
                           </Stack>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Promotions, partner offers, events. You can opt out anytime.
+                            {t("notifications.categories.marketing.description")}
                           </Typography>
                           <Divider />
 
                           <ChannelRow
-                            label="Email"
-                            desc="Offers and announcements (recommended off by default)."
+                            label={t("notifications.email")}
+                            desc={t("notifications.channel.emailDesc")}
                             icon={<MailIcon size={18} />}
                             value={prefs.marketing.email}
                             onChange={(v: boolean) => {
@@ -511,8 +511,8 @@ export default function NotificationPreferencesPage() {
                             }}
                           />
                           <ChannelRow
-                            label="SMS"
-                            desc="Limited promotions only."
+                            label={t("notifications.sms")}
+                            desc={t("notifications.channel.smsDesc")}
                             icon={<SmsIcon size={18} />}
                             value={prefs.marketing.sms}
                             onChange={(v: boolean) => {
@@ -521,24 +521,24 @@ export default function NotificationPreferencesPage() {
                             }}
                           />
                           <ChannelRow
-                            label="Push"
-                            desc="Mobile push notifications (coming soon)."
+                            label={t("notifications.push")}
+                            desc={t("notifications.channel.pushDesc")}
                             icon={<PhoneIcon size={18} />}
                             value={false}
                             onChange={() => { }}
                             disabled
-                            suffix={<Chip size="small" variant="outlined" label="Later" sx={{ borderRadius: "4px" }} />}
+                            suffix={<Chip size="small" variant="outlined" label={t("notifications.later")} sx={{ borderRadius: "4px" }} />}
                           />
 
-                          <TextField select label="Delivery" value={prefs.marketingDigest} onChange={(e) => setDigest("marketingDigest", e.target.value as Digest)} fullWidth>
+                          <TextField select label={t("notifications.delivery")} value={prefs.marketingDigest} onChange={(e) => setDigest("marketingDigest", e.target.value as Digest)} fullWidth>
                             {(["Instant", "Daily", "Weekly"] as Digest[]).map((d) => (
                               <MenuItem key={d} value={d}>
-                                {d}
+                                {t(`notifications.digest.${d.toLowerCase()}`)}
                               </MenuItem>
                             ))}
                           </TextField>
 
-                          <Alert severity="info">Transaction and security messages are always delivered.</Alert>
+                          <Alert severity="info">{t("notifications.transactionSecurity")}</Alert>
                         </Stack>
                       </CardContent>
                     </Card>
@@ -551,10 +551,10 @@ export default function NotificationPreferencesPage() {
                         <Stack spacing={1.2}>
                           <Stack direction="row" spacing={1} alignItems="center">
                             <ClockIcon size={18} />
-                            <Typography variant="h6">Quiet hours</Typography>
+                            <Typography variant="h6">{t("notifications.quietHours")}</Typography>
                           </Stack>
                           <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                            Reduce non-urgent messages during your preferred hours.
+                            {t("notifications.categories.quietHours.description")}
                           </Typography>
                           <Divider />
 
@@ -568,13 +568,13 @@ export default function NotificationPreferencesPage() {
                                 }}
                               />
                             }
-                            label={<Typography sx={{ fontWeight: 800 }}>Enable quiet hours</Typography>}
+                            label={<Typography sx={{ fontWeight: 800 }}>{t("notifications.enableQuietHours")}</Typography>}
                           />
 
                           <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2}>
                             <TextField
                               type="time"
-                              label="Start"
+                              label={t("notifications.start")}
                               value={prefs.quietStart}
                               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                 setPrefs((p) => ({ ...p, quietStart: e.target.value }));
@@ -586,7 +586,7 @@ export default function NotificationPreferencesPage() {
                             />
                             <TextField
                               type="time"
-                              label="End"
+                              label={t("notifications.end")}
                               value={prefs.quietEnd}
                               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                 setPrefs((p) => ({ ...p, quietEnd: e.target.value }));
@@ -599,7 +599,7 @@ export default function NotificationPreferencesPage() {
                           </Stack>
 
                           <Alert severity="info" icon={<ClockIcon size={18} />}>
-                            Security alerts still come through.
+                            {t("notifications.securityAlertsThrough")}
                           </Alert>
                         </Stack>
                       </CardContent>
@@ -613,10 +613,10 @@ export default function NotificationPreferencesPage() {
                     <CardContent sx={{ py: 1.1, px: 1.2 }}>
                       <Stack direction="row" spacing={1}>
                         <Button fullWidth variant="outlined" sx={orangeOutlined} onClick={resetRecommended}>
-                          Reset
+                          {t("common.actions.reset")}
                         </Button>
                         <Button fullWidth variant="contained" sx={orangeContained} onClick={saveNow}>
-                          Save
+                          {t("common.actions.save")}
                         </Button>
                       </Stack>
                     </CardContent>
