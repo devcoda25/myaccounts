@@ -25,12 +25,22 @@ export function sanitizeUrl(url: string): string {
 
     try {
         const parsed = new URL(url);
+
+        // Only allow safe protocols
+        if (!['https:', 'http:', 'mailto:', 'tel:'].includes(parsed.protocol)) {
+            return '';
+        }
+
         // Only allow HTTPS for production
         if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
     } catch {
+        // Allow safe relative URLs (prevent protocol-relative bypass)
+        if (url.startsWith('/') && !url.startsWith('//')) {
+            return url;
+        }
         return '';
     }
 }
