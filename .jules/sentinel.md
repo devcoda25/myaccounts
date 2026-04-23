@@ -1,0 +1,4 @@
+## 2024-03-31 - Open Redirect Vulnerability in Auth Handlers
+**Vulnerability:** User-controlled `redirectUri` values were being assigned directly to `window.location.href` in auth success and sign-out handlers (`src/features/auth/continue/Index.tsx` and `src/features/auth/signed-out/Index.tsx`). In addition, the `isValidUrl` sanitizer was checking domains using `.includes('evzone.com')`, which could be bypassed (e.g., `evzone.com.attacker.com`).
+**Learning:** Checking for `.includes()` is insufficient for domain validation and leaves applications vulnerable to Open Redirect and SSRF attacks. Also, relative path redirection is a valid use case that generic URL parsers might fail on.
+**Prevention:** Always validate URLs against a strict allowlist or verify they are relative paths (e.g., `.startsWith('/')`) before passing them to sinks like `window.location.href`. Domain validation must use exact matching or strict suffixes (`.endsWith('.evzone.com')`).
