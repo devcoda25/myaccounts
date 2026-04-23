@@ -193,15 +193,7 @@ function WhatsAppIcon({ size = 18 }: { size?: number }) {
 // -----------------------------
 // Helpers
 // -----------------------------
-function safeRandomBytes(n: number): Uint8Array {
-  const out = new Uint8Array(n);
-  try {
-    window.crypto.getRandomValues(out);
-  } catch {
-    for (let i = 0; i < n; i++) out[i] = Math.floor(Math.random() * 256);
-  }
-  return out;
-}
+import { safeRandomBytes } from "@/utils/helpers";
 
 function randomBase32(length: number) {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";

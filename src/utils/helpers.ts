@@ -56,11 +56,16 @@ export function supportsPasskeys(): boolean {
  */
 export function safeRandomBytes(n: number): Uint8Array {
     const out = new Uint8Array(n);
-    try {
-        window.crypto.getRandomValues(out);
-    } catch {
-        for (let i = 0; i < n; i++) out[i] = Math.floor(Math.random() * 256);
+    // Support modern browsers (window.crypto), Node.js (global.crypto), and others (globalThis.crypto)
+    const crypto = typeof globalThis !== 'undefined' ? globalThis.crypto :
+        typeof window !== 'undefined' ? window.crypto :
+            typeof global !== 'undefined' ? (global as any).crypto : undefined;
+
+    if (!crypto || !crypto.getRandomValues) {
+        throw new Error('Secure random number generation is not available.');
     }
+
+    crypto.getRandomValues(out);
     return out;
 }
 
