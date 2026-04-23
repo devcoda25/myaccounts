@@ -1,0 +1,5 @@
+
+## 2025-04-07 - [Open Redirect Bypass via Incomplete Domain Validation]
+**Vulnerability:** Found `isValidUrl` validation function in `src/sanitizers/url.ts` using `.includes('evzone.com')` instead of strict matching. This allowed an attacker to bypass domain validation using `evzone.com.attacker.com` and perform Open Redirects or XSS. Furthermore, `window.location.href` assignment in `ContinueToAppV4` and `SignedOutPage` components didn't use any URL validation, blindly trusting the `redirect_uri` parameter.
+**Learning:** Checking for a domain substring via `.includes` is insufficient and vulnerable to bypass. Any user-provided redirect URL directly assigned to `window.location.href` must be validated.
+**Prevention:** Always use exact match `===` or suffix check `.endsWith()` when performing strict domain validation. Additionally, wrap dynamic redirect assignments (`window.location.href = ...`) with validation functions that also allow local safe relative paths (e.g., `url.startsWith('/') && !url.startsWith('//')`).
