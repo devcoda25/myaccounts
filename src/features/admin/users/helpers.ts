@@ -4,12 +4,11 @@ import { Risk, UserStatus } from "./types";
 // Generate a temporary password with EVZ-XXXX-XXXX format
 export function mkTempPassword(): string {
     const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    const bytes = new Uint8Array(10);
-    try {
-        window.crypto.getRandomValues(bytes);
-    } catch {
-        for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
+    if (typeof window === "undefined" || !window.crypto || !window.crypto.getRandomValues) {
+        throw new Error("Secure random generation not supported");
     }
+    const bytes = new Uint8Array(10);
+    window.crypto.getRandomValues(bytes);
     const s = Array.from(bytes)
         .map((b) => alphabet[b % alphabet.length])
         .join("");
