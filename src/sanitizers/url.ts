@@ -10,7 +10,7 @@ export function isValidUrl(url: string): boolean {
     try {
         const parsed = new URL(url);
         return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+            isEvzoneDomain(parsed.hostname);
     } catch {
         return false;
     }
@@ -26,13 +26,21 @@ export function sanitizeUrl(url: string): string {
     try {
         const parsed = new URL(url);
         // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        if (parsed.protocol !== 'https:' && isEvzoneDomain(parsed.hostname)) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
     } catch {
         return '';
     }
+}
+
+/**
+ * Check if the hostname is a valid evzone domain
+ * Strictly checks for exact match or subdomain
+ */
+function isEvzoneDomain(hostname: string): boolean {
+    return hostname === 'evzone.com' || hostname.endsWith('.evzone.com');
 }
 
 /**
