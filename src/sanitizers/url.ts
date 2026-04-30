@@ -1,3 +1,4 @@
+/* global URL */
 /**
  * URL Sanitizer
  * URL validation and sanitization utilities
@@ -9,8 +10,8 @@
 export function isValidUrl(url: string): boolean {
     try {
         const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        const isEvzone = parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com');
+        return ['https:', 'http:'].includes(parsed.protocol) && isEvzone;
     } catch {
         return false;
     }
@@ -25,12 +26,25 @@ export function sanitizeUrl(url: string): string {
 
     try {
         const parsed = new URL(url);
-        // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
-            parsed.protocol = 'https:';
+
+        // Explicitly allowlist only HTTP and HTTPS
+        if (!['http:', 'https:'].includes(parsed.protocol)) {
+            return '';
+        }
+
+        // Only allow HTTPS for production domains
+        const isEvzone = parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com');
+        if (parsed.protocol === 'http:' && isEvzone) {
+            // Re-create as HTTPS instead of mutating protocol on the URL object directly
+            parsed.protocol = 'https:'; // mutating http->https is safe, but we'll return a new string just to be explicit
+            return parsed.toString();
         }
         return parsed.toString();
     } catch {
+        // Fallback for safe relative URLs
+        if (url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/\\')) {
+            return url;
+        }
         return '';
     }
 }
