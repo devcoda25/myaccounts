@@ -9,8 +9,11 @@
 export function isValidUrl(url: string): boolean {
     try {
         const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        if (!['https:', 'http:'].includes(parsed.protocol)) return false;
+        const h = parsed.hostname;
+        return h === 'evzone.com' || h.endsWith('.evzone.com') ||
+               h === 'evzone.app' || h.endsWith('.evzone.app') ||
+               h === 'evzonemarketplace.com' || h.endsWith('.evzonemarketplace.com');
     } catch {
         return false;
     }
@@ -25,12 +28,17 @@ export function sanitizeUrl(url: string): string {
 
     try {
         const parsed = new URL(url);
+        if (!['https:', 'http:', 'mailto:', 'tel:'].includes(parsed.protocol)) return '';
         // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        if (parsed.protocol === 'http:' && parsed.hostname.includes('evzone')) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
     } catch {
+        // Fallback for safe relative paths
+        if (url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/\\')) {
+            return url;
+        }
         return '';
     }
 }
