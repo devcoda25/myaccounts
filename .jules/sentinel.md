@@ -1,0 +1,5 @@
+
+## 2024-05-01 - Fix XSS and SSRF vulnerabilities in URL sanitization
+**Vulnerability:** Weak domain checking (`.includes('evzone.com')`) in URL sanitization (`isValidUrl` and `sanitizeUrl`) permitted bypasses (e.g. `evzone.com.attacker.com`), leading to SSRF or Open Redirects. Additionally, failure to restrict allowed URL schemes allowed XSS via `javascript:` protocols.
+**Learning:** Checking subdomains with `.includes` is a common anti-pattern that can be bypassed. URL sanitizers must strictly validate protocols against an allowlist and reject invalid schemes to ensure safety. Also, when using the `URL` API, relative URLs throw an error; catch blocks must safely handle relative paths without accidentally allowing protocol-relative bypasses.
+**Prevention:** Always use exact string matching (`===`) or strict suffix matching (`.endsWith('.evzone.com')`) for domains. Explicitly check `.protocol` against an allowlist (e.g. `['http:', 'https:']`) and reject unapproved protocols immediately. Ensure custom URL parsing appropriately handles and allows safe relative paths.
