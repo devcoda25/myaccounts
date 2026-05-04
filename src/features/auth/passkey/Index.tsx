@@ -139,7 +139,7 @@ async function tryWebAuthnGet(): Promise<{ ok: boolean; message: string }> {
     try {
       window.crypto.getRandomValues(random);
     } catch {
-      for (let i = 0; i < random.length; i++) random[i] = Math.floor(Math.random() * 256);
+      throw new Error("Secure random number generation is not supported in this environment");
     }
 
     await nav.credentials.get({
