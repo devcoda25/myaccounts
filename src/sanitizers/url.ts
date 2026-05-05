@@ -9,8 +9,15 @@
 export function isValidUrl(url: string): boolean {
     try {
         const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        if (!['https:', 'http:'].includes(parsed.protocol)) return false;
+
+        const hostname = parsed.hostname;
+        // Trusted ecosystem domains
+        const allowedDomains = ['evzone.com', 'evzone.app', 'evzonemarketplace.com'];
+        // Strict suffix or exact match, not .includes() which is vulnerable to attacker.com bypass
+        return allowedDomains.some(domain =>
+            hostname === domain || hostname.endsWith('.' + domain)
+        );
     } catch {
         return false;
     }
@@ -25,12 +32,29 @@ export function sanitizeUrl(url: string): string {
 
     try {
         const parsed = new URL(url);
+        // Explicitly reject unapproved protocols (like javascript:)
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return '';
+        }
+
+        const hostname = parsed.hostname;
+        const isEvzone = ['evzone.com', 'evzone.app', 'evzonemarketplace.com'].some(domain =>
+            hostname === domain || hostname.endsWith('.' + domain)
+        );
+
         // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        if (parsed.protocol === 'http:' && isEvzone) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
     } catch {
+        // Fallback for safe relative paths, preventing XSS/Open Redirect
+        if (url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/\\')) {
+            const pathPart = url.split('?')[0].split('#')[0];
+            if (!pathPart.includes('../') && !pathPart.includes('./')) {
+                return url;
+            }
+        }
         return '';
     }
 }
