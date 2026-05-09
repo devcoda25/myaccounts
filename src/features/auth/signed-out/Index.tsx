@@ -24,6 +24,7 @@ import {
 
 import AuthHeader from "@/components/layout/AuthHeader";
 import { EVZONE } from "@/theme/evzone";
+import { isValidUrl } from "@/sanitizers/url";
 
 /**
  * EVzone My Accounts - Redesigned Signed Out Page
@@ -38,7 +39,8 @@ export default function SignedOutPage() {
   const [searchParams] = useSearchParams();
 
   const appName = searchParams.get("app") || "EVzone Portal";
-  const redirectUri = searchParams.get("redirect_uri") || "";
+  const rawUri = searchParams.get("redirect_uri") || "";
+  const redirectUri = isValidUrl(rawUri) ? rawUri : "";
 
   const pageBg = isDark
     ? "radial-gradient(1200px 600px at 12% 6%, rgba(3,205,140,0.22), transparent 52%), radial-gradient(1000px 520px at 92% 10%, rgba(3,205,140,0.16), transparent 56%), linear-gradient(180deg, #04110D 0%, #07110F 60%, #07110F 100%)"
