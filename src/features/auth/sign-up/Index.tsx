@@ -648,6 +648,7 @@ export default function SignUpPageV3() {
                             value={countryCode}
                             onChange={(e) => setCountryCode(e.target.value)}
                             displayEmpty
+                            renderValue={(value) => <Typography>{value}</Typography>}
                             MenuProps={{
                               anchorOrigin: { vertical: 'bottom', horizontal: 'left' },
                               transformOrigin: { vertical: 'top', horizontal: 'left' },
