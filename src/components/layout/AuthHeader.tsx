@@ -12,7 +12,7 @@ interface AuthHeaderProps {
     showHelp?: boolean;
 }
 
-export default function AuthHeader({ title = "EVzone", subtitle, showHelp = true }: AuthHeaderProps) {
+export default function AuthHeader({ title, subtitle, showHelp = true }: AuthHeaderProps) {
     const theme = useTheme();
     const navigate = useNavigate();
     const location = useLocation();
@@ -39,14 +39,16 @@ export default function AuthHeader({ title = "EVzone", subtitle, showHelp = true
                         >
                             <img src="/logo.png" alt="EVzone" style={{ height: '100%', width: 'auto' }} />
                         </Box>
-                        <Box>
-                            <Typography variant="subtitle1" sx={{ lineHeight: 1.1 }}>{title}</Typography>
-                            {subtitle && (
-                                <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                                    {subtitle}
-                                </Typography>
-                            )}
-                        </Box>
+                        {(title || subtitle) && (
+                            <Box>
+                                {title && <Typography variant="subtitle1" sx={{ lineHeight: 1.1 }}>{title}</Typography>}
+                                {subtitle && (
+                                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                                        {subtitle}
+                                    </Typography>
+                                )}
+                            </Box>
+                        )}
                     </Stack>
 
                     {/* Actions */}
