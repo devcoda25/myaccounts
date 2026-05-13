@@ -226,7 +226,7 @@ export default function SignInOtpPage() {
   return (
     <Box className="min-h-screen" sx={{ background: pageBg }}>
       {/* Top Bar - Replace with AuthHeader */}
-      <AuthHeader title={t("EVzone My Accounts")} subtitle={t("Sign in with a one-time code")} />
+      <AuthHeader />
 
       {/* Body */}
       <Box className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">

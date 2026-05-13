@@ -463,10 +463,7 @@ export default function SignInPage() {
   return (
     <Box className="min-h-screen" sx={{ background: pageBg }}>
       {/* Unified Auth Header */}
-      <AuthHeader
-        title={t('app.name')}
-        subtitle={t('auth.signIn.subtitle')}
-      />
+      <AuthHeader />
 
       {/* Body */}
       <Box className="mx-auto max-w-lg px-4 py-8 md:px-6 md:py-12">

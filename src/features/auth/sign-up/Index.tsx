@@ -566,10 +566,7 @@ export default function SignUpPageV3() {
 
   return (
     <Box className="min-h-screen" sx={{ background: pageBg }}>
-      <AuthHeader
-        title={t("header.title")}
-        subtitle={t("header.subtitle")}
-      />
+      <AuthHeader />
 
       <Box className="mx-auto max-w-3xl px-4 py-8 md:px-6 md:py-12">
         <Box className="grid gap-4 md:grid-cols-12 md:gap-6">
