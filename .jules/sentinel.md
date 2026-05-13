@@ -1,0 +1,4 @@
+## 2024-05-18 - Fix weak URL validation leading to SSRF/Open Redirect
+**Vulnerability:** Weak hostname validation using `hostname.includes('domain.com')` allowed bypassing via attacker domains like `domain.com.attacker.com`. Additionally, naive protocol checks failed when `URL` parses `javascript:` schemas (it doesn't throw and bypasses naive checks).
+**Learning:** `URL` parsing is permissive. `URL.hostname` validations must use exact matching or strict regex (`^([a-z0-9-]+\.)*domain\.com$`). Also, modifying `url.protocol` for sanitization without an allowlist is insecure since `javascript:` domains evaluate silently.
+**Prevention:** Always use strict regex or exact string match for domain validation. Implement explicit allowlists for protocols (`http:`, `https:`, etc.) before any processing to prevent XSS via `javascript:` schemas. Ensure fallback to allow safe relative URLs (e.g., starting with `/` but not `//` or `\\`) in custom sanitizers that catch errors.
