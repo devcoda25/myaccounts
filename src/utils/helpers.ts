@@ -52,16 +52,31 @@ export function supportsPasskeys(): boolean {
 }
 
 /**
- * Generate cryptographically secure random bytes
+ * Generate cryptographically secure random bytes.
+ *
+ * Uses `window.crypto` (Browser) or `global.crypto` (Node/Test) to generate
+ * secure random values. Throws an error if no secure RNG is available.
+ *
+ * @param n Number of bytes to generate
+ * @returns Uint8Array of random bytes
+ * @throws Error if secure random number generator is not available
  */
 export function safeRandomBytes(n: number): Uint8Array {
     const out = new Uint8Array(n);
-    try {
+
+    // Browser environment
+    if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
         window.crypto.getRandomValues(out);
-    } catch {
-        for (let i = 0; i < n; i++) out[i] = Math.floor(Math.random() * 256);
+        return out;
     }
-    return out;
+
+    // Node.js / Test environment
+    if (typeof global !== 'undefined' && global.crypto && global.crypto.getRandomValues) {
+        global.crypto.getRandomValues(out);
+        return out;
+    }
+
+    throw new Error('No secure random number generator available.');
 }
 
 /**
