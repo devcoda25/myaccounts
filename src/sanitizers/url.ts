@@ -9,8 +9,12 @@
 export function isValidUrl(url: string): boolean {
     try {
         const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return false;
+        }
+        const hostname = parsed.hostname;
+        return hostname === 'evzone.com' || hostname.endsWith('.evzone.com') ||
+            hostname === 'evzone.app' || hostname.endsWith('.evzone.app');
     } catch {
         return false;
     }
@@ -25,8 +29,19 @@ export function sanitizeUrl(url: string): string {
 
     try {
         const parsed = new URL(url);
-        // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+
+        // Block dangerous protocols
+        const allowedProtocols = ['http:', 'https:', 'mailto:', 'tel:'];
+        if (!allowedProtocols.includes(parsed.protocol)) {
+            return '';
+        }
+
+        // Only allow HTTPS for production domains
+        const hostname = parsed.hostname;
+        const isEvzoneDomain = hostname === 'evzone.com' || hostname.endsWith('.evzone.com') ||
+                               hostname === 'evzone.app' || hostname.endsWith('.evzone.app');
+
+        if (parsed.protocol === 'http:' && isEvzoneDomain) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
