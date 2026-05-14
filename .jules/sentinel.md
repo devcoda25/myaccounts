@@ -1,0 +1,5 @@
+
+## 2024-05-14 - [HIGH] Fix XSS and SSRF in URL validation
+**Vulnerability:** Weak URL validation in `src/sanitizers/url.ts` allowed Open Redirect / SSRF bypass via `.includes('evzone.com')` (e.g. `evzone.com.attacker.com`). It also failed to block the `javascript:` protocol when used for attributes, potentially enabling XSS.
+**Learning:** URL sanitizers using `new URL()` must explicitly enforce strict regex domain matching for allowed hosts. Additionally, `new URL()` throws an error on relative paths, so falling back to catch block requires careful validation of safe relative paths (e.g. `url.startsWith('/') && !url.startsWith('//')`) to prevent functionality regression while maintaining security.
+**Prevention:** Always use exact domain checking or strict regex (e.g., `/^(?:[a-z0-9-]+\.)*(?:evzone\.com|evzone\.app|evzonemarketplace\.com)$/i`) rather than substring matching. Always explicitly allowlist protocols (`http:`, `https:`, etc.) rather than assuming standard parsing prevents XSS via `javascript:`.
