@@ -7,8 +7,8 @@ export function mkTempPassword(): string {
     const bytes = new Uint8Array(10);
     try {
         window.crypto.getRandomValues(bytes);
-    } catch {
-        for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
+    } catch (e) {
+        throw new Error("Cryptographically secure random number generation is not available.", { cause: e });
     }
     const s = Array.from(bytes)
         .map((b) => alphabet[b % alphabet.length])
