@@ -82,7 +82,7 @@ function safeRandomBytes(n: number): Uint8Array {
   try {
     window.crypto.getRandomValues(out);
   } catch {
-    for (let i = 0; i < n; i++) out[i] = Math.floor(Math.random() * 256);
+    throw new Error("Cryptography API not available");
   }
   return out;
 }
