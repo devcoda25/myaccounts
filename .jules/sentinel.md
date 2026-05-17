@@ -1,0 +1,4 @@
+## 2024-03-15 - Insecure URL Validation via .includes()
+**Vulnerability:** URL validation and sanitization (`isValidUrl` and `sanitizeUrl` in `src/sanitizers/url.ts`) used `.includes()` on hostnames, permitting bypasses via domains like `evzone.com.attacker.com` (Open Redirect / SSRF). Additionally, attempting to modify `url.protocol` for schemas like `javascript:` fails silently, leaving XSS vectors intact.
+**Learning:** Checking hostnames with `.includes()` fails to properly anchor the domain, granting attackers flexibility to inject arbitrary domains or special URI schemes. Relying on mutable URL properties (`url.protocol`) is unsafe due to silent failures on non-standard schemas.
+**Prevention:** Always validate domains using exact equality (`===`) or strict suffix matching (`.endsWith()`). Validate and whitelist protocols (`http:`, `https:`) explicitly and reject non-allowed protocols entirely rather than trying to sanitize or replace them silently.
