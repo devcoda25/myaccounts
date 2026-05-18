@@ -53,15 +53,19 @@ export function supportsPasskeys(): boolean {
 
 /**
  * Generate cryptographically secure random bytes
+ * Fails closed if no secure source is available.
  */
 export function safeRandomBytes(n: number): Uint8Array {
     const out = new Uint8Array(n);
-    try {
+    if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
         window.crypto.getRandomValues(out);
-    } catch {
-        for (let i = 0; i < n; i++) out[i] = Math.floor(Math.random() * 256);
+        return out;
     }
-    return out;
+    if (typeof crypto !== 'undefined' && crypto?.getRandomValues) {
+        crypto.getRandomValues(out);
+        return out;
+    }
+    throw new Error('No secure random number generator available.');
 }
 
 /**
