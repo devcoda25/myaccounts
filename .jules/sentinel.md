@@ -1,0 +1,5 @@
+
+## 2024-05-18 - [HIGH] Fix Open Redirect and SSRF bypass via weak URL validation
+**Vulnerability:** Open Redirect and SSRF check bypass in URL validation. The `isValidUrl` method used `.includes('evzone.com')` without strict domain validation or regex constraints. This allowed bypasses using malicious subdomains like `https://evzone.com.attacker.com` that trick the system to redirect to external attacker-controlled domains.
+**Learning:** Checking for substrings in domain validation allows simple SSRF and Open Redirect bypasses. A URL string containing `evzone.com` inside a larger malicious domain (like `evzone.com.attacker.com`) passes the `includes` check but points to a completely different domain.
+**Prevention:** Avoid using `.includes()` for URL domain validation. Always use strict domain matching (`===`) or a strict regex (e.g., `/^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i`) checking the `.hostname` of the parsed URL to ensure it exactly matches the intended domains.
