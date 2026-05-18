@@ -1,0 +1,5 @@
+
+## 2024-05-18 - Fix Weak URL Validation Leading to Open Redirect & XSS
+**Vulnerability:** The custom `isValidUrl` validation function used `.includes('evzone.com')` to validate hostnames, and `sanitizeUrl` did not strictly enforce the protocol allowlist. This allowed Open Redirects (e.g., `https://evzone.com.attacker.com` bypassing host checks) and potential XSS (e.g. `javascript:alert(1)` bypassing naive hostname validation since empty hostnames aren't explicitly caught if the protocol isn't verified).
+**Learning:** `includes()` or similar string matching for domain validation is highly susceptible to subdomain spoofing bypasses. Furthermore, using JavaScript's `URL` API requires strictly checking `parsed.protocol` against an explicit allowlist *first* because protocols like `javascript:` don't trigger parsing errors and simply return empty domains/paths.
+**Prevention:** Always use exact matching (`===`) or strict Regex matching (e.g., `/^([a-z0-9-]+\.)*(evzone\.com)$/i`) to validate domain names. Always use a strict protocol allowlist (e.g., `http:`, `https:`) before interpreting the rest of the URL from a `URL` object.

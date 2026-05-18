@@ -37,6 +37,8 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 
+import { isValidUrl } from "@/sanitizers/url";
+
 /**
  * EVzone My Accounts — Continue to App (v4)
  * Route: /auth/continue
@@ -299,7 +301,11 @@ export default function ContinueToAppV4() {
     const onContinue = () => {
       setSnack({ open: true, severity: "success", msg: `Continuing to ${ctx.name}…` });
       setTimeout(() => {
-        window.location.href = ctx.redirectUri;
+        if (isValidUrl(ctx.redirectUri)) {
+          window.location.href = ctx.redirectUri;
+        } else {
+          navigate("/app");
+        }
       }, 800);
     };
 
