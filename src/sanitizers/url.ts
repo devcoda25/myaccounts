@@ -9,8 +9,13 @@
 export function isValidUrl(url: string): boolean {
     try {
         const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return false;
+        }
+
+        // Strict domain validation to prevent SSRF and Open Redirect bypasses via subdomains
+        const validUrlRegex = /^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i;
+        return validUrlRegex.test(parsed.hostname);
     } catch {
         return false;
     }
