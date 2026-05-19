@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { isValidUrl } from "@/sanitizers/url";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import {
@@ -297,6 +298,10 @@ export default function ContinueToAppV4() {
     };
 
     const onContinue = () => {
+      if (!isValidUrl(ctx.redirectUri)) {
+        setSnack({ open: true, severity: "error", msg: "Invalid redirect URI. Cannot continue." });
+        return;
+      }
       setSnack({ open: true, severity: "success", msg: `Continuing to ${ctx.name}…` });
       setTimeout(() => {
         window.location.href = ctx.redirectUri;
