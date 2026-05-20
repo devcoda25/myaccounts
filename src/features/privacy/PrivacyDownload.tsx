@@ -25,6 +25,7 @@ import {
 import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { api } from "@/utils/api";
+import { safeRandomBytes } from "@/utils/helpers";
 
 /**
  * EVzone My Accounts - Download My Data
@@ -199,8 +200,11 @@ function buildTheme(mode: ThemeMode) {
 // -----------------------------
 // Helpers
 // -----------------------------
+
 function mkId(prefix: string) {
-  return `${prefix}_${Math.random().toString(16).slice(2, 10).toUpperCase()}`;
+  const bytes = safeRandomBytes(4);
+  const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+  return `${prefix}_${hex}`;
 }
 
 function fmtDateTime(ts?: number) {

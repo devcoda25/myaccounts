@@ -155,8 +155,13 @@ function mkIncidentId() {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   const bytes = new Uint8Array(12);
   try {
-    window.crypto.getRandomValues(bytes);
+    if (typeof window !== "undefined" && window.crypto) {
+      window.crypto.getRandomValues(bytes);
+    } else {
+      throw new Error("No crypto");
+    }
   } catch {
+    // 500 page is allowed to fallback since we're already crashing, we don't want to crash loop
     for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
   }
   const s = Array.from(bytes)

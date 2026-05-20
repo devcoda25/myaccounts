@@ -56,12 +56,11 @@ export function supportsPasskeys(): boolean {
  */
 export function safeRandomBytes(n: number): Uint8Array {
     const out = new Uint8Array(n);
-    try {
+    if (typeof window !== "undefined" && window.crypto) {
         window.crypto.getRandomValues(out);
-    } catch {
-        for (let i = 0; i < n; i++) out[i] = Math.floor(Math.random() * 256);
+        return out;
     }
-    return out;
+    throw new Error("Secure random number generation is not available.");
 }
 
 /**
@@ -103,7 +102,9 @@ export function truncate(str: string, maxLength: number): string {
  * Generate a unique ID
  */
 export function generateId(prefix: string = 'id'): string {
-    return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+    const bytes = safeRandomBytes(4);
+    const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+    return `${prefix}_${Date.now().toString(36)}_${hex}`;
 }
 
 /**
