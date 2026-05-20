@@ -1,0 +1,4 @@
+## 2024-05-24 - Remove Math.random() fallback for cryptographic operations
+**Vulnerability:** Several cryptographic functions (`safeRandomBytes` in multiple locations, `mkTempPassword`, etc.) were configured to fall back to `Math.random()` if `window.crypto` was unavailable. `Math.random()` is not a cryptographically secure pseudo-random number generator (CSPRNG) and its values can be predicted.
+**Learning:** Hardcoding insecure fallbacks inside seemingly "safe" functions (like `safeRandomBytes`) creates a false sense of security. If the environment lacks `window.crypto` (which shouldn't happen in modern browsers, but could in some obscure polyfills or misconfigured environments), it silently degrades to insecure behavior without throwing an error.
+**Prevention:** Always fail fast and throw an error when security prerequisites (like `window.crypto.getRandomValues`) are not met, rather than silently degrading security.
