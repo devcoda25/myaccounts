@@ -1,0 +1,5 @@
+## 2024-05-21 - URL Validation and Sanitization Bypasses
+
+**Vulnerability:** Open Redirect and SSRF bypasses via `.includes()` domain validation, and XSS bypasses via silent protocol modifications when using `new URL()` with `javascript:` schemas.
+**Learning:** Naive `.includes()` checks for domain validation (e.g. `.includes('evzone.com')`) can be bypassed by an attacker registering subdomains like `evzone.com.attacker.com`. Additionally, the JavaScript `URL` object doesn't throw an error on `javascript:alert(1)//evzone.com` but parses it with protocol `javascript:` and empty host, evading naive host validation if the protocol isn't checked first.
+**Prevention:** Always use strict regex or exact string matching for domains (e.g., `/^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i`). When parsing untrusted URLs, always explicitly check `protocol` against an allowlist (e.g. `['http:', 'https:', 'mailto:', 'tel:']`) before attempting further validations or mutation. Handle safe relative path fallbacks carefully (`startsWith('/') && !startsWith('//')`).
