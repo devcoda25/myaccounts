@@ -1,3 +1,4 @@
+import { isValidUrl } from "@/sanitizers/url";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -297,6 +298,11 @@ export default function ContinueToAppV4() {
     };
 
     const onContinue = () => {
+      if (!isValidUrl(ctx.redirectUri)) {
+        setSnack({ open: true, severity: "error", msg: "Invalid redirect destination." });
+        setTimeout(() => navigate("/app"), 1500);
+        return;
+      }
       setSnack({ open: true, severity: "success", msg: `Continuing to ${ctx.name}…` });
       setTimeout(() => {
         window.location.href = ctx.redirectUri;
