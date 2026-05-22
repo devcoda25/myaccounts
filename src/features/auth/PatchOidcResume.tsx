@@ -17,7 +17,10 @@ export default function PatchOidcResume() {
 
     console.log("[PatchOidcResume] Inspecting path:", path);
 
-    if (segment && segment.length > 20 && !segment.includes("/")) {
+    // Validate segment strictly against allowed characters to prevent bypasses like backslashes
+    const isValidSegment = /^[a-zA-Z0-9-_]+$/.test(segment);
+
+    if (segment && segment.length > 20 && isValidSegment) {
       const target = `/oidc/auth/${segment}${location.search}${location.hash}`;
       console.log("[PatchOidcResume] redirecting to:", target);
       window.location.href = target;
