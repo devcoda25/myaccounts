@@ -1,0 +1,4 @@
+## 2024-05-22 - Prevent Open Redirects via window.location.href Assignments
+**Vulnerability:** The application was directly assigning user-controlled input (e.g., query parameter `redirect_uri`) to `window.location.href` in authentication flows (`src/features/auth/continue/Index.tsx` and `src/features/auth/signed-out/Index.tsx`), creating Open Redirect vulnerabilities.
+**Learning:** Directly assigning to `window.location.href` bypasses any client-side routing restrictions. Even if a string looks like a URL, it can be manipulated to redirect users to malicious sites, which can lead to phishing or token leakage.
+**Prevention:** Always strictly validate dynamic or user-supplied URLs before assignment. Wrap the assignment in a validation condition using `isValidUrl()` and provide a safe fallback (e.g., using internal routing like `navigate('/app')`) if validation fails.
