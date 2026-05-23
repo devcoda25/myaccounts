@@ -1,0 +1,4 @@
+## 2024-05-24 - SSRF and Open Redirect Bypasses via URL Parsing and Insecure Regex
+**Vulnerability:** Open Redirect and Server-Side Request Forgery (SSRF) bypass vulnerabilities in URL validation logic.
+**Learning:** `javascript:` schemas bypass naive URL protocol validations that do not explicitly check against a strict allowlist. Furthermore, using `String.prototype.includes()` for validating domain names allows attackers to construct bypassing subdomains (e.g., `evzone.com.attacker.com`), bypassing SSRF protections. The `URL` constructor does not throw exceptions on malicious schemas.
+**Prevention:** Always explicitly validate protocols against an allowlist (`http:`, `https:`), and validate domain hostnames using strict exact matches (`===`) or strict Regex matching. Fallback explicitly to internal navigation paths when validation fails to prevent Open Redirects via `window.location.href`.
