@@ -1,0 +1,4 @@
+## 2024-05-23 - URL Validation Bypass and XSS via Unsafe Protocols
+**Vulnerability:** The application was vulnerable to Open Redirect and SSRF because domain validation used `.includes('evzone.com')`, which could be bypassed with `evzone.com.attacker.com`. Additionally, XSS was possible via `sanitizeUrl` because the `URL` API silently accepts protocols like `javascript:` without throwing an error, allowing execution.
+**Learning:** Checking for substrings in hostnames is unsafe. Also, modifying `url.protocol` or omitting explicit protocol verification allows unsafe schemas (like `javascript:`) to slip through because `new URL()` does not throw exceptions for them.
+**Prevention:** Always use exact matching or strict Regex to validate domains. Always strictly enforce an explicit allowlist of safe protocols (`http:`, `https:`, etc.) when sanitizing user-provided URLs.
