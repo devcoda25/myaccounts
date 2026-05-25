@@ -1,0 +1,5 @@
+
+## 2024-05-18 - Strict URL Validation for Open Redirect Prevention
+**Vulnerability:** The application previously used `.includes()` for domain validation and path segment checks (e.g., `parsed.hostname.includes('evzone.com')` and `!segment.includes("/")`), which are vulnerable to bypasses such as `evzone.com.attacker.com` or path traversal via backslashes (`\`). This allowed potential Open Redirect and SSRF vulnerabilities.
+**Learning:** Naive string matching methods like `.includes()` or `.startsWith()` are insufficient for security-critical URL and path validation, as attackers can craft inputs that satisfy these conditions while pointing to malicious destinations. Backslashes can also bypass simple forward-slash exclusion filters.
+**Prevention:** Always use strict regex matching (e.g., `/^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i`) or exact matching (`===`) against an allowlist for domain validation. For URL paths, validate against an explicit safe character allowlist (e.g., `/^[a-zA-Z0-9-_]+$/`) rather than relying on character exclusion.
