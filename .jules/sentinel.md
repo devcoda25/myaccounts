@@ -1,0 +1,4 @@
+## 2026-05-26 - [HIGH] Fix XSS and Open Redirect in URL sanitizers
+**Vulnerability:** XSS and Open Redirect vulnerabilities due to weak substring matching and unvalidated URL protocols.
+**Learning:** The `isValidUrl` implementation used `.includes('evzone.com')` for validation, allowing attackers to bypass validation using domains like `evzone.com.attacker.com`. Also, the `new URL()` constructor allowed malicious protocols (like `javascript:`) when passed to `sanitizeUrl` because protocol validation was missing.
+**Prevention:** Always use strict exact matching or strict regex constraints instead of substrings (like `.includes()`) for domain name validation to prevent SSRF and Open Redirect. In addition, when dealing with `new URL()`, enforce an explicit protocol allowlist (e.g., `http:`, `https:`) because `new URL()` silently allows arbitrary schemas which can cause XSS. Also explicitly handle relative URL fallbacks properly by allowing clean relative paths.
