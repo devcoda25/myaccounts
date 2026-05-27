@@ -7,10 +7,25 @@
  * Validate URL is safe and allowed
  */
 export function isValidUrl(url: string): boolean {
+    if (!url) return false;
+
+    // Allow safe relative paths
+    if (url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/\\')) {
+        return true;
+    }
+
     try {
+        /* global URL */
         const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+
+        // Strict protocol allowlist
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return false;
+        }
+
+        // Strict domain regex matching
+        const domainRegex = /^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i;
+        return domainRegex.test(parsed.hostname);
     } catch {
         return false;
     }
@@ -23,10 +38,24 @@ export function isValidUrl(url: string): boolean {
 export function sanitizeUrl(url: string): string {
     if (!url) return '';
 
+    // Allow safe relative paths
+    if (url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/\\')) {
+        return url;
+    }
+
     try {
+        /* global URL */
         const parsed = new URL(url);
-        // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+
+        // Protocol allowlist
+        if (!['https:', 'http:', 'mailto:', 'tel:'].includes(parsed.protocol)) {
+            return '';
+        }
+
+        const domainRegex = /^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i;
+
+        // Only allow HTTPS for production domains
+        if (parsed.protocol === 'http:' && domainRegex.test(parsed.hostname)) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
