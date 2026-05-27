@@ -1,0 +1,4 @@
+## 2024-05-24 - URL Parsing and Validation Bypasses
+**Vulnerability:** Open Redirect and Path Traversal bypasses were found due to weak string matching methods and silent failure behavior of the URL API.
+**Learning:** Using `.includes()` for domain validation can easily be bypassed (e.g., `evzone.com.attacker.com`). When sanitizing protocol schemas, attempting to mutate `parsed.protocol` fails silently on special schemas like `javascript:`. Furthermore, validating path segments by simply rejecting a single character like `/` can be bypassed using backslashes `\\`.
+**Prevention:** Always use strict regex or exact string matching for domains. For URLs, explicitly check protocols against an allowlist instead of relying on mutation. Validate dynamic path segments using a safe character allowlist regex like `/^[a-zA-Z0-9-_]+$/`.
