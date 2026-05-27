@@ -8,10 +8,15 @@
  */
 export function isValidUrl(url: string): boolean {
     try {
+        // eslint-disable-next-line no-undef
         const parsed = new URL(url);
         return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+            /^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i.test(parsed.hostname);
     } catch {
+        // Allow safe relative paths
+        if (url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/\\')) {
+            return true;
+        }
         return false;
     }
 }
@@ -24,13 +29,25 @@ export function sanitizeUrl(url: string): string {
     if (!url) return '';
 
     try {
+        // eslint-disable-next-line no-undef
         const parsed = new URL(url);
+
+        // Explicitly check allowlist of safe protocols
+        const safeProtocols = ['http:', 'https:', 'mailto:', 'tel:'];
+        if (!safeProtocols.includes(parsed.protocol)) {
+            return '';
+        }
+
         // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        if (parsed.protocol !== 'https:' && /^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i.test(parsed.hostname)) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
     } catch {
+        // Catch block handles relative paths, validate them securely
+        if (url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/\\')) {
+            return url;
+        }
         return '';
     }
 }
@@ -40,6 +57,7 @@ export function sanitizeUrl(url: string): string {
  */
 export function extractHostname(url: string): string {
     try {
+        // eslint-disable-next-line no-undef
         return new URL(url).hostname;
     } catch {
         return '';
@@ -58,6 +76,7 @@ export function isAbsoluteUrl(url: string): boolean {
  */
 export function resolveRelativeUrl(baseUrl: string, relativeUrl: string): string {
     try {
+        // eslint-disable-next-line no-undef
         return new URL(relativeUrl, baseUrl).toString();
     } catch {
         return relativeUrl;
