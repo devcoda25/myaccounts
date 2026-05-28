@@ -9,10 +9,12 @@
 export function isValidUrl(url: string): boolean {
     try {
         const parsed = new URL(url);
+        // Validate protocol and use strict regex for trusted domains
         return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+            /^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i.test(parsed.hostname);
     } catch {
-        return false;
+        // Allow safe relative paths (e.g. /path, but not //attacker.com or /\attacker.com)
+        return /^\/(?!\/|\\)/.test(url);
     }
 }
 
@@ -25,12 +27,22 @@ export function sanitizeUrl(url: string): string {
 
     try {
         const parsed = new URL(url);
-        // Only allow HTTPS for production
+
+        // Explicitly check for allowed protocols to block javascript:, data:, etc.
+        if (!['https:', 'http:', 'mailto:', 'tel:'].includes(parsed.protocol)) {
+            return '';
+        }
+
+        // Only allow HTTPS for production domains
         if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
     } catch {
+        // Fallback for safe relative URLs
+        if (/^\/(?!\/|\\)/.test(url)) {
+            return url;
+        }
         return '';
     }
 }
