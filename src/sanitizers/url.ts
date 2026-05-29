@@ -1,3 +1,4 @@
+/* global URL */
 /**
  * URL Sanitizer
  * URL validation and sanitization utilities
@@ -9,10 +10,11 @@
 export function isValidUrl(url: string): boolean {
     try {
         const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        const isValidDomain = /^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i.test(parsed.hostname);
+        return ['https:', 'http:'].includes(parsed.protocol) && isValidDomain;
     } catch {
-        return false;
+        // Fallback for valid relative paths to prevent functional regressions
+        return /^\/(?!\/|\.|\\)/.test(url);
     }
 }
 
@@ -25,12 +27,24 @@ export function sanitizeUrl(url: string): string {
 
     try {
         const parsed = new URL(url);
-        // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+
+        // Explicitly check against protocol allowlist to prevent javascript: or other unsafe schemes
+        const allowedProtocols = ['http:', 'https:', 'mailto:', 'tel:'];
+        if (!allowedProtocols.includes(parsed.protocol)) {
+            return '';
+        }
+
+        // Only allow HTTPS for production trusted domains
+        const isEvzoneDomain = /^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i.test(parsed.hostname);
+        if (parsed.protocol === 'http:' && isEvzoneDomain) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
     } catch {
+        // Fallback for valid relative paths
+        if (/^\/(?!\/|\.|\\)/.test(url)) {
+            return url;
+        }
         return '';
     }
 }
