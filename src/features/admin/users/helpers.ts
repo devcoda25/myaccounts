@@ -1,15 +1,11 @@
+import { getRandomBytes } from "@/utils/secure-random";
 import { EVZONE } from "./constants";
 import { Risk, UserStatus } from "./types";
 
 // Generate a temporary password with EVZ-XXXX-XXXX format
 export function mkTempPassword(): string {
     const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    const bytes = new Uint8Array(10);
-    try {
-        window.crypto.getRandomValues(bytes);
-    } catch {
-        for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
-    }
+    const bytes = getRandomBytes(10);
     const s = Array.from(bytes)
         .map((b) => alphabet[b % alphabet.length])
         .join("");
