@@ -9,8 +9,11 @@
 export function isValidUrl(url: string): boolean {
     try {
         const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        const allowedDomains = ['evzone.com', 'evzone.app', 'evzonemarketplace.com'];
+        const isAllowedDomain = allowedDomains.some(domain =>
+            parsed.hostname === domain || parsed.hostname.endsWith('.' + domain)
+        );
+        return ['https:', 'http:'].includes(parsed.protocol) && isAllowedDomain;
     } catch {
         return false;
     }
@@ -25,12 +28,28 @@ export function sanitizeUrl(url: string): string {
 
     try {
         const parsed = new URL(url);
-        // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
-            parsed.protocol = 'https:';
+
+        // Explicitly reject unapproved protocols to prevent XSS (e.g., javascript:)
+        if (!['https:', 'http:', 'mailto:', 'tel:'].includes(parsed.protocol)) {
+            return '';
+        }
+
+        // Only allow HTTPS for production domains
+        if (parsed.protocol === 'http:') {
+            const productionDomains = ['evzone.com', 'evzone.app', 'evzonemarketplace.com'];
+            const isProdDomain = productionDomains.some(domain =>
+                parsed.hostname === domain || parsed.hostname.endsWith('.' + domain)
+            );
+            if (isProdDomain) {
+                parsed.protocol = 'https:';
+            }
         }
         return parsed.toString();
     } catch {
+        // Fallback for safe relative paths
+        if (url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/\\')) {
+            return url;
+        }
         return '';
     }
 }
