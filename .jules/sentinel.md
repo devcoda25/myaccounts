@@ -1,0 +1,4 @@
+## 2024-04-06 - Insecure URL parsing and missing protocol validation
+**Vulnerability:** The application was vulnerable to SSRF, Open Redirect, and XSS due to using `.includes('evzone.com')` for domain validation (which could be bypassed with `evzone.com.attacker.com`) and not validating URL protocols explicitly before attempting to sanitize them. The `URL` API ignores assignments to `parsed.protocol` for special schemas like `javascript:`, failing silently.
+**Learning:** Checking for subdomains with `.includes()` is extremely insecure. Assigning properties on URL objects does not work predictably for unsafe protocols like `javascript:`.
+**Prevention:** Always use exact matching or `.endsWith()` for domain validation. Always explicitly check against a strict allowlist of protocols (`http:`, `https:`) before using URLs or attempting to modify them.
