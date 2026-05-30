@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { isValidUrl } from "@/sanitizers/url";
 import {
   Alert,
   Box,
@@ -266,7 +267,10 @@ export default function ContinueToAppV4() {
       const qs = new URLSearchParams(window.location.search);
       const name = qs.get("app") || "EVzone Marketplace";
       const logoMark = (qs.get("mark") || "E").slice(0, 2).toUpperCase();
-      const redirectUri = qs.get("redirect_uri") || "https://evzonemarketplace.com/auth/callback";
+      let redirectUri = qs.get("redirect_uri") || "https://evzonemarketplace.com/auth/callback";
+      if (!isValidUrl(redirectUri)) {
+          redirectUri = "https://evzonemarketplace.com/auth/callback"; // fallback to safe default
+      }
       const scopeKeys = parseScopes(qs.get("scopes"));
 
       return {
