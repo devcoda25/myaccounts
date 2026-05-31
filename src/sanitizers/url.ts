@@ -7,10 +7,22 @@
  * Validate URL is safe and allowed
  */
 export function isValidUrl(url: string): boolean {
+    if (!url) return false;
+
+    // Allow safe relative paths
+    if (url.startsWith('/') && !url.startsWith('//')) {
+        return true;
+    }
+
     try {
         const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return false;
+        }
+
+        const host = parsed.hostname;
+        return host === 'evzone.com' || host.endsWith('.evzone.com') ||
+               host === 'evzone.app' || host.endsWith('.evzone.app');
     } catch {
         return false;
     }
