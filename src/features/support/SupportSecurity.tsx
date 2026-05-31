@@ -191,7 +191,7 @@ function timeAgo(ts: number) {
 }
 
 function mkId(prefix: string) {
-  return `${prefix}_${Math.random().toString(16).slice(2, 8).toUpperCase()}`;
+  return `${prefix}_${window.crypto.randomUUID()}`;
 }
 
 

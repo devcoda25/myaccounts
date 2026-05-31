@@ -5,11 +5,10 @@ import { Risk, UserStatus } from "./types";
 export function mkTempPassword(): string {
     const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     const bytes = new Uint8Array(10);
-    try {
-        window.crypto.getRandomValues(bytes);
-    } catch {
-        for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
+    if (!window.crypto || !window.crypto.getRandomValues) {
+        throw new Error("Web Crypto API is not available");
     }
+    window.crypto.getRandomValues(bytes);
     const s = Array.from(bytes)
         .map((b) => alphabet[b % alphabet.length])
         .join("");
@@ -18,7 +17,7 @@ export function mkTempPassword(): string {
 
 // Generate a unique ID with a prefix
 export function uid(prefix: string): string {
-    return `${prefix}_${Math.random().toString(16).slice(2)}`;
+    return `${prefix}_${window.crypto.randomUUID()}`;
 }
 
 // Get the color tone for a risk level

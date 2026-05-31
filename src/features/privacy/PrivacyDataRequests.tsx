@@ -306,7 +306,7 @@ export default function PrivacyDataRequestsPage() {
             }
 
             const req: DataRequest = {
-                id: `req_${Math.random().toString(36).slice(2, 7)}`,
+                id: `req_${window.crypto.randomUUID()}`,
                 type: newType,
                 status: "Pending",
                 createdAt: Date.now(),

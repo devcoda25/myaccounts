@@ -200,7 +200,7 @@ function buildTheme(mode: ThemeMode) {
 // Helpers
 // -----------------------------
 function mkId(prefix: string) {
-  return `${prefix}_${Math.random().toString(16).slice(2, 10).toUpperCase()}`;
+  return `${prefix}_${window.crypto.randomUUID()}`;
 }
 
 function fmtDateTime(ts?: number) {
