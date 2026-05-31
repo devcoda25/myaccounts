@@ -10,7 +10,7 @@ export function isValidUrl(url: string): boolean {
     try {
         const parsed = new URL(url);
         return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+            (parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com'));
     } catch {
         return false;
     }
@@ -25,8 +25,17 @@ export function sanitizeUrl(url: string): string {
 
     try {
         const parsed = new URL(url);
+
+        // Ensure the protocol is http or https to prevent javascript: or other malicious schemes
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return '';
+        }
+
         // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        const isProductionDomain = parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com') ||
+                                 parsed.hostname === 'evzone.app' || parsed.hostname.endsWith('.evzone.app');
+
+        if (parsed.protocol !== 'https:' && isProductionDomain) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
