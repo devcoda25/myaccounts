@@ -1,0 +1,4 @@
+## 2024-10-27 - [High] Open Redirect and Path Traversal in Auth Redirects
+**Vulnerability:** Open Redirect and potential Path Traversal through unsafe assignments to `window.location.href` in auth flows (`signed-out/Index.tsx`, `continue/Index.tsx`) and weak segment validation in `PatchOidcResume.tsx` (using `!segment.includes("/")` instead of a regex).
+**Learning:** `!segment.includes("/")` can be bypassed easily with backslashes (`\`). Direct assignment to `window.location.href` requires strict URL validation, as attacker-controlled URIs can redirect users to malicious domains.
+**Prevention:** Always validate user-supplied redirect URLs strictly using `isValidUrl` exported from `@/sanitizers/url`. For dynamic segments, use a strict regex allowlist (e.g., `/^[a-zA-Z0-9-_]+$/`) instead of negative string matching.
