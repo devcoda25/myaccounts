@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 /**
  * PatchOidcResume
@@ -10,6 +10,7 @@ import { useParams, useLocation } from "react-router-dom";
 export default function PatchOidcResume() {
   const { t } = useTranslation("common");
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const path = location.pathname;
@@ -17,14 +18,15 @@ export default function PatchOidcResume() {
 
     console.log("[PatchOidcResume] Inspecting path:", path);
 
-    if (segment && segment.length > 20 && !segment.includes("/")) {
+    if (segment && segment.length > 20 && /^[a-zA-Z0-9-_]+$/.test(segment)) {
       const target = `/oidc/auth/${segment}${location.search}${location.hash}`;
       console.log("[PatchOidcResume] redirecting to:", target);
       window.location.href = target;
     } else {
       console.warn("[PatchOidcResume] Path did not match OIDC UID pattern:", segment);
+      navigate("/app");
     }
-  }, [location]);
+  }, [location, navigate]);
 
   return (
     <div style={{ padding: 40, color: 'white', textAlign: 'center' }}>
