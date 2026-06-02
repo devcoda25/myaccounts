@@ -1,3 +1,4 @@
+/* global window, console, URL */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -24,6 +25,7 @@ import {
 
 import AuthHeader from "@/components/layout/AuthHeader";
 import { EVZONE } from "@/theme/evzone";
+import { isValidUrl } from "../../../sanitizers/url";
 
 /**
  * EVzone My Accounts - Redesigned Signed Out Page
@@ -78,9 +80,12 @@ export default function SignedOutPage() {
   const signInAgain = () => navigate("/auth/sign-in");
 
   const returnToApp = () => {
-    if (redirectUri) {
+    if (redirectUri && isValidUrl(redirectUri)) {
       window.location.href = redirectUri;
     } else {
+      if (redirectUri) {
+        console.warn("[SignedOut] Invalid redirect URI:", redirectUri);
+      }
       navigate("/auth/sign-in");
     }
   };

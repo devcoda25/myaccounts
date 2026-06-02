@@ -1,0 +1,4 @@
+## 2024-06-02 - Path Traversal and Open Redirect URL Bypass Fixes
+**Vulnerability:** The application was vulnerable to Open Redirect and Path Traversal bypasses because `new URL()` fails silently when parsing special schemas like `javascript:`. Furthermore, `!segment.includes('/')` could be bypassed using backslashes, and domain validation using `.includes('evzone.com')` allowed attacker domains.
+**Learning:** `new URL()` does not validate protocols safely on its own, bypassing domain validation if the attacker crafts a `javascript:alert(1)//evzone.com` URL. Additionally, weak substring checks for domains or paths are easily evaded.
+**Prevention:** Always enforce a strict protocol allowlist (e.g. `http:`, `https:`), use exact regex matching for allowed domains, and enforce strict safe-character regexes for dynamic path segments.
