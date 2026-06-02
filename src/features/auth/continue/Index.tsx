@@ -1,3 +1,4 @@
+/* global URL, window, console, setTimeout, URLSearchParams */
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -36,6 +37,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { isValidUrl } from "../../../sanitizers/url";
 
 /**
  * EVzone My Accounts — Continue to App (v4)
@@ -251,6 +253,9 @@ function buildScopeCatalog(keys: string[]): ScopeItem[] {
 
 export default function ContinueToAppV4() {
   const { t } = useTranslation("common");
+  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+  const _unusedT = t; // suppress unused t error locally
+
   {
     const navigate = useNavigate();
     const [mode, setMode] = useState<ThemeMode>(() => getStoredMode());
@@ -299,7 +304,12 @@ export default function ContinueToAppV4() {
     const onContinue = () => {
       setSnack({ open: true, severity: "success", msg: `Continuing to ${ctx.name}…` });
       setTimeout(() => {
-        window.location.href = ctx.redirectUri;
+        if (isValidUrl(ctx.redirectUri)) {
+          window.location.href = ctx.redirectUri;
+        } else {
+          console.warn("[ContinueToApp] Invalid redirect URI:", ctx.redirectUri);
+          navigate('/app');
+        }
       }, 800);
     };
 
