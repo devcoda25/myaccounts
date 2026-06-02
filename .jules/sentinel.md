@@ -1,0 +1,4 @@
+## 2024-05-24 - Fix Open Redirect and SSRF Bypass in URL Sanitizers
+**Vulnerability:** The `isValidUrl` function used `.includes('evzone.com')` to validate hostnames, allowing bypasses like `evzone.com.attacker.com`. Additionally, `sanitizeUrl` failed to strictly validate protocols, permitting malicious schemas like `javascript:` execution when passed to `new URL()`.
+**Learning:** Naive `.includes()` checks are insufficient for domain validation and easily bypassed. The JavaScript `URL` constructor accepts almost any protocol string without throwing an error, masking potentially dangerous schemas.
+**Prevention:** Always use strict regex or exact string matching for domain validation. Implement explicit allowlists for protocols (e.g., `http:`, `https:`) when sanitizing URLs, and ensure newline/tab characters are stripped before validating relative paths to prevent bypassing regex checks.
