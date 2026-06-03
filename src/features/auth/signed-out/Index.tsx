@@ -78,11 +78,14 @@ export default function SignedOutPage() {
   const signInAgain = () => navigate("/auth/sign-in");
 
   const returnToApp = () => {
-    if (redirectUri) {
-      window.location.href = redirectUri;
-    } else {
-      navigate("/auth/sign-in");
-    }
+    // 🛡️ Sentinel: Validate redirect URI to prevent Open Redirect
+    import("@/sanitizers/url").then(({ isValidUrl }) => {
+      if (redirectUri && isValidUrl(redirectUri)) {
+        window.location.href = redirectUri;
+      } else {
+        navigate("/auth/sign-in");
+      }
+    });
   };
 
   const safeHost = (url: string) => {
