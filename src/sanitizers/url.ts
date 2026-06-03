@@ -1,3 +1,4 @@
+/* global URL */
 /**
  * URL Sanitizer
  * URL validation and sanitization utilities
@@ -5,14 +6,17 @@
 
 /**
  * Validate URL is safe and allowed
+ * 🛡️ Sentinel: Enforces strict regex for trusted domains to prevent Open Redirect/SSRF bypasses.
+ * Allows safe relative paths by blocking protocol-relative prefixes like // or /\.
  */
 export function isValidUrl(url: string): boolean {
     try {
         const parsed = new URL(url);
         return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+            /^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i.test(parsed.hostname);
     } catch {
-        return false;
+        const clean = url.replace(/[\n\r\t]/g, '');
+        return /^\/(?!\/|\.|\\)/.test(clean);
     }
 }
 
