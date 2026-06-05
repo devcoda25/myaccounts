@@ -24,6 +24,7 @@ import {
 
 import AuthHeader from "@/components/layout/AuthHeader";
 import { EVZONE } from "@/theme/evzone";
+import { isValidUrl } from "@/sanitizers/url";
 
 /**
  * EVzone My Accounts - Redesigned Signed Out Page
@@ -78,7 +79,7 @@ export default function SignedOutPage() {
   const signInAgain = () => navigate("/auth/sign-in");
 
   const returnToApp = () => {
-    if (redirectUri) {
+    if (redirectUri && isValidUrl(redirectUri)) {
       window.location.href = redirectUri;
     } else {
       navigate("/auth/sign-in");
@@ -184,7 +185,7 @@ export default function SignedOutPage() {
                       <CheckCircle size={32} />
                     </Box>
                     <Box>
-                      <Typography variant="h5" fontWeight={900}>You're signed out</Typography>
+                      <Typography variant="h5" fontWeight={900}>You&apos;re signed out</Typography>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                         Your access to EVzone services on this device is now locked.
                       </Typography>
@@ -198,7 +199,7 @@ export default function SignedOutPage() {
                     p: 3
                   }}>
                     <Stack spacing={1.5}>
-                      <Typography variant="subtitle1" fontWeight={900}>What's next?</Typography>
+                      <Typography variant="subtitle1" fontWeight={900}>What&apos;s next?</Typography>
                       <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                         You can sign back in to **{appName}** or visit your profile later.
                       </Typography>
