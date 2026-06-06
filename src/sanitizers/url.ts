@@ -1,3 +1,4 @@
+/* global URL */
 /**
  * URL Sanitizer
  * URL validation and sanitization utilities
@@ -8,9 +9,11 @@
  */
 export function isValidUrl(url: string): boolean {
     try {
-        const parsed = new URL(url);
+        const cleanUrl = url.replace(/[\n\r\t]/g, '');
+        const parsed = new URL(cleanUrl);
+        const allowedHosts = /^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i;
         return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+            allowedHosts.test(parsed.hostname);
     } catch {
         return false;
     }
