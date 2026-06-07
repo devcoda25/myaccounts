@@ -1,0 +1,5 @@
+
+## 2024-05-18 - [HIGH] Fix SSRF and Open Redirect in URL Validator
+**Vulnerability:** URL validation and sanitization using the `.includes()` method for domain verification allowed Server-Side Request Forgery (SSRF) and Open Redirect bypasses (e.g., `https://evzone.com.attacker.com`). Additionally, passing unstripped URLs to the `URL` constructor allowed whitespace characters (like `\n`) to bypass checks due to inconsistent parsing. `sanitizeUrl` did not enforce a protocol allowlist, permitting Javascript execution via `javascript:alert(1)//evzone.com`.
+**Learning:** Naive substring matching (like `.includes()`) is insufficient for domain validation. Furthermore, relying on the default behavior of the JS `URL` constructor without input normalization can lead to parsing inconsistencies. Protocols must always be validated against a strict allowlist.
+**Prevention:** Always use strict regex matching or exact equality `===` for domain verification. Strip whitespace/newlines before passing input to the `URL` constructor. Explicitly enforce a protocol allowlist (e.g., `http:`, `https:`, `mailto:`, `tel:`) when sanitizing URLs.
