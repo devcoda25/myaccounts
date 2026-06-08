@@ -1,0 +1,5 @@
+
+## 2024-05-24 - [CRITICAL] Open Redirect / SSRF Bypasses via `.includes()` and Backslashes
+**Vulnerability:** Weak domain validation using `.includes('evzone.com')` allowed bypassing hostname checks via malicious subdomains (e.g., `https://evzone.com.attacker.com`). Furthermore, URL parsing bypasses were possible via newline injection, and path segment validation using `!segment.includes('/')` could be bypassed using backslashes (`\`).
+**Learning:** General string matching functions (`.includes()`, `.indexOf()`) are inherently insecure for validating domain names, URLs, and file paths. The `URL` constructor's parsing mechanism can also be tricked with whitespace characters.
+**Prevention:** Always use strict regex matching (e.g., `/^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i`) or exact string equality (`===`) for validating domains. Prevent parsing bypasses by stripping whitespace characters (e.g., `url.replace(/[\n\r\t]/g, '')`) before parsing. Prevent path traversal and open redirects in path segments by using an allowlist regex (e.g., `/^[a-zA-Z0-9-_]+$/`) rather than blocking specific characters.

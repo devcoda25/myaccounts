@@ -8,9 +8,13 @@
  */
 export function isValidUrl(url: string): boolean {
     try {
-        const parsed = new URL(url);
+        // Prevent parsing bypasses
+        const cleanUrl = url.replace(/[\n\r\t]/g, '');
+        const parsed = new URL(cleanUrl);
+        // Strict domain regex to prevent SSRF and Open Redirect bypasses via malicious subdomains
+        const domainRegex = /^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i;
         return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+            domainRegex.test(parsed.hostname);
     } catch {
         return false;
     }
@@ -24,9 +28,11 @@ export function sanitizeUrl(url: string): string {
     if (!url) return '';
 
     try {
-        const parsed = new URL(url);
+        const cleanUrl = url.replace(/[\n\r\t]/g, '');
+        const parsed = new URL(cleanUrl);
+        const domainRegex = /^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i;
         // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        if (parsed.protocol !== 'https:' && domainRegex.test(parsed.hostname)) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
