@@ -27,6 +27,7 @@ import { motion } from "framer-motion";
 import { useThemeStore } from "@/stores/themeStore";
 import { EVZONE } from "@/theme/evzone";
 import { api } from "@/utils/api";
+import { isValidUrl } from "@/sanitizers/url";
 
 /**
  * EVzone My Accounts - Connected EVzone Apps
@@ -323,6 +324,11 @@ export default function ConnectedAppsPage() {
       // If we have a launchUrl, we redirect the user to it
       // This starts the OIDC flow: MyAccounts -> App (with code) -> App calls Token Endpoint
       if (a.launchUrl) {
+        if (!isValidUrl(a.launchUrl)) {
+          setSnack({ open: true, severity: "error", msg: `Invalid launch URL for ${a.name}.` });
+          return;
+        }
+
         // In a real SPA, this might be window.location.href = a.launchUrl
         // For demo purposes, let's open in new tab or simulate redirect
         setSnack({ open: true, severity: "success", msg: `Redirecting to ${a.name}...` });
