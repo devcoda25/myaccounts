@@ -1,0 +1,4 @@
+## 2024-06-09 - Open Redirect via Unvalidated window.location.href Assignments
+**Vulnerability:** The application was directly assigning user-provided or dynamic URLs to `window.location.href` without validating them against the trusted domain list, leading to Open Redirect and potentially Server-Side Request Forgery (SSRF) vulnerabilities.
+**Learning:** Even when a `safeHost` or similar utility is used for display purposes, the actual assignment to `window.location.href` must be strictly validated. Relying on frontend routing constructs (`useNavigate`) is safer when possible, but when absolute URLs are required, strict validation is necessary.
+**Prevention:** Always use the `isValidUrl` utility from `src/sanitizers/url.ts` to validate external redirects. If validation fails, provide a safe fallback using internal routing (e.g., `navigate('/app')`).
