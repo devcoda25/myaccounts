@@ -1,0 +1,5 @@
+
+## 2024-05-18 - Open Redirect and SSRF Bypass via Weak URL Validation
+**Vulnerability:** The `isValidUrl` utility in `src/sanitizers/url.ts` used `parsed.hostname.includes('evzone.com')` which could be bypassed using a subdomain like `evzone.com.attacker.com`. Furthermore, parsing could be bypassed entirely by injecting whitespace characters like `\n`. Path Traversal was also possible in `PatchOidcResume.tsx` by bypassing `!segment.includes('/')` using backslashes.
+**Learning:** Naive substring matching (like `.includes()`) is insufficient for security validations. Standard URL parsers may behave unexpectedly when confronted with control characters. Open Redirect vulnerabilities can easily propagate into client-side routing logic if not rigorously validated.
+**Prevention:** Always use strict regex matching for domains (e.g., `/^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i`) and strip whitespace before passing URLs to standard parsers like `new URL()`. Ensure segment validation uses strict allowlists (e.g., `/^[a-zA-Z0-9-_]+$/`) rather than blocklists.
