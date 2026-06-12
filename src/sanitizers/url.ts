@@ -6,11 +6,22 @@
 /**
  * Validate URL is safe and allowed
  */
+const TRUSTED_DOMAINS = ['evzone.com', 'evzone.app', 'evzonemarketplace.com'];
+
+function isTrustedDomain(hostname: string): boolean {
+    return TRUSTED_DOMAINS.some(domain =>
+        hostname === domain || hostname.endsWith(`.${domain}`)
+    );
+}
+
+// eslint-disable-next-line no-undef
 export function isValidUrl(url: string): boolean {
     try {
         const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return false;
+        }
+        return isTrustedDomain(parsed.hostname);
     } catch {
         return false;
     }
@@ -20,11 +31,17 @@ export function isValidUrl(url: string): boolean {
  * Sanitize URL for avatar/documents
  * Ensures HTTPS for production domains
  */
+// eslint-disable-next-line no-undef
 export function sanitizeUrl(url: string): string {
     if (!url) return '';
 
     try {
         const parsed = new URL(url);
+
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return '';
+        }
+
         // Only allow HTTPS for production
         if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
             parsed.protocol = 'https:';
@@ -38,6 +55,7 @@ export function sanitizeUrl(url: string): string {
 /**
  * Extract hostname from URL safely
  */
+// eslint-disable-next-line no-undef
 export function extractHostname(url: string): string {
     try {
         return new URL(url).hostname;
@@ -56,6 +74,7 @@ export function isAbsoluteUrl(url: string): boolean {
 /**
  * Resolve relative URL against base URL
  */
+// eslint-disable-next-line no-undef
 export function resolveRelativeUrl(baseUrl: string, relativeUrl: string): string {
     try {
         return new URL(relativeUrl, baseUrl).toString();
