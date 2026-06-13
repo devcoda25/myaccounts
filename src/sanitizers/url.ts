@@ -7,10 +7,15 @@
  * Validate URL is safe and allowed
  */
 export function isValidUrl(url: string): boolean {
+    if (url.startsWith('/') && !url.startsWith('//')) return true;
     try {
         const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        if (!['https:', 'http:'].includes(parsed.protocol)) return false;
+
+        const trustedDomains = ['evzone.com', 'evzone.app'];
+        return trustedDomains.some(domain =>
+            parsed.hostname === domain || parsed.hostname.endsWith(`.${domain}`)
+        );
     } catch {
         return false;
     }
@@ -22,13 +27,26 @@ export function isValidUrl(url: string): boolean {
  */
 export function sanitizeUrl(url: string): string {
     if (!url) return '';
+    if (url.startsWith('/') && !url.startsWith('//')) return url;
 
     try {
         const parsed = new URL(url);
-        // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+
+        // Reject unsafe protocols immediately
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return '';
+        }
+
+        const trustedDomains = ['evzone.com', 'evzone.app'];
+        const isTrustedDomain = trustedDomains.some(domain =>
+            parsed.hostname === domain || parsed.hostname.endsWith(`.${domain}`)
+        );
+
+        // Enforce HTTPS for trusted domains
+        if (parsed.protocol !== 'https:' && isTrustedDomain) {
             parsed.protocol = 'https:';
         }
+
         return parsed.toString();
     } catch {
         return '';
