@@ -1,0 +1,4 @@
+## 2026-04-21 - URL validation bypasses (SSRF & Open Redirect)
+**Vulnerability:** Weak domain validation using `.includes()` allowed SSRF/Open Redirect by passing subdomains of attacker domains (e.g., `evzone.com.attacker.com`). Silent failure of URL API when mutating special schemas (`javascript:`) allowed bypasses via `javascript:` URLs since modification is ignored.
+**Learning:** `.includes()` is inherently insecure for URL domain matching. The URL API's `.protocol` setter fails silently on non-standard schemas, making it unsafe to mutate schemas to force HTTPS without explicitly validating the starting protocol.
+**Prevention:** Strictly validate domain names using exact matching (`===`) or `.endsWith()` (`.endsWith('.evzone.com')`). Before modifying or trusting a URL, explicitly enforce an allowlist of valid schemas (`http:`, `https:`).
