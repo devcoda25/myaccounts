@@ -36,6 +36,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { isValidUrl } from "@/sanitizers/url";
 
 /**
  * EVzone My Accounts — Continue to App (v4)
@@ -266,7 +267,12 @@ export default function ContinueToAppV4() {
       const qs = new URLSearchParams(window.location.search);
       const name = qs.get("app") || "EVzone Marketplace";
       const logoMark = (qs.get("mark") || "E").slice(0, 2).toUpperCase();
-      const redirectUri = qs.get("redirect_uri") || "https://evzonemarketplace.com/auth/callback";
+      let redirectUri = qs.get("redirect_uri") || "https://evzonemarketplace.com/auth/callback";
+
+      if (!isValidUrl(redirectUri)) {
+        redirectUri = "https://evzonemarketplace.com/auth/callback";
+      }
+
       const scopeKeys = parseScopes(qs.get("scopes"));
 
       return {
@@ -297,6 +303,10 @@ export default function ContinueToAppV4() {
     };
 
     const onContinue = () => {
+      if (!isValidUrl(ctx.redirectUri)) {
+        setSnack({ open: true, severity: "error", msg: "Invalid redirect URI detected." });
+        return;
+      }
       setSnack({ open: true, severity: "success", msg: `Continuing to ${ctx.name}…` });
       setTimeout(() => {
         window.location.href = ctx.redirectUri;
