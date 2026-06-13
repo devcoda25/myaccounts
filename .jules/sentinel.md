@@ -1,0 +1,4 @@
+## 2024-05-18 - [Path Traversal & Open Redirect Bypass in OIDC Resume]
+**Vulnerability:** The application was vulnerable to path traversal and open redirects in `PatchOidcResume.tsx` because it weakly validated path segments with `!segment.includes("/")` before appending them to a URL. This could be bypassed using backslashes `\` or other characters.
+**Learning:** Using negative validation (e.g. `!includes`) is dangerous for path parsing and URL construction. Browsers normalize backslashes `\` to forward slashes `/`, allowing attackers to bypass the string exclusion and inject path traversal payloads (e.g., `..\..\`).
+**Prevention:** Always use strict regex allowlists for dynamic path segments. In this case, `^[a-zA-Z0-9-_]+$` was used to guarantee the path segment only contains safe alphanumeric characters, effectively blocking all path traversal and open redirect attempts.
