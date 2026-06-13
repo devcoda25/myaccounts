@@ -393,6 +393,7 @@ export default function AdminUsersList() {
         if (newType === 'Agent') role = 'ADMIN';
 
         try {
+            const tempPassword = mkTempPassword();
             await api('/users/create', {
                 method: 'POST',
                 body: JSON.stringify({
@@ -401,11 +402,11 @@ export default function AdminUsersList() {
                     email: newEmail,
                     phone: newPhone || undefined,
                     role,
-                    password: 'Password123!',
+                    password: tempPassword,
                     acceptTerms: true
                 })
             });
-            showNotification({ type: "success", title: "User Created", message: `User ${newName} created successfully.` });
+            showNotification({ type: "success", title: "User Created", message: `User ${newName} created. Password: ${tempPassword}` });
             setCreateOpen(false);
             fetchUsers();
 
@@ -706,7 +707,6 @@ export default function AdminUsersList() {
                                         type="password"
                                         fullWidth
                                         InputProps={{ startAdornment: (<InputAdornment position="start"><LockIcon size={18} /></InputAdornment>) }}
-                                        helperText="Demo password: superadmin-secure-pw"
                                         sx={{ '& .MuiOutlinedInput-root': { borderRadius: 3 }, mt: 2 }}
                                     />
                                 ) : (
