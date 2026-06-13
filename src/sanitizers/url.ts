@@ -9,8 +9,15 @@
 export function isValidUrl(url: string): boolean {
     try {
         const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return false;
+        }
+
+        const hostname = parsed.hostname;
+        const isEvzoneCom = hostname === 'evzone.com' || hostname.endsWith('.evzone.com');
+        const isEvzoneApp = hostname === 'evzone.app' || hostname.endsWith('.evzone.app');
+
+        return isEvzoneCom || isEvzoneApp;
     } catch {
         return false;
     }
@@ -25,8 +32,18 @@ export function sanitizeUrl(url: string): string {
 
     try {
         const parsed = new URL(url);
+
+        // 🛡️ Sentinel: Reject non-HTTP(S) protocols (like javascript: which can't be mutated)
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return '';
+        }
+
+        const hostname = parsed.hostname;
+        const isEvzone = hostname === 'evzone.com' || hostname.endsWith('.evzone.com') ||
+                         hostname === 'evzone.app' || hostname.endsWith('.evzone.app');
+
         // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        if (parsed.protocol !== 'https:' && isEvzone) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
