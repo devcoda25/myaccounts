@@ -1,0 +1,5 @@
+
+## 2024-05-18 - URL Sanitization Schema Mutilation Failure
+**Vulnerability:** XSS and Open Redirect vulnerabilities present due to incomplete URL sanitization. Specifically, `.includes()` was used for domain validation, allowing SSRF bypass (e.g. `evzone.com.attacker.com`). Furthermore, URL sanitization did not properly reject unapproved protocols (like `javascript:`), as attempting to modify `parsed.protocol` on such schemas fails silently.
+**Learning:** `URL.prototype.protocol` cannot reliably be used to re-assign or neutralize protocols like `javascript:` due to internal JS specifications (silent mutation failures). Furthermore, using `.includes()` for domain validation is easily bypassed.
+**Prevention:** Validate protocols using an explicit allowlist (e.g., `['http:', 'https:']`) and reject unapproved entries instead of attempting mutation. Use exact string matching (`===`) or suffix matching (`.endsWith('.domain.com')`) for safe domain validation to prevent SSRF and Open Redirect bypasses.
