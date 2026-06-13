@@ -19,6 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
+import { getSecureRandomValues } from "@/utils/secure-random";
 
 /**
  * EVzone - 500 / Unexpected Error
@@ -154,11 +155,7 @@ function buildTheme(mode: ThemeMode) {
 function mkIncidentId() {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   const bytes = new Uint8Array(12);
-  try {
-    window.crypto.getRandomValues(bytes);
-  } catch {
-    for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
-  }
+  getSecureRandomValues(bytes);
   const s = Array.from(bytes)
     .map((b) => alphabet[b % alphabet.length])
     .join("");
