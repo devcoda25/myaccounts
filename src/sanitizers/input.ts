@@ -8,6 +8,7 @@ const htmlEscapes: Record<string, string> = {
     "<": "&lt;",
     ">": "&gt;",
     "\"": "&quot;",
+    "'": "&#39;",
     "/": "&#x2F;"
 };
 
@@ -16,10 +17,7 @@ const htmlEscapes: Record<string, string> = {
  * Escapes HTML special characters
  */
 export function sanitizeInput(input: string): string {
-    // First replace single quote separately
-    let result = input.replace(/'/g, "&#39;");
-    // Then replace all other characters
-    return result.replace(/[&<>"\/]/g, (match) => htmlEscapes[match]);
+    return input.replace(/[&<>"'/]/g, (match) => htmlEscapes[match]);
 }
 
 /**
