@@ -1,0 +1,4 @@
+## 2024-05-24 - [URL Domain Bypass via .includes()]
+**Vulnerability:** The application used `.includes('evzone.com')` to validate URLs, allowing SSRF and Open Redirect via malicious subdomains like `evzone.com.attacker.com`. Additionally, the URL sanitization lacked strict protocol checking, exposing the app to `javascript:` XSS attacks.
+**Learning:** Checking for string inclusion rather than strict matching is a common and critical source of bypasses in URL validation. JavaScript URL parsing can also fail silently or handle dangerous schemas unexpectedly.
+**Prevention:** Always validate domains using exact matches (`===`) or exact subdomain terminations (`.endsWith('.domain.com')`). Enforce an explicit allowlist of safe protocols (e.g., `['http:', 'https:']`) instead of just attempting to override the protocol.
