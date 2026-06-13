@@ -1,0 +1,4 @@
+## 2023-11-20 - Fix URL validation and sanitization
+**Vulnerability:** URL validation (`isValidUrl`) allowed SSRF/Open Redirects via `.includes('evzone.com')` which bypassed verification for domains like `evzone.com.attacker.com`. Additionally, URL sanitization (`sanitizeUrl`) failed to neutralize XSS payloads like `javascript:alert(1)` because assigning to `url.protocol` on the URL object fails silently for special schemas, returning the unsanitized URL.
+**Learning:** `.includes()` on hostnames is insecure. For sanitization, mutating the `protocol` property of the `URL` object fails silently on restricted schemas.
+**Prevention:** Use exact equality (`===`) or strict suffix matching (`.endsWith('.evzone.com')`) for domain validation. For URL sanitization, always enforce an explicit protocol allowlist (e.g., `['http:', 'https:']`) and reject the URL if the protocol is not allowed, rather than attempting to mutate it.
