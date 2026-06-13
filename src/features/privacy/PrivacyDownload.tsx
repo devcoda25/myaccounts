@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { safeRandomBytes } from "../../utils/helpers";
 import {
   Alert,
   Box,
@@ -200,7 +201,9 @@ function buildTheme(mode: ThemeMode) {
 // Helpers
 // -----------------------------
 function mkId(prefix: string) {
-  return `${prefix}_${Math.random().toString(16).slice(2, 10).toUpperCase()}`;
+  const randomBytes = safeRandomBytes(4);
+  const randomHex = Array.from(randomBytes).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+  return `${prefix}_${randomHex}`;
 }
 
 function fmtDateTime(ts?: number) {
