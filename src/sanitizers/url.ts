@@ -9,8 +9,13 @@
 export function isValidUrl(url: string): boolean {
     try {
         const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        // Ensure protocol is HTTP or HTTPS
+        const isAllowedProtocol = ['https:', 'http:'].includes(parsed.protocol);
+        // Match exact domain or subdomains ending in .evzone.com or .evzone.app
+        const host = parsed.hostname;
+        const isAllowedDomain = host === 'evzone.com' || host.endsWith('.evzone.com') ||
+                                host === 'evzone.app' || host.endsWith('.evzone.app');
+        return isAllowedProtocol && isAllowedDomain;
     } catch {
         return false;
     }
