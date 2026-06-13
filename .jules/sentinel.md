@@ -1,0 +1,5 @@
+
+## 2024-05-24 - Strict URL Domain and Protocol Validation
+**Vulnerability:** Open Redirect and potentially Server-Side Request Forgery (SSRF) and XSS via weak URL validation in `sanitizeUrl` and `isValidUrl`. Using `.includes('evzone.com')` allowed attacker domains like `evzone.com.attacker.com` to pass validation. Furthermore, attempting to coerce non-HTTPS URLs by mutating the `protocol` property silently fails for `javascript:` URLs, allowing XSS execution.
+**Learning:** The `.includes()` string matching method is unsafe for domain validation because it checks for substrings rather than precise matches. In addition, the JavaScript `URL` API ignores protocol modifications for special schemes (like `javascript:`), meaning validation must explicitly filter schemas against a safe allowlist (`http:`, `https:`) rather than attempt mutation.
+**Prevention:** Always use exact matching (`===`) or suffix matching (`.endsWith()`) when verifying hostnames against trusted domains. Always validate and reject unapproved URL protocols outright instead of attempting to mutate the protocol property.
