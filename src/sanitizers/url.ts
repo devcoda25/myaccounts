@@ -7,10 +7,26 @@
  * Validate URL is safe and allowed
  */
 export function isValidUrl(url: string): boolean {
+    if (!url) return false;
+
+    // Allow relative local paths
+    if (url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/\\')) {
+        return true;
+    }
+
     try {
         const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return false;
+        }
+
+        const hostname = parsed.hostname.toLowerCase();
+
+        // Exact matching or proper subdomain matching
+        const allowedDomains = ['evzone.com', 'evzone.app', 'evzonemarketplace.com'];
+        return allowedDomains.some(domain =>
+            hostname === domain || hostname.endsWith(`.${domain}`)
+        );
     } catch {
         return false;
     }
@@ -25,10 +41,17 @@ export function sanitizeUrl(url: string): string {
 
     try {
         const parsed = new URL(url);
+
+        // Strictly reject non-HTTP(S) protocols like javascript:
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return '';
+        }
+
         // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        if (parsed.protocol === 'http:' && parsed.hostname.includes('evzone')) {
             parsed.protocol = 'https:';
         }
+
         return parsed.toString();
     } catch {
         return '';
