@@ -4,13 +4,21 @@
  */
 
 /**
+ * Check if a hostname belongs to trusted ecosystem domains
+ */
+function isTrustedDomain(hostname: string): boolean {
+    return hostname === 'evzone.com' || hostname.endsWith('.evzone.com') ||
+           hostname === 'evzone.app' || hostname.endsWith('.evzone.app');
+}
+
+/**
  * Validate URL is safe and allowed
  */
 export function isValidUrl(url: string): boolean {
     try {
         const parsed = new URL(url);
         return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+            isTrustedDomain(parsed.hostname);
     } catch {
         return false;
     }
@@ -25,10 +33,17 @@ export function sanitizeUrl(url: string): string {
 
     try {
         const parsed = new URL(url);
-        // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+
+        // Reject unapproved protocols (e.g. javascript:, data:, etc)
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return '';
+        }
+
+        // Ensure HTTPS for trusted domains
+        if (parsed.protocol !== 'https:' && isTrustedDomain(parsed.hostname)) {
             parsed.protocol = 'https:';
         }
+
         return parsed.toString();
     } catch {
         return '';
