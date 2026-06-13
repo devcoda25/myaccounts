@@ -119,6 +119,8 @@ function buildTheme(mode: ThemeMode) {
 // -----------------------------
 // Helpers
 // -----------------------------
+import { safeRandomBytes } from "@/utils/helpers";
+
 function supportsPasskeys() {
   try {
     const w = window as any;
@@ -135,12 +137,7 @@ async function tryWebAuthnGet(): Promise<{ ok: boolean; message: string }> {
     const nav: any = navigator as any;
     if (!nav?.credentials?.get) return { ok: false, message: "WebAuthn is not available." }; // This string is internal/error, we can translate it if needed but maybe later. actually let's use t in the component
 
-    const random = new Uint8Array(32);
-    try {
-      window.crypto.getRandomValues(random);
-    } catch {
-      for (let i = 0; i < random.length; i++) random[i] = Math.floor(Math.random() * 256);
-    }
+    const random = safeRandomBytes(32);
 
     await nav.credentials.get({
       publicKey: {
