@@ -1,0 +1,4 @@
+## 2024-05-24 - URL Hostname Bypass and Silent Protocol Mutation
+**Vulnerability:** The application used `.includes('evzone.com')` to validate hostnames, allowing bypasses like `evzone.com.attacker.com`. Additionally, attempting to sanitize URLs by setting `parsed.protocol = 'https:'` fails silently for special schemas like `javascript:`, leaving XSS vulnerabilities.
+**Learning:** The JavaScript `URL` API silently ignores protocol mutations for certain schemas (e.g., `javascript:` to `https:`), meaning URL sanitizers must explicitly allowlist schemas rather than trying to mutate dangerous ones. Furthermore, `.includes()` is never safe for domain validation.
+**Prevention:** Always use exact matching (`===`) or `.endsWith()` for domain validation. Always use an explicit allowlist for URL protocols (e.g., `['http:', 'https:']`) instead of attempting to overwrite them.
