@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 
 import AuthHeader from "@/components/layout/AuthHeader";
+import { isValidUrl } from "@/sanitizers/url";
 import { EVZONE } from "@/theme/evzone";
 
 /**
@@ -78,7 +79,7 @@ export default function SignedOutPage() {
   const signInAgain = () => navigate("/auth/sign-in");
 
   const returnToApp = () => {
-    if (redirectUri) {
+    if (redirectUri && isValidUrl(redirectUri)) {
       window.location.href = redirectUri;
     } else {
       navigate("/auth/sign-in");
