@@ -19,6 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
+import { safeRandomBytes } from "@/utils/helpers";
 
 /**
  * EVzone - 500 / Unexpected Error
@@ -153,10 +154,11 @@ function buildTheme(mode: ThemeMode) {
 
 function mkIncidentId() {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  const bytes = new Uint8Array(12);
+  let bytes: Uint8Array;
   try {
-    window.crypto.getRandomValues(bytes);
+    bytes = safeRandomBytes(12);
   } catch {
+    bytes = new Uint8Array(12);
     for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
   }
   const s = Array.from(bytes)
