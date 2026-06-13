@@ -4,13 +4,20 @@
  */
 
 /**
+ * Check if a hostname belongs to the allowed ecosystem domains
+ */
+function isAllowedDomain(hostname: string): boolean {
+    return hostname === 'evzone.com' || hostname.endsWith('.evzone.com') ||
+           hostname === 'evzone.app' || hostname.endsWith('.evzone.app');
+}
+
+/**
  * Validate URL is safe and allowed
  */
 export function isValidUrl(url: string): boolean {
     try {
         const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        return ['https:', 'http:'].includes(parsed.protocol) && isAllowedDomain(parsed.hostname);
     } catch {
         return false;
     }
@@ -25,8 +32,14 @@ export function sanitizeUrl(url: string): string {
 
     try {
         const parsed = new URL(url);
+
+        // Reject unapproved protocols to prevent XSS (e.g., javascript:)
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return '';
+        }
+
         // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        if (parsed.protocol !== 'https:' && isAllowedDomain(parsed.hostname)) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
