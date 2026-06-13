@@ -3,6 +3,7 @@ import axios, { AxiosRequestConfig, AxiosError, InternalAxiosRequestConfig } fro
 import axiosRetry from "axios-retry";
 import { getFriendlyMessage, ApiError } from "../components/errors/ApiErrorCatalog";
 import { userManager } from "../auth/oidcConfig";
+import { safeRandomBytes } from "./helpers";
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL || "/api/v1";
 const CSRF_TOKEN_KEY = 'x-csrf-token';
@@ -12,8 +13,7 @@ const CSRF_COOKIE_KEY = 'evzone-csrf';
  * [Security] Generate a random CSRF token
  */
 function generateCsrfToken(): string {
-  const array = new Uint8Array(32);
-  crypto.getRandomValues(array);
+  const array = safeRandomBytes(32);
   return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
