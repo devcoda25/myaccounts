@@ -1,0 +1,4 @@
+## 2026-04-08 - [Path Traversal to Open Redirect in URL Segment]
+**Vulnerability:** In `PatchOidcResume.tsx`, the OIDC interaction UID segment was extracted from the path and validated with `!segment.includes("/")` before being embedded into a redirect URL (`window.location.href = target`). This allowed an attacker to bypass the validation using backslashes (e.g., `..\..\evil.com`) which browsers normalize to forward slashes, resulting in an Open Redirect.
+**Learning:** Browsers aggressively normalize URLs. Validating path segments with basic string exclusion (like blocking `/`) is insufficient because attackers can use alternate characters (like `\`) or URL encoding (`%5C`) which get normalized later by the browser or server.
+**Prevention:** Always use strict allowlist validation (e.g., regex `^[a-zA-Z0-9_-]{21,}$`) for path segments that will be interpolated into URLs, ensuring they can only contain safe, expected characters.
