@@ -1,0 +1,4 @@
+## 2024-04-05 - Fix XSS and SSRF Bypasses in URL Validation
+**Vulnerability:** The `isValidUrl` and `sanitizeUrl` functions in `src/sanitizers/url.ts` were vulnerable to XSS and SSRF/Open Redirects. They used `.includes('evzone.com')` to validate hostnames, allowing bypasses like `evzone.com.attacker.com`. Additionally, `sanitizeUrl` allowed malicious schemas like `javascript:` because modifying the `protocol` property of a `URL` object fails silently for special schemas.
+**Learning:** When validating domains, never use `.includes()`. The `URL` API silently fails when modifying protocols of special schemas like `javascript:`.
+**Prevention:** Always use exact matching (`===`) or `.endsWith('.domain.com')` for hostnames. Explicitly validate and enforce allowed schemas (e.g., `http:`, `https:`) and reject unapproved protocols instead of attempting to mutate them.
