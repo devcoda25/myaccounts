@@ -1,0 +1,4 @@
+## 2024-05-24 - [Insecure Randomness Fallback]
+**Vulnerability:** Several utility functions, including `safeRandomBytes` and various ID generators, fell back to `Math.random()` when `window.crypto` was unavailable. `Math.random()` is not cryptographically secure, leading to predictable secrets, temporary passwords, and identifiers.
+**Learning:** `safeRandomBytes` and similar cryptographic functions must "fail closed" securely. Providing a "convenient" fallback that compromises security undermines the purpose of the function.
+**Prevention:** Always throw an explicit error if a required secure cryptographic API (like `window.crypto.getRandomValues`) is unavailable. Do not attempt to gracefully degrade to insecure methods. Use linting rules to flag `Math.random` usage in cryptographic contexts.

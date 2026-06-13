@@ -191,7 +191,13 @@ function timeAgo(ts: number) {
 }
 
 function mkId(prefix: string) {
-  return `${prefix}_${Math.random().toString(16).slice(2, 8).toUpperCase()}`;
+  const bytes = new Uint8Array(4);
+  if (!window.crypto || !window.crypto.getRandomValues) {
+    throw new Error('Secure random number generation is not supported in this environment.');
+  }
+  window.crypto.getRandomValues(bytes);
+  const randomPart = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 6).toUpperCase();
+  return `${prefix}_${randomPart}`;
 }
 
 
