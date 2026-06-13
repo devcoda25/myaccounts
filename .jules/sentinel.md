@@ -1,0 +1,4 @@
+## 2024-05-24 - Strict URL domain validation and secure sanitization
+**Vulnerability:** URL sanitization and validation allowed SSRF/Open Redirects via .includes() domain matching (e.g. evzone.com.attacker.com) and allowed unsafe URL bypasses like javascript: and protocol-relative paths.
+**Learning:** The URL API fails silently when changing protocol of special schemas like javascript:. Strict hostname checking using exact matches and endsWith is essential over loose includes() checks. Relative URL fallbacks must explicitly reject protocol-relative paths (//) and path-traversal backslashes (/\).
+**Prevention:** Always validate URL hostname using strict endsWith/exact domain matching. Reject invalid protocols instead of mutating them. Strictly allowlist safe relative fallback patterns.
