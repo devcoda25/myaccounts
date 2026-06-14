@@ -1,0 +1,4 @@
+## 2024-05-24 - [Critical] Open Redirect and SSRF bypass via .includes()
+**Vulnerability:** The `isValidUrl` validation function used `.includes('evzone.com')` to check the hostname, which could be bypassed with domains like `evzone.com.attacker.com`. Additionally, malicious payload schemas could circumvent validation.
+**Learning:** Naive `.includes()` checks are easily defeated by attackers appending or prepending to a given string. Furthermore, JavaScript's `new URL()` can be bypassed by inserting newline characters which requires whitespace stripping prior to parsing.
+**Prevention:** Strictly validate protocols to a known allowlist (`http:`, `https:`), strip out whitespaces before parsing URLs, and validate hostnames using exact matches or strict Regex anchored against `.evzone.com`, `.evzone.app`, or `.evzonemarketplace.com` to prevent bypassing logic.
