@@ -8,9 +8,11 @@
  */
 export function isValidUrl(url: string): boolean {
     try {
-        const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        const sanitizedUrl = url.replace(/[\n\r\t]/g, '');
+        const parsed = new URL(sanitizedUrl);
+        const validProtocol = ['https:', 'http:'].includes(parsed.protocol);
+        const domainRegex = /^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i;
+        return validProtocol && domainRegex.test(parsed.hostname);
     } catch {
         return false;
     }
