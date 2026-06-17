@@ -1,0 +1,4 @@
+## 2024-06-17 - [Fix Open Redirects in Auth Flows]
+**Vulnerability:** Found Open Redirect vulnerabilities in both authentication continue and sign-out flows where untrusted parameters (such as `ctx.redirectUri` and `redirectUri` from query strings) were directly assigned to `window.location.href` without validation.
+**Learning:** Client-side redirects using `window.location.href` must strictly validate dynamic input, even if the values originate from seemingly "trusted" state contexts or query parameters, as attackers can manipulate these parameters to redirect users to malicious domains.
+**Prevention:** Always use the dedicated `isValidUrl` sanitization utility to validate destination URLs against an explicit allowlist before redirecting users. If the validation fails, fall back to a safe default internal route using a client-side router (e.g., `navigate('/app')`).
