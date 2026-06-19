@@ -1,3 +1,4 @@
+/* global window, URL */
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -14,6 +15,7 @@ import {
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { motion } from "framer-motion";
+import { isValidUrl } from "@/sanitizers/url";
 import {
   CheckCircle,
   ArrowRight,
@@ -78,7 +80,7 @@ export default function SignedOutPage() {
   const signInAgain = () => navigate("/auth/sign-in");
 
   const returnToApp = () => {
-    if (redirectUri) {
+    if (redirectUri && isValidUrl(redirectUri)) {
       window.location.href = redirectUri;
     } else {
       navigate("/auth/sign-in");
