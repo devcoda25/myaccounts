@@ -36,6 +36,8 @@ import {
   Wallet,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { isValidUrl } from "@/sanitizers/url";
+/* global URL, window */
 
 /**
  * EVzone My Accounts — Continue to App (v4)
@@ -250,6 +252,7 @@ function buildScopeCatalog(keys: string[]): ScopeItem[] {
 }
 
 export default function ContinueToAppV4() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   const { t } = useTranslation("common");
   {
     const navigate = useNavigate();
@@ -263,6 +266,7 @@ export default function ContinueToAppV4() {
     );
 
     const [ctx] = useState<ClientContext>(() => {
+      /* global URLSearchParams */
       const qs = new URLSearchParams(window.location.search);
       const name = qs.get("app") || "EVzone Marketplace";
       const logoMark = (qs.get("mark") || "E").slice(0, 2).toUpperCase();
@@ -298,8 +302,13 @@ export default function ContinueToAppV4() {
 
     const onContinue = () => {
       setSnack({ open: true, severity: "success", msg: `Continuing to ${ctx.name}…` });
+      /* global setTimeout */
       setTimeout(() => {
-        window.location.href = ctx.redirectUri;
+        if (isValidUrl(ctx.redirectUri)) {
+          window.location.href = ctx.redirectUri;
+        } else {
+          navigate("/app");
+        }
       }, 800);
     };
 
