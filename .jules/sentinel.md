@@ -1,0 +1,4 @@
+## 2024-05-18 - URL Validation Bypass via Protocol and Subdomain Manipulation
+**Vulnerability:** The URL sanitizers `isValidUrl` and `sanitizeUrl` were vulnerable to SSRF, Open Redirect, and XSS. They relied on naive `.includes('evzone.com')` checks and didn't strictly validate the protocol before returning or utilizing the parsed URL.
+**Learning:** Using JavaScript's `new URL()` with payloads like `javascript:alert(1)//evzone.com` succeeds without throwing errors, parsing an empty hostname and satisfying `.includes()` bypasses. Similarly, attacker subdomains like `evzone.com.attacker.com` bypass `.includes()` domain validation.
+**Prevention:** Always validate URL schemes explicitly against an allowlist (e.g., `['http:', 'https:']`) *before* relying on hostname checks. Replace weak `.includes()` domain checks with strict regex anchoring for allowed domains (e.g., `/^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i`).
