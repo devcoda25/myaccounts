@@ -1,0 +1,4 @@
+## 2025-02-14 - Domain Validation Bypass via .includes()
+**Vulnerability:** The application's core `isValidUrl` validation function used `.includes('evzone.com')` to check if a redirect domain was trusted. This was vulnerable to Open Redirect and SSRF bypasses via malicious subdomains registered by attackers, such as `evzone.com.attacker.com` which successfully matches the include check.
+**Learning:** Using substring checks like `.includes()` or `.endsWith()` for domain validation is inherently insecure because they do not verify the strict domain boundaries. Attackers can append or prepend text to create matching rogue domains. Additionally, Javascript URL parser natively allows `javascript:` protocols with empty hostnames.
+**Prevention:** Always use strict regular expressions with anchor tags (e.g., `/^([a-z0-9-]+\.)*evzone\.com$/i`) or exact string matching (`===`) for hostnames, and explicitly define a secure protocol allowlist (`https:`, `http:`).
