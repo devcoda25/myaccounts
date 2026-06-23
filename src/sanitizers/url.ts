@@ -3,6 +3,8 @@
  * URL validation and sanitization utilities
  */
 
+/* global URL */
+
 /**
  * Validate URL is safe and allowed
  */
@@ -10,7 +12,7 @@ export function isValidUrl(url: string): boolean {
     try {
         const parsed = new URL(url);
         return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+            /^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i.test(parsed.hostname);
     } catch {
         return false;
     }
