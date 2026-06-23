@@ -1,0 +1,4 @@
+## 2024-05-18 - Fix Open Redirect and SSRF in URL validation
+**Vulnerability:** The `isValidUrl` and `sanitizeUrl` functions used naive validation (`.includes('evzone.com')` or `.includes('evzone')`) allowing attackers to bypass validation using domains like `evzone.com.attacker.com`. Additionally, `sanitizeUrl` did not restrict protocols, allowing execution of `javascript:` URIs.
+**Learning:** Checking for substring inclusion in hostnames is a critical vulnerability leading to Open Redirect and SSRF. `URL` constructors also handle whitespace and relative paths differently, requiring explicit sanitization.
+**Prevention:** Always use strict regex or exact string matching for domains (`TRUSTED_DOMAIN_REGEX`). Strip whitespace (CRLF injection) before parsing, and explicitly handle relative URLs. Finally, always explicitly allowlist protocols (e.g., `http:`, `https:`).
