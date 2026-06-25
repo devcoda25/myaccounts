@@ -1,0 +1,4 @@
+## 2024-06-25 - [Strict URL Validation using Regex for open redirects/SSRF]
+**Vulnerability:** The `isValidUrl` method used `.includes('evzone.com')` to validate if a URL is trusted, which could be bypassed by a domain like `evzone.com.attacker.com` leading to SSRF or Open Redirect vulnerabilities. Additionally, it did not strictly limit the protocols or correctly handle paths missing safe protocols.
+**Learning:** Using string matching like `.includes()` for domain validation is insufficient as attackers can easily craft hostnames that contain the allowed domain string as a substring or subdomain of their own domain.
+**Prevention:** Always use exact matching (`===`) or strict Regex matching like `/^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i` to validate domains. Also ensure strict checking of protocols like `https:` and stripping whitespaces to avoid bypasses, and safely check relative paths if client-side routing fallback is required.
