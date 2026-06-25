@@ -1,0 +1,4 @@
+## 2023-10-27 - [URL Validation Bypass]
+**Vulnerability:** URL validation bypass (SSRF/Open Redirect) via naive `.includes()` hostname checking and XSS via `javascript:` protocol with newline characters bypassing standard `URL` object parsing.
+**Learning:** Using `String.prototype.includes()` for validating domain names is vulnerable to bypasses like `evzone.com.attacker.com`. Also, `new URL()` does not throw an error for `javascript:` protocols, and newline characters can bypass naive checks if not stripped before parsing.
+**Prevention:** Always use strict regex matching like `/^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i` for domain validation. Strip whitespace characters `[\n\r\t]` from URLs before parsing them, and enforce a strict protocol allowlist (e.g., `http:`, `https:`, `mailto:`, `tel:`).
