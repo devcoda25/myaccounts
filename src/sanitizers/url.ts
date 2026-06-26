@@ -7,10 +7,21 @@
  * Validate URL is safe and allowed
  */
 export function isValidUrl(url: string): boolean {
+    if (!url) return false;
+
+    // Strip whitespace to prevent newline/tab injection bypasses
+    const cleanUrl = url.replace(/[\n\r\t]/g, '');
+
+    // Allow safe relative paths for client-side routing
+    if (cleanUrl.startsWith('/') && !cleanUrl.startsWith('//') && !cleanUrl.startsWith('/\\')) {
+        return true;
+    }
+
     try {
-        const parsed = new URL(url);
+        const parsed = new URL(cleanUrl);
+        const domainRegex = /^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i;
         return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+            domainRegex.test(parsed.hostname);
     } catch {
         return false;
     }
