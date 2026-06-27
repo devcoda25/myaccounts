@@ -1,0 +1,4 @@
+## 2024-05-24 - [CRITICAL] Insufficient URL Validation allowing SSRF/Open Redirects
+**Vulnerability:** The existing URL validation logic was vulnerable to SSRF and Open Redirect bypasses. It used naive `.includes('evzone.com')` checking, allowing domains like `evzone.com.attacker.com` to pass validation. It also did not strip whitespace prior to parsing or enforce strict protocol allowlists.
+**Learning:** Naive `.includes()` substring matching for domains is inherently unsafe and can easily be bypassed by subdomains or similarly named malicious domains. Whitespace characters like tabs or newlines can also be used to bypass URL parsing logic.
+**Prevention:** Always use strict domain Regex matching or exact equality `===` for domain verification. Strip whitespace characters (`\n`, `\r`, `\t`) before passing to URL constructors, and implement strict protocol allowlists (`http:`, `https:`).
