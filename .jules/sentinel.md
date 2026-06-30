@@ -1,0 +1,4 @@
+## 2025-02-14 - Fix Open Redirect and SSRF in URL validation
+**Vulnerability:** The `isValidUrl` and `sanitizeUrl` functions used naive `.includes('evzone')` matching, which allowed malicious subdomains (e.g., `https://evzone.com.attacker.com` or `https://attackerevzone.com`). They also didn't strip whitespace, allowing Javascript protocol injections via `\njavascript:alert(1)`.
+**Learning:** `URL.hostname.includes()` is insufficient for security domain validation. Additionally, the JavaScript `URL` constructor does not throw an error for `\njavascript:` URLs, requiring manual whitespace stripping before parsing or protocol matching.
+**Prevention:** Always use strict regex matching (`/^([a-z0-9-]+\.)*(domain\.com)$/i`) or strict equality (`===`) when validating domains. Strip newline and tab bytes `[\n\r\t]` from user input URLs before parsing.
