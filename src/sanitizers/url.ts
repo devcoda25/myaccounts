@@ -6,11 +6,24 @@
 /**
  * Validate URL is safe and allowed
  */
+/* global URL */
+
 export function isValidUrl(url: string): boolean {
+    if (!url) return false;
+
+    // Strip whitespace characters to prevent injection bypasses
+    const cleanUrl = url.replace(/[\n\r\t]/g, '');
+
+    // Allow safe relative paths
+    if (cleanUrl.startsWith('/') && !cleanUrl.startsWith('//') && !cleanUrl.startsWith('/\\')) {
+        return true;
+    }
+
     try {
-        const parsed = new URL(url);
+        const parsed = new URL(cleanUrl);
+        const allowedDomainRegex = /^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i;
         return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+            allowedDomainRegex.test(parsed.hostname);
     } catch {
         return false;
     }
