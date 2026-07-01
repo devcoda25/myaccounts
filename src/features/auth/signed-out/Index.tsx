@@ -24,6 +24,9 @@ import {
 
 import AuthHeader from "@/components/layout/AuthHeader";
 import { EVZONE } from "@/theme/evzone";
+import { isValidUrl } from "@/sanitizers/url";
+
+/* global window, URL */
 
 /**
  * EVzone My Accounts - Redesigned Signed Out Page
@@ -31,6 +34,7 @@ import { EVZONE } from "@/theme/evzone";
  */
 
 export default function SignedOutPage() {
+
   const { t } = useTranslation("common");
   const navigate = useNavigate();
   const theme = useTheme();
@@ -78,7 +82,7 @@ export default function SignedOutPage() {
   const signInAgain = () => navigate("/auth/sign-in");
 
   const returnToApp = () => {
-    if (redirectUri) {
+    if (redirectUri && isValidUrl(redirectUri)) {
       window.location.href = redirectUri;
     } else {
       navigate("/auth/sign-in");
