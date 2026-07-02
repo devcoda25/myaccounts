@@ -1,0 +1,4 @@
+## 2025-02-15 - Strict Domain Validation & SSRF/Open Redirect Fix
+**Vulnerability:** `isValidUrl` used naive `.includes('evzone.com')` checking, which allowed attackers to bypass validation using domains like `evzone.com.attacker.com` or `attacker.com/?q=evzone.com`.
+**Learning:** Using `.includes()` for URL hostname validation is an anti-pattern. Attackers can trivially bypass it because it does not anchor the domain matching. Furthermore, relative paths crashed the `URL` constructor which prevented legitimate internal routing unless explicitly handled.
+**Prevention:** Always use exact matching (`===`) or strict Regex matching (e.g., `/^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i`) anchored to the end of the string when validating domains. Handle relative paths explicitly and strip whitespace to prevent injection bypasses.

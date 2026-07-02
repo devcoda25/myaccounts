@@ -1,3 +1,5 @@
+/* global URL */
+
 /**
  * URL Sanitizer
  * URL validation and sanitization utilities
@@ -7,10 +9,24 @@
  * Validate URL is safe and allowed
  */
 export function isValidUrl(url: string): boolean {
+    if (typeof url !== 'string') return false;
+    // Strip whitespace to prevent injection
+    url = url.replace(/[\n\r\t]/g, '');
+
+    // Allow safe relative paths
+    if (url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/\\')) {
+        return true;
+    }
+
     try {
         const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return false;
+        }
+
+        // Use strict regex for allowed domains
+        const domainRegex = /^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i;
+        return domainRegex.test(parsed.hostname);
     } catch {
         return false;
     }
