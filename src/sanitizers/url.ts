@@ -1,3 +1,5 @@
+/* global URL */
+
 /**
  * URL Sanitizer
  * URL validation and sanitization utilities
@@ -7,10 +9,18 @@
  * Validate URL is safe and allowed
  */
 export function isValidUrl(url: string): boolean {
+    if (!url) return false;
     try {
-        const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        // Strip whitespace to prevent bypasses
+        const cleanUrl = url.replace(/[\n\r\t]/g, '');
+        // Allow safe relative paths
+        if (cleanUrl.startsWith('/') && !cleanUrl.startsWith('//') && !cleanUrl.startsWith('/\\')) {
+            return true;
+        }
+        const parsed = new URL(cleanUrl);
+        // Prevent SSRF/Open Redirect by using strict domain matching, not .includes()
+        const isValidDomain = /^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i.test(parsed.hostname);
+        return ['https:', 'http:'].includes(parsed.protocol) && isValidDomain;
     } catch {
         return false;
     }
@@ -24,9 +34,22 @@ export function sanitizeUrl(url: string): string {
     if (!url) return '';
 
     try {
-        const parsed = new URL(url);
-        // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        // Strip whitespace
+        const cleanUrl = url.replace(/[\n\r\t]/g, '');
+        // Allow safe relative paths
+        if (cleanUrl.startsWith('/') && !cleanUrl.startsWith('//') && !cleanUrl.startsWith('/\\')) {
+            return cleanUrl;
+        }
+        const parsed = new URL(cleanUrl);
+
+        // Strict protocol allowlist
+        if (!['http:', 'https:', 'mailto:', 'tel:'].includes(parsed.protocol)) {
+            return '';
+        }
+
+        const isProdDomain = /^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i.test(parsed.hostname);
+        // Only allow HTTPS for production domains
+        if (parsed.protocol === 'http:' && isProdDomain) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
