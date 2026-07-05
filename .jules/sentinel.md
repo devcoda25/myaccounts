@@ -1,0 +1,4 @@
+## 2024-10-27 - Strict URL Validation for Client-side Routing
+**Vulnerability:** Open Redirect and SSRF bypass via unvalidated URL domain manipulation.
+**Learning:** `new URL(url).hostname.includes('domain.com')` is insufficient for domain validation as it permits malicious subdomains like `domain.com.attacker.com`. Additionally, naive string matching without strictly enforcing protocol allowlists or handling valid relative paths can allow `javascript:` protocol bypasses and break client-side routing on legitimate relative links.
+**Prevention:** Always use strict regex matching for domain validation (e.g., `/^([a-z0-9-]+\.)*(domain\.com)$/i`) rather than `.includes()`. Explicitly allowsafe relative paths and strip whitespace to prevent injection before passing values to `window.location.href`. Provide safe application fallbacks when validation fails.

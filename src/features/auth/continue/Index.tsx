@@ -36,6 +36,9 @@ import {
   Wallet,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { isValidUrl } from "@/sanitizers/url";
+
+/* global URL, window, URLSearchParams, setTimeout */
 
 /**
  * EVzone My Accounts — Continue to App (v4)
@@ -250,6 +253,7 @@ function buildScopeCatalog(keys: string[]): ScopeItem[] {
 }
 
 export default function ContinueToAppV4() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   const { t } = useTranslation("common");
   {
     const navigate = useNavigate();
@@ -299,7 +303,11 @@ export default function ContinueToAppV4() {
     const onContinue = () => {
       setSnack({ open: true, severity: "success", msg: `Continuing to ${ctx.name}…` });
       setTimeout(() => {
-        window.location.href = ctx.redirectUri;
+        if (isValidUrl(ctx.redirectUri)) {
+          window.location.href = ctx.redirectUri;
+        } else {
+          navigate("/app");
+        }
       }, 800);
     };
 
