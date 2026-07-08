@@ -7,10 +7,23 @@
  * Validate URL is safe and allowed
  */
 export function isValidUrl(url: string): boolean {
+    if (!url) return false;
+
+    // Strip whitespace to prevent injection bypasses
+    const cleanUrl = url.replace(/[\n\r\t]/g, '');
+
+    // Explicitly allow safe relative paths
+    if (cleanUrl.startsWith('/') && !cleanUrl.startsWith('//') && !cleanUrl.startsWith('/\\')) {
+        return true;
+    }
+
     try {
-        const parsed = new URL(url);
+        // eslint-disable-next-line no-undef
+        const parsed = new URL(cleanUrl);
+        // Strictly validate trusted domains to prevent Open Redirect / SSRF
+        const domainRegex = /^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i;
         return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+            domainRegex.test(parsed.hostname);
     } catch {
         return false;
     }
@@ -24,6 +37,7 @@ export function sanitizeUrl(url: string): string {
     if (!url) return '';
 
     try {
+        // eslint-disable-next-line no-undef
         const parsed = new URL(url);
         // Only allow HTTPS for production
         if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
@@ -40,6 +54,7 @@ export function sanitizeUrl(url: string): string {
  */
 export function extractHostname(url: string): string {
     try {
+        // eslint-disable-next-line no-undef
         return new URL(url).hostname;
     } catch {
         return '';
@@ -58,6 +73,7 @@ export function isAbsoluteUrl(url: string): boolean {
  */
 export function resolveRelativeUrl(baseUrl: string, relativeUrl: string): string {
     try {
+        // eslint-disable-next-line no-undef
         return new URL(relativeUrl, baseUrl).toString();
     } catch {
         return relativeUrl;
