@@ -36,6 +36,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { isValidUrl } from "@/utils/validation";
 
 /**
  * EVzone My Accounts — Continue to App (v4)
@@ -297,6 +298,13 @@ export default function ContinueToAppV4() {
     };
 
     const onContinue = () => {
+      if (!isValidUrl(ctx.redirectUri)) {
+        setSnack({ open: true, severity: "error", msg: `Invalid redirect URI for ${ctx.name}.` });
+        setTimeout(() => {
+          navigate("/app");
+        }, 1200);
+        return;
+      }
       setSnack({ open: true, severity: "success", msg: `Continuing to ${ctx.name}…` });
       setTimeout(() => {
         window.location.href = ctx.redirectUri;
