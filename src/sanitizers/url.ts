@@ -3,14 +3,26 @@
  * URL validation and sanitization utilities
  */
 
+/* global URL */
+
+const TRUSTED_DOMAINS_REGEX = /^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i;
+
 /**
  * Validate URL is safe and allowed
  */
 export function isValidUrl(url: string): boolean {
+    if (!url) return false;
+    const cleanUrl = url.replace(/[\n\r\t]/g, '');
+
+    // Allow safe relative paths for internal routing
+    if (cleanUrl.startsWith('/') && !cleanUrl.startsWith('//') && !cleanUrl.startsWith('/\\')) {
+        return true;
+    }
+
     try {
-        const parsed = new URL(url);
+        const parsed = new URL(cleanUrl);
         return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+            TRUSTED_DOMAINS_REGEX.test(parsed.hostname);
     } catch {
         return false;
     }
@@ -22,9 +34,21 @@ export function isValidUrl(url: string): boolean {
  */
 export function sanitizeUrl(url: string): string {
     if (!url) return '';
+    const cleanUrl = url.replace(/[\n\r\t]/g, '');
+
+    // Allow safe relative paths
+    if (cleanUrl.startsWith('/') && !cleanUrl.startsWith('//') && !cleanUrl.startsWith('/\\')) {
+        return cleanUrl;
+    }
 
     try {
-        const parsed = new URL(url);
+        const parsed = new URL(cleanUrl);
+
+        // Protocol allowlist
+        if (!['https:', 'http:', 'mailto:', 'tel:'].includes(parsed.protocol)) {
+            return '';
+        }
+
         // Only allow HTTPS for production
         if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
             parsed.protocol = 'https:';
