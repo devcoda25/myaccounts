@@ -1,0 +1,4 @@
+## 2026-07-11 - [CRITICAL] Insecure URL Validation (Open Redirect/SSRF)
+**Vulnerability:** The `isValidUrl` function in `src/sanitizers/url.ts` relied on `hostname.includes('evzone.com')`, which is trivial to bypass using subdomains on attacker-controlled domains (e.g., `http://evzone.com.attacker.com`).
+**Learning:** `String.prototype.includes()` is insufficient for validating URL hostnames. The JavaScript `URL` constructor parses these malicious payloads without error, returning a technically valid `hostname` that passes the weak substring check.
+**Prevention:** Always use strict regular expressions with anchors (`^` and `$`) to validate hostnames, checking against a specific allowlist of trusted domains and subdomains (e.g., `/^([a-z0-9-]+\.)*(evzone\.com|evzone\.app|evzonemarketplace\.com)$/i`).
