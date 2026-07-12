@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { isValidUrl } from "@/utils/validation";
+
 import {
   Alert,
   Box,
@@ -36,6 +38,8 @@ import {
   Wallet,
 } from "lucide-react";
 import { motion } from "framer-motion";
+
+/* global URL, window, URLSearchParams, setTimeout */
 
 /**
  * EVzone My Accounts — Continue to App (v4)
@@ -250,6 +254,7 @@ function buildScopeCatalog(keys: string[]): ScopeItem[] {
 }
 
 export default function ContinueToAppV4() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   const { t } = useTranslation("common");
   {
     const navigate = useNavigate();
@@ -299,7 +304,11 @@ export default function ContinueToAppV4() {
     const onContinue = () => {
       setSnack({ open: true, severity: "success", msg: `Continuing to ${ctx.name}…` });
       setTimeout(() => {
-        window.location.href = ctx.redirectUri;
+        if (isValidUrl(ctx.redirectUri)) {
+          window.location.href = ctx.redirectUri;
+        } else {
+          navigate("/app");
+        }
       }, 800);
     };
 
