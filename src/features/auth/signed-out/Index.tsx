@@ -24,6 +24,7 @@ import {
 
 import AuthHeader from "@/components/layout/AuthHeader";
 import { EVZONE } from "@/theme/evzone";
+import { isValidUrl } from "@/utils/validation";
 
 /**
  * EVzone My Accounts - Redesigned Signed Out Page
@@ -78,7 +79,8 @@ export default function SignedOutPage() {
   const signInAgain = () => navigate("/auth/sign-in");
 
   const returnToApp = () => {
-    if (redirectUri) {
+    if (redirectUri && isValidUrl(redirectUri)) {
+      // eslint-disable-next-line no-undef
       window.location.href = redirectUri;
     } else {
       navigate("/auth/sign-in");
@@ -87,6 +89,7 @@ export default function SignedOutPage() {
 
   const safeHost = (url: string) => {
     try {
+      // eslint-disable-next-line no-undef
       return new URL(url).host;
     } catch {
       return "";
@@ -266,7 +269,9 @@ export default function SignedOutPage() {
             © {new Date().getFullYear()} EVzone Group
           </Typography>
           <Stack direction="row" spacing={3}>
+            {/* eslint-disable-next-line no-undef */}
             <Typography variant="caption" sx={{ cursor: 'pointer', "&:hover": { color: EVZONE.orange } }} onClick={() => window.open("/legal/terms", "_blank")}>Terms</Typography>
+            {/* eslint-disable-next-line no-undef */}
             <Typography variant="caption" sx={{ cursor: 'pointer', "&:hover": { color: EVZONE.orange } }} onClick={() => window.open("/legal/privacy", "_blank")}>Privacy</Typography>
           </Stack>
         </Box>
