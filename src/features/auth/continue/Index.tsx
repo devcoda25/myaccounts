@@ -1,3 +1,4 @@
+/* global URL, window, URLSearchParams, setTimeout */
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -36,6 +37,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { isValidUrl } from "@/utils/validation";
 
 /**
  * EVzone My Accounts — Continue to App (v4)
@@ -250,6 +252,7 @@ function buildScopeCatalog(keys: string[]): ScopeItem[] {
 }
 
 export default function ContinueToAppV4() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   const { t } = useTranslation("common");
   {
     const navigate = useNavigate();
@@ -297,6 +300,12 @@ export default function ContinueToAppV4() {
     };
 
     const onContinue = () => {
+      if (!isValidUrl(ctx.redirectUri)) {
+        setSnack({ open: true, severity: "error", msg: `Invalid redirect URL blocked.` });
+        setTimeout(() => navigate("/app"), 1500);
+        return;
+      }
+
       setSnack({ open: true, severity: "success", msg: `Continuing to ${ctx.name}…` });
       setTimeout(() => {
         window.location.href = ctx.redirectUri;
