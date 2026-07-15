@@ -1,0 +1,4 @@
+## 2023-10-27 - Strict Domain Matching and Whitespace Injection in URL validation
+**Vulnerability:** Weak domain validation (`hostname.includes('evzone.com')`) allowed bypasses via domains like `evzone.com.attacker.com`. Additionally, `sanitizeUrl` allowed arbitrary protocols such as `javascript:`, and both utilities were susceptible to whitespace injection bypasses.
+**Learning:** Checking for a domain substring is insufficient for security validation. Also, JS `URL` parser behaves permissively with whitespace and custom protocols unless explicitly restricted.
+**Prevention:** Always strip whitespace before parsing URLs. Enforce strict domain checking (exact match or strict suffix matching like `.evzone.com`). Validate against a strict protocol allowlist. Handle safe relative paths explicitly.
