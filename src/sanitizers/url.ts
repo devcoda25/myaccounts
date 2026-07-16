@@ -3,14 +3,23 @@
  * URL validation and sanitization utilities
  */
 
+/* global URL */
 /**
  * Validate URL is safe and allowed
  */
 export function isValidUrl(url: string): boolean {
+    if (!url) return false;
+    const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+    if (cleanUrl.startsWith('/') && !cleanUrl.startsWith('//') && !cleanUrl.startsWith('/\\')) {
+        return true;
+    }
     try {
-        const parsed = new URL(url);
+        const parsed = new URL(cleanUrl);
         return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+            (parsed.hostname === 'evzone.com' ||
+             parsed.hostname.endsWith('.evzone.com') ||
+             parsed.hostname === 'evzonemarketplace.com' ||
+             parsed.hostname.endsWith('.evzonemarketplace.com'));
     } catch {
         return false;
     }
