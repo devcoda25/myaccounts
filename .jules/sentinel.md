@@ -1,0 +1,4 @@
+## $(date +%Y-%m-%d) - [CRITICAL/HIGH] Fix Open Redirect and SSRF in URL validation
+**Vulnerability:** URL validation in `isValidUrl` and `sanitizeUrl` used loose `.includes('evzone.com')` checks, which could be bypassed by attacker domains like `attacker-evzone.com` or `evzone.com.attacker.com`. Additionally, `new URL()` throws on relative paths which can break client-side routing, and protocol checks were incomplete.
+**Learning:** Using `.includes()` for domain validation is insecure. The JavaScript `URL` constructor parses `javascript:` protocols even with malicious payloads, and relative paths need explicit safe handling before URL parsing.
+**Prevention:** Always use strict equality (`===`) or strict suffix matching (`.endsWith('.evzone.com')`) for hostnames. Ensure strict protocol allowlists and strip whitespace before validation to prevent bypasses. Explicitly handle safe relative paths if needed.
