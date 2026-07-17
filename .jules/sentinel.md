@@ -1,0 +1,4 @@
+## 2024-06-03 - [HIGH] Fix Open Redirect in URL Validation
+**Vulnerability:** The `isValidUrl` utility permitted any hostname containing "evzone.com" (e.g. "attacker-evzone.com") and did not sanitize whitespace/newlines, which allowed attackers to bypass validation and perform Open Redirects or SSRF via `window.location.href`.
+**Learning:** Naive `.includes()` checks for hostnames in URL validation are insecure. Newline/tab characters can bypass parsing. `new URL()` fails on legitimate relative routing paths.
+**Prevention:** Use strict regexes for hostname validation (e.g., `/(^|\.)evzone\.com$/`), strip `[\n\r\t]` before parsing, strictly enforce protocol allowlists (`http:`, `https:`), and explicitly allow safe relative paths while blocking scheme-relative ones (`//`). Wrap `window.location.href` assignments with this robust validation and a safe routing fallback.
