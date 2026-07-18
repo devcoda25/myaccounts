@@ -1,0 +1,4 @@
+## 2024-05-24 - URL Validation Bypass via .includes()
+**Vulnerability:** URL validation and sanitization bypassed Open Redirect / SSRF protections because they used `parsed.hostname.includes('evzone.com')`. An attacker could bypass this with `attacker-evzone.com` or `evzone.com.attacker.com`. Additionally, `sanitizeUrl` did not enforce protocol allowlisting.
+**Learning:** Using `.includes()` for domain validation is fundamentally insecure. Javascript's `URL` constructor parses `javascript:alert(1)//domain.com` without errors, which circumvents basic checks.
+**Prevention:** Always use strict equality (`=== 'domain.com'`) or strict suffix matching (`.endsWith('.domain.com')`) for domains. Always enforce a strict protocol allowlist (e.g., `['http:', 'https:']`) when validating URLs. Validate relative paths explicitly.
