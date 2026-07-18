@@ -18,6 +18,8 @@ import {
   Typography,
 } from "@mui/material";
 import { alpha, createTheme, ThemeProvider } from "@mui/material/styles";
+import { isValidUrl } from "@/utils/validation";
+
 import {
   ArrowLeft,
   ArrowRight,
@@ -250,6 +252,7 @@ function buildScopeCatalog(keys: string[]): ScopeItem[] {
 }
 
 export default function ContinueToAppV4() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   const { t } = useTranslation("common");
   {
     const navigate = useNavigate();
@@ -299,7 +302,11 @@ export default function ContinueToAppV4() {
     const onContinue = () => {
       setSnack({ open: true, severity: "success", msg: `Continuing to ${ctx.name}…` });
       setTimeout(() => {
-        window.location.href = ctx.redirectUri;
+        if (isValidUrl(ctx.redirectUri)) {
+          window.location.href = ctx.redirectUri;
+        } else {
+          navigate('/app');
+        }
       }, 800);
     };
 
