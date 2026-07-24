@@ -1,0 +1,4 @@
+## 2024-05-18 - SSRF and Open Redirect in URL Validation
+**Vulnerability:** URL validation and sanitization in `src/sanitizers/url.ts` used weak `.includes('evzone.com')` for hostname validation, allowing bypasses via `attacker-evzone.com` or `evzone.com.attacker.com`. Additionally, `sanitizeUrl` failed to strictly enforce allowed protocols, enabling XSS via `javascript:` URIs.
+**Learning:** `new URL()` does not throw on `javascript:` protocols. If a protocol is not strictly whitelisted, it can be returned verbatim. Also, `.includes()` on hostnames is never secure for domain validation.
+**Prevention:** Always use strict equality (`=== 'domain.com'`) or strict suffix matching (`.endsWith('.domain.com')`) for hostnames. Always enforce an explicit protocol allowlist (e.g., `['http:', 'https:', 'mailto:', 'tel:']`) when using `new URL()`.
