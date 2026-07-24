@@ -1,0 +1,4 @@
+## 2024-07-24 - Insecure URL Validation via `.includes` and missing protocol whitelisting
+**Vulnerability:** `isValidUrl` and `sanitizeUrl` used `.includes('evzone.com')` to validate domains, allowing bypasses like `https://attacker-evzone.com`. Furthermore, `sanitizeUrl` didn't reject `javascript:` payloads properly, which could lead to XSS, and `isValidUrl` allowed bypasses with whitespace injection (`https://\tevzone.com`).
+**Learning:** Always use strict equality (`===`) and strict suffix matching (`.endsWith('.evzone.com')`) for hostnames, and always strip whitespace (`url.replace(/[\n\r\t]/g, '').trim()`) before passing to `new URL()`. Enforce strict protocol whitelisting.
+**Prevention:** Establish robust sanitization helpers utilizing native `URL` APIs but strictly matching allowed properties and rejecting non-allowed protocols.
