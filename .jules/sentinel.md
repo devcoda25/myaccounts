@@ -1,0 +1,4 @@
+## 2024-07-25 - [Fix URL validation SSRF/Open Redirect bypass]
+**Vulnerability:** URL validation and sanitization functions used `.includes('evzone.com')` on the hostname, allowing SSRF and Open Redirect bypasses via domains like `evzone.com.attacker.com` or `attacker-evzone.com`. Additionally, `new URL()` threw errors on legitimate safe relative paths.
+**Learning:** Using `.includes()` for domain validation is fundamentally insecure as it matches anywhere in the string. Furthermore, the URL API requires explicitly handling relative paths before parsing to prevent breaking legitimate application routing.
+**Prevention:** Always use strict equality (`===`) for exact domains combined with strict suffix matching (`.endsWith('.domain.com')`) for subdomains. Always strip whitespace and safely allowlist relative paths (checking for `/` but not `//` or `/\`) before creating a URL object.
