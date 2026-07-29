@@ -1,0 +1,4 @@
+## 2024-05-24 - [CRITICAL] SSRF, Open Redirect, and XSS Bypass via Weak URL Validation
+**Vulnerability:** The `isValidUrl` and `sanitizeUrl` utilities used `.includes('evzone.com')` to validate domains, allowing bypasses like `attacker-evzone.com`. Furthermore, `sanitizeUrl` did not enforce a protocol allowlist, permitting `javascript:` payloads (XSS), and both utilities threw exceptions on legitimate relative paths.
+**Learning:** Using `.includes()` for domain validation is insecure and easily bypassed. Missing protocol allowlists in sanitization utilities implicitly allow malicious protocols. Not handling relative paths correctly leads to broken functionality or insecure workarounds.
+**Prevention:** Always use strict equality (`===`) and strict suffix matching (`.endsWith()`) for domains. Enforce explicit protocol allowlists (e.g., `['http:', 'https:', 'mailto:', 'tel:']`). Explicitly validate safe relative paths before URL parsing.
