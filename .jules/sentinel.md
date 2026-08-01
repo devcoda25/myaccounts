@@ -1,0 +1,4 @@
+## 2024-08-01 - SSRF and Open Redirect via Insecure URL Validation
+**Vulnerability:** URL sanitization utilities used `.includes('evzone.com')` for domain validation and allowed insecure URL parsing without protocol checks or stripping whitespace.
+**Learning:** `.includes` allows bypasses using domains like `attacker-evzone.com` or `evzone.com.attacker.com`. Insecure parsing of user input URLs without prior validation of protocols enables `javascript:` injection, and failing to strip whitespace can bypass protocol constraints.
+**Prevention:** Always use strict equality (`=== 'domain.com'`) or strict suffix matching (`.endsWith('.domain.com')`) for hostnames, strictly enforce protocol allowlists (e.g., `['https:', 'http:']`), explicitly permit safe relative paths, and securely strip whitespace before validation.
