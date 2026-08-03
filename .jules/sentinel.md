@@ -1,0 +1,4 @@
+## 2024-08-03 - [Security Enhancement] URL Validation Bypass Prevention
+**Vulnerability:** URL validation and sanitization in `isValidUrl` and `sanitizeUrl` used loose `.includes('evzone.com')` checks and lacked strict whitespace stripping before parsing. This allowed for Server-Side Request Forgery (SSRF), Open Redirect via subdomain spoofing (e.g., `attacker-evzone.com`), and XSS via `javascript:` protocols (e.g., `javascript:alert(1)//evzone.com`).
+**Learning:** JavaScript's `URL` constructor parses `javascript:` payloads without throwing, and `.includes()` allows bypasses if the attacker controls the prefix or suffix of the domain.
+**Prevention:** Always strip whitespace before parsing, use strict protocol allowlists (e.g., `http:`, `https:`), explicitly handle safe relative paths if required by the application, and enforce strict domain suffix matching (`endsWith('.evzone.com')` or `=== 'evzone.com'`) instead of `.includes()`.

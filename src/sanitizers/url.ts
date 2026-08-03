@@ -7,10 +7,24 @@
  * Validate URL is safe and allowed
  */
 export function isValidUrl(url: string): boolean {
+    if (!url) return false;
+    // Strip whitespace to prevent injection bypasses
+    const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+
+    // Explicitly allow safe relative paths
+    if (cleanUrl.startsWith('/') && !cleanUrl.startsWith('//') && !cleanUrl.startsWith('/\\')) {
+        return true;
+    }
+
     try {
-        const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        const parsed = new URL(cleanUrl);
+        // Strict protocol allowlist
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return false;
+        }
+        // Strict domain validation instead of .includes()
+        const hostname = parsed.hostname;
+        return hostname === 'evzone.com' || hostname.endsWith('.evzone.com');
     } catch {
         return false;
     }
@@ -22,11 +36,22 @@ export function isValidUrl(url: string): boolean {
  */
 export function sanitizeUrl(url: string): string {
     if (!url) return '';
+    // Strip whitespace to prevent injection bypasses
+    const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+
+    // Explicitly allow safe relative paths
+    if (cleanUrl.startsWith('/') && !cleanUrl.startsWith('//') && !cleanUrl.startsWith('/\\')) {
+        return cleanUrl;
+    }
 
     try {
-        const parsed = new URL(url);
-        // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        const parsed = new URL(cleanUrl);
+        // Strict protocol allowlist for sanitization (including mailto and tel)
+        if (!['https:', 'http:', 'mailto:', 'tel:'].includes(parsed.protocol)) {
+            return '';
+        }
+        // Only allow HTTPS for production. Strict domain validation.
+        if (parsed.protocol !== 'https:' && (parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com'))) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
