@@ -1,0 +1,4 @@
+## 2024-08-04 - Insecure Domain Validation (SSRF/Open Redirect)
+**Vulnerability:** Core URL utilities (`isValidUrl` and `sanitizeUrl`) used weak `.includes('evzone.com')` for domain validation, allowing bypasses with `attacker-evzone.com` or `evzone.com.attacker.com`. They also failed to strip malicious whitespace and lacked safe relative path handling, breaking legit usage if fixed naively.
+**Learning:** Checking for `.includes()` in hostnames is inherently flawed for SSRF/Open Redirect protection. Furthermore, `new URL()` fails for relative URLs and handles unexpected whitespace improperly.
+**Prevention:** Always use strict equality (`=== 'domain.com'`) and strict suffix matching (`.endsWith('.domain.com')`). Strip whitespace characters (`[\n\r\t]`) and `.trim()` first, handle safe relative paths explicitly (`startsWith('/') && !startsWith('//') && !startsWith('/\\')`), and enforce protocol whitelists before examining hostnames.
