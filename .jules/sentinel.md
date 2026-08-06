@@ -1,0 +1,4 @@
+## 2024-03-20 - [CRITICAL] URL Validation Bypass (SSRF/Open Redirect)
+**Vulnerability:** URL validation in `isValidUrl` and `sanitizeUrl` relied on loose `.includes()` checks for domains, allowing bypasses like `https://evzone.com.attacker.com`. Missing strict protocol enforcement also allowed `javascript:` payloads disguised with newlines (e.g., `javascript://evzone.com/%0aalert(1)`).
+**Learning:** `new URL()` alone doesn't validate protocols strictly enough to prevent XSS, and `includes()` is unsafe for domain validation because it matches subdomains or suffixes incorrectly.
+**Prevention:** Always strip whitespace before parsing URLs, enforce a strict protocol allowlist, use exact matching or strict suffix matching (`endsWith('.domain.com')`) for domains, and explicitly allow safe relative paths.
