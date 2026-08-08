@@ -1,0 +1,5 @@
+## 2024-08-08 - [Security Improvement] Fix SSRF and Open Redirect Vulnerability in URL Sanitization
+
+**Vulnerability:** The `isValidUrl` and `sanitizeUrl` functions in `src/sanitizers/url.ts` use weak hostname validation (`parsed.hostname.includes('evzone.com')`). This allows SSRF/Open Redirect attacks using domains like `evzone.com.attacker.com` or `attacker-evzone.com`. Additionally, `sanitizeUrl` does not check for dangerous protocols like `javascript:`, and both functions can be bypassed with whitespace formatting.
+**Learning:** Using `.includes()` on a hostname is dangerous. The domain validation should require either an exact match or strict subdomain matching (e.g. `hostname === 'evzone.com' || hostname.endsWith('.evzone.com')`). The protocol must be strictly checked against an allowlist, as Javascript protocol URLs can lead to XSS. Also, `new URL()` behavior on whitespace means strings must be stripped before parsing.
+**Prevention:** Always enforce a strict whitelist for protocols, strip whitespace first, and use strict hostname matching (`===` or `.endsWith()`) rather than substring matching (`.includes()`) for domain validations.
