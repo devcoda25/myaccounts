@@ -7,10 +7,23 @@
  * Validate URL is safe and allowed
  */
 export function isValidUrl(url: string): boolean {
+    if (!url) return false;
+    // Strip whitespace to prevent bypasses
+    const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+
+    // Allow safe relative paths
+    if (cleanUrl.startsWith('/') && !cleanUrl.startsWith('//') && !cleanUrl.startsWith('/\\')) {
+        return true;
+    }
+
     try {
-        const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        const parsed = new URL(cleanUrl);
+        // Enforce strict protocol allowlist
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return false;
+        }
+        // Strict hostname validation to prevent SSRF/Open Redirect
+        return parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com');
     } catch {
         return false;
     }
@@ -22,11 +35,22 @@ export function isValidUrl(url: string): boolean {
  */
 export function sanitizeUrl(url: string): string {
     if (!url) return '';
+    // Strip whitespace to prevent bypasses
+    const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+
+    // Allow safe relative paths
+    if (cleanUrl.startsWith('/') && !cleanUrl.startsWith('//') && !cleanUrl.startsWith('/\\')) {
+        return cleanUrl;
+    }
 
     try {
-        const parsed = new URL(url);
-        // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        const parsed = new URL(cleanUrl);
+        // Strict protocol allowlist for sanitization
+        if (!['http:', 'https:', 'mailto:', 'tel:'].includes(parsed.protocol)) {
+            return '';
+        }
+        // Strict hostname matching for HTTPS upgrade
+        if (parsed.protocol === 'http:' && (parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com'))) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
