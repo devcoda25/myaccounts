@@ -1,0 +1,4 @@
+## 2024-05-15 - [Title] SSRF and XSS Bypass via Loose URL Validation
+**Vulnerability:** URL validation and sanitization functions in `src/sanitizers/url.ts` failed to adequately strip whitespace, accepted malicious protocols (like `javascript:` when checking `.includes('evzone')`), and used `.includes('evzone.com')` for domain matching which allowed SSRF/Open Redirects to attacker domains like `attacker-evzone.com` or `evzone.com.attacker.com`.
+**Learning:** Using `new URL()` alone doesn't prevent JS injection without strict protocol filtering, and `.includes()` is dangerous for validating hostnames due to subdomain and suffix spoofing.
+**Prevention:** Always strip whitespace characters like newlines and tabs from URLs before parsing. Enforce strict protocol allowlists and use strict equality (`===`) along with strict suffix matching (`.endsWith('.domain.com')`) for hostnames. Ensure safe relative paths are explicitly permitted if necessary.
