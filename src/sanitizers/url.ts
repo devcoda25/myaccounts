@@ -8,9 +8,18 @@
  */
 export function isValidUrl(url: string): boolean {
     try {
+        url = url.replace(/[\n\r\t]/g, '').trim();
+        if (url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/\\')) {
+            return true;
+        }
+
         const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return false;
+        }
+
+        const hostname = parsed.hostname;
+        return hostname === 'evzone.com' || hostname.endsWith('.evzone.com');
     } catch {
         return false;
     }
@@ -24,9 +33,19 @@ export function sanitizeUrl(url: string): string {
     if (!url) return '';
 
     try {
+        url = url.replace(/[\n\r\t]/g, '').trim();
+        if (url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/\\')) {
+            return url;
+        }
+
         const parsed = new URL(url);
+        if (!['http:', 'https:', 'mailto:', 'tel:'].includes(parsed.protocol)) {
+            return '';
+        }
+
+        const hostname = parsed.hostname;
         // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        if (parsed.protocol !== 'https:' && (hostname === 'evzone.com' || hostname.endsWith('.evzone.com'))) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
