@@ -1,0 +1,4 @@
+## 2025-01-20 - [CRITICAL] Fix URL validation and SSRF/Open Redirects
+**Vulnerability:** URL validation in `isValidUrl` and `sanitizeUrl` was using `.includes('evzone.com')` allowing bypass via `attacker-evzone.com`. Furthermore, it was parsing unsanitized strings which could allow bypasses using whitespaces and XSS by leveraging javascript URIs that parsed correctly.
+**Learning:** Using `String.prototype.includes` for domain validation is insecure. Must always use strict equality or `.endsWith('.domain.com')` for subdomains. Must strip whitespace characters and enforce protocol whitelisting correctly before acting on URLs.
+**Prevention:** Centralized validators must be rigorously implemented and check inputs using strict regex or equality checks, explicitly allowing known secure elements.
