@@ -1,0 +1,4 @@
+## 2024-05-18 - URL Validation SSRF/Open Redirect Bypasses
+**Vulnerability:** URL validation (`isValidUrl` and `sanitizeUrl`) permitted Server-Side Request Forgery (SSRF) and Open Redirect bypasses by using `.includes('evzone.com')` for domain checking. It also failed to strip newline/carriage returns, and `sanitizeUrl` evaluated JavaScript protocols due to missing allowlists.
+**Learning:** Checking subdomains with `.includes()` allows bypasses via malicious domains (e.g., `attacker-evzone.com` or `evzone.com.attacker.com`). Furthermore, the `URL` constructor parses `javascript:` payloads successfully unless strict protocol allowlists are applied.
+**Prevention:** Validate domains using strict equality (`=== 'domain.com'`) or strict suffix matching (`.endsWith('.domain.com')`). Always strip whitespaces (`.replace(/[\n\r\t]/g, '').trim()`) and enforce explicit protocol allowlists (e.g., `['http:', 'https:']`) before using `URL` objects.
