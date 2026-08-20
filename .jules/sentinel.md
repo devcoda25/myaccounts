@@ -1,0 +1,4 @@
+## $(date +%Y-%m-%d) - [SSRF and Open Redirect via Weak URL Validation]
+**Vulnerability:** Weak URL validation in `isValidUrl` and `sanitizeUrl` using `.includes('evzone.com')` allowed bypasses via malicious domains (e.g., `evzone.com.attacker.com`). Lack of protocol validation allowed `javascript:` payloads, and failure to strip whitespace allowed newline injection bypasses.
+**Learning:** `new URL()` evaluates malicious payloads like `javascript:alert(1)//domain.com` without error. Checking subdomains requires strict suffix matching (`.endsWith('.domain.com')`) combined with exact matching (`=== 'domain.com'`), rather than loose substring matching (`.includes()`).
+**Prevention:** Always strip whitespace (`[\n\r\t]`), strictly validate protocol using an allowlist before evaluating the hostname, use strict equality and `.endsWith()` for domain validation, and safely handle relative paths separately from absolute URLs.
