@@ -8,9 +8,10 @@
  */
 export function isValidUrl(url: string): boolean {
     try {
-        const parsed = new URL(url);
+        const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+        const parsed = new URL(cleanUrl);
         return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+            (parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com'));
     } catch {
         return false;
     }
@@ -24,9 +25,22 @@ export function sanitizeUrl(url: string): string {
     if (!url) return '';
 
     try {
-        const parsed = new URL(url);
+        const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+
+        if ((cleanUrl.startsWith('/') && !cleanUrl.startsWith('//') && !cleanUrl.startsWith('/\\')) ||
+            cleanUrl.startsWith('#') ||
+            cleanUrl.startsWith('?')) {
+            return cleanUrl;
+        }
+
+        const parsed = new URL(cleanUrl);
+
+        if (!['http:', 'https:', 'mailto:', 'tel:'].includes(parsed.protocol)) {
+            return '';
+        }
+
         // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        if (parsed.protocol !== 'https:' && (parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com'))) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
@@ -40,7 +54,8 @@ export function sanitizeUrl(url: string): string {
  */
 export function extractHostname(url: string): string {
     try {
-        return new URL(url).hostname;
+        const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+        return new URL(cleanUrl).hostname;
     } catch {
         return '';
     }
@@ -50,7 +65,8 @@ export function extractHostname(url: string): string {
  * Check if URL is absolute (has protocol)
  */
 export function isAbsoluteUrl(url: string): boolean {
-    return /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(url);
+    const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+    return /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(cleanUrl);
 }
 
 /**
@@ -58,7 +74,8 @@ export function isAbsoluteUrl(url: string): boolean {
  */
 export function resolveRelativeUrl(baseUrl: string, relativeUrl: string): string {
     try {
-        return new URL(relativeUrl, baseUrl).toString();
+        const cleanRelativeUrl = relativeUrl.replace(/[\n\r\t]/g, '').trim();
+        return new URL(cleanRelativeUrl, baseUrl).toString();
     } catch {
         return relativeUrl;
     }
