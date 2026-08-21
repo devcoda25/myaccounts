@@ -1,0 +1,4 @@
+## 2023-10-25 - Fix Server-Side Request Forgery (SSRF) and Open Redirect via URL Parsing Bypasses
+**Vulnerability:** The \`isValidUrl\` and \`sanitizeUrl\` functions used `.includes('evzone.com')` to validate hostnames and failed to strip whitespace before using the `URL` constructor. This permitted SSRF and Open Redirect attacks by allowing bypasses like `https://evzone.com.attacker.com` and newline-injected protocols.
+**Learning:** Naively using `.includes()` for domain validation is insecure. The `URL` constructor in JavaScript requires input sanitization (like stripping whitespace) to prevent protocol injection. Relative paths also need explicit handling to avoid breaking legitimate routing.
+**Prevention:** Use strict equality (`===`) and strict suffix matching (`.endsWith('.evzone.com')`) for hostnames. Always strip whitespace from URLs prior to validation or parsing. Enforce a strict protocol allowlist.

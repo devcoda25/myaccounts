@@ -3,14 +3,23 @@
  * URL validation and sanitization utilities
  */
 
+/* global URL */
+
 /**
  * Validate URL is safe and allowed
  */
 export function isValidUrl(url: string): boolean {
+    if (!url) return false;
+    const clean = url.replace(/[\n\r\t]/g, '').trim();
+    if ((clean.startsWith('/') && !clean.startsWith('//') && !clean.startsWith('/\\')) || clean.startsWith('#') || clean.startsWith('?')) {
+        return true;
+    }
     try {
-        const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        const parsed = new URL(clean);
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return false;
+        }
+        return parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com');
     } catch {
         return false;
     }
@@ -22,11 +31,17 @@ export function isValidUrl(url: string): boolean {
  */
 export function sanitizeUrl(url: string): string {
     if (!url) return '';
-
+    const clean = url.replace(/[\n\r\t]/g, '').trim();
+    if ((clean.startsWith('/') && !clean.startsWith('//') && !clean.startsWith('/\\')) || clean.startsWith('#') || clean.startsWith('?')) {
+        return clean;
+    }
     try {
-        const parsed = new URL(url);
+        const parsed = new URL(clean);
+        if (!['https:', 'http:', 'mailto:', 'tel:'].includes(parsed.protocol)) {
+            return '';
+        }
         // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        if (parsed.protocol !== 'https:' && (parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com'))) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
