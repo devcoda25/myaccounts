@@ -1,0 +1,4 @@
+## 2026-08-22 - [CRITICAL] Fix URL validation to prevent SSRF and Open Redirect
+**Vulnerability:** The `isValidUrl` function used insecure `.includes('evzone.com')` for hostname validation, allowing bypasses via malicious domains like `attacker-domain.com` or `evzone.com.attacker.com`. It also lacked proper handling for malicious payloads parsing without error (e.g., `javascript:alert(1)//evzone.com`).
+**Learning:** Using `.includes()` on hostnames is insufficient for SSRF/Open Redirect prevention. The `URL` constructor can parse seemingly invalid URLs with unexpected protocols.
+**Prevention:** Use strict equality (`=== 'domain.com'`) combined with strict suffix matching (`.endsWith('.domain.com')`) for subdomains. Enforce a strict protocol allowlist BEFORE evaluating the hostname. Always strip whitespace to prevent newline/tab injection bypasses.
