@@ -1,0 +1,4 @@
+## 2024-10-18 - Prevent SSRF and Open Redirect via Weak URL Validation
+**Vulnerability:** URL validation used `.includes('evzone.com')` allowing bypasses like `attacker.com/evzone.com` or `evzone.com.attacker.com`. Missing strict protocol checks allowed `javascript:` or `data:` URLs to parse into a URL object without error but with an empty hostname, evading validation.
+**Learning:** The `URL` constructor parses malicious payloads like `javascript:alert(1)//evzone.com` seamlessly. Hostname validation via `.includes()` is extremely permissive and dangerous for SSRF/Open Redirects.
+**Prevention:** Always enforce a strict protocol allowlist (e.g., `['https:', 'http:']`) before evaluating hostnames. Validate hostnames using strict equality (`===`) and strict suffix matching (`.endsWith()`) combined with stripping whitespace before parsing.
