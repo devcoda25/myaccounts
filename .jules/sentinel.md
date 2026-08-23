@@ -1,0 +1,4 @@
+## 2026-08-23 - Open Redirect and SSRF in URL Validation
+**Vulnerability:** The `isValidUrl` and `sanitizeUrl` utilities used `.includes('evzone.com')` for hostname validation, allowing bypasses with domains like `attacker-evzone.com`. Furthermore, `sanitizeUrl` lacked protocol restrictions, opening the door for `javascript:` XSS payloads.
+**Learning:** `new URL()` behavior coupled with loose `.includes()` checks creates massive blind spots where attackers can craft URLs that parse cleanly but direct to malicious domains or execute XSS. The `URL` constructor also fails on legitimate relative paths without protocol.
+**Prevention:** Always use strict equality combined with strict suffix matching (`.endsWith('.domain.com')`) for subdomains. Enforce a strict protocol allowlist before evaluating hostnames, and handle relative paths explicitly while stripping whitespace to prevent payload obfuscation.
