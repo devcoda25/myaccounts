@@ -7,10 +7,22 @@
  * Validate URL is safe and allowed
  */
 export function isValidUrl(url: string): boolean {
+    if (!url) return false;
+
+    // Strip whitespace to prevent injection bypasses
+    const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+
+    // Explicitly allow safe relative paths
+    if ((cleanUrl.startsWith('/') && !cleanUrl.startsWith('//') && !cleanUrl.startsWith('/\\')) ||
+        cleanUrl.startsWith('?') || cleanUrl.startsWith('#')) {
+        return true;
+    }
+
     try {
-        const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        const parsed = new URL(cleanUrl);
+        const isAllowedProtocol = ['https:', 'http:'].includes(parsed.protocol);
+        const isAllowedDomain = parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com');
+        return isAllowedProtocol && isAllowedDomain;
     } catch {
         return false;
     }
@@ -23,10 +35,23 @@ export function isValidUrl(url: string): boolean {
 export function sanitizeUrl(url: string): string {
     if (!url) return '';
 
+    // Strip whitespace to prevent injection bypasses
+    const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+
+    // Explicitly allow safe relative paths
+    if ((cleanUrl.startsWith('/') && !cleanUrl.startsWith('//') && !cleanUrl.startsWith('/\\')) ||
+        cleanUrl.startsWith('?') || cleanUrl.startsWith('#')) {
+        return cleanUrl;
+    }
+
     try {
-        const parsed = new URL(url);
+        const parsed = new URL(cleanUrl);
+        // Enforce strict protocol allowlist
+        if (!['http:', 'https:', 'mailto:', 'tel:'].includes(parsed.protocol)) {
+            return '';
+        }
         // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        if (parsed.protocol === 'http:' && (parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com'))) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
@@ -39,8 +64,14 @@ export function sanitizeUrl(url: string): string {
  * Extract hostname from URL safely
  */
 export function extractHostname(url: string): string {
+    if (!url) return '';
+    const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+    if ((cleanUrl.startsWith('/') && !cleanUrl.startsWith('//') && !cleanUrl.startsWith('/\\')) ||
+        cleanUrl.startsWith('?') || cleanUrl.startsWith('#')) {
+        return '';
+    }
     try {
-        return new URL(url).hostname;
+        return new URL(cleanUrl).hostname;
     } catch {
         return '';
     }
