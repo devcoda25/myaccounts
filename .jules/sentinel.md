@@ -1,0 +1,4 @@
+## 2023-10-26 - SSRF Bypass in URL Validation
+**Vulnerability:** The URL validation functions (`isValidUrl` and `sanitizeUrl`) used `.includes('evzone.com')` for domain validation, which allowed malicious domains like `evzone.com.attacker.com` to bypass the check. Additionally, lack of whitespace stripping and missing strict protocol validation allowed for further bypasses.
+**Learning:** Never use `.includes()` for hostname validation as it fails to properly segment domain boundaries. The `URL` constructor allows whitespace and parses potentially malicious protocols without error.
+**Prevention:** Use strict domain matching (`hostname === 'domain.com' || hostname.endsWith('.domain.com')`). Always strip whitespace before parsing, strictly enforce protocol allowlists, and explicitly handle relative URLs.
