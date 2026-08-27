@@ -1,0 +1,4 @@
+## 2024-05-24 - SSRF and Protocol Bypass in URL Validation
+**Vulnerability:** URL validation and sanitization functions used `.includes()` for hostname checking and did not properly enforce protocol allowlists for absolute URLs, leading to SSRF bypasses (e.g., `attacker-evzone.com`) and protocol injection (e.g., `javascript:alert(1)//evzone.com`).
+**Learning:** The `URL` constructor parsing behavior can hide malicious protocols if not checked explicitly, and `.includes()` is dangerous for domain validation because it allows substring matches. Relative URLs must also be securely allowed.
+**Prevention:** Always enforce strict protocol allowlists (e.g., `['http:', 'https:']`) and use strict equality (`===`) combined with suffix matching (`.endsWith() - e.g., .endsWith('.domain.com')`) for subdomains.
