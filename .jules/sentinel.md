@@ -1,0 +1,4 @@
+## 2026-08-28 - Fix SSRF and Open Redirect in URL utilities
+**Vulnerability:** The `isValidUrl` and `sanitizeUrl` functions used insecure `.includes('evzone.com')` for hostname validation, allowing bypasses via domains like `attacker-evzone.com` or `evzone.com.attacker.com`. Additionally, `sanitizeUrl` didn't restrict protocols, permitting `javascript:` execution.
+**Learning:** `URL.hostname.includes()` is a widespread anti-pattern that fails to enforce domain boundaries securely. The native `URL` parser also accepts payloads with whitespace or arbitrary protocols without throwing.
+**Prevention:** Always use strict equality (`===`) and suffix matching (`.endsWith('.domain.com')`) for hostnames. Strip whitespace before parsing and explicitly enforce a protocol allowlist for both validation and sanitization.
