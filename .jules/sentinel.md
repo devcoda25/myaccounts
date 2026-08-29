@@ -1,0 +1,4 @@
+## 2026-08-29 - [CRITICAL] Fix SSRF Bypass in URL Validation
+**Vulnerability:** The application used `.includes('evzone.com')` for validating URL hostnames, which allows attackers to bypass validation using malicious domains like `evzone.com.attacker.com` or `attacker-evzone.com`. Additionally, the URL constructor allows bypasses like `javascript:alert(1)//evzone.com` if protocols aren't strictly validated before evaluating hostnames.
+**Learning:** The URL API is lenient in parsing. `javascript:` schemas treat the double slash `//` as a comment, parsing the hostname as empty, while standard `includes()` checks can match arbitrary substrings of entirely different domains.
+**Prevention:** Always use strict equality (`=== 'domain.com'`) or strict suffix matching (`.endsWith('.domain.com')`) for hostnames, and always explicitly validate the protocol against a strict allowlist (e.g., `['https:', 'http:']`) before trusting parsed hostname parts.
