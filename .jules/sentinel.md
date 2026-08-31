@@ -1,0 +1,4 @@
+## 2026-08-31 - [CRITICAL] Fix URL Validation SSRF/Open Redirect and Protocol Bypass
+**Vulnerability:** URL validation used `.includes('evzone.com')` allowing bypasses via domains like `attacker-evzone.com`. It also didn't strictly validate schemes or whitespace, allowing `javascript:` execution.
+**Learning:** Using `.includes()` for domain validation is insecure. The `URL` constructor will parse `javascript:` protocols successfully without throwing an error. Whitespace can be used to bypass prefix checks.
+**Prevention:** Always use strict equality (`===`) and strict suffix matching (`.endsWith()` for subdomains). Always strip whitespace before parsing. Always explicitly allowlist protocols (e.g., `['http:', 'https:']`). Handle relative paths safely before relying on the `URL` constructor.
