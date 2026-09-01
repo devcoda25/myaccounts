@@ -1,0 +1,4 @@
+## 2026-09-01 - [CRITICAL] Fix URL Validation SSRF and XSS
+**Vulnerability:** The `isValidUrl` and `sanitizeUrl` functions used loosely matched protocols and `.includes('evzone.com')`, which allowed bypasses (e.g., `javascript:alert(1)//evzone.com` or `http://attacker-evzone.com`). It also failed to correctly account for whitespace bypassing and relative URLs, preventing proper security and functionality.
+**Learning:** Using `URL` constructor without strict protocol allowlists and exact hostname matching allows maliciously crafted URLs to parse successfully but result in XSS or SSRF. `URL` constructor will also throw on relative URLs if not correctly handled before parsing.
+**Prevention:** Always enforce strict protocol allowlists before evaluating the hostname. Use strict equality (`===`) and `.endsWith('.domain.com')` for subdomain checking rather than `.includes()`. Explicitly allow safe relative URLs and strip whitespace injection payloads before parsing.
