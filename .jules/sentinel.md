@@ -1,0 +1,4 @@
+## 2026-09-04 - [CRITICAL] Fix URL Sanitization and Validation
+**Vulnerability:** The `isValidUrl` and `sanitizeUrl` functions used `.includes('evzone.com')` for hostname validation, allowing bypasses like `attacker-evzone.com`. Furthermore, `sanitizeUrl` did not restrict protocols, allowing XSS via `javascript:` URLs.
+**Learning:** Using `.includes()` on hostnames allows for prefix and suffix bypasses. The `URL` constructor parses `javascript:` payloads into a `javascript:` protocol with an empty hostname, which can bypass hostname checks if protocols aren't strictly validated first.
+**Prevention:** Always use strict equality (`===`) combined with strict suffix matching (`.endsWith()` with a leading dot) for subdomains. Always enforce a strict protocol allowlist before evaluating hostnames.
