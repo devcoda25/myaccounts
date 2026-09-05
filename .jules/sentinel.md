@@ -1,0 +1,4 @@
+## 2026-09-05 - [Insecure URL Validation and Sanitization]
+**Vulnerability:** URL validation and sanitization functions used loosely matched `.includes('evzone.com')` allowing SSRF bypasses via subdomains (e.g., `evzone.com.attacker.com`). Furthermore, `sanitizeUrl` failed to enforce a protocol allowlist, permitting XSS via `javascript:` URIs.
+**Learning:** Using `.includes()` for hostname verification is fundamentally insecure. Additionally, the JavaScript `URL` constructor parses malicious protocols like `javascript:` without error, so explicit protocol allowlists are mandatory.
+**Prevention:** Always use strict equality (`===`) and strict suffix matching (`.endsWith('.domain.com')`) for hostnames. Implement strict protocol allowlists (e.g., `['http:', 'https:']`) before trusting URL values.
