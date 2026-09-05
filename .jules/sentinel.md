@@ -1,0 +1,4 @@
+## 2026-09-05 - [CRITICAL] Prevent SSRF and Open Redirect in URL utilities
+**Vulnerability:** URL validation used `.includes('evzone.com')` which allows bypasses like `evzone.com.attacker.com`. It also lacked protocol allowlisting before hostname evaluation, and failed to strip whitespaces, allowing bypasses. Additionally, `new URL()` throws on relative paths, breaking client-side routing.
+**Learning:** Hostname validation must use strict equality or suffix matching (`.endsWith`). Relative paths need explicit whitelisting before `new URL()` parsing to prevent runtime errors without opening protocol-relative vulnerabilities.
+**Prevention:** Enforce exact matching or strict suffix matching for subdomains, strip whitespace to prevent injection bypasses, validate protocols strictly, and safely allowlist relative paths (`/`, `?`, `#`) while rejecting protocol-relative variants (`//`, `/`+`\`).
