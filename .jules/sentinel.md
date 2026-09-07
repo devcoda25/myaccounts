@@ -1,0 +1,4 @@
+## 2026-09-07 - Prevent SSRF and XSS through URL Validation Bypass
+**Vulnerability:** URL validation functions used `.includes('evzone.com')` allowing bypass via subdomains of attacker sites (e.g. `evzone.com.attacker.com`). `sanitizeUrl` didn't enforce a strict protocol allowlist or explicitly strip whitespace.
+**Learning:** `new URL()` correctly evaluates `javascript:` protocols even with malicious URL formatting but leaves hostname empty. Standard `.includes()` string matching on hostnames is prone to SSRF.
+**Prevention:** Always enforce a strict protocol allowlist (`['http:', 'https:', 'mailto:', 'tel:']`) before evaluating hostnames, explicitly strip whitespace characters (e.g. `url.replace(/[\n\r\t]/g, '').trim()`), and use strict exact matching or strict suffix matching (`=== 'domain.com' || .endsWith('.domain.com')`) for hostnames.
