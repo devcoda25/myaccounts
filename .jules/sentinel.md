@@ -1,0 +1,4 @@
+## 2026-09-10 - [CRITICAL/HIGH] Fix SSRF and Protocol Bypass
+**Vulnerability:** The URL sanitizer used `.includes('evzone.com')` for host validation, allowing SSRF/Open Redirect bypasses via malicious domains like `evzone.com.attacker.com` or `attacker-domain.com/evzone.com`. It also lacked strict protocol validation for `sanitizeUrl`, which could allow `javascript:` execution, and didn't strip whitespace which could bypass URL parsing.
+**Learning:** Naive substring matching on URL hostnames is dangerous. URL parsing is vulnerable to newline/tab injection (`\n`, `\t`).
+**Prevention:** Always use strict equality (`===`) and strict suffix matching (`.endsWith()`) for hostname validation. Enforce explicit protocol allowlists and strip whitespace characters before passing input to `new URL()`.
