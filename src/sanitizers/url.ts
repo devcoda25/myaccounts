@@ -7,10 +7,13 @@
  * Validate URL is safe and allowed
  */
 export function isValidUrl(url: string): boolean {
+    if (!url) return false;
     try {
-        const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        const cleaned = url.replace(/[\n\r\t]/g, '').trim();
+        const parsed = new URL(cleaned);
+        const validProtocol = ['https:', 'http:'].includes(parsed.protocol);
+        const validHost = parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com');
+        return validProtocol && validHost;
     } catch {
         return false;
     }
@@ -24,7 +27,13 @@ export function sanitizeUrl(url: string): string {
     if (!url) return '';
 
     try {
-        const parsed = new URL(url);
+        const cleaned = url.replace(/[\n\r\t]/g, '').trim();
+        const parsed = new URL(cleaned);
+
+        if (!['http:', 'https:', 'mailto:', 'tel:'].includes(parsed.protocol)) {
+            return '';
+        }
+
         // Only allow HTTPS for production
         if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
             parsed.protocol = 'https:';
