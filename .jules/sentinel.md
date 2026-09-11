@@ -1,0 +1,4 @@
+## 2026-09-11 - [CRITICAL] Fix URL validation SSRF/Open Redirect bypasses
+**Vulnerability:** The `isValidUrl` and `sanitizeUrl` functions used `.includes('evzone.com')` to validate the hostname, allowing attackers to bypass validation using domains like `attacker-evzone.com` or `evzone.com.attacker.com`. Additionally, lack of whitespace sanitization before `new URL()` allowed newline/tab injection bypasses.
+**Learning:** `.includes()` is insecure for domain validation as it matches substrings anywhere in the hostname. The URL constructor can also be bypassed with whitespace characters if not properly sanitized.
+**Prevention:** Always use strict equality (`=== 'evzone.com'`) combined with strict suffix matching (`.endsWith('.evzone.com')`) for subdomains. Always strip whitespace (`.replace(/[\n\r\t]/g, '').trim()`) before parsing URLs.
