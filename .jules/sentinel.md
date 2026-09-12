@@ -1,0 +1,4 @@
+## 2026-09-12 - Fix URL validation bypass via improper domain inclusion check
+**Vulnerability:** The `isValidUrl` and `sanitizeUrl` functions used `.includes('evzone.com')` (or `evzone`), which allows SSRF and Open Redirect bypasses using domains like `attacker-evzone.com`. Furthermore, newlines/tabs in URLs were not stripped, enabling whitespace injection, and `sanitizeUrl` lacked a strict protocol allowlist.
+**Learning:** Checking for domain inclusion using `.includes()` is dangerous because it matches prefixes and suffixes maliciously appended by attackers. `new URL()` can parse payloads with newlines/tabs, allowing filter bypasses.
+**Prevention:** Always use strict equality (`=== 'domain.com'`) or strict suffix matching (`.endsWith('.domain.com')`) for subdomains. Always strip whitespace before passing to `new URL()` and enforce strict protocol allowlists.
