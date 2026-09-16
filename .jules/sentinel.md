@@ -1,0 +1,4 @@
+## 2026-09-16 - Fix URL Validation SSRF and XSS Bypasses
+**Vulnerability:** URL validation using `.includes('evzone.com')` allowed bypasses via malicious domains (e.g., `attacker-evzone.com`), and missing protocol allowlists in `sanitizeUrl` allowed XSS via `javascript:` payloads.
+**Learning:** JavaScript's `new URL()` parses malicious payloads like `javascript:alert(1)//evzone.com` with an empty hostname and a `javascript:` protocol. Additionally, `.includes()` on hostnames is prone to SSRF/Open Redirect bypasses.
+**Prevention:** Always strip whitespace (e.g., `url.replace(/[\n\r\t]/g, '').trim()`), strictly validate the protocol against an allowlist before evaluating the hostname, and use strict equality (`===`) combined with strict suffix matching (`.endsWith()`) for subdomain validation.
