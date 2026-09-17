@@ -1,0 +1,4 @@
+## 2026-09-17 - Prevent SSRF and Open Redirect via strict hostname matching
+**Vulnerability:** URL validation and sanitization using `.includes('evzone.com')` allows bypasses via malicious domains like `attacker-evzone.com` or `evzone.com.attacker.com`. Furthermore, not stripping whitespace allows newline/tab injection bypasses (e.g., `javascript:alert(1)`).
+**Learning:** Substring matching on hostnames is insecure. Malicious actors can register domains that include the target string or use subdomains. Also, whitespace characters can bypass basic URL parsing constraints.
+**Prevention:** Always use strict equality (`===`) for exact domains and strict suffix matching (`.endsWith('.domain.com')`) for subdomains. Strip whitespace characters (e.g., `[\n\r\t]`) and `.trim()` URLs before parsing. Explicitly enforce protocol allowlists and avoid using `.includes()` on hostnames.
