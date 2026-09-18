@@ -8,9 +8,12 @@
  */
 export function isValidUrl(url: string): boolean {
     try {
-        const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+        // eslint-disable-next-line no-undef
+        const parsed = new URL(cleanUrl);
+        const isAllowedProtocol = ['https:', 'http:'].includes(parsed.protocol);
+        const isSafeHost = parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com');
+        return isAllowedProtocol && isSafeHost;
     } catch {
         return false;
     }
@@ -24,9 +27,17 @@ export function sanitizeUrl(url: string): string {
     if (!url) return '';
 
     try {
-        const parsed = new URL(url);
+        const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+        // eslint-disable-next-line no-undef
+        const parsed = new URL(cleanUrl);
+
+        if (!['http:', 'https:', 'mailto:', 'tel:'].includes(parsed.protocol)) {
+            return '';
+        }
+
+        const isEvzoneHost = parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com');
         // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        if (parsed.protocol !== 'https:' && isEvzoneHost) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
@@ -40,7 +51,9 @@ export function sanitizeUrl(url: string): string {
  */
 export function extractHostname(url: string): string {
     try {
-        return new URL(url).hostname;
+        const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+        // eslint-disable-next-line no-undef
+        return new URL(cleanUrl).hostname;
     } catch {
         return '';
     }
@@ -58,6 +71,7 @@ export function isAbsoluteUrl(url: string): boolean {
  */
 export function resolveRelativeUrl(baseUrl: string, relativeUrl: string): string {
     try {
+        // eslint-disable-next-line no-undef
         return new URL(relativeUrl, baseUrl).toString();
     } catch {
         return relativeUrl;
