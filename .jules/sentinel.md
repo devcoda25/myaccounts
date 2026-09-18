@@ -1,0 +1,4 @@
+## 2026-09-18 - [CRITICAL] Fix URL Validation SSRF/XSS Bypass
+**Vulnerability:** URL validation used `.includes('evzone.com')`, allowing bypasses via `attacker-evzone.com` or `evzone.com.attacker.com`. Missing protocol allowlists allowed `javascript:` payloads in sanitized URLs, and whitespace injection allowed parsing bypasses.
+**Learning:** Using `.includes()` for hostname validation allows domain spoofing. The `URL` constructor parses `javascript:` payloads without throwing. Newlines and tabs in URLs can bypass naive sanitization.
+**Prevention:** Always use strict domain matching (`hostname === 'domain.com' || hostname.endsWith('.domain.com')`). Enforce strict protocol allowlists (`['https:', 'http:']`) rather than blacklisting. Always strip whitespace (`/[\n\r\t]/g`) before passing to `new URL()`.
