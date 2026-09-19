@@ -1,0 +1,4 @@
+## 2026-09-19 - Fix SSRF and Open Redirect Bypasses in URL Validation
+**Vulnerability:** URL validation and sanitization in `src/sanitizers/url.ts` used `.includes('evzone.com')` for hostname checks and failed to enforce a strict protocol allowlist prior to parsing, allowing SSRF/XSS bypasses (e.g., `javascript:alert(1)//evzone.com` or `https://attacker.com/evzone.com`).
+**Learning:** The JavaScript `URL` constructor parses `javascript:` protocols successfully without throwing, leading to bypasses if protocols aren't strictly filtered. Furthermore, `.includes()` on hostnames is insecure as it matches malicious substrings.
+**Prevention:** Always strip whitespace characters first, strictly allowlist protocols (e.g., `['http:', 'https:']`), and use exact match (`===`) or strict suffix match (`.endsWith()` with a leading dot) for hostname validation.
