@@ -1,0 +1,4 @@
+## 2026-09-20 - Fix URL Validation SSRF/XSS Bypass
+**Vulnerability:** The `isValidUrl` and `sanitizeUrl` functions used loose `.includes('evzone.com')` string matching on `hostname`, allowing malicious subdomains (e.g. `attacker-evzone.com`). Furthermore, `sanitizeUrl` allowed any scheme (like `javascript:`), posing an XSS risk.
+**Learning:** JavaScript's `new URL()` parses `javascript:` schemas with an empty hostname instead of failing, bypassing hostname checks if the schema isn't also verified. Also, `.includes()` on hostnames is prone to SSRF bypasses via prefix/suffix manipulation.
+**Prevention:** Always enforce strict schema allowlists (e.g., `['http:', 'https:']`) *before* evaluating the hostname. Validate domains using strict equality (`===`) combined with strict suffix matching (`.endsWith('.domain.com')`) to prevent domain prefix/suffix spoofing.
