@@ -1,0 +1,5 @@
+## 2026-09-23 - Prevent URL Parsing Bypasses and SSRF
+
+**Vulnerability:** The `isValidUrl` and `sanitizeUrl` functions used `.includes('evzone.com')` for hostname validation, allowing SSRF and Open Redirect bypasses via malicious subdomains (e.g., `evzone.com.attacker.com` or `attacker-evzone.com`). Additionally, they failed to strip whitespace before parsing, and `sanitizeUrl` didn't explicitly enforce allowed protocols before upgrading to HTTPS, allowing `javascript:` URLs.
+**Learning:** URL parsers often tolerate whitespace which can obscure validation. Furthermore, partial string matching (`.includes`) on hostnames is extremely dangerous. The `URL` constructor does not enforce HTTP/HTTPS by default, so protocols must always be strictly validated against an allowlist before performing hostname checks.
+**Prevention:** Always strip whitespace (e.g., `.replace(/[\n\r\t]/g, '').trim()`) before parsing URLs. Use strict equality (`===`) or explicit suffix matching (`.endsWith('.domain.com')`) for subdomains instead of `.includes`. Always validate protocols explicitly (`['http:', 'https:']`).
