@@ -1,0 +1,4 @@
+## 2026-09-23 - [SSRF and XSS bypasses in URL Validation]
+**Vulnerability:** The URL validation logic used `.includes('evzone.com')` allowing bypasses via domains like `evzone.com.attacker.com`. Additionally, `sanitizeUrl` did not enforce a protocol allowlist, allowing `javascript:` URLs to bypass domain validation and potentially lead to XSS.
+**Learning:** Using `.includes()` for hostname validation is inherently insecure as it matches anywhere in the string. The `URL` constructor parses `javascript:` URLs without throwing an error, so explicit protocol validation is required before checking hostnames.
+**Prevention:** Always use strict equality (`===`) and strict suffix matching (`.endsWith()`) for domain validation. Always enforce a strict protocol allowlist (e.g., `['http:', 'https:']`) immediately after parsing a URL and before performing any other validation. Strip whitespace characters before parsing to prevent injection.
