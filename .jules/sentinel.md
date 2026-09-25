@@ -1,0 +1,4 @@
+## 2026-09-25 - URL Validation Bypass Vulnerabilities
+**Vulnerability:** The `isValidUrl` function used `.includes('evzone.com')` on `parsed.hostname`, allowing SSRF bypasses via malicious domains. Additionally, `sanitizeUrl` did not strictly enforce a protocol allowlist, allowing `javascript:` URIs which could lead to XSS. Neither function stripped whitespace, risking newline/tab injection.
+**Learning:** Using `.includes()` for hostname validation is flawed as it matches substrings anywhere in the domain. The `URL` constructor parses `javascript:` protocols without throwing, requiring explicit protocol allowlists.
+**Prevention:** Always use strict equality (`=== 'domain.com'`) combined with strict suffix matching (`.endsWith('.domain.com')`) for subdomains. Explicitly enforce a protocol allowlist (`['http:', 'https:']`) and strip whitespace (`url.replace(/[\n\r\t]/g, '').trim()`) before validation.
