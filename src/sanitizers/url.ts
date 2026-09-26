@@ -7,10 +7,13 @@
  * Validate URL is safe and allowed
  */
 export function isValidUrl(url: string): boolean {
+    if (!url) return false;
+    const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
     try {
-        const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        // eslint-disable-next-line no-undef
+        const parsed = new URL(cleanUrl);
+        if (!['https:', 'http:'].includes(parsed.protocol)) return false;
+        return parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com');
     } catch {
         return false;
     }
@@ -22,11 +25,14 @@ export function isValidUrl(url: string): boolean {
  */
 export function sanitizeUrl(url: string): string {
     if (!url) return '';
+    const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
 
     try {
-        const parsed = new URL(url);
+        // eslint-disable-next-line no-undef
+        const parsed = new URL(cleanUrl);
+        if (!['https:', 'http:'].includes(parsed.protocol)) return '';
         // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        if (parsed.protocol !== 'https:' && (parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com'))) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
@@ -39,8 +45,13 @@ export function sanitizeUrl(url: string): string {
  * Extract hostname from URL safely
  */
 export function extractHostname(url: string): string {
+    if (!url) return '';
+    const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
     try {
-        return new URL(url).hostname;
+        // eslint-disable-next-line no-undef
+        const parsed = new URL(cleanUrl);
+        if (!['https:', 'http:'].includes(parsed.protocol)) return '';
+        return parsed.hostname;
     } catch {
         return '';
     }
@@ -57,8 +68,11 @@ export function isAbsoluteUrl(url: string): boolean {
  * Resolve relative URL against base URL
  */
 export function resolveRelativeUrl(baseUrl: string, relativeUrl: string): string {
+    if (!relativeUrl) return '';
+    const cleanRelative = relativeUrl.replace(/[\n\r\t]/g, '').trim();
     try {
-        return new URL(relativeUrl, baseUrl).toString();
+        // eslint-disable-next-line no-undef
+        return new URL(cleanRelative, baseUrl).toString();
     } catch {
         return relativeUrl;
     }
