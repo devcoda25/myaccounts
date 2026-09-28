@@ -1,0 +1,4 @@
+## 2026-09-28 - Prevent XSS and SSRF Bypasses in URL Validation
+**Vulnerability:** URL validation in `isValidUrl` and `sanitizeUrl` was vulnerable to XSS (via `javascript:` protocols bypassing the hostname check) and SSRF/Open Redirects (via `hostname.includes('evzone.com')` allowing `attacker-evzone.com`). Furthermore, whitespace like newlines wasn't stripped before parsing.
+**Learning:** `new URL('javascript:...')` doesn't throw and results in an empty hostname. To prevent XSS, URLs must be stripped of whitespace (`[\n\r\t]`) and explicitly checked against a strict protocol allowlist (`['http:', 'https:']`) before validating hostnames.
+**Prevention:** Always strip whitespace before passing to `new URL()`. Enforce explicit protocol allowlists. Never use `.includes()` for domain validation; use strict equality (`===`) or `.endsWith('.domain.com')`.
