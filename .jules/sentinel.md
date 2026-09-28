@@ -1,0 +1,4 @@
+## 2026-09-28 - SSRF/Open Redirect Bypass via Loose Hostname Validation
+**Vulnerability:** URL validation used `.includes('evzone.com')`, which allowed SSRF/Open Redirects via malicious domains like `attacker-evzone.com` or `evzone.com.attacker.com`. Additionally, newlines/tabs were not stripped before parsing.
+**Learning:** Checking hostnames with `.includes()` is fundamentally insecure for validation. The `URL` constructor does not automatically block all injection vectors (like whitespace characters) or enforce expected protocols unless explicitly checked.
+**Prevention:** Use strict equality (`=== 'domain.com'`) combined with suffix matching (`.endsWith('.domain.com')`) for subdomains. Always strip whitespace (`replace(/[\n\r\t]/g, '').trim()`) and explicitly enforce a protocol allowlist (e.g., `['http:', 'https:']`) before checking the hostname.
