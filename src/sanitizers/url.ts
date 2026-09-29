@@ -8,9 +8,12 @@
  */
 export function isValidUrl(url: string): boolean {
     try {
-        const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        const sanitizedUrl = url.replace(/[\n\r\t]/g, '').trim();
+        const parsed = new URL(sanitizedUrl);
+        if (!['http:', 'https:'].includes(parsed.protocol)) {
+            return false;
+        }
+        return parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com');
     } catch {
         return false;
     }
