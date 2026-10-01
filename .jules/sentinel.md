@@ -1,0 +1,4 @@
+## 2026-10-01 - URL Validation Bypass Vulnerability
+**Vulnerability:** The `isValidUrl` and `sanitizeUrl` functions were vulnerable to multiple bypasses. `isValidUrl` used `.includes('evzone.com')` which allowed attacker domains like `evzone.com.attacker.com`. `sanitizeUrl` allowed any protocol (including `javascript:`) by default and didn't strip whitespace which could bypass the `URL` constructor parsing.
+**Learning:** Using `.includes()` on hostnames is insecure as it allows partial matches anywhere in the string. `URL` constructor allows whitespace and parses `javascript:` without throwing errors, leading to XSS if not explicitly restricted.
+**Prevention:** Always use exact matching or strict suffix matching (e.g., `hostname === 'evzone.com' || hostname.endsWith('.evzone.com')`) for domains. Always strip whitespace before parsing and enforce explicit protocol allowlists (e.g., `['https:', 'http:']`) before further validation or sanitization.
