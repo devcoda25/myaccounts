@@ -1,0 +1,4 @@
+## 2026-10-01 - URL Validation and Sanitization Bypass
+**Vulnerability:** URL validation and sanitization could be bypassed using crafted hostnames (e.g. `evzone.com.attacker.com`) and `javascript:` protocol URIs with prepended whitespace. The `URL` constructor parses `javascript:` without throwing, leading to potential XSS bypasses.
+**Learning:** Using `String.prototype.includes` for hostname validation is insufficient as it matches substrings anywhere in the hostname. Furthermore, the `URL` constructor does not strip all whitespace from the beginning of strings before parsing the protocol, and does not enforce HTTP/HTTPS.
+**Prevention:** Always strip whitespace (`[\n\r\t]`) and `.trim()` before parsing URLs. Always enforce an explicit protocol allowlist (e.g. `['https:', 'http:']`). For hostname validation, ensure it either exactly matches the domain or ends with `.` + the domain to prevent suffix bypasses.
