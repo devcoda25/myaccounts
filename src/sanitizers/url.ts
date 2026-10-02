@@ -8,6 +8,8 @@
  */
 export function isValidUrl(url: string): boolean {
     try {
+        // Prevent whitespace injection bypasses
+        url = url.replace(/[\n\r\t]/g, '').trim();
         const parsed = new URL(url);
         return ['https:', 'http:'].includes(parsed.protocol) &&
             parsed.hostname.includes('evzone.com');
@@ -24,7 +26,15 @@ export function sanitizeUrl(url: string): string {
     if (!url) return '';
 
     try {
+        // Prevent whitespace injection bypasses
+        url = url.replace(/[\n\r\t]/g, '').trim();
         const parsed = new URL(url);
+
+        // Prevent XSS bypasses by explicitly enforcing a strict protocol allowlist
+        if (!['http:', 'https:'].includes(parsed.protocol)) {
+            return '';
+        }
+
         // Only allow HTTPS for production
         if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
             parsed.protocol = 'https:';
@@ -40,7 +50,16 @@ export function sanitizeUrl(url: string): string {
  */
 export function extractHostname(url: string): string {
     try {
-        return new URL(url).hostname;
+        // Prevent whitespace injection bypasses
+        url = url.replace(/[\n\r\t]/g, '').trim();
+        const parsed = new URL(url);
+
+        // Prevent XSS bypasses by explicitly enforcing a strict protocol allowlist
+        if (!['http:', 'https:'].includes(parsed.protocol)) {
+            return '';
+        }
+
+        return parsed.hostname;
     } catch {
         return '';
     }
