@@ -1,0 +1,4 @@
+## 2026-10-03 - Prevent XSS Bypass via Whitespace in URLs
+**Vulnerability:** URL validation and sanitization functions in `src/sanitizers/url.ts` parse URLs containing whitespace (like newlines or tabs) without stripping them first, which allows bypassing protocol restrictions using payloads like `\njavascript:alert(1)`. The `URL` constructor accepts these, often resulting in an empty hostname and allowing dangerous protocols through filters.
+**Learning:** The built-in `URL` constructor is permissive with whitespace in scheme strings, meaning checking `parsed.protocol` without stripping whitespace or enforcing a strict allowlist can be bypassed.
+**Prevention:** Always explicitly strip whitespace characters (e.g., using `url.replace(/[\n\r\t]/g, '').trim()`) before passing input to the `URL` constructor, and strictly enforce an explicit protocol allowlist (e.g., `['http:', 'https:']`).

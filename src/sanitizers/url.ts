@@ -8,7 +8,9 @@
  */
 export function isValidUrl(url: string): boolean {
     try {
-        const parsed = new URL(url);
+        const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+        // eslint-disable-next-line no-undef
+        const parsed = new URL(cleanUrl);
         return ['https:', 'http:'].includes(parsed.protocol) &&
             parsed.hostname.includes('evzone.com');
     } catch {
@@ -24,7 +26,10 @@ export function sanitizeUrl(url: string): string {
     if (!url) return '';
 
     try {
-        const parsed = new URL(url);
+        const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+        // eslint-disable-next-line no-undef
+        const parsed = new URL(cleanUrl);
+        if (!['http:', 'https:'].includes(parsed.protocol)) return '';
         // Only allow HTTPS for production
         if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
             parsed.protocol = 'https:';
@@ -40,7 +45,11 @@ export function sanitizeUrl(url: string): string {
  */
 export function extractHostname(url: string): string {
     try {
-        return new URL(url).hostname;
+        const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+        // eslint-disable-next-line no-undef
+        const parsed = new URL(cleanUrl);
+        if (!['http:', 'https:'].includes(parsed.protocol)) return '';
+        return parsed.hostname;
     } catch {
         return '';
     }
@@ -58,7 +67,11 @@ export function isAbsoluteUrl(url: string): boolean {
  */
 export function resolveRelativeUrl(baseUrl: string, relativeUrl: string): string {
     try {
-        return new URL(relativeUrl, baseUrl).toString();
+        const cleanUrl = relativeUrl.replace(/[\n\r\t]/g, '').trim();
+        // eslint-disable-next-line no-undef
+        const parsed = new URL(cleanUrl, baseUrl);
+        if (!['http:', 'https:'].includes(parsed.protocol)) return baseUrl;
+        return parsed.toString();
     } catch {
         return relativeUrl;
     }
