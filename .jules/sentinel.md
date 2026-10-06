@@ -1,0 +1,4 @@
+## 2026-10-06 - [CRITICAL] URL Sanitizer XSS and Whitespace Bypass
+**Vulnerability:** The URL sanitizer allowed arbitrary protocols (like `javascript:`) because it did not strictly enforce an allowlist before returning the parsed URL. It also failed to strip whitespace characters, which allowed bypassing validation.
+**Learning:** When using the `URL` constructor for validation, it parses the `javascript:` protocol without throwing an error. Relying solely on `try/catch` and checking the hostname is insufficient for sanitization. Newlines and tabs can also cause the `URL` constructor or subsequent validation checks to behave unexpectedly if not stripped.
+**Prevention:** Always strip whitespace characters first using regex and `.trim()`. Then, explicitly enforce a strict protocol allowlist (e.g., `['http:', 'https:']`) before returning the parsed URL or checking the hostname.
