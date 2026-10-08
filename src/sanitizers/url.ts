@@ -8,9 +8,12 @@
  */
 export function isValidUrl(url: string): boolean {
     try {
-        const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+        const parsed = new URL(cleanUrl);
+        if (!['http:', 'https:'].includes(parsed.protocol)) {
+            return false;
+        }
+        return parsed.hostname.includes('evzone.com');
     } catch {
         return false;
     }
@@ -24,7 +27,11 @@ export function sanitizeUrl(url: string): string {
     if (!url) return '';
 
     try {
-        const parsed = new URL(url);
+        const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+        const parsed = new URL(cleanUrl);
+        if (!['http:', 'https:'].includes(parsed.protocol)) {
+            return '';
+        }
         // Only allow HTTPS for production
         if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
             parsed.protocol = 'https:';
@@ -40,7 +47,12 @@ export function sanitizeUrl(url: string): string {
  */
 export function extractHostname(url: string): string {
     try {
-        return new URL(url).hostname;
+        const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+        const parsed = new URL(cleanUrl);
+        if (!['http:', 'https:'].includes(parsed.protocol)) {
+            return '';
+        }
+        return parsed.hostname;
     } catch {
         return '';
     }
