@@ -1,0 +1,4 @@
+## 2026-10-09 - Prevent JavaScript protocol XSS in URL Parsing
+**Vulnerability:** URL sanitization relied on `URL` constructor without strict protocol validation, allowing `javascript://evzone.com/alert(1)` to bypass checks because its hostname is parsed as `evzone.com`. Furthermore, whitespace characters could bypass naive checks.
+**Learning:** The JavaScript `URL` constructor successfully parses the `javascript:` protocol. If relying on `hostname` validation (like `includes('evzone.com')`), an attacker can supply `javascript://evzone.com/alert(1)`, which passes the check.
+**Prevention:** Always explicitly strip whitespace (tabs, newlines) and strictly validate against a protocol allowlist (e.g., `['http:', 'https:']`) before performing any hostname validation or returning a sanitized URL.
