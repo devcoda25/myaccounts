@@ -7,10 +7,12 @@
  * Validate URL is safe and allowed
  */
 export function isValidUrl(url: string): boolean {
+    if (!url) return false;
+    url = url.replace(/[\n\r\t]/g, '').trim();
     try {
         const parsed = new URL(url);
-        return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+        if (!['http:', 'https:'].includes(parsed.protocol)) return false;
+        return parsed.hostname.includes('evzone.com');
     } catch {
         return false;
     }
@@ -22,9 +24,11 @@ export function isValidUrl(url: string): boolean {
  */
 export function sanitizeUrl(url: string): string {
     if (!url) return '';
+    url = url.replace(/[\n\r\t]/g, '').trim();
 
     try {
         const parsed = new URL(url);
+        if (!['http:', 'https:'].includes(parsed.protocol)) return '';
         // Only allow HTTPS for production
         if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
             parsed.protocol = 'https:';
@@ -39,8 +43,12 @@ export function sanitizeUrl(url: string): string {
  * Extract hostname from URL safely
  */
 export function extractHostname(url: string): string {
+    if (!url) return '';
+    url = url.replace(/[\n\r\t]/g, '').trim();
     try {
-        return new URL(url).hostname;
+        const parsed = new URL(url);
+        if (!['http:', 'https:'].includes(parsed.protocol)) return '';
+        return parsed.hostname;
     } catch {
         return '';
     }
