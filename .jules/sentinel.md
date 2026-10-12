@@ -1,0 +1,4 @@
+## 2026-10-12 - [Insecure URL Parsing and Validation Patterns]
+**Vulnerability:** URL sanitization and validation functions used loosely matched methods like `.includes('evzone.com')` allowing SSRF and Open Redirect bypasses. Additionally, `sanitizeUrl` lacked a strict protocol allowlist, permitting `javascript:` URIs because the URL constructor parses them without throwing errors and leaving the hostname empty, bypassing XSS protection.
+**Learning:** The URL constructor does not reject dangerous protocols, and partial string matching on hostnames is insufficient for security boundaries.
+**Prevention:** Always enforce a strict protocol allowlist (`['http:', 'https:']`) explicitly before performing any hostname validation or returning a sanitized URL. Always strip whitespace characters first and use exact matching (`===`) or strict suffix matching (`.endsWith()`) for hostname validation.
