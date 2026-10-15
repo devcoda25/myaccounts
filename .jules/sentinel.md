@@ -1,0 +1,4 @@
+## 2026-10-15 - Insecure URL parsing allows XSS and SSRF bypasses
+**Vulnerability:** URL parsing functions (`isValidUrl`, `sanitizeUrl`) used loosely matched hostname validation (`.includes('evzone.com')`) and lacked explicit protocol allowlists for sanitization, enabling SSRF (e.g., `attacker.com/evzone.com`) and XSS (e.g., `javascript:` protocols).
+**Learning:** `new URL()` parses potentially malicious protocols without throwing errors and retains whitespace characters, leading to bypasses if inputs aren't explicitly cleaned and strictly verified against an allowlist.
+**Prevention:** Always explicitly strip whitespace (`/[\n\r\t]/g`), enforce protocol allowlists (e.g., `['http:', 'https:']`), and use strict suffix (`.endsWith()`) or exact matching (`===`) for hostnames before assuming a URL is safe.
