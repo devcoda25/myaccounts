@@ -1,0 +1,7 @@
+## 2026-10-15 - [CRITICAL] Prevent SSRF and Open Redirect in URL parsing
+
+**Vulnerability:** URL parsing in `src/sanitizers/url.ts` was vulnerable to bypasses because it used loosely matched methods like `.includes('evzone.com')` for hostname validation (allowing `attacker-evzone.com`) and did not strip whitespace prior to parsing (allowing injection of newlines or tabs to bypass validation logic). Additionally, missing protocol allowlists meant `javascript:` URLs were parsed without throwing, bypassing intended logic.
+
+**Learning:** Using `.includes()` on hostnames is an insecure practice as it evaluates true for malicious prefix strings. Also, the `URL` constructor in JavaScript is forgiving and tolerates certain whitespace characters, but custom validation logic operating on the original string may fail or incorrectly identify safe components. Enforcing a strict protocol allowlist prior to checking any hostname property is critical, especially since the `URL` constructor does not reject arbitrary protocols by default.
+
+**Prevention:** Always use exact matching (`===`) or strict suffix matching (`.endsWith('.domain.com')`) for hostname validation. Always strip whitespace characters explicitly (e.g., using `.replace(/[\n\r\t]/g, '').trim()`) before passing inputs to the `URL` constructor. Ensure a strict protocol allowlist (e.g., `['http:', 'https:']`) is verified before acting on the parsed URL properties.
