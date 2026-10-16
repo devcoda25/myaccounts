@@ -8,9 +8,11 @@
  */
 export function isValidUrl(url: string): boolean {
     try {
-        const parsed = new URL(url);
+        // Explicitly strip whitespace, enforce protocol allowlist, and strictly match hostname to prevent bypasses
+        const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+        const parsed = new URL(cleanUrl);
         return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+            (parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com'));
     } catch {
         return false;
     }
@@ -24,9 +26,16 @@ export function sanitizeUrl(url: string): string {
     if (!url) return '';
 
     try {
-        const parsed = new URL(url);
+        // Strip whitespace, enforce protocol allowlist, and strictly match hostname
+        const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+        const parsed = new URL(cleanUrl);
+
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return '';
+        }
+
         // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        if (parsed.protocol !== 'https:' && (parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com'))) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
@@ -40,7 +49,15 @@ export function sanitizeUrl(url: string): string {
  */
 export function extractHostname(url: string): string {
     try {
-        return new URL(url).hostname;
+        // Strip whitespace and enforce protocol allowlist before extracting hostname
+        const cleanUrl = url.replace(/[\n\r\t]/g, '').trim();
+        const parsed = new URL(cleanUrl);
+
+        if (!['https:', 'http:'].includes(parsed.protocol)) {
+            return '';
+        }
+
+        return parsed.hostname;
     } catch {
         return '';
     }
