@@ -1,0 +1,4 @@
+## 2026-10-18 - [SSRF & Open Redirect] URL Validation Bypass via Loose Hostname Matching
+**Vulnerability:** The codebase validated URLs using loose string matching, which allowed SSRF and Open Redirect bypasses using domains like attackerevzone.com. Additionally, there was a risk of XSS via javascript: URLs since the URL constructor parses them without error, and newline/tab injection could bypass validation.
+**Learning:** URL.hostname matching must be strictly bounded. Loosely checking .includes() is unsafe. Furthermore, relative path behavior in new URL() implicitly throws a TypeError and this absolute-URL-only behavior needs to be preserved by wrapping the operation in a try/catch.
+**Prevention:** Always use exact matching (===) or strict suffix matching (.endsWith()) for hostnames. Ensure a strict protocol allowlist (e.g., ['http:', 'https:']) is explicitly verified, and strip whitespace (/[\n\r\t]/g) before parsing to prevent injection bypasses.
