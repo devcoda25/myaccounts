@@ -1,0 +1,4 @@
+## 2026-10-19 - Prevent Hostname Bypass in URL Sanitization
+**Vulnerability:** URL validation in `src/sanitizers/url.ts` used loosely matched methods like `.includes('evzone.com')` on `parsed.hostname`. This allowed attackers to craft malicious URLs to bypass validation. Furthermore, `sanitizeUrl` permitted `javascript:` URLs to pass through if they did not match the loosely matched hostname condition.
+**Learning:** Always use strict exact matching (`===`) or suffix matching (`.endsWith()`) for URL validation. Prioritize stripping whitespace to prevent injection bypasses, and explicitly restrict allowable protocols before running further hostname checks.
+**Prevention:** Strictly strip whitespace and validate allowable protocols against an allowlist before performing any exact string or strict suffix checks on URL components.
