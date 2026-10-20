@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /**
  * URL Sanitizer
  * URL validation and sanitization utilities
@@ -8,9 +9,10 @@
  */
 export function isValidUrl(url: string): boolean {
     try {
+        url = url.replace(/[\n\r\t]/g, '').trim();
         const parsed = new URL(url);
         return ['https:', 'http:'].includes(parsed.protocol) &&
-            parsed.hostname.includes('evzone.com');
+            (parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com'));
     } catch {
         return false;
     }
@@ -24,9 +26,13 @@ export function sanitizeUrl(url: string): string {
     if (!url) return '';
 
     try {
+        url = url.replace(/[\n\r\t]/g, '').trim();
         const parsed = new URL(url);
+        if (!['http:', 'https:'].includes(parsed.protocol)) {
+            return '';
+        }
         // Only allow HTTPS for production
-        if (parsed.protocol !== 'https:' && parsed.hostname.includes('evzone')) {
+        if (parsed.protocol !== 'https:' && (parsed.hostname === 'evzone.com' || parsed.hostname.endsWith('.evzone.com'))) {
             parsed.protocol = 'https:';
         }
         return parsed.toString();
@@ -40,6 +46,7 @@ export function sanitizeUrl(url: string): string {
  */
 export function extractHostname(url: string): string {
     try {
+        url = url.replace(/[\n\r\t]/g, '').trim();
         return new URL(url).hostname;
     } catch {
         return '';
