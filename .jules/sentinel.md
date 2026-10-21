@@ -1,0 +1,4 @@
+## 2026-10-21 - Prevent SSRF and Open Redirect bypasses in URL sanitization
+**Vulnerability:** URL validation and sanitization functions used loosely matched methods like `.includes('evzone.com')` on hostnames, allowing bypasses with domains like `evzone.com.attacker.com` or `attacker-evzone.com`. Also, lack of strict whitespace stripping allowed newline bypasses.
+**Learning:** Using `.includes()` for domain validation is insecure. The `URL` constructor allows whitespace and parses the `javascript:` protocol without error, leading to bypasses if not explicitly checked.
+**Prevention:** Always use exact matching (`===`) or strict suffix matching (`.endsWith()`) for domains. Strip whitespace characters (`url.replace(/[\n\r\t]/g, '').trim()`) and enforce a strict protocol allowlist before hostname validation.
