@@ -1,0 +1,4 @@
+## 2026-10-24 - [CRITICAL] Prevent SSRF/Open Redirect via Loose URL Validation
+**Vulnerability:** URL validation used `.includes('evzone.com')` instead of strict matching, allowing bypasses like `attacker.evzone.com.evil.com`. It also lacked whitespace stripping before passing to the `URL` constructor, and didn't strictly enforce an allowlisted protocol before hostname checking.
+**Learning:** `.includes()` is extremely dangerous for hostname validation. The `URL` constructor allows whitespace characters which can lead to bypasses, and can parse protocols like `javascript:` which yield empty hostnames.
+**Prevention:** Always strip whitespace first. Always enforce a strict protocol allowlist (e.g. `http:`, `https:`) before validating hostnames. Use strict matching (`===`) or strict suffix matching (`.endsWith()`) for hostnames.
