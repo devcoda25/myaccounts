@@ -1,0 +1,4 @@
+## 2026-10-25 - [CRITICAL] Fix URL validation SSRF/XSS bypasses
+**Vulnerability:** URL sanitization and validation allowed loose hostname matching (`.includes('evzone.com')`) which could be bypassed (e.g., `attacker-evzone.com`). It also didn't strip whitespace characters before parsing or explicitly enforce protocol allowlists, allowing XSS via `javascript:` protocols or bypasses with newlines.
+**Learning:** The `URL` constructor parses the `javascript:` protocol without throwing an error and loose string matching on hostnames fails to account for subdomain or suffix injections.
+**Prevention:** Always strip whitespace characters first, enforce an explicit protocol allowlist (e.g., `['http:', 'https:']`), and use exact matching (`===`) or strict suffix matching (`.endsWith()`) for hostnames.
