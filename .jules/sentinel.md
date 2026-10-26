@@ -1,0 +1,4 @@
+## 2026-10-26 - Insecure URL Hostname Matching
+**Vulnerability:** URL validation used `.includes('evzone.com')` for hostname matching, which allowed SSRF and Open Redirect bypasses (e.g., `evil-evzone.com` or `evzone.com.evil.com`). Additionally, `sanitizeUrl` parsed URLs without checking for allowed protocols like `http:` or `https:`, exposing XSS via the `javascript:` protocol.
+**Learning:** The `URL` constructor parses the `javascript:` protocol and might produce empty or unexpected hostnames. White-space characters (e.g., tabs, newlines) can also be used to bypass validation before parsing.
+**Prevention:** Always strip whitespace characters first, enforce an explicit protocol allowlist before evaluating the hostname, and use exact matching (`===`) or strict suffix matching (`.endsWith()`) rather than loosely matching hostnames using `.includes()`.
