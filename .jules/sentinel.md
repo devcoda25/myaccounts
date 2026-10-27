@@ -1,0 +1,4 @@
+## 2026-10-27 - Fix URL validation SSRF/Open Redirect vulnerabilities
+**Vulnerability:** The `isValidUrl` and `sanitizeUrl` functions in `src/sanitizers/url.ts` use `.includes('evzone.com')` and `.includes('evzone')` to check the hostname, which allows bypasses like `evzone.com.malicious.com` or `evzone.malicious.com`. `sanitizeUrl` also allows `javascript:` URLs to pass through if the user input contains it. Both functions do not strip whitespace before parsing.
+**Learning:** Using loosely matched `.includes` for hostname validation creates SSRF and Open Redirect bypasses. `new URL()` parses the `javascript:` protocol without throwing an error.
+**Prevention:** Use exact matching or strict suffix matching for hostname validation. Always enforce a strict protocol allowlist explicitly before performing any hostname validation. Always strip whitespace characters before passing to the `URL` constructor.
