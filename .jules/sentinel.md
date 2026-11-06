@@ -1,0 +1,4 @@
+## 2024-11-06 - Insecure URL Validation Bypass
+**Vulnerability:** URL validation and sanitization functions in `src/sanitizers/url.ts` use loose string matching (`.includes('evzone.com')` and `.includes('evzone')`) which allows SSRF, Open Redirects, and bypasses to domains like `evzone.com.attacker.com` or `attackerevzone.com`. Additionally, it does not strip whitespace before parsing, allowing potential protocol bypasses.
+**Learning:** `URL.hostname.includes()` is a flawed pattern for domain validation as it matches substrings anywhere in the hostname.
+**Prevention:** Always use exact matching (`===`) or strict suffix matching (`.endsWith('.evzone.com')`) for domains. Always strip whitespaces (`[\n\r\t]`) and enforce strict protocol allowlists (`['http:', 'https:']`) before hostname checks.
