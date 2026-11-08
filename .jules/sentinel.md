@@ -1,0 +1,4 @@
+## 2026-11-08 - Fix URL validation bypasses (SSRF, Open Redirect, XSS)
+**Vulnerability:** The `isValidUrl` and `sanitizeUrl` functions used `.includes('evzone.com')` on the hostname, allowing attackers to bypass validation using domains like `evzone.com.evil.com` (SSRF/Open Redirect). Additionally, whitespace and newline characters in URLs could potentially bypass protocol checks or allow `javascript:` execution.
+**Learning:** Using `.includes()` for hostname validation is insecure and easily bypassed. URL parsing can behave unexpectedly with whitespace.
+**Prevention:** Use exact matching (`===`) or strict suffix matching (`.endsWith('.evzone.com')`) for domains. Always strip whitespace before parsing URLs, explicitly enforce protocol allowlists (`['http:', 'https:']`), and use strict absolute URL checks.
