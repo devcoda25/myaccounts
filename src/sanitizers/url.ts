@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /**
  * URL Sanitizer
  * URL validation and sanitization utilities
