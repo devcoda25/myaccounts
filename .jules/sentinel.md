@@ -1,0 +1,4 @@
+## 2026-11-10 - Prevent SSRF and XSS in URL Validation
+**Vulnerability:** The project used loosely matched `.includes('evzone.com')` for hostname validation, allowing SSRF bypasses via subdomains (e.g., `evzone.com.attacker.com`). Additionally, `new URL()` permitted `javascript:` protocols in sanitization routines without error, posing an XSS risk.
+**Learning:** JavaScript's `URL` constructor parses `javascript:` without throwing an error, leading to empty or misleading hostnames. Furthermore, `String.prototype.includes` is insufficient for domain validation as it matches substrings anywhere in the hostname.
+**Prevention:** Always enforce strict domain suffix matching (e.g., `hostname === 'domain.com' || hostname.endsWith('.domain.com')`) and explicitly validate protocols against an allowlist (e.g., `['http:', 'https:']`) before trusting parsed URL components. Strip whitespace like newlines and tabs before parsing to prevent injection bypasses.
