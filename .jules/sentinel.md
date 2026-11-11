@@ -1,0 +1,4 @@
+## $(date +%Y-%m-%d) - [URL Validation SSRF and XSS Bypass]
+**Vulnerability:** URL sanitization used loosely matched `.includes()` for hostnames (allowing `evzone.com.attacker.com`) and failed to explicitly allowlist protocols before validating hostnames, allowing `javascript://evzone.com/%0Aalert(1)` bypasses due to lack of whitespace stripping and protocol checks.
+**Learning:** The `URL` constructor parses the `javascript:` protocol without error, leading to empty hostnames or bypassing hostname checks if protocols aren't strictly allowlisted first. Furthermore, loosely matching domains via `.includes()` creates Open Redirect and SSRF risks.
+**Prevention:** Always strip whitespace characters before parsing URLs. Explicitly enforce a strict protocol allowlist (`http:`, `https:`) before executing hostname logic, and use exact matching (`===`) or strict suffix matching (`.endsWith()` with a dot) for domain validation.
